@@ -1,11 +1,11 @@
-ScriptName OStimPlayerAliasScript extends ReferenceAlias
- 
+ScriptName OStimPlayerAliasScript Extends ReferenceAlias
+
 OSexIntegrationMain Property OStim Auto
 
-event onInit()
+Event OnInit()
 	OStim = (GetOwningQuest()) as OsexIntegrationMain
-endevent 
+Endevent
 
 Event OnPlayerLoadGame()
-	OStim.onLoadGame()
+	OStim.OnLoadGame()
 EndEvent

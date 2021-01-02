@@ -1,942 +1,831 @@
 Scriptname _oGlobal
 
-
-; ██████╗ ███████╗ █████╗      ██████╗ ██╗      ██████╗ ██████╗  █████╗ ██╗                                                                                           
-;██╔═══██╗██╔════╝██╔══██╗    ██╔════╝ ██║     ██╔═══██╗██╔══██╗██╔══██╗██║                                                                                           
-;██║   ██║███████╗███████║    ██║  ███╗██║     ██║   ██║██████╔╝███████║██║                                                                                           
-;██║   ██║╚════██║██╔══██║    ██║   ██║██║     ██║   ██║██╔══██╗██╔══██║██║                                                                                           
-;╚██████╔╝███████║██║  ██║    ╚██████╔╝███████╗╚██████╔╝██████╔╝██║  ██║███████╗                                                                                      
-; ╚═════╝ ╚══════╝╚═╝  ╚═╝     ╚═════╝ ╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝                                                                                      
-;█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗                                                                                       
-;╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝ 
-;OSA Global Script, holds all global functions that the OSA family of scripts share. 
-;Mainly used by multiple instances of the Actra script.
-
+;  ██████╗ ███████╗ █████╗      ██████╗ ██╗      ██████╗ ██████╗  █████╗ ██╗
+; ██╔═══██╗██╔════╝██╔══██╗    ██╔════╝ ██║     ██╔═══██╗██╔══██╗██╔══██╗██║
+; ██║   ██║███████╗███████║    ██║  ███╗██║     ██║   ██║██████╔╝███████║██║
+; ██║   ██║╚════██║██╔══██║    ██║   ██║██║     ██║   ██║██╔══██╗██╔══██║██║
+; ╚██████╔╝███████║██║  ██║    ╚██████╔╝███████╗╚██████╔╝██████╔╝██║  ██║███████╗
+;  ╚═════╝ ╚══════╝╚═╝  ╚═╝     ╚═════╝ ╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+; █████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗
+; ╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝
+; OSA Global Script, holds all global functions that the OSA family of scripts share.
+; Mainly used by multiple instances of the Actra script.
 
 
-
-
-String function GetFormID_s(Form zForm) global
+String Function GetFormID_S(Form zForm) Global
     String ModID = IntToHex(Math.RightShift(zForm.GetFormID(), 24))
     String SubID = IntToHex(Math.LogicalAnd(0x00FFFFFF, zForm.GetFormID()))
-    If ModID == ""
+
+    If (ModID == "")
         ModID = "00"
-    ElseIf StringUtil.getLength(ModID) < 2
+    ElseIf (StringUtil.GetLength(ModID) < 2)
         ModID = "0" + ModID
     EndIf
 
-    int SubLen = StringUtil.getLength(SubID)
+    Int SubLen = StringUtil.GetLength(SubID)
 
-    If SubLen == 0
+    If (SubLen == 0)
         SubID = "000000"
-    ElseIf SubLen == 1
+    ElseIf (SubLen == 1)
         SubID = "00000" + SubID
-    ElseIf SubLen == 2
+    ElseIf (SubLen == 2)
         SubID = "0000" + SubID
-    ElseIf SubLen == 3
+    ElseIf (SubLen == 3)
         SubID = "000" + SubID
-    ElseIf SubLen == 4
+    ElseIf (SubLen == 4)
         SubID = "00" + SubID
-    ElseIf SubLen == 5
+    ElseIf (SubLen == 5)
         SubID = "0" + SubID
     EndIf
 
-    return ModID + SubID
-endFunction
+    Return ModID + SubID
+EndFunction
+
+Bool Function DirectionCheck_D(Actor Initiator, Actor Target, Int Min, Int Max) Global
+    Float Angle = Target.GetHeadingAngle(Initiator)
+    If (Angle < 0)
+        Angle = 180 + (180 + Angle)
+    Endif
+    If (Angle > Min && Angle < Max)
+        Return True
+    Else
+        Return False
+    Endif
+EndFunction
 
 
-bool function directionCheck_D(actor initiator, actor target, int min, int max) global
-float angle = target.GetHeadingAngle(initiator)
-if angle < 0 
-    angle = 180 + (180+angle)
-endif
-if angle > min && angle < max
-return true
-else    
-return false
-endif
-endFunction
-
-; █████╗  ██████╗████████╗ ██████╗ ██████╗     ██████╗ ██████╗ ███████╗██████╗                                                                                        
-;██╔══██╗██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗    ██╔══██╗██╔══██╗██╔════╝██╔══██╗                                                                                       
-;███████║██║        ██║   ██║   ██║██████╔╝    ██████╔╝██████╔╝█████╗  ██████╔╝                                                                                       
-;██╔══██║██║        ██║   ██║   ██║██╔══██╗    ██╔═══╝ ██╔══██╗██╔══╝  ██╔═══╝                                                                                        
-;██║  ██║╚██████╗   ██║   ╚██████╔╝██║  ██║    ██║     ██║  ██║███████╗██║                                                                                            
-;╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝         
-;Functions that prepare the actors to perform in the scene and counter functions.
+;  █████╗  ██████╗████████╗ ██████╗ ██████╗     ██████╗ ██████╗ ███████╗██████╗
+; ██╔══██╗██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗    ██╔══██╗██╔══██╗██╔════╝██╔══██╗
+; ███████║██║        ██║   ██║   ██║██████╔╝    ██████╔╝██████╔╝█████╗  ██████╔╝
+; ██╔══██║██║        ██║   ██║   ██║██╔══██╗    ██╔═══╝ ██╔══██╗██╔══╝  ██╔═══╝
+; ██║  ██║╚██████╗   ██║   ╚██████╔╝██║  ██║    ██║     ██║  ██║███████╗██║
+; ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝
+; Functions that prepare the actors to perform in the scene and counter functions.
 
 
-;Performs a series of random skyrim locks on the actors so they don't repel each other during a scene.
-function actorLock(actor actra, actor player) global
-     If player == actra
+; Performs a series of random skyrim locks on the actors so they don't repel each other during a scene.
+Function ActorLock(Actor Actra, Actor Player) Global
+    If (Player == Actra)
         Game.ForceThirdPerson()
         Game.SetPlayerAIDriven()
-        Game.DisablePlayerControls(false, false, false, false, false, false, true, false, 0)
-    else
-        actra.SetRestrained(true)
-        actra.SetDontMove(true)
-    endIf
-endFunction
-
-;Disables all locking stuff used in OSA,
-;also reverts their footIK to normal and puts them back into an idle animation
-function actorUnlock(actor actra, actor player) global
-     If player == actra
-        Game.SetPlayerAIDriven(false)
-        Game.EnablePlayerControls()
-    else
-        actra.SetRestrained(False)
-        actra.SetDontMove(False)
-
-    endIf
-    actra.StopTranslation()
-    actra.SetVehicle(None)
-    actra.SetAnimationVariableBool("bHumanoidFootIKDisable", false)
-    Debug.SendAnimationEvent(actra, "IdleForceDefaultState")
-endFunction
-
-function actorSmoothUnlock(actor actra, actor player, float Xp, float Yp) global
-     If player == actra
-        Game.SetPlayerAIDriven(false)
-        Game.EnablePlayerControls()
-    else
-        actra.SetRestrained(False)
-        actra.SetDontMove(False)
-
-    endIf
-    actra.StopTranslation()
-    actra.SetVehicle(None)
-    actra.setPosition(Xp, Yp, actra.z)
-    actra.SplineTranslateTo(Xp, Yp, actra.z, actra.GetAngleX(), actra.GetAngley(), actra.GetAnglez(), 1.0, 70, 0)
-    actra.SetAnimationVariableBool("bHumanoidFootIKDisable", false)
-    Debug.SendAnimationEvent(actra, "IdleForceDefaultState")
-endFunction
-
-;Overwrites the actor's package with a DoNothing package.
-function packageSquelch(actor actra, package[] oPackage) global
-     ActorUtil.AddPackageOverride(actra, oPackage[0], 100, 1)
-                actra.EvaluatePackage()
-endFunction
-
-;Reverse the above squelch package override.
-Function packageClean(actor actra, package[] oPackage) global
-ActorUtil.RemovePackageOverride(actra, oPackage[0])
-actra.EvaluatePackage()
-EndFunction
-
-;Cleans all factions used by OSA from an actor.
-Function FactionClean(actor actra, faction[] OFaction) global
-actra.RemoveFromFaction(OFaction[0])
-actra.RemoveFromFaction(OFaction[1])
-actra.RemoveFromFaction(OFaction[2])
-EndFunction
-
-Function sheathWep(actor actra, actor player) global
-    If actra == player && actra.IsWeaponDrawn() 
-        actra.SheatheWeapon()
+        Game.DisablePlayerControls(False, False, False, False, False, False, True, False, 0)
+    Else
+        Actra.SetRestrained(True)
+        Actra.SetDontMove(True)
     EndIf
 EndFunction
 
-;██████╗  ██████╗ ███████╗██╗████████╗██╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗                                                                                     
-;██╔══██╗██╔═══██╗██╔════╝██║╚══██╔══╝██║██╔═══██╗████╗  ██║██║████╗  ██║██╔════╝                                                                                     
-;██████╔╝██║   ██║███████╗██║   ██║   ██║██║   ██║██╔██╗ ██║██║██╔██╗ ██║██║  ███╗                                                                                    
-;██╔═══╝ ██║   ██║╚════██║██║   ██║   ██║██║   ██║██║╚██╗██║██║██║╚██╗██║██║   ██║                                                                                    
-;██║     ╚██████╔╝███████║██║   ██║   ██║╚██████╔╝██║ ╚████║██║██║ ╚████║╚██████╔╝                                                                                    
-;╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝    
+; Disables all locking stuff used in OSA,
+; also reverts their footIK to normal and puts them back into an idle animation
+Function ActorUnlock(Actor Actra, Actor Player) Global
+    If (Player == Actra)
+        Game.SetPlayerAIDriven(False)
+        Game.EnablePlayerControls()
+    Else
+        Actra.SetRestrained(False)
+        Actra.SetDontMove(False)
+    EndIf
 
-
-Function getStageLoc(actor actra, float[] loc) global
-loc [0] = actra.GetPositionX()    
-loc [1] = actra.GetPositionY()
-loc [2] = actra.GetPositionZ()
-loc [3] = actra.GetAngleX()
-loc [4] = actra.GetAngleY()
-loc [5] = actra.GetAngleZ()
+    Actra.StopTranslation()
+    Actra.SetVehicle(None)
+    Actra.SetAnimationVariableBool("bHumanoidFootIKDisable", False)
+    Debug.SendAnimationEvent(Actra, "IdleForceDefaultState")
 EndFunction
 
-float[] Function getStageLocArray(objectReference actra) global
-float[] loc = new float[6] 
-loc [0] = actra.GetPositionX()    
-loc [1] = actra.GetPositionY()
-loc [2] = actra.GetPositionZ()
-loc [3] = actra.GetAngleX()
-loc [4] = actra.GetAngleY()
-loc [5] = actra.GetAngleZ()
+Function ActorSmoothUnlock(Actor Actra, Actor Player, Float Xp, Float Yp) Global
+    If (Player == Actra)
+        Game.SetPlayerAIDriven(False)
+        Game.EnablePlayerControls()
+    Else
+        Actra.SetRestrained(False)
+        Actra.SetDontMove(False)
+    EndIf
 
-Return loc
+    Actra.StopTranslation()
+    Actra.SetVehicle(None)
+    Actra.SetPosition(Xp, Yp, Actra.z)
+    Actra.SplineTranslateTo(Xp, Yp, Actra.z, Actra.GetAngleX(), Actra.GetAngleY(), Actra.GetAnglez(), 1.0, 70, 0)
+    Actra.SetAnimationVariableBool("bHumanoidFootIKDisable", False)
+    Debug.SendAnimationEvent(Actra, "IdleForceDefaultState")
+EndFunction
+
+; Overwrites the Actor's package with a DoNothing package.
+Function PackageSquelch(Actor Actra, Package[] oPackage) Global
+    ActorUtil.AddPackageOverride(Actra, oPackage[0], 100, 1)
+    Actra.EvaluatePackage()
+EndFunction
+
+; Reverse the above squelch package override.
+Function PackageClean(Actor Actra, Package[] oPackage) Global
+    ActorUtil.RemovePackageOverride(Actra, oPackage[0])
+    Actra.EvaluatePackage()
+EndFunction
+
+; Cleans all factions used by OSA from an Actor.
+Function FactionClean(Actor Actra, Faction[] OFaction) Global
+    Actra.RemoveFromFaction(OFaction[0])
+    Actra.RemoveFromFaction(OFaction[1])
+    Actra.RemoveFromFaction(OFaction[2])
+EndFunction
+
+Function SheathWep(Actor Actra, Actor Player) Global
+    If (Actra == Player && Actra.IsWeaponDrawn())
+        Actra.SheatheWeapon()
+    EndIf
 EndFunction
 
 
+; ██████╗  ██████╗ ███████╗██╗████████╗██╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗
+; ██╔══██╗██╔═══██╗██╔════╝██║╚══██╔══╝██║██╔═══██╗████╗  ██║██║████╗  ██║██╔════╝
+; ██████╔╝██║   ██║███████╗██║   ██║   ██║██║   ██║██╔██╗ ██║██║██╔██╗ ██║██║  ███╗
+; ██╔═══╝ ██║   ██║╚════██║██║   ██║   ██║██║   ██║██║╚██╗██║██║██║╚██╗██║██║   ██║
+; ██║     ╚██████╔╝███████║██║   ██║   ██║╚██████╔╝██║ ╚████║██║██║ ╚████║╚██████╔╝
+; ╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝
 
 
-function enforceAngle(actor actra, float[] loc) Global
-            if Math.Abs(actra.GetAngleZ() - loc[5]) > 0.5    
-            actra.SetAngle(loc[3], loc[4], loc[5])
-            EndIf
+Function GetStageLoc(Actor Actra, Float[] Loc) Global
+    Loc[0] = Actra.GetPositionX()
+    Loc[1] = Actra.GetPositionY()
+    Loc[2] = Actra.GetPositionZ()
+    Loc[3] = Actra.GetAngleX()
+    Loc[4] = Actra.GetAngleY()
+    Loc[5] = Actra.GetAngleZ()
 EndFunction
 
-function enforcePosition(actor actra, ObjectReference stageSpot, float[] loc) Global
-            If actra.GetDistance(stageSpot) > 0.5
-            actra.SetPosition(loc[0], loc[1], loc[2])
-                    actra.SetVehicle(stageSpot)  
-            EndIf  
-                   actra.SplineTranslateTo(loc[0], loc[1], loc[2], loc[3], loc[4], loc[5], 1.0, 10000, 0.0001)
-                   actra.SetVehicle(stageSpot) 
+Float[] Function GetStageLocArray(ObjectReference Actra) Global
+    Float[] Loc = new Float[6]
+    Loc[0] = Actra.GetPositionX()
+    Loc[1] = Actra.GetPositionY()
+    Loc[2] = Actra.GetPositionZ()
+    Loc[3] = Actra.GetAngleX()
+    Loc[4] = Actra.GetAngleY()
+    Loc[5] = Actra.GetAngleZ()
+    Return Loc
 EndFunction
 
+Function EnforceAngle(Actor Actra, Float[] Loc) Global
+    If (Math.Abs(Actra.GetAngleZ() - Loc[5]) > 0.5)
+        Actra.SetAngle(Loc[3], Loc[4], Loc[5])
+    EndIf
+EndFunction
 
+Function EnforcePosition(Actor Actra, ObjectReference StageSpot, Float[] Loc) Global
+    If (Actra.GetDistance(stageSpot) > 0.5)
+        Actra.SetPosition(loc[0], loc[1], loc[2])
+        Actra.SetVehicle(stageSpot)
+    EndIf
+    Actra.SplineTranslateTo(loc[0], loc[1], loc[2], loc[3], loc[4], loc[5], 1.0, 10000, 0.0001)
+    Actra.SetVehicle(stageSpot)
+EndFunction
 
+String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni Oso) Global
+    ;/
+    If (!CPConvert.CPIsValid(Oso.codepage))
+        ; CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
+        Debug.Notification(Oso.codepage + " is not a valid codepage value!")
+    EndIf
+    /;
 
+    ActorBase ActB = Actra.GetLeveledActorBase()
+    String[] Details = new String[20]
+    Details[0] = FormID
+    Details[1] = Actra.GetFormId()
+    ; CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
+    ;details[2] = CPConvert.CPConv(oso.codepage, "UTF-8", ActB.GetName())
+    Details[2] = Actra.GetDisplayName()
+    Details[3] = ActB.GetSex()
 
-string[] function sendActraDetails(actor actra, string FormID, _oOmni oso) global
+    If Actra == Oso.PlayerRef
+        Details[4] = "1"
+        ConsoleUtil.SetSelectedReference(None)
+        Consoleutil.ExecuteCommand("tcl")
+        Actra.SetScale(1.0)
+        Consoleutil.ExecuteCommand("tcl")
+    Else
+        Actra.SetScale(1.0)
+        Details[4] = "0"
+        Details[10] = Details[0] ; it is now already a String in hex
+        Details[11] = Game.GetModName(ModNameHex10(Details[10]))
+        Details[10] = StringUtil.SubString(Details[10], 2) ; last 6 of hex
+        Details[12] = StringUtil.SubString(Details[11], 0, StringUtil.Find(Details[11], ".es"))
+        Details[13] = Details[12] + Details[10]
+    EndIf
+    Details[8] = ActB.GetWeight()
+    Details[7] = ActB.GetVoiceType().GetFormId()
 
-If (!CPConvert.CPIsValid(oso.codepage))
+    ;/
+    If !NoMove
+        If Actra != PlayerRef
+            If Actra.GetSitState() > 2 || Actra.GetSleepState() > 2
+                Debug.SendAnimationEvent(Actra, "Reset")
+                Debug.SendAnimationEvent(Actra, "ReturnToDefault")
+                Debug.SendAnimationEvent(Actra, "ForceFurnExit")
+                Actra.MoveTo(PlayerRef, (40 * Math.Sin(PlayerRef.GetAngleZ())), (40 * Math.Cos(PlayerRef.GetAngleZ())), 0.0, abMatchRotation = False)
+            Endif
+        Endif
+    EndIf
+    /;
+
     ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
-    ;Debug.Notification(oso.codepage + " is not a valid codepage value!")
-EndIf
+    ;details[6] = CPConvert.CPConv(oso.codepage, "UTF-8", ActB.GetRace().GetName())
+    Details[6] = ActB.GetRace().GetName()
+    Details[5] = Actra.GetScale()
 
+    Return Details
+EndFunction
 
+String[] Function SendActraScale(Actor Actra, String FormID) Global
+    String[] Scale = new String[20]
+    Scale[0] = FormID
+    Scale[1] = NetImmerse.GetNodeScale(Actra, "NPC Root [Root]", False)
+    Scale[2] = NetImmerse.GetNodeScale(Actra, "NPC Belly", False)
+    Scale[3] = NetImmerse.GetNodeScale(Actra, "NPC L Butt", False)
+    Scale[4] = NetImmerse.GetNodeScale(Actra, "NPC R Butt", False)
+    Scale[5] = NetImmerse.GetNodeScale(Actra, "NPC L Breast", False)
+    Scale[6] = NetImmerse.GetNodeScale(Actra, "NPC R Breast", False)
 
+    Scale[10] = NetImmerse.GetNodeScale(Actra, "NPC GenitalsBase [GenBase]", False)
+    Scale[11] = NetImmerse.GetNodeScale(Actra, "NPC GenitalsScrotum [GenScrot]", False)
+    Scale[12] = NetImmerse.GetNodeScale(Actra, "NPC Genitals01 [Gen01]", False)
+    Scale[13] = NetImmerse.GetNodeScale(Actra, "NPC Genitals02 [Gen02]", False)
+    Scale[14] = NetImmerse.GetNodeScale(Actra, "NPC Genitals03 [Gen03]", False)
+    Scale[15] = NetImmerse.GetNodeScale(Actra, "NPC Genitals04 [Gen04]", False)
+    Scale[16] = NetImmerse.GetNodeScale(Actra, "NPC Genitals05 [Gen05]", False)
+    Scale[17] = NetImmerse.GetNodeScale(Actra, "NPC Genitals06 [Gen06]", False)
+    Return Scale
+EndFunction
 
-actorBase ActB = actra.GetLeveledActorBase()
-string[] details = new string[20]
-details[0] = FormID
-details[1] = actra.getFormId()
-;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
-;details[2] = CPConvert.CPConv(oso.codepage, "UTF-8", ActB.GetName())
-details[2] = actra.GetDisplayName()
+;/
+String[] Function ActraHostility(Actor Actra, Actor[] Actro) Global
+    String[] Hostile = new String[10]
 
-details[3] = ActB.GetSex()
-if actra == oso.PlayerRef
-details[4] = "1"
-consoleUtil.SetSelectedReference(none)
-consoleutil.executeCommand("tcl")
-actra.SetScale(1.0)
-consoleutil.executeCommand("tcl")
-Else
-actra.SetScale(1.0)
-details[4] = "0"
-details[10] = details[0] ; it is now already a string in hex
-details[11] = Game.GetModName(ModNameHex10(details[10]))
-details[10] = StringUtil.SubString(details[10], 2) ; last 6 of hex
-details[12] = stringUtil.SubString(Details[11], 0, StringUtil.Find(details[11], ".es"))
-details[13] = details[12]+details[10]
-EndIf
-details[8] = ActB.GetWeight()
-details[7] = ActB.GetVoiceType().getFormId()
+    Int i = 0
+    Int Length = Actro.Length
+    While (i < Length)
+        Hostile[i] = Actra.IsHostileToActor(Actro[i]) as Int
+        ActorBase ActraBase = Actra.GetLeveledActorBase()
+        i += 1
+    EndWhile
 
+    Return Hostile
+EndFunction
+/;
 
-   ;if !noMove
-   ;if actra != PlayerRef
-   ;     if actra.GetSitState() > 2 || actra.GetSleepState() > 2
-   ;     Debug.SendAnimationEvent(actra, "Reset")
-   ;     Debug.SendAnimationEvent(actra, "ReturnToDefault")
-   ;     Debug.SendAnimationEvent(actra, "ForceFurnExit")
-   ;     Actra.MoveTo(PlayerRef, (40 * Math.Sin(PlayerRef.GetAngleZ())), (40 * Math.Cos(PlayerRef.GetAngleZ())), 0.0, abMatchRotation = false)
-   ;     endif
-   ; endif
-   ; endIf
+Function SendEQSuite(Actor Actra, String FormID, Int Glyph, String CodePage) Global
+    Int zSlot = 0
+    String[] Eq = new String[73]
+    Armor EqCur
 
-;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
-;details[6] = CPConvert.CPConv(oso.codepage, "UTF-8", ActB.GetRace().GetName())
-details[6] = ActB.GetRace().GetName()
+    While (zSlot <= 32)
+        EqCur = Actra.GetWornForm(GetOSlot(zSlot)) as Armor
+        If (EqCur)
+            Eq[zSlot] = EqCur.GetFormID()
 
-details[5] = actra.getScale()
+            ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
+            ;Eq[zSlot+40] = CPConvert.CPConv(CodePage, "UTF-8", EqCur.GetName())
+            Eq[zSlot+40] = EqCur.GetName()
+        Else
+            Eq[zSlot] = 0
+            Eq[zSlot+40] = "noeq"
+        EndIf
+        zSlot += 1
+    EndWhile
 
+    Eq[39] = FormID
+    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.com.skyActraAttireWorn", Eq)
+    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.com.skyActraWeaponWorn", AnalyzeWeapon(0, Actra, FormID, Glyph, CodePage))
+    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.com.skyActraWeaponWorn", AnalyzeWeapon(1, Actra, FormID, Glyph, CodePage))
+EndFunction
 
-return details
-endfunction
+String[] Function AnalyzeWeapon(Int zTrueHand, Actor Actra, String FormID, Int Glyph, String CodePage) Global
+    Int zHand = 0
+    Int zExHand = 2
 
+    If (zTrueHand == 0)
+        zHand = 1
+        zExHand = 1
+    EndIf
 
+    String[] WepUnit = new String[5]
+    WepUnit[0] = FormID
+    WepUnit[1] = zTrueHand
+    Form zWep = Actra.GetEquippedObject(zHand)
 
-string[] function sendActraScale(actor actra, string FormID) global
-string[] scale = new string[20]
-scale[0] = FormID
-scale[1] = NetImmerse.GetNodeScale(actra, "NPC Root [Root]", False)
-scale[2] = NetImmerse.GetNodeScale(actra, "NPC Belly", False)
-scale[3] = NetImmerse.GetNodeScale(actra, "NPC L Butt", False)
-scale[4] = NetImmerse.GetNodeScale(actra, "NPC R Butt", False)
-scale[5] = NetImmerse.GetNodeScale(actra, "NPC L Breast", False)
-scale[6] = NetImmerse.GetNodeScale(actra, "NPC R Breast", False)
+    If (!zWep)
+        WepUnit[2] = 0
+        WepUnit[3] = "noeq"
+        WepUnit[4] = 9
+    ElseIf (zWep as Weapon)
+        WepUnit[2] = zWep.GetFormID()
+        ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
+        ;WepUnit[3] = CPConvert.CPConv(CodePage, "UTF-8", zWep.GetName())
+        zWep.GetName()
+        WepUnit[4] = "0"
+    ElseIf (zWep as Spell)
+        WepUnit[2] = zWep.GetFormID()
+        ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
+        ;WepUnit[3] = CPConvert.CPConv(CodePage, "UTF-8", zWep.GetName())
+        zWep.GetName()
+        WepUnit[4] = "1"
+    Else
+        WepUnit[2] = 0
+        WepUnit[3] = "noeq"
+        WepUnit[4] = 9
+    EndIf
 
-scale[10] = NetImmerse.GetNodeScale(actra, "NPC GenitalsBase [GenBase]", False)
-scale[11] = NetImmerse.GetNodeScale(actra, "NPC GenitalsScrotum [GenScrot]", False)
-scale[12] = NetImmerse.GetNodeScale(actra, "NPC Genitals01 [Gen01]", False)
-scale[13] = NetImmerse.GetNodeScale(actra, "NPC Genitals02 [Gen02]", False)
-scale[14] = NetImmerse.GetNodeScale(actra, "NPC Genitals03 [Gen03]", False)
-scale[15] = NetImmerse.GetNodeScale(actra, "NPC Genitals04 [Gen04]", False)
-scale[16] = NetImmerse.GetNodeScale(actra, "NPC Genitals05 [Gen05]", False)
-scale[17] = NetImmerse.GetNodeScale(actra, "NPC Genitals06 [Gen06]", False)
-return scale
+    Return WepUnit
+EndFunction
+
+Int Function BindActionKeyPair(Int Index, Int[] KBind, String[] KIndex, Int Glyph) Global
+    KBind[Index] = UI.GetInt("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.olib.a" + Index + ".bind")
+    KIndex[Index] = UI.GetString("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.olib.a" + Index + ".id")
+    Return KBind[Index]
+EndFunction
+
+Function ScanFolders(Int Glyph) Global
+    String[] ScannedFiles = MiscUtil.FilesInFolder("Data/meshes/0SA/mod/__install/mod/",".osmod")
+    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.scan.scanMods", ScannedFiles)
+    ScannedFiles = MiscUtil.FilesInFolder("Data/meshes/0SA/mod/__install/plugin/",".osplug")
+    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.scan.scanPlugs", ScannedFiles)
+    Utility.wait(0.2)
+    ScannedFiles = MiscUtil.FilesInFolder("Data/OSA/Persona/base/identity/",".oiden")
+    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.lib.codex.scanIdentity", ScannedFiles)
+    Utility.wait(0.2)
+    ScannedFiles = MiscUtil.FilesInFolder("Data/OSA/Persona/base/form",".oform")
+    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.lib.codex.scanForm", ScannedFiles)
+EndFunction
+
+Function CleanPositionArray(ObjectReference[] PositionObjArray) Global
+    Int i = 0
+    Int L = PositionObjArray.Length
+    While (i < L)
+        If PositionObjArray[i]
+            PositionObjArray[i].Delete()
+        EndIf
+        i += 1
+    EndWhile
 EndFunction
 
 
-string[] function actraHostility(actor actra, actor[] actro) global 
-string[] hostile= new string[10]
-
-int i = 0
-int L = actro.length
-while i < L
-hostile[i] = actra.IsHostileToActor(actro[i]) as int  
-ActorBase actraBase = actra.GetLeveledActorBase()
-i+=1
-endwhile
-EndFunction
+; ██╗  ██╗███████╗██╗  ██╗██╗███╗   ██╗ ██████╗
+; ██║  ██║██╔════╝╚██╗██╔╝██║████╗  ██║██╔════╝
+; ███████║█████╗   ╚███╔╝ ██║██╔██╗ ██║██║  ███╗
+; ██╔══██║██╔══╝   ██╔██╗ ██║██║╚██╗██║██║   ██║
+; ██║  ██║███████╗██╔╝ ██╗██║██║ ╚████║╚██████╔╝
+; ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝
+; Functions to convert Actors FormIDs into Hex to use as a serial number for records.
+; This is the only concrete way I've found to generate a universal ID that an Actor
+; can be searched for in a String format.
 
 
-function SendEQSuite(actor actra, string formID, int glyph, string codePage) global
-int zSlot = 0
-string[] Eq = new string[73]
-armor EqCur
-While zSlot <= 32
-EqCur = Actra.GetWornForm(getOSlot(zSlot)) as armor
-If EqCur
-Eq[zSlot] = EqCur.getFormID()
-
-;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
-;Eq[zSlot+40] = CPConvert.CPConv(codePage, "UTF-8", EqCur.getName())
-Eq[zSlot+40] = EqCur.getName()
-Else
-Eq[zSlot] = 0
-Eq[zSlot+40] = "noeq"   
-EndIf
-zSlot += 1
-EndWhile
-Eq[39] = formID
-UI.InvokeStringA("HUD Menu", "_root.WidgetContainer."+glyph+".widget.com.skyActraAttireWorn", Eq)
-UI.InvokeStringA("HUD Menu", "_root.WidgetContainer."+glyph+".widget.com.skyActraWeaponWorn", analyzeWeapon(0, actra, formID, glyph, codePage))
-UI.InvokeStringA("HUD Menu", "_root.WidgetContainer."+glyph+".widget.com.skyActraWeaponWorn", analyzeWeapon(1, actra, formID, glyph, codePage))
-endFunction
-
-
-string[] Function analyzeWeapon(int zTrueHand, actor actra, string formID, int glyph, string codePage) global
-int zHand
-int zExHand
-If zTrueHand == 0
-zHand = 1
-zExHand = 1
-Else
-zHand = 0
-zExHand = 2
-EndIf
-
-string[] WepUnit = new String[5]
-WepUnit[0] = formID
-WepUnit[1] = zTrueHand
-Form zWep = Actra.GetEquippedObject(zHand)
-
-If !zWep
-    WepUnit[2] = 0
-    WepUnit[3] = "noeq"
-    WepUnit[4] = 9
-ElseIf (zWep as Weapon)
-    WepUnit[2] = zWep.getFormID()
-    ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
-    ;WepUnit[3] = CPConvert.CPConv(codePage, "UTF-8", zWep.getName())
-    zWep.getName()
-    WepUnit[4] = "0"
-ElseIf (zWep as Spell)
-    WepUnit[2] = zWep.getFormID()
-    ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
-    ;WepUnit[3] = CPConvert.CPConv(codePage, "UTF-8", zWep.getName())
-    zWep.getName()
-    WepUnit[4] = "1"    
-Else
-    WepUnit[2] = 0
-    WepUnit[3] = "noeq"
-    WepUnit[4] = 9
-EndIf
-
-return WepUnit
-EndFunction
-
-
-
-
-
-int function bindActionKeyPair(int index, int[] KBind, string[] KIndex, int glyph) global
-
-KBind[index] = UI.GetInt("HUD Menu", "_root.WidgetContainer."+glyph+".widget.olib.a"+index+".bind")
-KIndex[index] = UI.GetString("HUD Menu", "_root.WidgetContainer."+glyph+".widget.olib.a"+index+".id")
-return KBind[index]
-endFunction
-
-
-
-
-
-function scanFolders(int glyph) global
-    String[] scanedFiles = MiscUtil.FilesInFolder("Data/meshes/0SA/mod/__install/mod/",".osmod")
-    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer."+glyph+".widget.scan.scanMods", scanedFiles)
-    scanedFiles = MiscUtil.FilesInFolder("Data/meshes/0SA/mod/__install/plugin/",".osplug")
-    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer."+glyph+".widget.scan.scanPlugs", scanedFiles)
-    
-    utility.wait(0.2)
-    scanedFiles = MiscUtil.FilesInFolder("Data/OSA/Persona/base/identity/",".oiden")
-    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer."+glyph+".widget.lib.codex.scanIdentity", scanedFiles)
-    utility.wait(0.2)
-    scanedFiles = MiscUtil.FilesInFolder("Data/OSA/Persona/base/form",".oform")
-    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer."+glyph+".widget.lib.codex.scanForm", scanedFiles)
-endFunction
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function cleanPositionArray(objectReference[] positionObjArray) global
-int i = 0
-int L = positionObjArray.length
-while i < L
-    if positionObjArray[i]
-        positionObjArray[i].Delete()
-    endif
-    i+=1
-endWhile
-endFunction
-
-
-
-
-
-;██╗  ██╗███████╗██╗  ██╗██╗███╗   ██╗ ██████╗                                                                                                                        
-;██║  ██║██╔════╝╚██╗██╔╝██║████╗  ██║██╔════╝                                                                                                                        
-;███████║█████╗   ╚███╔╝ ██║██╔██╗ ██║██║  ███╗                                                                                                                       
-;██╔══██║██╔══╝   ██╔██╗ ██║██║╚██╗██║██║   ██║                                                                                                                       
-;██║  ██║███████╗██╔╝ ██╗██║██║ ╚████║╚██████╔╝                                                                                                                       
-;╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝  
-;Functions to convert Actors FormIDs into Hex to use as a serial number for records.
-;This is the only concrete way I've found to generate a universal ID that an actor
-;can be searched for in a string format.
-
-
-;Converts the first two Hex of the actor's Hex into a Mod Name (Minus the .esp or .esm) 
-string Function IDSerial_Name(string zHex) global
+; Converts the first two Hex of the Actor's Hex into a Mod Name (Minus the .esp or .esm)
+String Function IDSerial_Name(String zHex) Global
     String TempMod = Game.GetModName(ModNameHex10(zHex))
     Return StringUtil.SubString(TempMod, 0, StringUtil.Find(TempMod, ".es"))
 EndFunction
 
-
-String Function HeHexMe(string zHex) global
-    Int HexL = StringUtil.getLength(zHex)
-        
-        If HexL == 7
+String Function HeHexMe(String zHex) Global
+    Int HexL = StringUtil.GetLength(zHex)
+    If (HexL == 7)
         Return StringUtil.Substring(zHex, 1)
-        ElseIf HexL == 8
+    ElseIf (HexL == 8)
         Return StringUtil.Substring(zHex, 2)
-        ElseIf HexL == 6
+    ElseIf (HexL == 6)
         Return zHex
-        ElseIf HexL == 5
-        Return "0"+zHex
-        ElseIf HexL == 4
-        Return "00"+zHex
-        ElseIf HexL == 3
-        Return "000"+zHex
-        ElseIf HexL == 2
-        Return "0000"+zHex
-        ElseIf HexL == 1
-        Return "00000"+zHex
-        ElseIf HexL == 0
-        Return "000000"+zHex 
-        EndIf
-
+    ElseIf (HexL == 5)
+        Return "0" + zHex
+    ElseIf (HexL == 4)
+        Return "00" + zHex
+    ElseIf (HexL == 3)
+        Return "000" + zHex
+    ElseIf (HexL == 2)
+        Return "0000" + zHex
+    ElseIf (HexL == 1)
+        Return "00000" + zHex
+    ElseIf (HexL == 0)
+        Return "000000" + zHex
+    EndIf
 EndFunction
 
-
-
-String function IntToHex (int dez) global
-    String hex = ""
-    int rest = dez
-    while (rest > 0)
-        int m16 = rest % 16
-        rest = rest / 16
-        String temp = ""
-        if (m16 == 1)
-            temp = "1"
-        elseif (m16 == 2)
-            temp = "2"
-        elseif (m16 == 3)
-            temp = "3"
-        elseif (m16 == 4)
-            temp = "4"
-        elseif (m16 == 5)
-            temp = "5"
-        elseif (m16 == 6)
-            temp = "6"
-        elseif (m16 == 7)
-            temp = "7"
-        elseif (m16 == 8)
-            temp = "8"
-        elseif (m16 == 9)
-            temp = "9"
-        elseif (m16 == 10)
-            temp = "A"
-        elseif (m16 == 11)
-            temp = "B"
-        elseif (m16 == 12)
-            temp = "C"
-        elseif (m16 == 13)
-            temp = "D"
-        elseif (m16 == 14)
-            temp = "E"
-        elseif (m16 == 15)
-            temp = "F"
-        else
-            temp = "0"
-        endif
-        hex = temp + hex
-    endWhile
-    return hex
-endFunction
-
-
-Int Function HexTo10(String zHex) global
-
-        If (zHex == "1")
-            Return 1
-        ElseIf (zHex == "2")
-            Return 2
-        ElseIf (zHex == "3")
-            Return 3
-        ElseIf (zHex == "4")
-            Return 4
-        ElseIf (zHex == "5")
-            Return 5
-        ElseIf (zHex == "6")
-            Return 6
-        ElseIf (zHex == "7")
-            Return 7
-        ElseIf (zHex == "8")
-            Return 8
-        ElseIf (zHex == "9")
-            Return 9
-        ElseIf (zHex == "A" || zHex == "a")
-            Return 10
-        ElseIf (zHex == "B" || zHex == "b")
-            Return 11
-        ElseIf (zHex == "C" || zHex == "c")
-            Return 12
-        ElseIf (zHex == "D" || zHex == "d")
-            Return 13
-        ElseIf (zHex == "E" || zHex == "e")
-            Return 14
-        ElseIf (zHex == "F" || zHex == "f")
-            Return 15
+String Function IntToHex (Int Dez) Global
+    String Hex = ""
+    Int Rest = Dez
+    While (Rest > 0)
+        Int m16 = Rest % 16
+        Rest = Rest / 16
+        String Temp = ""
+        If (m16 < 10)
+            Temp = (m16 as String)
+        ElseIf (m16 == 10)
+            Temp = "A"
+        ElseIf (m16 == 11)
+            Temp = "B"
+        ElseIf (m16 == 12)
+            Temp = "C"
+        ElseIf (m16 == 13)
+            Temp = "D"
+        ElseIf (m16 == 14)
+            Temp = "E"
+        ElseIf (m16 == 15)
+            Temp = "F"
         Else
-            Return 0
+            Temp = "0"
         EndIf
+        Hex = Temp + Hex
+    EndWhile
+    Return Hex
 EndFunction
 
-Int Function ModNameHex10(string zHex) global
+Int Function HexTo10(String zHex) Global
+    If (zHex == "1")
+        Return 1
+    ElseIf (zHex == "2")
+        Return 2
+    ElseIf (zHex == "3")
+        Return 3
+    ElseIf (zHex == "4")
+        Return 4
+    ElseIf (zHex == "5")
+        Return 5
+    ElseIf (zHex == "6")
+        Return 6
+    ElseIf (zHex == "7")
+        Return 7
+    ElseIf (zHex == "8")
+        Return 8
+    ElseIf (zHex == "9")
+        Return 9
+    ElseIf (zHex == "A" || zHex == "a")
+        Return 10
+    ElseIf (zHex == "B" || zHex == "b")
+        Return 11
+    ElseIf (zHex == "C" || zHex == "c")
+        Return 12
+    ElseIf (zHex == "D" || zHex == "d")
+        Return 13
+    ElseIf (zHex == "E" || zHex == "e")
+        Return 14
+    ElseIf (zHex == "F" || zHex == "f")
+        Return 15
+    Else
+        Return 0
+    EndIf
+EndFunction
 
-        If StringUtil.getLength(zHex) == 7
+Int Function ModNameHex10(String zHex) Global
+    If (StringUtil.getLength(zHex) == 7)
         Return HexTo10(StringUtil.GetNthChar(zHex, 0))
-        ElseIf StringUtil.getLength(zHex) == 8
-        int x1 = HexTo10(StringUtil.GetNthChar(zHex, 0))
-        int x2 = HexTo10(StringUtil.GetNthChar(zHex, 1))
-        Return (x1*16) + x2 
-        EndIf
-
+    ElseIf (StringUtil.getLength(zHex) == 8)
+        Int x1 = HexTo10(StringUtil.GetNthChar(zHex, 0))
+        Int x2 = HexTo10(StringUtil.GetNthChar(zHex, 1))
+        Return (x1 * 16) + x2
+    EndIf
 EndFunction
 
+; To get equipped item by slot through the SKSE Function you can't just put in 45 to get slot 45 for example.
+; If I was checking slot 45 EquipSlot would be 45.
 
-;To get equipped item by slot through the SKSE function you can't just put in 45 to get slot 45 for example.
-;If I was checking slot 45 EquipSlot would be 45.
-
-;Since I get slot masks in a lot of cases checking slots 30-62 all at once i use a While + array[i] set up
-;getOSlot is for the array set up so I can start from 0,  Slot 30 = 0 etc. basicaly. getSlot would take the standard slot number "30"
-Int Function getOSlot(Int EqSlot) global
+; Since I get slot masks in a lot of cases checking slots 30-62 all at once i use a While + array[i] set up
+; getOSlot is for the array set up so I can start from 0,  Slot 30 = 0 etc. basicaly. getSlot would take the standard slot number "30"
+Int Function GetOSlot(Int EqSlot) Global
     Return Math.Pow(2, EqSlot) as Int
-EndFunction   
+EndFunction
 
-
-Int Function getSlot(Int EqSlot) global
+Int Function GetSlot(Int EqSlot) Global
     Return Math.Pow(2, EqSlot - 30) as Int
-EndFunction   
-
-
-;███╗   ███╗███████╗ ██████╗        ██╗       ███████╗ ██████╗ █████╗ ██╗     ███████╗                                                                                
-;████╗ ████║██╔════╝██╔════╝        ██║       ██╔════╝██╔════╝██╔══██╗██║     ██╔════╝                                                                                
-;██╔████╔██║█████╗  ██║  ███╗    ████████╗    ███████╗██║     ███████║██║     █████╗                                                                                  
-;██║╚██╔╝██║██╔══╝  ██║   ██║    ██╔═██╔═╝    ╚════██║██║     ██╔══██║██║     ██╔══╝                                                                                  
-;██║ ╚═╝ ██║██║     ╚██████╔╝    ██████║      ███████║╚██████╗██║  ██║███████╗███████╗                                                                                
-;╚═╝     ╚═╝╚═╝      ╚═════╝     ╚═════╝      ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝   
-;Softly blend adjusts for MFG console & Node Scale.
-
-
-;Blends MFG Modifier.
-Function blendMo(actor actra, int zGoal, int zCur, int zMode, int zSpeed) global
-zGoal = papyrusUtil.ClampInt(zGoal, 0, 100)
-zCur = papyrusUtil.ClampInt(zCur, 0, 100)
-zSpeed = papyrusUtil.SignInt(zGoal < zCur, zSpeed)
-If zSpeed != 0
-    While zCur != zGoal 
-        zCur += zSpeed
-        If zSpeed > 0 && zCur > zGoal || zSpeed < 0 && zCur < zGoal
-            zCur = zGoal
-        EndIf
-        MfgConsoleFunc.SetModifier(actra, zMode, zCur)
-    EndWhile
-EndIf 
 EndFunction
 
 
-;Blends MFG Phonome.
-Function blendPh(actor actra, int zGoal, int zCur, int zMode, int zSpeed) global  
-zGoal = papyrusUtil.ClampInt(zGoal, 0, 100)
-zCur = papyrusUtil.ClampInt(zCur, 0, 100)
-zSpeed = papyrusUtil.SignInt(zGoal < zCur, zSpeed)
-If zSpeed != 0
-    While zCur != zGoal 
-        zCur += zSpeed
-        If zSpeed > 0 && zCur > zGoal || zSpeed < 0 && zCur < zGoal
-            zCur = zGoal
+; ███╗   ███╗███████╗ ██████╗        ██╗       ███████╗ ██████╗ █████╗ ██╗     ███████╗
+; ████╗ ████║██╔════╝██╔════╝        ██║       ██╔════╝██╔════╝██╔══██╗██║     ██╔════╝
+; ██╔████╔██║█████╗  ██║  ███╗    ████████╗    ███████╗██║     ███████║██║     █████╗
+; ██║╚██╔╝██║██╔══╝  ██║   ██║    ██╔═██╔═╝    ╚════██║██║     ██╔══██║██║     ██╔══╝
+; ██║ ╚═╝ ██║██║     ╚██████╔╝    ██████║      ███████║╚██████╗██║  ██║███████╗███████╗
+; ╚═╝     ╚═╝╚═╝      ╚═════╝     ╚═════╝      ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝
+; Softly blend adjusts for MFG console & Node Scale.
+
+
+; Blends MFG Modifier.
+Function BlendMo(Actor Actra, Int zGoal, Int zCur, Int zMode, Int zSpeed) Global
+    zGoal = PapyrusUtil.ClampInt(zGoal, 0, 100)
+    zCur = PapyrusUtil.ClampInt(zCur, 0, 100)
+    zSpeed = PapyrusUtil.SignInt(zGoal < zCur, zSpeed)
+    If (zSpeed != 0)
+        While (zCur != zGoal)
+            zCur += zSpeed
+            If (zSpeed > 0 && zCur > zGoal || zSpeed < 0 && zCur < zGoal)
+                zCur = zGoal
+            EndIf
+            MfgConsoleFunc.SetModifier(Actra, zMode, zCur)
+        EndWhile
+    EndIf
+EndFunction
+
+; Blends MFG Phonome.
+Function BlendPh(Actor Actra, Int zGoal, Int zCur, Int zMode, Int zSpeed) Global
+    zGoal = PapyrusUtil.ClampInt(zGoal, 0, 100)
+    zCur = PapyrusUtil.ClampInt(zCur, 0, 100)
+    zSpeed = PapyrusUtil.SignInt(zGoal < zCur, zSpeed)
+    If (zSpeed != 0)
+        While (zCur != zGoal)
+            zCur += zSpeed
+            If (zSpeed > 0 && zCur > zGoal || zSpeed < 0 && zCur < zGoal)
+                zCur = zGoal
+            EndIf
+            MfgConsoleFunc.SetPhoneme(Actra, zMode, zCur)
+        EndWhile
+    EndIf
+EndFunction
+
+; Blends NiNode Scale.
+Function BlendSc(Actor Actra, float zGoal, float zCur, String zNode, float zSpeed) Global
+    If zCur != zGoal
+        If (zCur >= zGoal)
+            zCur -= zSpeed
+            If (zCur <= zGoal)
+                zCur = zGoal
+            EndIf
+            NetImmerse.SetNodeScale(Actra, zNode, zCur, False)
+            BlendSC(Actra, zGoal, zCur, zNode, zSpeed)
+        ElseIf (zCur <= zGoal)
+            zCur += zSpeed
+            If (zCur >= zGoal)
+                zCur = zGoal
+            EndIf
+            NetImmerse.SetNodeScale(Actra, zNode, zCur, False)
+            BlendSC(Actra, zGoal, zCur, zNode, zSpeed)
         EndIf
-        MfgConsoleFunc.SetPhoneme(actra, zMode, zCur)
-    EndWhile
-EndIf 
+    EndIf
 EndFunction
 
 
-;Blends NiNode Scale.
-Function blendSc(actor actra, float zGoal, float zCur, string zNode, float zSpeed) global
-If zCur != zGoal 
-    If zCur >= zGoal 
-        zCur -= zSpeed
-        If zCur <= zGoal
-            zCur = zGoal
-        EndIf
-    NetImmerse.SetNodeScale(actra, zNode, zCur, False)
-    blendSC(actra, zGoal, zCur, zNode, zSpeed)
-    ElseIf zCur <= zGoal
-        zCur += zSpeed
-        If zCur >= zGoal
-            zCur = zGoal
-        EndIf
-            NetImmerse.SetNodeScale(actra, zNode, zCur, False)
-            blendSC(actra, zGoal, zCur, zNode, zSpeed)
-    EndIf   
-EndIf
-EndFunction
-
-
-
-
-
-
-; ██████╗ ██████╗  ██████╗ ██████╗ ██████╗ ██╗███╗   ██╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗                                                                       
-;██╔════╝██╔═══██╗██╔═══██╗██╔══██╗██╔══██╗██║████╗  ██║██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║                                                                       
-;██║     ██║   ██║██║   ██║██████╔╝██║  ██║██║██╔██╗ ██║███████║   ██║   ██║██║   ██║██╔██╗ ██║                                                                       
-;██║     ██║   ██║██║   ██║██╔══██╗██║  ██║██║██║╚██╗██║██╔══██║   ██║   ██║██║   ██║██║╚██╗██║                                                                       
-;╚██████╗╚██████╔╝╚██████╔╝██║  ██║██████╔╝██║██║ ╚████║██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║                                                                       
-; ╚═════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝ 
+;  ██████╗ ██████╗  ██████╗ ██████╗ ██████╗ ██╗███╗   ██╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗
+; ██╔════╝██╔═══██╗██╔═══██╗██╔══██╗██╔══██╗██║████╗  ██║██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║
+; ██║     ██║   ██║██║   ██║██████╔╝██║  ██║██║██╔██╗ ██║███████║   ██║   ██║██║   ██║██╔██╗ ██║
+; ██║     ██║   ██║██║   ██║██╔══██╗██║  ██║██║██║╚██╗██║██╔══██║   ██║   ██║██║   ██║██║╚██╗██║
+; ╚██████╗╚██████╔╝╚██████╔╝██║  ██║██████╔╝██║██║ ╚████║██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║
+;  ╚═════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
 ; Functions related to coordinating the sub spells Actro and Actra and the UI
 
 
-Function GameLoaded() global
-int a = ModEvent.Create("0S_LoadGame")
-if (a)
-ModEvent.Send(a)
-endIf
+Function GameLoaded() Global
+    Int a = ModEvent.Create("0S_LoadGame")
+    If (a)
+        ModEvent.Send(a)
+    EndIf
 EndFunction
 
-;When an Actra completes it's set up it "Reveals" itself (actor) to the global 
-;Actro script so it can have access to all the actors in the scene.
-Function ActraReveal(actor actra, string ActorID, string zPass) global
-int a = ModEvent.Create("0SAO"+zPass+"_ActraReveal")
-if (a)
-        ModEvent.PushForm(a, actra)
+; When an Actra completes it's set up it "Reveals" itself (Actor) to the Global
+; Actro script so it can have access to all the actors in the scene.
+Function ActraReveal(Actor Actra, String ActorID, String zPass) Global
+    Int a = ModEvent.Create("0SAO" + zPass + "_ActraReveal")
+    If (a)
+        ModEvent.PushForm(a, Actra)
         ModEvent.PushString(a, ActorID)
         ModEvent.Send(a)
-    endIf
+    EndIf
+EndFunction
+
+Function OEND(String zPass) Global
+    Int x = ModEvent.Create("0S0" + zPass + "_OEND")
+    If (x)
+        ModEvent.Send(x)
+    EndIf
+EndFunction
+
+Function ActroReady(String StageID) Global
+    Int a = ModEvent.Create("0S0" + StageID + "_StageReady")
+    If (a)
+        ModEvent.Send(a)
+    EndIf
+EndFunction
+
+Function AlignActraStage(String ActraID) Global
+    Int a = ModEvent.Create("0SAA" + ActraID + "_AlignStage")
+    If (a)
+        ModEvent.Send(a)
+    EndIf
+EndFunction
+
+; Calibrating Scale involves putting the actors in a TPose animation to be measured.
+; The issue is certain game animations takes priority over playing scene animations (Sitting Standing Sheathing weapon etc.)
+; Calibrate Spam, rapidly sends the request to play the OS-Tpose animation until the animation actually starts.
+; When it does start it's received by an OnAnimationEvent and the spam is canceled.
+Function TPoseSpam(String ActraID) Global
+    Int a = ModEvent.Create("0Temp" + ActraID + "_TPoseSpam")
+    If (a)
+        ModEvent.Send(a)
+    EndIf
 EndFunction
 
 
-Function OEND(string zPass) global
-int x = ModEvent.Create("0S0"+zPass+"_OEND")
-if (x)
-ModEvent.Send(x)
-endIf
+; ███████╗███████╗ ██████╗     ██╗   ██╗██████╗ ██╗      ██████╗  █████╗ ██████╗
+; ██╔════╝██╔════╝██╔════╝     ██║   ██║██╔══██╗██║     ██╔═══██╗██╔══██╗██╔══██╗
+; █████╗  ███████╗██║  ███╗    ██║   ██║██████╔╝██║     ██║   ██║███████║██║  ██║
+; ██╔══╝  ╚════██║██║   ██║    ██║   ██║██╔═══╝ ██║     ██║   ██║██╔══██║██║  ██║
+; ███████╗███████║╚██████╔╝    ╚██████╔╝██║     ███████╗╚██████╔╝██║  ██║██████╔╝
+; ╚══════╝╚══════╝ ╚═════╝      ╚═════╝ ╚═╝     ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝
+; Functions related to the game recording information about actors equipmen and sending it to the UI.
+
+
+; I use an event to multithread the process since there is some small time factor involved with
+; processing 30 slots per Actor and I want the delay on starting the scene to be minimal.
+; This function calls the event.
+Function EquipmentUpload(String ActraID) Global
+    Int a = ModEvent.Create("0SEQ" + ActraID + "_UploadEQ")
+    If (a)
+        ModEvent.Send(a)
+    EndIf
+EndFunction
+
+Function ActorLight(Actor Actra, String zWhich, Spell[] LSP, MagicEffect[] LME) Global
+    If (zWhich == "FaceBright")
+        If Actra.HasMagicEffect(LME[1])
+            LSP[1].Cast(Actra, Actra)
+        Elseif Actra.HasMagicEffect(LME[2])
+            LSP[2].Cast(Actra, Actra)
+        Elseif Actra.HasMagicEffect(LME[3])
+            LSP[3].Cast(Actra, Actra)
+        EndIf
+        LSP[0].Cast(Actra, Actra)
+    ElseIf (zWhich == "FaceDim")
+        If Actra.HasMagicEffect(LME[0])
+            LSP[0].Cast(Actra, Actra)
+        Elseif Actra.HasMagicEffect(LME[2])
+            LSP[2].Cast(Actra, Actra)
+        Elseif Actra.HasMagicEffect(LME[3])
+            LSP[3].Cast(Actra, Actra)
+        EndIf
+        LSP[1].Cast(Actra, Actra)
+    ElseIf (zWhich == "AssBright")
+        If Actra.HasMagicEffect(LME[0])
+            LSP[0].Cast(Actra, Actra)
+        Elseif Actra.HasMagicEffect(LME[1])
+            LSP[1].Cast(Actra, Actra)
+        Elseif Actra.HasMagicEffect(LME[3])
+            LSP[3].Cast(Actra, Actra)
+        EndIf
+        LSP[2].Cast(Actra, Actra)
+    ElseIf (zWhich == "AssDim")
+        If Actra.HasMagicEffect(LME[0])
+            LSP[0].Cast(Actra, Actra)
+        Elseif Actra.HasMagicEffect(LME[1])
+            LSP[1].Cast(Actra, Actra)
+        Elseif Actra.HasMagicEffect(LME[2])
+            LSP[2].Cast(Actra, Actra)
+        EndIf
+        LSP[3].Cast(Actra, Actra)
+    ElseIf (zWhich == "Remove")
+        If Actra.HasMagicEffect(LME[0])
+            ActorLight(Actra, "FaceBright", LSP, LME)
+        EndIf
+        If Actra.HasMagicEffect(LME[1])
+            ActorLight(Actra, "FaceDim", LSP, LME)
+        EndIf
+        If Actra.HasMagicEffect(LME[2])
+            ActorLight(Actra, "AssBright", LSP, LME)
+        EndIf
+        If Actra.HasMagicEffect(LME[3])
+            ActorLight(Actra, "AssDim", LSP, LME)
+        EndIf
+    EndIf
+EndFunction
+
+Function oGlyphSet(GlobalVariable Glyph, Int Identifier) Global
+    Glyph.SetValue(Identifier)
 EndFunction
 
 
-Function ActroReady(string stageID) global
-int a = ModEvent.Create("0S0"+StageID+"_StageReady")
-if (a)
-ModEvent.Send(a)
-endIf
+;  █████╗ ██████╗ ██╗   ██╗
+; ██╔══██╗██╔══██╗██║   ██║
+; ███████║██║  ██║██║   ██║
+; ██╔══██║██║  ██║╚██╗ ██╔╝
+; ██║  ██║██████╔╝ ╚████╔╝ ██╗
+; ╚═╝  ╚═╝╚═════╝   ╚═══╝  ╚═╝
+;  ██████╗ ██╗     ██╗   ██╗██████╗ ██╗  ██╗
+; ██╔════╝ ██║     ╚██╗ ██╔╝██╔══██╗██║  ██║
+; ██║  ███╗██║      ╚████╔╝ ██████╔╝███████║
+; ██║   ██║██║       ╚██╔╝  ██╔═══╝ ██╔══██║
+; ╚██████╔╝███████╗   ██║   ██║     ██║  ██║
+;  ╚═════╝ ╚══════╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝
+; Lighter Glyphs with no checks
+; For internal OSA use when checks aren't needed to
+; speed up the process.
+
+
+Function oSendO(String zMethod, Int Glyph) Global
+    UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget" + zMethod)
 EndFunction
 
-Function alignActraStage(string ActraID) global
-int a = ModEvent.Create("0SAA"+ActraID+"_AlignStage")
-if (a)
-ModEvent.Send(a)
-endIf
+Function oSendI(String zMethod, Int zInt, Int Glyph) Global
+    UI.InvokeInt("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget"+zMethod, zInt)
 EndFunction
 
-;Calibrating Scale involves putting the actors in a TPose animation to be measured.
-;The issue is certain game animations takes priority over playing scene animations (Sitting Standing Sheathing weapon etc.)  
-;Calibrate Spam, rapidly sends the request to play the OS-Tpose animation until the animation actually starts.
-;When it does start it's received by an OnAnimationEvent and the spam is canceled.
-Function TPoseSpam(string ActraID) global
-int a = ModEvent.Create("0Temp"+ActraID+"_TPoseSpam")
-if (a)
-ModEvent.Send(a)
-endIf
+Function oSendS(String zMethod, String zString, Int Glyph) Global
+    UI.InvokeString("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget"+zMethod, zString)
 EndFunction
 
+Function oSendSS(String zMethod, String[] zStringArray, Int Glyph) Global
+    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget" + zMethod, zStringArray)
+EndFunction
 
-;███████╗███████╗ ██████╗     ██╗   ██╗██████╗ ██╗      ██████╗  █████╗ ██████╗                                                                  
-;██╔════╝██╔════╝██╔════╝     ██║   ██║██╔══██╗██║     ██╔═══██╗██╔══██╗██╔══██╗                                                                 
-;█████╗  ███████╗██║  ███╗    ██║   ██║██████╔╝██║     ██║   ██║███████║██║  ██║                                                                 
-;██╔══╝  ╚════██║██║   ██║    ██║   ██║██╔═══╝ ██║     ██║   ██║██╔══██║██║  ██║                                                                 
-;███████╗███████║╚██████╔╝    ╚██████╔╝██║     ███████╗╚██████╔╝██║  ██║██████╔╝                                                                 
-;╚══════╝╚══════╝ ╚═════╝      ╚═════╝ ╚═╝     ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝   
-;Functions related to the game recording information about actors equipmen and sending it to the UI.
+String Function oGetS(String path, Int Glyph) Global
+    Return UI.GetString("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget" + Path)
+EndFunction
 
-
-;I use an event to multithread the process since there is some small time factor involved with
-;processing 30 slots per actor and I want the delay on starting the scene to be minimal. 
-;This function calls the event.
-Function EquipmentUpload(string ActraID) global
-int a = ModEvent.Create("0SEQ"+ActraID+"_UploadEQ")
-if (a)
-ModEvent.Send(a)
-endIf
+Int Function oGetI(String path,Int Glyph) Global
+    Return UI.GetInt("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget" + Path)
 EndFunction
 
 
-Function ActorLight(actor actra, string zWhich, Spell[] LSP, MagicEffect[] LME) global
+;  ██████╗ ███████╗ █████╗
+; ██╔═══██╗██╔════╝██╔══██╗
+; ██║   ██║███████╗███████║
+; ██║   ██║╚════██║██╔══██║
+; ╚██████╔╝███████║██║  ██║
+;  ╚═════╝ ╚══════╝╚═╝  ╚═╝
+; ███████╗██╗  ██╗████████╗███████╗███╗   ██╗██████╗ ███████╗██████╗
+; ██╔════╝╚██╗██╔╝╚══██╔══╝██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗
+; █████╗   ╚███╔╝    ██║   █████╗  ██╔██╗ ██║██║  ██║█████╗  ██║  ██║
+; ██╔══╝   ██╔██╗    ██║   ██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██║  ██║
+; ███████╗██╔╝ ██╗   ██║   ███████╗██║ ╚████║██████╔╝███████╗██████╔╝
+; ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═════╝
 
-            If zWhich == "FaceBright" 
-                If actra.HasMagicEffect(LME[1])
-                    LSP[1].cast(actra, actra)
-                Elseif actra.HasMagicEffect(LME[2])
-                    LSP[2].cast(actra, actra)
-                Elseif actra.HasMagicEffect(LME[3])
-                    LSP[3].cast(actra, actra)
-                EndIf
-                LSP[0].cast(actra, actra)
-            
-            ElseIf zWhich == "FaceDim" 
-                If actra.HasMagicEffect(LME[0])
-                    LSP[0].cast(actra, actra)
-                Elseif actra.HasMagicEffect(LME[2])
-                    LSP[2].cast(actra, actra)
-                Elseif actra.HasMagicEffect(LME[3])
-                    LSP[3].cast(actra, actra)
-                EndIf
-                LSP[1].cast(actra, actra)
+; Functions that assist the OSA script that holds functions
+; for papyrus developers to directly call.
+;
+; These are quarantined here because they are in support to
+; the OSA functions and not intended to be called directly through papyrus.
 
-            ElseIf zWhich == "AssBright"
-                If actra.HasMagicEffect(LME[0])
-                    LSP[0].cast(actra, actra)
-                Elseif actra.HasMagicEffect(LME[1])
-                    LSP[1].cast(actra, actra)
-                Elseif actra.HasMagicEffect(LME[3])
-                    LSP[3].cast(actra, actra)
-                EndIf
-                LSP[2].cast(actra, actra)
 
-            ElseIf zWhich == "AssDim"
-                If actra.HasMagicEffect(LME[0])
-                    LSP[0].cast(actra, actra)
-                Elseif actra.HasMagicEffect(LME[1])
-                    LSP[1].cast(actra, actra)
-                Elseif actra.HasMagicEffect(LME[2])
-                    LSP[2].cast(actra, actra)
-                EndIf
-                LSP[3].cast(actra, actra)
-
-            ElseIf zWhich == "Remove"
-                if actra.HasMagicEffect(LME[0])
-                    ActorLight(actra, "FaceBright", LSP, LME)
-                EndIf               
-                If actra.HasMagicEffect(LME[1])
-                    ActorLight(actra, "FaceDim", LSP, LME)
-                EndIf               
-                If actra.HasMagicEffect(LME[2])
-                    ActorLight(actra, "AssBright", LSP, LME)
-                EndIf
-                If actra.HasMagicEffect(LME[3])
-                    ActorLight(actra, "AssDim", LSP, LME)
-                EndIf   
-            
+; Checks to see If the Actor is an acceptable candidate before sending them to be Actra infused.
+Bool Function CheckActra(String StageID, Actor Actra, faction StatusFaction = None, Bool Creature = False) Global
+    If (StatusFaction)
+        If (Actra.GetFactionRank(StatusFaction) != 1)
+            If (OSA.IsAllowed(Actra, Creature))
+                Return True
+            Else
+                Return False
             EndIf
+        Else
+            Return False
+        EndIf
+    Else
+        If (OSA.IsAllowed(Actra, Creature))
+            Return True
+        Else
+            Return False
+        EndIf
+    EndIf
 EndFunction
 
+Function SystemReport() Global
+    String[] Log = new String[49]
 
+    Log[0] = "SystemReport"
+    Log[1] = Utility.GetINIString("sLanguage:General")
+    Log[2] = (Quest.GetQuest("0SA") as _oOmni).CodePage
 
+    If (NetImmerse.HasNode(Game.GetPlayer(), "NPC GenitalsBase [GenBase]", False))
+        Log[3] = 1
+    Else
+        Log[3] = 0
+    EndIf
 
+    Log[4] = ""
+    Log[5] = ""
+    Log[6] = ""
+    Log[7] = ""
+    Log[8] = ""
+    Log[9] = ""
+    Log[10] = _oV.GetScriptVersion_s()
+    Log[11] = _oV.GetBracket_s()
+    Log[12] = _oV.GetIVersion() as String
+    Log[13] = SKSE.GetPluginVersion("OSA")
 
+    Log[20] = SKSE.getVersion()
+    Log[21] = SKSE.GetPluginVersion("chargen")
+    Log[22] = SKSE.GetPluginVersion("CPConvert")
+    Log[23] = SKSE.GetPluginVersion("papyrusutil plugin")
+    Log[24] = PapyrusUtil.GetVersion()
+    Log[25] = SKSE.GetPluginVersion("nioverride")
+    ;Log[26] = NiOverride.GetScriptVersion()
+    Log[27] = SKSE.GetPluginVersion("Mfg Console plugin")
+    Log[28] = SKSE.GetPluginVersion("SchlongsOfSkyrim")
 
+    Log[40] = SKSE.GetPluginVersion("CrashFixPlugin")
+    Log[41] = SKSE.GetPluginVersion("hdtHighHeelNative")
+    Log[42] = SKSE.GetPluginVersion("hdtPhysicsExtensions")
+    Log[43] = SKSE.GetPluginVersion("hdtSkinnedMeshPhysics")
+    Log[44] = SKSE.GetPluginVersion("hdtSkyrimMemPatch")
+    Log[45] = SKSE.GetPluginVersion("OneTweak")
+    Log[46] = SKSE.GetPluginVersion("Safety Load plugin")
+    Log[47] = SKSE.GetPluginVersion("ShowRaceMenu preCacheKiller plugin")
+    Log[48] = SKSE.GetPluginVersion("SkyrimReloaded")
 
-
-
-
-
-
-
-function oGlyphSet(globalVariable glyph, int identifier) global
-glyph.setValue(identifier) 
-endFunction
-
-
-; █████╗ ██████╗ ██╗   ██╗                 
-;██╔══██╗██╔══██╗██║   ██║                 
-;███████║██║  ██║██║   ██║                 
-;██╔══██║██║  ██║╚██╗ ██╔╝                 
-;██║  ██║██████╔╝ ╚████╔╝ ██╗              
-;╚═╝  ╚═╝╚═════╝   ╚═══╝  ╚═╝              
-; ██████╗ ██╗     ██╗   ██╗██████╗ ██╗  ██╗
-;██╔════╝ ██║     ╚██╗ ██╔╝██╔══██╗██║  ██║
-;██║  ███╗██║      ╚████╔╝ ██████╔╝███████║
-;██║   ██║██║       ╚██╔╝  ██╔═══╝ ██╔══██║
-;╚██████╔╝███████╗   ██║   ██║     ██║  ██║
-; ╚═════╝ ╚══════╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝
-;Lighter Glyphs with no checks
-;For internal OSA use when checks aren't needed to
-;speed up the process.
-
-
-Function oSendO(string zMethod, int glyph) global
-    UI.Invoke("HUD Menu", "_root.WidgetContainer."+glyph+".widget"+zMethod)
+    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + (Quest.GetQuest("0SA") as _oOmni).Glyph + ".widget.com.skyReport", Log)
 EndFunction
 
-Function oSendI(string zMethod, int zInt, int glyph) global
-    UI.InvokeInt("HUD Menu", "_root.WidgetContainer."+glyph+".widget"+zMethod, zInt)
-EndFunction
-
-Function oSendS(string zMethod, string zString, int glyph) global
-    UI.InvokeString("HUD Menu", "_root.WidgetContainer."+glyph+".widget"+zMethod, zString)
-EndFunction
-
-Function oSendSS(string zMethod, string[] zStringArray, int glyph) global
-    UI.InvokeStringA("HUD Menu", "_root.WidgetContainer."+glyph+".widget"+zMethod, zStringArray)
-EndFunction
-
-string Function oGetS(string path, int glyph) global
-return  UI.GetString("HUD Menu", "_root.WidgetContainer."+glyph+".widget"+path)
-EndFunction
-
-int Function oGetI(string path,int glyph) global
-return  UI.GetInt("HUD Menu", "_root.WidgetContainer."+glyph+".widget"+path)
-EndFunction
-
-
-
-; ██████╗ ███████╗ █████╗                                           
-;██╔═══██╗██╔════╝██╔══██╗                                          
-;██║   ██║███████╗███████║                                          
-;██║   ██║╚════██║██╔══██║                                          
-;╚██████╔╝███████║██║  ██║                                          
-; ╚═════╝ ╚══════╝╚═╝  ╚═╝                                          
-;███████╗██╗  ██╗████████╗███████╗███╗   ██╗██████╗ ███████╗██████╗ 
-;██╔════╝╚██╗██╔╝╚══██╔══╝██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗
-;█████╗   ╚███╔╝    ██║   █████╗  ██╔██╗ ██║██║  ██║█████╗  ██║  ██║
-;██╔══╝   ██╔██╗    ██║   ██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██║  ██║
-;███████╗██╔╝ ██╗   ██║   ███████╗██║ ╚████║██████╔╝███████╗██████╔╝
-;╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═════╝ 
-
-;Functions that assist the OSA script that holds functions
-;for papyrus developers to directly call.
-; 
-;These are quarantined here because they are in support to
-;the OSA functions and not intended to be called directly through papyrus.
-
-
-
-
-;Checks to see if the actor is an acceptable candidate before sending them to be actra infused.
-
-bool function checkActra(string stageID, actor actra, faction statusFaction=none, bool creature=false) global
-    if statusFaction
-        if actra.GetFactionRank(statusFaction) != 1
-            if(osa.isAllowed(actra, creature))                
-            return true
-            else
-            return false
-            endif
-        else
-        return false
-        endif
-    else
-        if(osa.isAllowed(actra, creature))                
-            return true
-            else
-            return false
-            endif
-    endif
-endFunction
-
-
-
-
-
-
-function systemReport() global
-string[] log = new string[49]
-
-log[0] = "systemReport"
-log[1] = Utility.GetINIString("sLanguage:General")
-log[2] = (Quest.GetQuest("0SA") as _oOmni).codePage
-if NetImmerse.HasNode(game.GetPlayer(), "NPC GenitalsBase [GenBase]", false)
-log[3] = 1
-else
-log[3] = 0
-endIf
-log[4] = ""
-log[5] = ""
-log[6] = ""
-log[7] = ""
-log[8] = ""
-log[9] = ""
-log[10] = _oV.getScriptVersion_s()
-log[11] = _oV.getBracket_s()
-log[12] = _oV.GetIVersion() as string
-log[13] = SKSE.GetPluginVersion("OSA")
-
-log[20] = SKSE.getVersion()
-log[21] = SKSE.GetPluginVersion("chargen")
-log[22] = SKSE.GetPluginVersion("CPConvert")
-log[23] = SKSE.GetPluginVersion("papyrusutil plugin")
-log[24] = PapyrusUtil.GetVersion()
-log[25] = SKSE.GetPluginVersion("nioverride")
-;log[26] = NiOverride.GetScriptVersion()
-log[27] = SKSE.GetPluginVersion("Mfg Console plugin")
-log[28] = SKSE.GetPluginVersion("SchlongsOfSkyrim")
-
-
-log[40] = SKSE.GetPluginVersion("CrashFixPlugin")
-log[41] = SKSE.GetPluginVersion("hdtHighHeelNative")
-log[42] = SKSE.GetPluginVersion("hdtPhysicsExtensions")
-log[43] = SKSE.GetPluginVersion("hdtSkinnedMeshPhysics")
-log[44] = SKSE.GetPluginVersion("hdtSkyrimMemPatch")
-log[45] = SKSE.GetPluginVersion("OneTweak")
-log[46] = SKSE.GetPluginVersion("Safety Load plugin")
-log[47] = SKSE.GetPluginVersion("ShowRaceMenu preCacheKiller plugin")
-log[48] = SKSE.GetPluginVersion("SkyrimReloaded")
-
-UI.InvokeStringA("HUD Menu", "_root.WidgetContainer."+(Quest.GetQuest("0SA") as _oOmni).glyph+".widget.com.skyReport", log)
-
-endFunction
-
-
-
-
-bool function OStimGlobalLoaded() global
-    return true
+Bool Function OStimGlobalLoaded() Global
+    Return True
 EndFunction
