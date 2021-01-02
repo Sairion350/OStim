@@ -1,17 +1,17 @@
-ScriptName ODatabaseScript extends Quest
+ScriptName ODatabaseScript Extends Quest
 
 OsexIntegrationMain OStim
-string[] modules
-int database
+String[] Modules
+Int Database
 
-string[] property originalmodules auto
-string savepath 
-bool built = false
-bool loaded = false
+String[] property OriginalModules auto
+String SavePath
+Bool Built = False
+Bool Loaded = False
 
-;for debugging
-bool LoadInitialFromFile = false
-bool dumpConsole = false
+; for debugging
+Bool LoadInitialFromFile = False
+Bool DumpConsole = False
 
 
 ; Structures
@@ -24,875 +24,827 @@ bool dumpConsole = false
 
 ;OMap Animation data
 
-; name - string
-; sceneid - string 
-; numactors - int
-; positiondata - string
-; sourcemodule - string
-; animclass - string
+; name - String
+; sceneid - String
+; numactors - Int
+; positiondata - String
+; sourcemodule - String
+; animclass - String
 ; OAanimids - OArray
-; istransitory - bool | "t="t""
-; mainactor - int | speed a="1"
-; minspeed - int
-; maxspeed - int
+; istransitory - Bool | "t="t""
+; mainactor - Int | speed a="1"
+; minspeed - Int
+; maxspeed - Int
 
-; hasidlespeed - bool
+; hasidlespeed - Bool
 
-; ishub - bool | has only one animation 
-; isaggressive - bool
+; ishub - Bool | has only one animation
+; isaggressive - Bool
 
+Function InitDatabase()
+	OriginalModules = new String[1]
+	OriginalModules[0] = "0MF"
+	OriginalModules = PapyrusUtil.PushString(OriginalModules, "0M2F")
+	OriginalModules = PapyrusUtil.PushString(OriginalModules, "BB")
+	OriginalModules = PapyrusUtil.PushString(OriginalModules, "BG")
+	OriginalModules = PapyrusUtil.PushString(OriginalModules, "EMF")
+	OriginalModules = PapyrusUtil.PushString(OriginalModules, "WZH0")
 
-function initDatabase()
-	originalmodules = new String[1]
-	originalmodules[0] = "0MF"
-	originalmodules = PapyrusUtil.PushString(originalmodules, "0M2F")
-	originalmodules = PapyrusUtil.PushString(originalmodules, "BB")
-	originalmodules = PapyrusUtil.PushString(originalmodules, "BG")
-	originalmodules = PapyrusUtil.PushString(originalmodules, "EMF")
-	originalmodules = PapyrusUtil.PushString(originalmodules, "WZH0")
+	SavePath = JContainers.UserDirectory() + "ODatabase.json"
+	Built = False
+	Loaded = False
 
-	savepath = JContainers.userDirectory() + "ODatabase.json"
-	built = False
-	loaded = false
+	OStim = (Self as Quest) as OsexIntegrationMain
 
-	ostim = (self as quest) as OsexIntegrationMain
-	
-	if LoadInitialFromFile
-		load()
-	else	
-		if JContainers.fileExistsAtPath(savepath)
-			console("Deleting old database file...")
-			JContainers.removeFileAtPath(savepath)
-		endif
-		database = newOArray()
-		jdb.setObj("OStim.ODatabase", database)
+	If (LoadInitialFromFile)
+		Load()
+	Else
+		If (JContainers.FileExistsAtPath(SavePath))
+			Console("Deleting old Database file...")
+			JContainers.RemoveFileAtPath(SavePath)
+		EndIf
+		Database = NewOArray()
+		JDB.SetObj("OStim.ODatabase", Database)
 
-		build()
-		console(getLengthOArray(database) + " OSex scenes installed")
+		Build()
+		Console(GetLengthOArray(Database) + " OSex scenes installed")
 	EndIf
 
-	loaded = true
+	Loaded = True
 
-	saveToDisk()
-	unload()
-	built = true
+	SaveToDisk()
+	Unload()
+	Built = True
 EndFunction
 
-int function getDatabaseOArray(); never cache this for more than a few seconds, it can be cleared from memory at any time
-	if !loaded
-		load()
-	endif
-	return database
+Int Function GetDatabaseOArray(); never cache this for more than a few seconds, it can be cleared from memory at any time
+	If (!Loaded)
+		Load()
+	EndIf
+	Return Database
 EndFunction
 
-function unload()
+Function Unload()
+	JDB.SetObj("OStim.ODatabase", 0)
+	JValue.Release(GetDatabaseOArray())
 
-	jdb.setObj("OStim.ODatabase", 0)
-	JValue.release(getDatabaseOArray())
-
-	console("Unloaded database")
-
-	loaded = false
+	Console("Unloaded Database")
+	Loaded = False
 EndFunction
 
-function saveToDisk()
-	if !loaded
-		load()
+Function SaveToDisk()
+	If (!Loaded)
+		Load()
 	EndIf
 
-	JValue.writeToFile(getDatabaseOArray(), savepath)
+	JValue.WriteToFile(GetDatabaseOArray(), SavePath)
+	Console("Wrote Database to disk")
+EndFunction
 
-	console("Wrote database to disk")
-endfunction
-
-function load()
-	if loaded
+Function Load()
+	If (Loaded)
 		Return
-	endif
-	if JContainers.fileExistsAtPath(savepath)
-		database = JValue.readFromFile(savepath)
-		jdb.setObj("OStim.ODatabase", database)
-	else
-		console("Error: Database not found at: " + savepath)
+	EndIf
 
-		database = newOArray()
-		jdb.setObj("OStim.ODatabase", database)
+	If (JContainers.FileExistsAtPath(SavePath))
+		Database = JValue.ReadFromFile(SavePath)
+		JDB.SetObj("OStim.ODatabase", Database)
+	Else
+		Console("Error: Database not found at: " + SavePath)
 
-		build()
-		loaded = true
+		Database = NewOArray()
+		JDB.SetObj("OStim.ODatabase", Database)
 
-		saveToDisk()
-	endif
+		Build()
+		Loaded = True
 
-	console("Loaded database")
-	loaded = true
-endfunction
+		SaveToDisk()
+	EndIf
 
-bool function isbuilt()
-	return built
+	Console("Loaded Database")
+	Loaded = True
+EndFunction
+
+Bool Function IsBuilt()
+	Return Built
 EndFunction
 
 ;--------------------------------------------
 ;  	Retrieve Data from animation OMaps
 ;--------------------------------------------
 
-string function getFullName(int animation)
-	return getStringOMap(animation, "name")
-endfunction
-
-string function getAnimationClass(int animation)
-	return getStringOMap(animation, "animclass")
-endfunction
-
-int function getAnimationIDOArray(int animation) ; returns an OArray of animation IDs
-	return getObjOMap(animation, "OAanimids")
-endfunction
-
-int function getNumActors(int animation) 
-	return getIntOMap(animation, "NumActors")
-endfunction
-
-string function getPositionData(int animation)
-	return getStringOMap(animation, "positiondata")
-endfunction
-
-string function getSceneID(int animation)
-	return getStringOMap(animation, "sceneid")
-endfunction
-
-string function getModule(int animation)
-	return getStringOMap(animation, "sourcemodule")
-endfunction
-
-bool function isAggressive(int animation)
-	return getBoolOMap(animation, "aggressive")
+String Function GetFullName(Int Animation)
+	Return GetStringOMap(Animation, "name")
 EndFunction
 
-bool function isHubAnimation(int animation)
-	return getBoolOMap(animation, "ishub")
+String Function GetAnimationClass(Int Animation)
+	Return GetStringOMap(Animation, "animclass")
 EndFunction
 
-bool function isTransitoryAnimation(int animation)
-	return getBoolOMap(animation, "istransitory")
+Int Function GetAnimationIDOArray(Int Animation) ; returns an OArray of animation IDs
+	Return GetObjOMap(Animation, "OAanimids")
 EndFunction
 
-bool function isSexAnimation(int animation)
-	return !isHubAnimation(animation) && !isTransitoryAnimation(animation)
+Int Function GetNumActors(Int Animation)
+	Return GetIntOMap(Animation, "NumActors")
 EndFunction
 
-int function getMainActor(int animation) ; the main actor is the one doing the most work. 0 - dom | 1 - sub
-	if !isSexAnimation(animation)
-		return -1
-	endif
-	return getIntOMap(animation, "mainActor")
+String Function GetPositionData(Int Animation)
+	Return GetStringOMap(Animation, "positiondata")
 EndFunction
 
-int function getMaxSpeed(int animation)
-	if !isSexAnimation(animation)
-		return -1
-	endif
-	return getIntOMap(animation, "maxspeed")
+String Function GetSceneID(Int Animation)
+	Return GetStringOMap(Animation, "sceneid")
 EndFunction
 
-int function getMinSpeed(int animation)
-	if !isSexAnimation(animation)
-		return -1
-	endif
-	return getIntOMap(animation, "minspeed")
+String Function GetModule(Int Animation)
+	Return GetStringOMap(Animation, "sourcemodule")
 EndFunction
 
-bool function hasIdleSpeed(int animation) ;if the lowest speed on a sex animation is called "idle"
-	if !isSexAnimation(animation)
-		return -1
-	endif
-	return getBoolOMap(animation, "hasidlespeed")
+Bool Function IsAggressive(Int Animation)
+	Return GetBoolOMap(Animation, "aggressive")
+EndFunction
+
+Bool Function IsHubAnimation(Int Animation)
+	Return GetBoolOMap(Animation, "ishub")
+EndFunction
+
+Bool Function IsTransitoryAnimation(Int Animation)
+	Return GetBoolOMap(Animation, "istransitory")
+EndFunction
+
+Bool Function IsSexAnimation(Int Animation)
+	Return (!IsHubAnimation(Animation) && !IsTransitoryAnimation(Animation))
+EndFunction
+
+Int Function GetMainActor(Int Animation) ; the main actor is the one doing the most work. 0 - dom | 1 - sub
+	If (!IsSexAnimation(Animation))
+		Return -1
+	EndIf
+	Return GetIntOMap(Animation, "mainActor")
+EndFunction
+
+Int Function GetMaxSpeed(Int Animation)
+	If (!IsSexAnimation(Animation))
+		Return -1
+	EndIf
+	Return GetIntOMap(Animation, "maxspeed")
+EndFunction
+
+Int Function GetMinSpeed(Int Animation)
+	If (!IsSexAnimation(Animation))
+		Return -1
+	EndIf
+	Return GetIntOMap(Animation, "minspeed")
+EndFunction
+
+Bool Function HasIdleSpeed(Int Animation) ; if the lowest speed on a sex animation is called "idle"
+	If (!IsSexAnimation(Animation))
+		Return -1
+	EndIf
+	Return GetBoolOMap(Animation, "hasidlespeed")
 EndFunction
 
 ; extras
-string function getPositionDataForActorSlot(int animation, int slot)
-	return stringutil.split(getPositionData(animation), "!")[slot]
-endfunction
+String Function GetPositionDataForActorSlot(Int Animation, Int Slot)
+	Return StringUtil.Split(GetPositionData(Animation), "!")[Slot]
+EndFunction
 
-bool function hasPositionDataInSlot(int animation, int slot, string data) ; this supports partial data, ie "Kn" at slot 0 will tell you if a dom actor is kneeling on both knees
-	string slotdata = getPositionDataForActorSlot(animation, slot)
-	return !(StringUtil.Find(slotdata, data) == -1)
-endfunction
+Bool Function HasPositionDataInSlot(Int Animation, Int Slot, String Data) ; this supports partial data, ie "Kn" at slot 0 will tell you if a dom actor is kneeling on both knees
+	String slotdata = GetPositionDataForActorSlot(Animation, Slot)
+	Return !(StringUtil.Find(SlotData, Data) == -1)
+EndFunction
 
-bool function hasPositionData(int animation, string data) ; this supports partial data
-	string slotdata = getpositiondata(animation)
-	return !(StringUtil.Find(slotdata, data) == -1)
-endfunction
+Bool Function HasPositionData(Int Animation, String Data) ; this supports partial data
+	String SlotData = GetPositionData(Animation)
+	Return !(StringUtil.Find(SlotData, Data) == -1)
+EndFunction
 
 ;----------------------------------------------
-;  	Retrieve OArray of animations from database
+;  	Retrieve OArray of animations from Database
 ;-----------------------------------------------
 
-int function databaseKeyAndParameterLookup(int zdatabase, string zkey, int integerParameter = -100, string stringParameter = "", int boolParameter = -1, bool allowPartialStringResult = false, bool negativePartial = false)
-	int base = zdatabase
-	int ret = newOArray()
+Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntParam = -100, String StringParam = "", Int BoolParam = -1, Bool AllowPartialStringResult = False, Bool NegativePartial = False)
+	Int Base = zDatabase
+	Int Ret = NewOArray()
 
-	int i = 0
-	int max = getLengthOArray(base)
-
-	while i < max
-		int animation = getObjectOArray(base, i)
-
-		if integerParameter > -100
-			int output = getIntOMap(animation, zkey)
-			if (output == integerParameter) && (output != 10001)
-				appendObjectOArray(ret, animation)
-			endif
-		elseif stringparameter != ""
-			string output = getStringOMap(animation, zkey)
-
-			
-			if !allowPartialStringResult
-				if (output == stringParameter) && (output != "")
-						appendObjectOArray(ret, animation)
-				endif
-			Else
-				if StringUtil.Find(output, stringParameter) != -1
-					if !negativePartial
-						appendObjectOArray(ret, animation)
-					endif
-				Else
-					if negativePartial
-						appendObjectOArray(ret, animation)
-					endif
-				endif
-			endif
-		elseif boolParameter > -1
-			bool parameter = (boolParameter == 1)
-			if getBoolOMap(animation, zkey) == parameter
-				appendObjectOArray(ret, animation)
-			endif
-		endif
-
-		i += 1
-	endwhile
-	return ret
-endfunction
-
-
-int function getAnimationWithAnimID(int zDatabase, string AnimID) ;returns OArray
-	int base = zdatabase
-	int ret = newOArray()
-
-	int i = 0
-	int max = getLengthOArray(base)
-
-
-	while i < max
-		int animation = getObjectOArray(base, i)
-
-		int OAanimIDs = getAnimationIDOArray(animation)
-		int i2 = 0
-		int max2 = getLengthOArray(OAanimIDs)
-
-		while i2 < max2
-			if animid == getStringOArray(oaanimids, i2)
-				appendObjectOArray(ret, animation)
-				return ret ; short circuit out
-			endif
-
-			i2 += 1
-		endwhile
-
-		i += 1
-	endwhile
-	return ret
-endfunction
-
-
-int function getAnimationsWithSpecificPositionData(int zDatabase, string data, int slot = -1, bool has = true)  ; this supports partial data, ie "Kn" at slot 0 will tell you if a dom actor is kneeling on both knees
-	; slot -1 = search all slots
-	;has = false will give you animations that do not contain the data
-	int base = zdatabase
-	int ret = newOArray()
-
-	int i = 0
-	int max = getLengthOArray(base)
-
-	while i < max
-		int animation = getObjectOArray(base, i)
-
-		if slot != -1
-			if hasPositionDataInSlot(animation, slot, data)
-				if has
-					appendObjectOArray(ret, animation)
-				endif
-			Else
-				if !has
-					appendObjectOArray(ret, animation)
-				endif
-			endif
-		Else
-			if hasPositionData(animation, data)
-				if has	
-					appendObjectOArray(ret, animation)
+	Int i = 0
+	Int L = GetLengthOArray(Base)
+	While (i < L)
+		Int Animation = getObjectOArray(base, i)
+		If (IntParam > -100)
+			Int Output = GetIntOMap(Animation, zKey)
+			If (Output == IntParam) && (Output != 10001)
+				AppendObjectOArray(Ret, Animation)
+			EndIf
+		ElseIf (StringParam != "")
+			String Output = GetStringOMap(Animation, zKey)
+			If (!AllowPartialStringResult)
+				If (Output == StringParam) && (Output != "")
+					AppendObjectOArray(Ret, Animation)
 				EndIf
 			Else
-				if !has
-					appendObjectOArray(ret, animation)
-				endif
-			endif
-		endif
+				If (StringUtil.Find(Output, StringParam) != -1)
+					If (!NegativePartial)
+						appendObjectOArray(ret, Animation)
+					EndIf
+				Else
+					If (NegativePartial)
+						AppendObjectOArray(ret, Animation)
+					EndIf
+				EndIf
+			EndIf
+		ElseIf (BoolParam > -1)
+			Bool Parameter = (BoolParam == 1)
+			If (GetBoolOMap(Animation, zKey) == Parameter)
+				AppendObjectOArray(Ret, Animation)
+			EndIf
+		EndIf
+		i += 1
+	EndWhile
+	Return Ret
+EndFunction
+
+Int Function getAnimationWithAnimID(Int zDatabase, String AnimID) ;returns OArray
+	Int Base = zDatabase
+	Int Ret = NewOArray()
+
+	Int i = 0
+	Int L = GetLengthOArray(Base)
+	while (i < L)
+		Int Animation = GetObjectOArray(Base, i)
+		Int OAAnimIDs = GetAnimationIDOArray(Animation)
+
+		Int i2 = 0
+		Int L2 = GetLengthOArray(OAanimIDs)
+		While (i2 < L2)
+			If (AnimID == GetStringOArray(OAAnimIDs, i2))
+				AppendObjectOArray(Ret, Animation)
+				Return Ret ; short circuit out
+			EndIf
+
+			i2 += 1
+		EndWhile
+
 		i += 1
 	endwhile
-	return ret
+	Return Ret
+EndFunction
+
+Int Function GetAnimationsWithSpecificPositionData(Int zDatabase, String Data, Int Slot = -1, Bool Has = True)  ; this supports partial data, ie "Kn" at slot 0 will tell you if a dom actor is kneeling on both knees
+	; slot -1 = search all slots
+	;Has = False will give you animations that do not contain the data
+	Int Base = zDatabase
+	Int Ret = NewOArray()
+
+	Int i = 0
+	Int L = GetLengthOArray(base)
+	While (i < L)
+		Int Animation = GetObjectOArray(Base, i)
+		If (Slot != -1)
+			If (HasPositionDataInSlot(Animation, Slot, Data))
+				If (Has)
+					AppendObjectOArray(Ret, Animation)
+				EndIf
+			Else
+				If (!Has)
+					AppendObjectOArray(Ret, Animation)
+				EndIf
+			EndIf
+		Else
+			If (HasPositionData(Animation, Data))
+				If (Has)
+					AppendObjectOArray(Ret, Animation)
+				EndIf
+			Else
+				If (!Has)
+					AppendObjectOArray(Ret, Animation)
+				EndIf
+			EndIf
+		EndIf
+		i += 1
+	EndWhile
+	Return Ret
 EndFunction
 
 ;-----------
 
+Int Function GetAnimationsWithActorCount(Int zDatabase, Int Num) ; returns OArray
+	Return DatabaseKeyAndParameterLookup(zDatabase, "NumActors", IntParam = Num)
+EndFunction
 
-int function getAnimationsWithActorCount(int zDatabase, int num) ;returns OArray
-	return databaseKeyAndParameterLookup(zdatabase, "NumActors", integerParameter = num)
-endfunction
+Int Function GetAnimationsWithName(Int zDatabase, String Name, Bool AllowPartialResult = False, Bool Negative = False) ; returns OArray
+	Return DatabaseKeyAndParameterLookup(zDatabase, "name", StringParam = Name, AllowPartialStringResult = AllowPartialResult, NegativePartial = Negative)
+EndFunction
 
-int function getAnimationsWithName(int zDatabase, string name, bool allowPartialResult = false, bool negative = false) ;returns OArray
-	return databaseKeyAndParameterLookup(zdatabase, "name", stringparameter = name, allowpartialstringresult = allowPartialResult, negativePartial = negative)
-endfunction
+Int Function GetAnimationsWithAnimationClass(Int zDatabase, String zClass) ; returns OArray
+	Return DatabaseKeyAndParameterLookup(zDatabase, "animclass", StringParam = zClass)
+EndFunction
 
-int function getAnimationsWithAnimationClass(int zDatabase, string zclass) ;returns OArray
-	return databaseKeyAndParameterLookup(zdatabase, "animclass", stringparameter = zclass)
-endfunction
+Int Function GetAnimationsWithPositionData(Int zDatabase, String Pos) ; returns OArray
+	Return DatabaseKeyAndParameterLookup(zDatabase, "positiondata", StringParam = Pos)
+EndFunction
 
-int function getAnimationsWithPositionData(int zDatabase, string pos) ;returns OArray
-	return databaseKeyAndParameterLookup(zdatabase, "positiondata", stringparameter = pos)
-endfunction
+Int Function GetAnimationsWithSceneID(Int zDatabase, String SceneID) ; returns OArray
+	Return DatabaseKeyAndParameterLookup(zDatabase, "sceneid", StringParam = SceneID)
+EndFunction
 
-int function getAnimationsWithSceneID(int zDatabase, string sceneid) ;returns OArray
-	return databaseKeyAndParameterLookup(zdatabase, "sceneid", stringparameter = sceneid)
-endfunction
+Int Function GetAnimationsFromModule(Int zDatabase, String Module) ; returns OArray
+	Return DatabaseKeyAndParameterLookup(zDatabase, "sourcemodule", StringParam = Module)
+EndFunction
 
-int function getAnimationsFromModule(int zDatabase, string module) ;returns OArray
-	return databaseKeyAndParameterLookup(zdatabase, "sourcemodule", stringparameter = module)
-endfunction
+Int Function GetAnimationsByAggression(Int zDatabase, Bool IsAggressive) ; returns OArray
+	Int Send = 0
+	If (IsAggressive)
+		Send = 1
+	EndIf
+	Return DatabaseKeyAndParameterLookup(zDatabase, "aggressive", BoolParam = Send)
+EndFunction
 
-int function getAnimationsByAggression(int zDatabase, bool isaggressive) ;returns OArray
-	int send = 0
-	if isAggressive
-		send = 1
-	Else
-		send = 0
-	endif
-	return databaseKeyAndParameterLookup(zdatabase, "aggressive", boolParameter = send)
-endfunction
+Int Function GetHubAnimations(Int zDatabase, Bool IsHub) ; returns OArray
+	Int Send = 0
+	If (IsHub)
+		Send = 1
+	EndIf
+	Return databaseKeyAndParameterLookup(zDatabase, "ishub", BoolParam = Send)
+EndFunction
 
-int function getHubAnimations(int zDatabase, bool ishub) ;returns OArray
-	int send = 0
-	if ishub
-		send = 1
-	Else
-		send = 0
-	endif
-	return databaseKeyAndParameterLookup(zdatabase, "ishub", boolParameter = send)
-endfunction
+Int Function GetTransitoryAnimations(Int zDatabase, Bool IsTransitory) ; returns OArray
+	Int Send = 0
+	If (IsTransitory)
+		Send = 1
+	EndIf
+	Return DatabaseKeyAndParameterLookup(zDatabase, "istransitory", BoolParam = Send)
+EndFunction
 
-int function getTransitoryAnimations(int zDatabase, bool istransitory) ;returns OArray
-	int send = 0
-	if istransitory
-		send = 1
-	Else
-		send = 0
-	endif
-	return databaseKeyAndParameterLookup(zdatabase, "istransitory", boolParameter = send)
-endfunction
-
-int function getSexAnimations(int zDatabase, bool istransitory) ;returns OArray
+Int Function GetSexAnimations(Int zDatabase, Bool IsTransitory) ; returns OArray
 	; returns all sexual animations, for intercourse animations only, use the animation class "Sx" as a lookup instead
-	int a = getHubAnimations(zdatabase, false)
-	return getTransitoryAnimations(a, false)
-endfunction
+	Int a = GetHubAnimations(zDatabase, False)
+	Return GetTransitoryAnimations(a, False)
+EndFunction
 
-int function getAnimationsByMainActor(int zDatabase, int mainActor) ;returns OArray
+Int Function GetAnimationsByMainActor(Int zDatabase, Int MainActor) ; returns OArray
 	; 0 - dom, 1 - sub
-	return databaseKeyAndParameterLookup(zdatabase, "mainActor", integerParameter = mainactor)
-endfunction
+	Return DatabaseKeyAndParameterLookup(zDatabase, "mainActor", IntParam = MainActor)
+EndFunction
 
-int function getAnimationsByMaxSpeed(int zDatabase, int speed) ;returns OArray
-	return databaseKeyAndParameterLookup(zdatabase, "maxspeed", integerParameter = speed)
-endfunction
+Int Function GetAnimationsByMaxSpeed(Int zDatabase, Int Speed) ; returns OArray
+	Return DatabaseKeyAndParameterLookup(zDatabase, "maxspeed", IntParam = Speed)
+EndFunction
 
-int function getAnimationsByMinSpeed(int zDatabase, int speed) ;returns OArray
-	return databaseKeyAndParameterLookup(zdatabase, "minspeed", integerParameter = speed)
-endfunction
+Int Function GetAnimationsByMinSpeed(Int zDatabase, Int Speed) ; returns OArray
+	Return DatabaseKeyAndParameterLookup(zDatabase, "minspeed", IntParam = Speed)
+EndFunction
 
-int function getAnimationsWithIdleSpeed(int zDatabase, bool zidle) ;returns OArray
-	return databaseKeyAndParameterLookup(zdatabase, "hasidlespeed", boolParameter = zidle as int)
-endfunction
+Int Function GetAnimationsWithIdleSpeed(Int zDatabase, Bool zIdle) ; returns OArray
+	Return DatabaseKeyAndParameterLookup(zDatabase, "hasidlespeed", BoolParam = zIdle as Int)
+EndFunction
 
 ;--- auxiliary functions
 
-string function getSceneIDByAnimID(string animID)
-	int OManim = getobjectoarray( getAnimationWithAnimID(getDatabaseOArray(), animID) , 0  ) 
-	return getSceneID(OManim)
-endfunction
-
-
-
+String Function GetSceneIDByAnimID(String AnimID)
+	Int OMAnim = GetObjectOArray(GetAnimationWithAnimID(GetDatabaseOArray(), AnimID), 0)
+	Return GetSceneID(OMAnim)
+EndFunction
 
 ;----------------------
 ;  	Building
 ;----------------------
-function checkForModules()
-	string path = "data/meshes/0SA/mod/0Sex/scene"
-	modules = MiscUtil.FoldersInFolder(path)
-	int i = 0
-	int numModules = modules.Length
-	console("Modules found: " + numModules)
-	if numModules == 0
-		debug.MessageBox("OStim: ERROR - Your version of PapyrusUtils is out of date - this is ALMOST CERTAINLY because OSA's packaged in (and out of date) PapyrusUtils is overwriting a more recent downloaded version. Please exit without saving, and move PapyrusUtils lower in your mod organizer, or install the latest version if it is not installed so that OStim can function. ")
-	endif
-	while i < numModules
-		if !ostim.StringArrayContainsValue(originalmodules, modules[i])
-			Debug.Notification("OStim - loaded third-party animation pack: " + modules[i])
-		endif
+
+Function CheckForModules()
+	String Path = "data/meshes/0SA/mod/0Sex/scene"
+	Modules = MiscUtil.FoldersInFolder(Path)
+
+	Int NumModules = Modules.Length
+
+	Console("Modules found: " + NumModules)
+	If (NumModules == 0)
+		Debug.MessageBox("OStim: ERROR - Your version of PapyrusUtils is out of date - this is ALMOST CERTAINLY because OSA's packaged in (and out of date) PapyrusUtils is overwriting a more recent downloaded version. Please exit without saving, and move PapyrusUtils lower in your mod organizer, or install the latest version if it is not installed so that OStim can Function. ")
+	EndIf
+
+	Int i = 0
+	While (i < NumModules)
+		If (!OStim.StringArrayContainsValue(OriginalModules, Modules[i]))
+			Debug.Notification("OStim - loaded third-party animation pack: " + Modules[i])
+		EndIf
 		i += 1
 	EndWhile
-endfunction
+EndFunction
 
-
-int function GetAllAnimationFiles() 
+Int Function GetAllAnimationFiles()
 	; returns an oarray of all file paths to all files
-	string path = "data/meshes/0SA/mod/0Sex/scene"
-	int ret = newOArray()
+	String Path = "data/meshes/0SA/mod/0Sex/scene"
+	Int Ret = NewOArray()
 
-	modules = MiscUtil.FoldersInFolder(path)
+	Modules = MiscUtil.FoldersInFolder(Path)
 
-	int i = 0
-	int numModules = modules.Length
-	console("Modules found: " + numModules)
+	Int i = 0
+	Int NumModules = Modules.Length
+	Console("Modules found: " + NumModules)
 
-	if numModules == 0
-		debug.MessageBox("OStim: ERROR - Your version of PapyrusUtils is out of date - this is ALMOST CERTAINLY because OSA's packaged in (and out of date) PapyrusUtils is overwriting a more recent downloaded version. Please exit without saving, and move PapyrusUtils lower in your mod organizer, or install the latest version if it is not installed so that OStim can function. ")
-	endif
-	while i < numModules
-		if !ostim.StringArrayContainsValue(originalmodules, modules[i])
-			Debug.Notification("OStim - loaded third-party animation pack: " + modules[i])
-		endif
-		string[] positions = MiscUtil.FoldersInFolder(path + "/" + modules[i])
+	If (NumModules == 0)
+		Debug.MessageBox("OStim: ERROR - Your version of PapyrusUtils is out of date - this is ALMOST CERTAINLY because OSA's packaged in (and out of date) PapyrusUtils is overwriting a more recent downloaded version. Please exit without saving, and move PapyrusUtils lower in your mod organizer, or install the latest version if it is not installed so that OStim can Function. ")
+	EndIf
 
-		int i2 = 0
-		int numPositions = positions.Length
+	While (i < NumModules)
+		If (!OStim.StringArrayContainsValue(OriginalModules, Modules[i]))
+			Debug.Notification("OStim - loaded third-party animation pack: " + Modules[i])
+		EndIf
+		String[] Positions = MiscUtil.FoldersInFolder(Path + "/" + Modules[i])
 
-		while i2 < numPositions
-			if positions[i2] == "_TOG"
+		Int i2 = 0
+		Int NumPositions = Positions.Length
+
+		While (i2 < NumPositions)
+			If (Positions[i2] == "_TOG")
 				;ignore
 			Else
-				string[] classes = MiscUtil.FoldersInFolder(path + "/" + modules[i] + "/" + positions[i2])
+				String[] Classes = MiscUtil.FoldersInFolder(Path + "/" + Modules[i] + "/" + Positions[i2])
 
-				int i3 = 0
-				int numClasses = classes.Length
+				Int i3 = 0
+				Int NumClasses = Classes.Length
+				While (i3 < NumClasses)
+					String[] Files = MiscUtil.FilesInFolder(Path + "/" + Modules[i] + "/" + Positions[i2] + "/" + Classes[i3])
 
-				while i3 < numClasses
-					string[] files = MiscUtil.FilesInFolder(path + "/" + modules[i] + "/" + positions[i2] + "/" + classes[i3])
+					Int i4 = 0
+					Int NumFiles = Files.Length
+					While (i4 < Numfiles)
+						String FileLocation = Path + "/" + Modules[i] + "/" + Positions[i2] + "/" + Classes[i3] + "/" + Files[i4]
 
-					int i4 = 0
-					int numFiles = files.Length
-
-					while i4 < numfiles
-						string fileLocation = path + "/" + modules[i] + "/" + positions[i2] + "/" + classes[i3] + "/" + files[i4]
-
-						if (StringUtil.Find(files[i4], ".xml") != -1) || (StringUtil.Find(files[i4], ".XML") != -1)
-							appendStringOArray(ret, fileLocation)
-							console("Animation data found: " + fileLocation)
-							JValue.retain(ret)
+						If (StringUtil.Find(Files[i4], ".xml") != -1) || (StringUtil.Find(Files[i4], ".XML") != -1)
+							AppendStringOArray(Ret, FileLocation)
+							Console("Animation data found: " + FileLocation)
+							JValue.Retain(Ret)
 						Else
-							console("Skipping non-XML file: " + files[i4])
-						endif
-						
+							Console("Skipping non-XML file: " + Files[i4])
+						EndIf
+
 						i4 += 1
 					EndWhile
-
 					i3 += 1
 				EndWhile
-			endif
+			EndIf
 			i2 += 1
 		EndWhile
-
 		i += 1
 	EndWhile
 
-	return ret
+	Return Ret
 EndFunction
 
-string function getFileContents(string file)
-	return MiscUtil.ReadFromFile(file)
+String Function GetFileContents(String File)
+	Return MiscUtil.ReadFromFile(File)
 EndFunction
 
-bool function build()
-	if ostim.useNativeFunctions
-		console("Using native build function")
-		return buildNative()
-	Else	
-		console("Using papyrus build function")
-		return buildPapyrus()
-	endif
-endfunction
+Bool Function Build()
+	If (OStim.UseNativeFunctions)
+		Console("Using native build Function")
+		Return BuildNative()
+	Else
+		Console("Using papyrus build Function")
+		Return BuildPapyrus()
+	EndIf
+EndFunction
 
-bool function buildNative()
+Bool Function BuildNative()
  	OSANative.BuildDB()
+ 	Load()
+	CheckForModules()
+	Console("ODatabase built using native Function")
+	Return True
+EndFunction
 
- 	load()
-	checkForModules()
-	console("ODatabase built using native function")
-	return true
-endfunction
+Bool Function BuildPapyrus() ; papyrus implementation of the odatabase builder - slow
+	Int OAFiles = GetAllAnimationFiles()
 
-bool function buildPapyrus() ;papyrus implementation of the odatabase builder - slow
-	int OAfiles = GetAllAnimationFiles()
+	Int i = 0
+	Int L = GetLengthOArray(OAFiles)
+	While (i < L)
+		String contents = GetFileContents(GetStringOArray(OAFiles, i))
+		Int OMAnimation = NewOMap()
 
-	int loop = 0
-	int max = getLengthOArray(OAfiles)
+		AppendStringOMap(OMAnimation, "name", XMLGetName(Contents))
+		AppendStringOMap(OMAnimation, "sceneid", XMLGetSceneID(Contents))
+		AppendIntOMap(OMAnimation, "numactors", XMLGetNumActors(Contents))
+		AppendStringOMap(OMAnimation, "positiondata", XMLGetPosData(OMAnimation))
+		AppendStringOMap(OMAnimation, "sourcemodule", XMLGetSourceModule(GetStringOArray(OAFiles, i)))
+		AppendStringOMap(OMAnimation, "animclass", XMLGetAnimClass(GetStringOArray(OAFiles, i)))
+		AppendObjectOMap(OMAnimation, "OAanimids", XMLGetAnimIDs(Contents))
+		AppendBoolOMap(OMAnimation, "aggressive", XMLIsAggressive(OMAnimation))
 
-	while loop < max
-		string contents = getFileContents(getStringOArray(OAfiles, loop))
-		int OMAnimation = newOMap()
+		Bool Transitory = XMLIsTransitory(Contents)
+		AppendBoolOMap(OMAnimation, "istransitory", Transitory)
+		Bool IsHub = XMLIsHub(Contents, OMAnimation)
+		AppendBoolOMap(OMAnimation, "ishub", IsHub)
 
-			appendStringOMap(OMAnimation, "name", XMLGetName(contents))
-			appendStringOMap(OMAnimation, "sceneid", XMLGetSceneID(contents))
-			appendIntOMap(OMAnimation, "numactors", XMLGetNumActors(contents))
-			appendStringOMap(OMAnimation, "positiondata", XMLGetPosData(OMAnimation))
-			appendStringOMap(OMAnimation, "sourcemodule", XMLGetSourceModule(getStringOArray(OAfiles, loop)))
-			appendStringOMap(OMAnimation, "animclass", XMLGetAnimClass(getStringOArray(OAfiles, loop)))
-			appendObjectOMap(OMAnimation, "OAanimids", XMLGetAnimIDs(contents))
-			appendBoolOMap(OMAnimation, "aggressive", xmlisaggressive(OMAnimation))
+		If (!Transitory && !IsHub)
+			Int MainActor = XMLMainActor(Contents)
+			AppendIntOMap(OMAnimation, "mainactor", MainActor)
+			AppendIntOMap(OMAnimation, "minspeed", XMLMinSpeed(Contents, MainActor))
+			AppendIntOMap(OMAnimation, "maxspeed", XMLMaxSpeed(Contents))
+			AppendBoolOMap(OMAnimation, "hasidlespeed", XMLHasIdleSpeed(Contents))
+		EndIf
 
-			bool transitory = XMLIsTransitory(contents)
-			appendBoolOMap(OMAnimation, "istransitory", transitory)
-			bool ishub = xmlishub(contents, OMAnimation)
-			appendBoolOMap(OMAnimation, "ishub", ishub)
-
-			if (!transitory) && (!ishub)
-				int mainactor = XMLMainActor(contents)
-				appendIntOMap(OMAnimation, "mainactor", mainactor)
-				appendIntOMap(OMAnimation, "minspeed", XMLMinSpeed(contents, mainActor))
-				appendIntOMap(OMAnimation, "maxspeed", XMLMaxSpeed(contents))
-				appendBoolOMap(OMAnimation, "hasidlespeed", XMLHasIdleSpeed(contents))
-				
-			endif
-
-			appendObjectOArray(database, OMAnimation)
-			JValue.retain(OAfiles)
-			console("-------------------------------------------------------------------------")
-		loop += 1
-	endwhile
+		AppendObjectOArray(Database, OMAnimation)
+		JValue.Retain(OAFiles)
+		Console("-------------------------------------------------------------------------")
+		i += 1
+	EndWhile
 EndFunction
 
 ; Extracting data from XML input
 
-string function ToolExtractFirstString(string in, string element)
-	string xmlpart = element + "\""
-	string ret
-	int partLength = StringUtil.GetLength(xmlpart)
+String Function ToolExtractFirstString(String In, String Element)
+	String XMLPart = Element + "\""
+	Int PartLength = StringUtil.GetLength(XMLPart)
 
-	int	start = StringUtil.Find(in, xmlpart)
-	if start == -1
-		return ""
-	endif
-
-	string substring = StringUtil.Substring(in, start + partLength, len = 0) ; we now just have to cut off the end
-
-	ret = StringUtil.Split(substring, "\"")[0]
-
-	return ret
-endfunction
-
-string function ToolExtractNthString(string in, string element, int nth)
-	string xmlpart = element + "\""
-	string ret
-	int partLength = StringUtil.GetLength(xmlpart)
-
-	int end = 0 
-	int i = 0
-	while i < nth
-		end = StringUtil.Find(in, xmlpart, end) + partLength
-		i += 1
-	endwhile
-
-	string substring = StringUtil.Substring(in, end, len = 0) ; we now just have to cut off the end
-	ret = StringUtil.Split(substring, "\"")[0]
-
-	return ret
-endfunction
-
-int function ToolSingleDigitStringnumberToInt(string in)
-	return ostim.speedStringToInt("s" + in)
-endfunction
-
-string function ToolExtractNthFolderPathFolder(string path, int part)
-	string[] splitpath = StringUtil.Split(path, "/")
-	return splitpath[part]
-endfunction
-
-string function XMLGetName(string in)
-	string ret = toolextractfirststring(in, "<info name=")
-
-	console("	Name: " + ret)
-	return ret
-endfunction
-
-string function XMLGetSceneID(string in)
-	string ret = toolextractfirststring(in, "<scene id=")
-
-	console("	Scene ID: " + ret)
-	return ret
-endfunction
-
-int function XMLGetNumActors(string in)
-	int ret = ToolSingleDigitStringnumberToInt(toolextractfirststring(in, "actors="))
-
-	console("	Number of actors: " + ret)
-	return ret
-endfunction
-
-string function XMLGetPosData(int OMAnim)
-	string ret = stringutil.split(getSceneID(OMAnim), "|")[1]
-
-	console("	Position Data: " + ret)
-	return ret
-EndFunction
-
-string function XMLGetSourceModule(string path)
-	string ret = ToolExtractNthFolderPathFolder(path, 6)
-
-	console("	Source Module: " + ret)
-	return ret
-EndFunction
-
-string function XMLGetAnimClass(string path)
-	string ret = ToolExtractNthFolderPathFolder(path, 8)
-
-	console("	Animation Class: " + ret)
-	return ret
-EndFunction
-
-int function XMLGetAnimIDs(string in) 
-	string[] ret
-
-	if ToolExtractNthString(in, "<anim id=", 2) != "="
-		int number = 2
-		ret = Utility.CreateStringArray(1, ToolExtractNthString(in, "<anim id=", number))
-		string last = ret[0]
-
-		while last != "=" ;assuming "=" marks end of file
-			number += 1
-			last = ToolExtractNthString(in, "<anim id=", number)
-
-			if last != "="
-				ret = PapyrusUtil.PushString(ret, last)
-			endif
-		EndWhile
-	else
-		ret = Utility.CreateStringArray(1, ToolExtractNthString(in, "<anim id=", 1))
-	endif
-
-	int i = 0
-	int len = ret.length
-		
-	while i < len
-		console("		Animation ID " + i + ": " + ret[i])
-		i += 1
-	endwhile
-
-	return JArray.ObjectWithStrings(ret)
-endfunction
-
-bool function XMLIsTransitory(string in)
-	bool ret = (toolextractfirststring(in, "t=") == "T")
-
-	console("	Is Transitory Animation: " + ret)
-	return ret
-endfunction
-
-int function XMLMainActor(string in)
-	int ret = ToolSingleDigitStringnumberToInt(toolextractfirststring(in, "<speed a="))
-
-	console("	Main controlling actor: " + ret)
-	return ret
-endfunction
-
-int function XMLMinSpeed(string in, int mainActor)
-	int ret = ToolSingleDigitStringnumberToInt(toolextractfirststring(in, "<speed a=\""+ mainactor + "\" min="))
-
-	console("	Minimum Speed: " + ret)
-	return ret 
-endfunction
-
-int function XMLMaxSpeed(string in)
-	int ret = ToolSingleDigitStringnumberToInt(toolextractfirststring(in, " max="))
-
-	console("	Maximum Speed: " + ret)
-	return ret 
-endfunction
-
-bool function XMLHasIdleSpeed(string in)
-	bool ret = toolextractfirststring(in, "<sp mtx=") == "^idle"
-
-	console("	Has Idle Speed: " + ret)
-	return ret 
-endfunction
-
-bool function XMLIsHub(string in, int OMAnim) 
-	bool ret
-	if toolextractfirststring(in, " max=") == ""
-
-		if isTransitoryAnimation(OMAnim)
-			ret = false
-		else 
-			ret = true
-		endif
-	Else
-		ret = False
-	endif
-	console("	Is Hub Animation: " + ret)
-	return ret
-endfunction
-
-bool function XMLIsAggressive(int OMAnimation)
-	bool ret = false
-	string aclass = getAnimationClass(OMAnimation)
-	string module = getmodule(OMAnimation)
-
-	If (aclass == "Ro") || (aclass == "HhPJ") || (aclass == "HhBJ") || (aclass == "HhPo") || (aclass == "SJ")
-		ret = True
-	Elseif (module == "BG") || (module == "BB")
-		ret = True
-	else
-		int	start = StringUtil.Find(aclass, "Ag")
-		if start != -1
-			ret = true
-		endif
+	Int	Start = StringUtil.Find(In, XMLPart)
+	If (Start == -1)
+		Return ""
 	EndIf
-	console("	Is Aggressive: " + ret)
-	return ret
-endfunction
+
+	String SubString = StringUtil.SubString(In, Start + PartLength, Len = 0) ; we now just have to cut off the end
+	Return StringUtil.Split(SubString, "\"")[0]
+EndFunction
+
+String Function ToolExtractNthString(String In, String Element, Int Nth)
+	String XMLPart = Element + "\""
+	Int PartLength = StringUtil.GetLength(XMLPart)
+
+	Int End = 0
+	Int i = 0
+	While (i < Nth)
+		End = StringUtil.Find(In, XMLPart, End) + PartLength
+		i += 1
+	EndWhile
+
+	String SubString = StringUtil.Substring(In, End, Len = 0) ; we now just have to cut off the end
+	Return StringUtil.Split(SubString, "\"")[0]
+EndFunction
+
+Int Function ToolSingleDigitStringNumberToInt(String In)
+	Return OStim.SpeedStringToInt("s" + In)
+EndFunction
+
+String Function ToolExtractNthFolderPathFolder(String Path, Int Part)
+	String[] SplitPath = StringUtil.Split(Path, "/")
+	Return SplitPath[Part]
+EndFunction
+
+String Function XMLGetName(String In)
+	String Ret = ToolExtractFirstString(In, "<info name=")
+	Console("	Name: " + Ret)
+	Return Ret
+EndFunction
+
+String Function XMLGetSceneID(String In)
+	String Ret = ToolExtractFirstString(In, "<scene id=")
+	Console("	Scene ID: " + Ret)
+	Return Ret
+EndFunction
+
+Int Function XMLGetNumActors(String In)
+	Int Ret = ToolSingleDigitStringnumberToInt(toolextractfirststring(In, "actors="))
+	Console("	Number of actors: " + Ret)
+	Return Ret
+EndFunction
+
+String Function XMLGetPosData(Int OMAnim)
+	String Ret = StringUtil.Split(getSceneID(OMAnim), "|")[1]
+	Console("	Position Data: " + Ret)
+	Return Ret
+EndFunction
+
+String Function XMLGetSourceModule(String Path)
+	String Ret = ToolExtractNthFolderPathFolder(Path, 6)
+	Console("	Source Module: " + Ret)
+	Return Ret
+EndFunction
+
+String Function XMLGetAnimClass(String Path)
+	String Ret = ToolExtractNthFolderPathFolder(Path, 8)
+	Console("	Animation Class: " + Ret)
+	Return Ret
+EndFunction
+
+Int Function XMLGetAnimIDs(String In)
+	String[] Ret
+
+	If (ToolExtractNthString(In, "<anim id=", 2) != "=")
+		Int Number = 2
+		Ret = Utility.CreateStringArray(1, ToolExtractNthString(In, "<anim id=", Number))
+		String Last = Ret[0]
+
+		While (last != "=") ; assuming "=" marks end of file
+			Number += 1
+			Last = ToolExtractNthString(In, "<anim id=", Number)
+
+			If (Last != "=")
+				Ret = PapyrusUtil.PushString(Ret, Last)
+			EndIf
+		EndWhile
+	Else
+		Ret = Utility.CreateStringArray(1, ToolExtractNthString(In, "<anim id=", 1))
+	EndIf
+
+	Int i = 0
+	Int L = Ret.Length
+	While (i < L)
+		Console("		Animation ID " + i + ": " + Ret[i])
+		i += 1
+	EndWhile
+
+	Return JArray.ObjectWithStrings(Ret)
+EndFunction
+
+Bool Function XMLIsTransitory(String In)
+	Bool Ret = (ToolExtractFirstString(In, "t=") == "T")
+	Console("	Is Transitory Animation: " + Ret)
+	Return Ret
+EndFunction
+
+Int Function XMLMainActor(String In)
+	Int Ret = ToolSingleDigitStringnumberToInt(ToolExtractFirstString(In, "<speed a="))
+	Console("	Main controlling actor: " + Ret)
+	Return Ret
+EndFunction
+
+Int Function XMLMinSpeed(String In, Int mainActor)
+	Int Ret = ToolSingleDigitStringNumberToInt(ToolExtractFirstString(In, "<speed a=\""+ mainactor + "\" min="))
+	Console("	Minimum Speed: " + Ret)
+	Return Ret
+EndFunction
+
+Int Function XMLMaxSpeed(String In)
+	Int Ret = ToolSingleDigitStringNumberToInt(ToolExtractFirstString(In, " max="))
+	Console("	Maximum Speed: " + Ret)
+	Return Ret
+EndFunction
+
+Bool Function XMLHasIdleSpeed(String In)
+	Bool Ret = ToolExtractFirstString(In, "<sp mtx=") == "^idle"
+	Console("	Has Idle Speed: " + Ret)
+	Return Ret
+EndFunction
+
+Bool Function XMLIsHub(String In, Int OMAnim)
+	Bool Ret
+	If (ToolExtractFirstString(In, " max=") == "")
+		If (IsTransitoryAnimation(OMAnim))
+			Ret = False
+		else
+			Ret = True
+		EndIf
+	Else
+		Ret = False
+	EndIf
+	Console("	Is Hub Animation: " + Ret)
+	Return Ret
+EndFunction
+
+Bool Function XMLIsAggressive(Int OMAnimation)
+	Bool Ret = False
+	String AClass = GetAnimationClass(OMAnimation)
+	String Module = Getmodule(OMAnimation)
+
+	If ((AClass == "Ro") || (AClass == "HhPJ") || (AClass == "HhBJ") || (AClass == "HhPo") || (AClass == "SJ"))
+		Ret = True
+	Elseif ((Module == "BG") || (Module == "BB"))
+		Ret = True
+	else
+		Int	Start = StringUtil.Find(AClass, "Ag")
+		If (Start != -1)
+			Ret = True
+		EndIf
+	EndIf
+
+	Console("	Is Aggressive: " + Ret)
+	Return Ret
+EndFunction
 
 ;----------------------
 ;  OArray Manipulation
 ;----------------------
 
-int function newOArray()
-	return JArray.object()
-endfunction
-
-function appendIntOArray(int OArray, int append)
-	JArray.addInt(oarray, append)
+Int Function newOArray()
+	Return JArray.object()
 EndFunction
 
-function appendObjectOArray(int OArray, int append)
-	JArray.addObj(oarray, append)
+Function AppendIntOArray(Int OArray, Int Append)
+	JArray.AddInt(OArray, Append)
 EndFunction
 
-function appendStringOArray(int OArray, string append)
-	JArray.addStr(oarray, append)
+Function AppendObjectOArray(Int OArray, Int Append)
+	JArray.AddObj(OArray, Append)
 EndFunction
 
-int function getIntOArray(int OArray, int index)
-	return JArray.getInt(OArray, index, default = -10001)
+Function AppendStringOArray(Int OArray, String Append)
+	JArray.addStr(OArray, Append)
 EndFunction
 
-int function getObjectOArray(int OArray, int index)
-	return JArray.getObj(OArray, index)
+Int Function GetIntOArray(Int OArray, Int Index)
+	Return JArray.GetInt(OArray, Index, Default = -10001)
 EndFunction
 
-string function getStringOArray(int OArray, int index)
-	return JArray.getStr(OArray, index, default = "")
+Int Function GetObjectOArray(Int OArray, Int Index)
+	Return JArray.GetObj(OArray, Index)
 EndFunction
 
-int function getLengthOArray(int OArray) ;number of items total
-	return JArray.count(OArray)
+String Function GetStringOArray(Int OArray, Int Index)
+	Return JArray.GetStr(OArray, Index, Default = "")
 EndFunction
 
-int function mergeOArrays(int[] arrays) ;may only work if arrays are full of omap or oarray objects
-	int ret = newOArray()
+Int Function GetLengthOArray(Int OArray) ;number of items total
+	Return JArray.Count(OArray)
+EndFunction
 
-	int i = 0
-	int max = arrays.length
+Int Function MergeOArrays(Int[] Arrays) ;may only work if arrays are full of omap or oarray objects
+	Int Ret = NewOArray()
 
-	while i < max
-		int array = arrays[i]
+	Int i = 0
+	Int max = Arrays.Length
+	While (i < max)
+		Int Array = Arrays[i]
 
-		int i2 = 0
-		int max2 = getLengthOArray(array)
-
-		while i2 < max2
-			appendObjectOArray(ret, getObjectOArray(array, i2))
+		Int i2 = 0
+		Int max2 = GetLengthOArray(Array)
+		While (i2 < max2)
+			AppendObjectOArray(Ret, GetObjectOArray(Array, i2))
 			i2 += 1
-		endwhile
+		EndWhile
 
 		i += 1
 	EndWhile
 
-	return ret
-endfunction
+	Return Ret
+EndFunction
+
 ;----------------------
 ;  OMap Manipulation
 ;----------------------
 
-int function newOMap()
-	return JMap.object()
-endfunction
-
-function appendStringOMap(int OMap, string zkey, string append)
-	JMap.setStr(OMap, zkey, append)
+Int Function NewOMap()
+	Return JMap.Object()
 EndFunction
 
-function appendIntOMap(int OMap, string zkey, int append)
-	JMap.setint(OMap, zkey, append)
+Function AppendStringOMap(Int OMap, String zKey, String zAppend)
+	JMap.SetStr(OMap, zKey, zAppend)
 EndFunction
 
-function appendObjectOMap(int OMap, string zkey, int append)
-	JMap.setobj(OMap, zkey, append)
+Function AppendIntOMap(Int OMap, String zKey, Int zAppend)
+	JMap.SetInt(OMap, zKey, zAppend)
 EndFunction
 
-function appendBoolOMap(int OMap, string zkey, bool zappend)
-	int append
-	if zappend
-		append = 1
+Function AppendObjectOMap(Int OMap, String zKey, Int zAppend)
+	JMap.SetObj(OMap, zKey, zAppend)
+EndFunction
+
+Function AppendBoolOMap(Int OMap, String zKey, Bool zAppend)
+	Int Append
+	If (zAppend)
+		Append = 1
 	Else
-		append = 0
-	endif
-	JMap.setInt(OMap, zkey, append)
+		Append = 0
+	EndIf
+	JMap.SetInt(OMap, zKey, Append)
 EndFunction
 
-string function getStringOMap(int OMap, string zkey)
-	return JMap.getStr(OMap, zkey, default = "")
+String Function GetStringOMap(Int OMap, String zKey)
+	Return JMap.GetStr(OMap, zKey, Default = "")
 EndFunction
 
-int function getIntOMap(int OMap, string zkey)
-	return JMap.getInt(OMap, zkey, default = -10001)
+Int Function getIntOMap(Int OMap, String zKey)
+	Return JMap.GetInt(OMap, zKey, Default = -10001)
 EndFunction
 
-int function getObjOMap(int OMap, string zkey)
-	return JMap.getObj(OMap, zkey)
+Int Function getObjOMap(Int OMap, String zKey)
+	Return JMap.GetObj(OMap, zKey)
 EndFunction
 
-bool function getBoolOMap(int OMap, string zkey)
-	int a = JMap.getInt(OMap, zkey, default = 0)
-	if a == 1
-		return true
-	else
-		return false
-	endif
+Bool Function getBoolOMap(Int OMap, String zKey)
+	Int a = JMap.getInt(OMap, zKey, Default = 0)
+	If (a == 1)
+		Return True
+	EndIf
+	Return False
 EndFunction
 
 ;----------------------------------
 ; 			Other
 ;----------------------------------
-function console(string in) 
-	OsexIntegrationMain.console(in)
-	if dumpConsole
-		dumpString(in + "\n")
-	endif
+
+Function Console(String In)
+	OsexIntegrationMain.Console(In)
+	If (DumpConsole)
+		DumpString(In + "\n")
+	EndIf
 EndFunction
 
-function dumpString(string in)
-	MiscUtil.WriteToFile("data/ostimdump.txt", in, timestamp = false)
+Function DumpString(String In)
+	MiscUtil.WriteToFile("data/ostimdump.txt", In, TimeStamp = False)
 EndFunction
 
-function dumpOmap(int OMap)
-	JValue.writeToFile(OMap, "data/ostimdump.txt")
-	console("Dumped")
+Function DumpOmap(Int OMap)
+	JValue.WriteToFile(OMap, "data/ostimdump.txt")
+	Console("Dumped")
 EndFunction

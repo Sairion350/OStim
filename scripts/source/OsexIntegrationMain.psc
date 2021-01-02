@@ -1,865 +1,865 @@
-ScriptName OsexIntegrationMain extends Quest
+ScriptName OsexIntegrationMain Extends Quest
 
 
-;code spacing is a mess right now after 2.0
-;--------- Settings
-	bool property endOnDomOrgasm auto
+; -------------------------------------------------------------------------------------------------
+; SETTINGS  ---------------------------------------------------------------------------------------
 
-	bool property enableDomBar auto
-	bool property enableSubBar auto
-	bool property autoHideBars auto
-	bool property enableImprovedCamSupport auto
 
-	bool property enableActorSpeedControl auto
+Bool Property EndOnDomOrgasm Auto
 
-	bool property allowUnlimitedSpanking auto
+Bool Property EnableDomBar Auto
+Bool Property EnableSubBar Auto
+Bool Property AutoHideBars Auto
+Bool Property EnableImprovedCamSupport Auto
 
-	bool property autoUndressIfNeeded auto
-	int property bedSearchDistance auto
+Bool Property EnableActorSpeedControl Auto
 
-	int property subLightPos auto
-	int property domLightPos auto
-	int property subLightBrightness auto
-	int property domLightBrightness auto
+Bool Property AllowUnlimitedSpanking Auto
 
-	bool property lowLightLevelLightsOnly auto
-	bool property slowMoOnOrgasm auto
+Bool Property AutoUndressIfNeeded Auto
+Int Property BedSearchDistance Auto
 
-	bool property alwaysUndressAtAnimStart auto
-	bool property onlyUndressChest auto
-	bool property alwaysAnimateUndress auto
+Int Property SubLightPos Auto
+Int Property DomLightPos Auto
+Int Property SubLightBrightness Auto
+Int Property DomLightBrightness Auto
 
-	bool  speedUpNonSexAnimation 
-	float speedUpSpeed
+Bool Property LowLightLevelLightsOnly Auto
+Bool Property SlowMoOnOrgasm Auto
 
-	int property customTimescale Auto
+Bool Property AlwaysUndressAtAnimStart Auto
+Bool Property OnlyUndressChest Auto
+Bool Property AlwaysAnimateUndress Auto
 
-	bool property orgasmIncreasesRelationship auto
+Bool  SpeedUpNonSexAnimation
+Float SpeedUpSpeed
 
-	float property sexExcitementMult auto
+Int Property CustomTimescale Auto
 
-	int property keyMap auto
+Bool Property OrgasmIncreasesRelationship Auto
 
-	int property speedUpKey auto
-	int property speedDownKey auto
-	int property PullOutKey auto
-	int property ControlToggleKey auto
+Float Property SexExcitementMult Auto
 
-	bool property useBed auto
+Int Property KeyMap Auto
 
-	bool property misallignmentProtection auto
+Int Property SpeedUpKey Auto
+Int Property SpeedDownKey Auto
+Int Property PullOutKey Auto
+Int Property ControlToggleKey Auto
 
-	bool property UseAIControl auto
-	bool property pauseAI auto
+Bool Property UseBed Auto
 
-	bool property useAINPConNPC auto
-	bool property useAIPlayerAggressor auto
-	bool property useAIPlayerAggressed auto
-	bool property useAINonAggressive auto
+Bool Property MisallignmentProtection Auto
 
-	bool property muteOSA Auto
+Bool Property UseAIControl Auto
+Bool Property PauseAI Auto
 
-	bool property fixFlippedAnimations auto
+Bool Property UseAINPConNPC Auto
+Bool Property UseAIPlayerAggressor Auto
+Bool Property UseAIPlayerAggressed Auto
+Bool Property UseAINonAggressive Auto
 
-	bool property useFreeCam auto
+Bool Property MuteOSA Auto
 
-	bool property useRumble Auto
-	bool property useScreenShake auto
+Bool Property FixFlippedAnimations Auto
 
-	bool property useFades auto
-	bool property useAutoFades auto
+Bool Property UseFreeCam Auto
 
-	bool property endAfterActorHit auto
+Bool Property UseRumble Auto
+Bool Property UseScreenShake Auto
 
-	bool property getInBedAfterBedScene auto
+Bool Property UseFades Auto
+Bool Property UseAutoFades Auto
 
-	int property freecamFOV Auto
-	int property defaultFOV Auto
-	int property freecamSpeed auto
-	
-	int property bedReallignment auto
+Bool Property EndAfterActorHit Auto
 
-	bool property forceFirstPersonAfter auto
+Bool Property GetInBedAfterBedScene Auto
 
-	bool property useNativeFunctions auto
-;---------
+Int Property FreecamFOV Auto
+Int Property DefaultFOV Auto
+Int Property FreecamSpeed Auto
 
-;--------- scriptwide Variables are stored here so they can be used async
-actor DomActor
-actor SubActor
+Int Property BedReallignment Auto
 
-float DomExcitement
-float SubExcitement
+Bool Property ForceFirstPersonAfter Auto
 
-bool sceneRunning
-string currentAnimation
-int currentSpeed
-string[] currScene
-string currAnimClass
+Bool Property UseNativeFunctions Auto
 
-bool animSpeedAtMax
-int spankCount
-int spankMax
+
+; -------------------------------------------------------------------------------------------------
+; SCRIPTWIDE VARIABLES ----------------------------------------------------------------------------
+
+
+Actor DomActor
+Actor SubActor
+
+Float DomExcitement
+Float SubExcitement
+
+Bool SceneRunning
+String CurrentAnimation
+Int CurrentSpeed
+String[] CurrScene
+String CurrAnimClass
+
+Bool AnimSpeedAtMax
+Int SpankCount
+Int SpankMax
 
 _oOmni OSAOmni
 
-actor playerref
+Actor PlayerRef
 
-GlobalVariable timescale
+GlobalVariable Timescale
 
-bool undressDom
-bool undressSub
-bool animateUndress
-string startingAnimation
-actor thirdActor
+Bool UndressDom
+Bool UndressSub
+Bool AnimateUndress
+String StartingAnimation
+Actor ThirdActor
 
-form domHelm
-form domArmor
-form domGlove
-form domBoot
-form domWep
+Form DomHelm
+Form DomArmor
+Form DomGlove
+Form DomBoot
+Form DomWep
 
-form subHelm
-form subArmor
-form subGlove
-form subBoot
-form subWep
+Form SubHelm
+Form SubArmor
+Form SubGlove
+Form SubBoot
+Form SubWep
 
-bool isFreeCamming
+Bool IsFreeCamming
 
-int domTimesOrgasm
-int subTimesOrgasm
+Int DomTimesOrgasm
+Int SubTimesOrgasm
 
-actor mostRecentOrgasmedActor
+Actor MostRecentOrgasmedActor
 
-bool usingBed
-ObjectReference currentBed
+Bool UsingBed
+ObjectReference CurrentBed
 
-bool endedProper
+Bool EndedProper
 
-float startTime
+Float StartTime
 
-float mostRecentOSexInteractionTime
+Float MostRecentOSexInteractionTime
 
-int[] OSexControlKeys
+Int[] OSexControlKeys
+
 ;--Thank you ODatabase
-int currentOID ; the OID is the JMap ID of the current animation. You can feed this in to ODatabase
-int lastHubOID
-bool currentAnimIsAggressive
+Int CurrentOID ; the OID is the JMap ID of the current animation. You can feed this in to ODatabase
+Int LastHubOID
+Bool CurrentAnimIsAggressive
 ;--
-bool aiRunning
 
-bool aggressiveThemedSexScene
-actor aggressiveActor
+Bool AIRunning
+
+Bool AggressiveThemedSexScene
+Actor AggressiveActor
 
 OAiScript AI
 
-bool isFlipped
-;---------
+Bool IsFlipped
 
-;--------- Osa specific stuff and more
+; -------------------------------------------------------------------------------------------------
+; OSA SPECIFIC  -----------------------------------------------------------------------------------
+
 MagicEffect Actra
-faction OsaFactionStage
+Faction OsaFactionStage
 
-faction ArousedFaction
+Faction ArousedFaction
 ImageSpaceModifier NutEffect
 
-Quest sexlab ;for cum effects
-sound orgasmSound
+Quest SexLab ; for cum effects
+Sound OrgasmSound
 
-sound OsaDing
-sound OsaTickSmall
-sound OsaTickBig
+Sound OSADing
+Sound OSATickSmall
+Sound OSATickBig
 
 ;_oUI OSAUI
 ;---------
 
 ;--------- bars
-Osexbar dombar
-Osexbar subbar
+Osexbar DomBar
+Osexbar SubBar
 ;---------
 
 ;--------- database
 ODatabaseScript ODatabase
 ;---------
 ;--------- ID shortcuts
-	;Animation classifications
-	string ClassSex
-	string ClassEmbracing
-	string ClassCunn
-	String ClassHolding
-	string ClassApart
-	string ClassApartUndressing
-	string ClassApartHandjob
-	string ClassHandjob
-	string ClassClitRub
-	string ClassOneFingerPen
-	string ClassTwoFingerPen
-	string ClassBlowjob
-	string ClassPenisjob
-	string ClassMasturbate
-	string ClassRoughHolding
-	string ClassSelfSuck
-	string ClassHeadHeldBlowjob
-	string ClassHeadHeldPenisjob
-	string ClassHeadHeldMasturbate
-	string ClassDualHandjob
-	string Class69Blowjob
-	string Class69Handjob
+;Animation classifications
+String ClassSex
+String ClassEmbracing
+String ClassCunn
+String ClassHolding
+String ClassApart
+String ClassApartUndressing
+String ClassApartHandjob
+String ClassHandjob
+String ClassClitRub
+String ClassOneFingerPen
+String ClassTwoFingerPen
+String ClassBlowjob
+String ClassPenisjob
+String ClassMasturbate
+String ClassRoughHolding
+String ClassSelfSuck
+String ClassHeadHeldBlowjob
+String ClassHeadHeldPenisjob
+String ClassHeadHeldMasturbate
+String ClassDualHandjob
+String Class69Blowjob
+String Class69Handjob
 
-	string ClassAnal
-	string ClassBoobjob 
-	string ClassBreastFeeding
-	string ClassFootjob
+String ClassAnal
+String ClassBoobjob
+String ClassBreastFeeding
+String ClassFootjob
 
-	;Body parts
-	int penis
-	int vagina 
-	int mouth
-	int hand
-	int clit
-	;extra parts
-	int anus
-	int feet
-	int breasts
-	int prostate
+;Body parts
+Int Penis
+Int Vagina
+Int Mouth
+Int Hand
+Int Clit
+;extra parts
+Int Anus
+Int Feet
+Int Breasts
+Int Prostate
 
-	float[] penisStimValues
-	float[] vaginaStimValues
-	float[] mouthStimValues
-	float[] handStimValues
-	float[] clitStimValues
+Float[] PenisStimValues
+Float[] VaginaStimValues
+Float[] MouthStimValues
+Float[] HandStimValues
+Float[] ClitStimValues
 
-	float[] anusStimValues
-	float[] feetStimValues
-	float[] breastsStimValues
-	float[] prostateStimValues
+Float[] AnusStimValues
+Float[] FeetStimValues
+Float[] BreastsStimValues
+Float[] ProstateStimValues
 
-	string[] speeds
-;--------- 
+String[] Speeds
 
-Event OnKeyDown(int KeyPress)
-	if Utility.IsInMenuMode()
+; -------------------------------------------------------------------------------------------------
+; -------------------------------------------------------------------------------------------------
+
+Event OnKeyDown(Int KeyPress)
+	If (Utility.IsInMenuMode())
 		Return
-	endif
+	EndIf
 
-	if animationRunning()
-		if IntArrayContainsValue(OSexControlKeys, keypress)
-			mostRecentOSexInteractionTime = Utility.GetCurrentRealTime()
-			if autoHideBars
-				if !isBarVisible(dombar)
-					setBarVisible(dombar, true)
-				endif
-				if !isBarVisible(subbar)
-					setBarVisible(subbar, true)
-				endif
-			endif
-		endif
+	If (AnimationRunning())
+		If (IntArrayContainsValue(OSexControlKeys, KeyPress))
+			MostRecentOSexInteractionTime = Utility.GetCurrentRealTime()
+			If (AutoHideBars)
+				If (!IsBarVisible(DomBar))
+					SetBarVisible(DomBar, True)
+				EndIf
+				If (!IsBarVisible(SubBar))
+					SetBarVisible(SubBar, True)
+				EndIf
+			EndIf
+		EndIf
 
-		if KeyPress == speedUpKey
-			increaseAnimationSpeed()
-			playTickSmall()
-		elseif KeyPress == speedDownKey
-			decreaseAnimationSpeed()
-			playTickSmall()
-		elseif (KeyPress == PullOutKey) && !aiRunning
-			if ODatabase.isSexAnimation(currentoid)
-				if lastHubOID != -1
-					travelToAnimationIfPossible(odatabase.getSceneID(lastHubOID))
-				endif
-			endif
-		endif
-	endif
+		If (KeyPress == SpeedUpKey)
+			IncreaseAnimationSpeed()
+			PlayTickSmall()
+		ElseIf (KeyPress == SpeedDownKey)
+			DecreaseAnimationSpeed()
+			PlayTickSmall()
+		ElseIf ((KeyPress == PullOutKey) && !AIRunning)
+			If (ODatabase.IsSexAnimation(CurrentOID))
+				If (LastHubOID != -1)
+					TravelToAnimationIfPossible(ODatabase.GetSceneID(LastHubOID))
+				EndIf
+			EndIf
+		EndIf
+	EndIf
 
-	if (KeyPress == ControlToggleKey)
-		if animationRunning()
-			if aiRunning
-				aiRunning = False
-				pauseAI = true
+	If (KeyPress == ControlToggleKey)
+		If (AnimationRunning())
+			If (AIRunning)
+				AIRunning = False
+				PauseAI = True
 				Debug.Notification("Switched to manual control mode")
-				console("Switched to manual control mode")
+				Console("Switched to manual control mode")
 			Else
-				if pauseAI
-					pauseAI = False
+				If (PauseAI)
+					PauseAI = False
 				Else
-					AI.startAI()
-				endif
-				aiRunning = true
-				debug.Notification("Switched to automatic control mode")
-				console("Switched to automatic control mode")
-			endif
+					AI.StartAI()
+				EndIf
+				AIRunning = True
+				Debug.Notification("Switched to automatic control mode")
+				Console("Switched to automatic control mode")
+			EndIf
 		Else
-			if UseAIControl
+			If (UseAIControl)
 				UseAIControl = False
 				Debug.Notification("Switched to manual control mode")
-				console("Switched to manual control mode")
+				Console("Switched to manual control mode")
 			Else
 				UseAIControl = True
-				debug.Notification("Switched to automatic control mode")
-				console("Switched to automatic control mode")
-			endif
-		endif
-		playTickBig()
-	endif
+				Debug.Notification("Switched to automatic control mode")
+				Console("Switched to automatic control mode")
+			EndIf
+		EndIf
+		PlayTickBig()
+	EndIf
 
-	actor target = Game.GetCurrentCrosshairRef() as actor
-	if KeyPress == keymap
-		if target.IsInDialogueWithPlayer()
-			Return
-		endif
-		if target && !target.isdead()
-			StartScene(playerref,  target)
-		endif
-	endif
-endevent
-
-
-Event OnInit()
-	startup()
+	Actor Target = Game.GetCurrentCrosshairRef() as Actor
+	If (KeyPress == KeyMap)
+		If (Target)
+			If (Target.IsInDialogueWithPlayer())
+				Return
+			EndIf
+			If (!Target.IsDead())
+				StartScene(PlayerRef,  Target)
+			EndIf
+		EndIf
+	EndIf
 EndEvent
 
-function startup()
+Event OnInit()
+	Startup()
+EndEvent
+
+Function Startup()
 	Debug.Notification("Installing OStim. Please wait...")
-	sceneRunning = false
-	actra = game.GetFormFromFile(0x000D63, "OSA.ESM") as MagicEffect
-	OsaFactionStage = game.GetFormFromFile(0x00182F, "OSA.ESM") as faction
-	osaomni = (Quest.GetQuest("0SA") as _oOmni)
+	SceneRunning = False
+	Actra = Game.GetFormFromFile(0x000D63, "OSA.ESM") as MagicEffect
+	OsaFactionStage = Game.GetFormFromFile(0x00182F, "OSA.ESM") as Faction
+	OSAOmni = (Quest.GetQuest("0SA") as _oOmni)
 ;	OSAUI = (Quest.GetQuest("0SA") as _oui)
-	playerref = game.GetPlayer()
-	NutEffect = game.GetFormFromFile(0x000805, "Ostim.esp") as ImageSpaceModifier
-	
-	OsaDing = game.GetFormFromFile(0x000D6D, "Ostim.esp") as sound
-	OsaTickSmall = game.GetFormFromFile(0x000D6E, "Ostim.esp") as sound
-	OsaTickBig = game.GetFormFromFile(0x000D6F, "Ostim.esp") as sound
+	PlayerRef = Game.GetPlayer()
+	NutEffect = Game.GetFormFromFile(0x000805, "Ostim.esp") as ImageSpaceModifier
 
-	if (Game.GetModByName("SexLab.esm") != 255) 
-		sexlab = (Game.GetFormFromFile(0x00000D62, "SexLab.esm")) as Quest
-		orgasmSound = (Game.GetFormFromFile(0x00065A34, "SexLab.esm")) as sound
-	endif
-	if (Game.GetModByName("SexlabAroused.esm") != 255) 
-		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as faction
-	endif 
+	OSADing = Game.GetFormFromFile(0x000D6D, "Ostim.esp") as Sound
+	OSATickSmall = Game.GetFormFromFile(0x000D6E, "Ostim.esp") as Sound
+	OSATickBig = Game.GetFormFromFile(0x000D6F, "Ostim.esp") as Sound
 
-	dombar = (self as quest) as Osexbar
-	subbar = (game.GetFormFromFile(0x000804, "Ostim.esp")) as Osexbar
-	timescale = (game.GetFormFromFile(0x00003A, "Skyrim.esm")) as GlobalVariable
-	initBar(dombar, true)
-	initBar(subbar, false)
+	If (Game.GetModByName("SexLab.esm") != 255)
+		SexLab = (Game.GetFormFromFile(0x00000D62, "SexLab.esm")) as Quest
+		OrgasmSound = (Game.GetFormFromFile(0x00065A34, "SexLab.esm")) as Sound
+	EndIf
 
-	ai = ((self as quest) as OAiScript)
+	If (Game.GetModByName("SexlabAroused.esm") != 255)
+		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as Faction
+	EndIf
+
+	DomBar = (Self as Quest) as Osexbar
+	SubBar = (Game.GetFormFromFile(0x000804, "Ostim.esp")) as Osexbar
+	Timescale = (Game.GetFormFromFile(0x00003A, "Skyrim.esm")) as GlobalVariable
+	InitBar(dombar, True)
+	InitBar(subbar, False)
+
+	AI = ((Self as Quest) as OAiScript)
 	RegisterForModEvent("ostim_actorhit", "OnActorHit")
-	setSystemVars()
-	setDefaultSettings()
+	SetSystemVars()
+	SetDefaultSettings()
 	BuildSoundFormlists()
 
-	ODatabase = (self as quest) as ODatabaseScript
+	ODatabase = (Self as Quest) as ODatabaseScript
+	ODatabase.InitDatabase()
 
-	ODatabase.initDatabase()
-
-	if OsaFactionStage
-		console("Loaded")
-	else
-		debug.MessageBox("Osex and OSA do not appear to be installed, please do not continue using this save file")
-		return
-	endif
-
-	if ArousedFaction
-		console("Sexlab Aroused loaded")
-	endif
-
-	if sexlab
-		console("Sexlab loaded, using its cum effects")
+	If (OSAFactionStage)
+		Console("Loaded")
 	Else
-		debug.Notification("OStim: Sexlab is not loaded. Some orgasm FX will be missing")
-	endif
+		Debug.MessageBox("Osex and OSA do not appear to be installed, please do not continue using this save file")
+		Return
+	EndIf
 
-	if osa.stimInstalledProper() == True
-		console("Osa is installed correctly")
+	If (ArousedFaction)
+		Console("Sexlab Aroused loaded")
+	EndIf
 
+	If (SexLab)
+		Console("Sexlab loaded, using its cum effects")
 	Else
-		debug.MessageBox("OStim is not loaded after OSA in your mod files, please allow OStim to overwrite OSA's files and restart")
-		return
-	endif
+		Debug.Notification("OStim: Sexlab is not loaded. Some orgasm FX will be missing")
+	EndIf
 
-	if _oGlobal.OStimGlobalLoaded() != True
+	If (OSA.StimInstalledProper())
+		Console("Osa is installed correctly")
+	Else
+		Debug.MessageBox("OStim is not loaded after OSA in your mod files, please allow OStim to overwrite OSA's files and restart")
+		Return
+	EndIf
+
+	If (!_oGlobal.OStimGlobalLoaded())
 		Debug.MessageBox("It appears you have the OSex facial expression fix installed. Please exit and remove that mod, as it is now included in OStim, and having it installed will break some things now!")
-	endif
+	EndIf
 
-	
-	
 	DisplayTextBanner("OStim installed")
-endfunction
-actor reroutedDomActor
-actor reroutedSubActor
-function acceptReroutingActors(actor act1, actor act2)
-	reroutedDomActor = act1
-	reroutedSubActor = act2
-	console("Recieved rerouted actors")
-endfunction
+EndFunction
 
-function startReroutedScene()
-	console("Rerouting scene")
-	StartScene(reroutedDomActor,  reroutedSubActor)
-endfunction
+Actor ReroutedDomActor
+Actor ReroutedSubActor
+Function AcceptReroutingActors(Actor Act1, Actor Act2)
+	ReroutedDomActor = Act1
+	ReroutedSubActor = Act2
+	Console("Recieved rerouted actors")
+EndFunction
 
-bool function StartScene(actor Dom, actor Sub, bool zundressDom = false, bool zundressSub = false, bool zanimateUndress = false, string zstartingAnimation = "", actor zthirdActor = none, objectreference bed = none, bool aggressive = false, actor aggressingActor = none)
-	if sceneRunning
-		debug.Notification("Osex scene already running")
-		return false
-	endif
+Function StartReroutedScene()
+	Console("Rerouting scene")
+	StartScene(ReroutedDomActor,  ReroutedSubActor)
+EndFunction
 
-	
-	DomActor = dom
-	SubActor = sub
+Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zUndressSub = False, Bool zAnimateUndress = False, String zStartingAnimation = "", Actor zThirdActor = None, ObjectReference Bed = None, Bool Aggressive = False, Actor AggressingActor = None)
+	If (SceneRunning)
+		Debug.Notification("Osex scene already running")
+		Return False
+	EndIf
 
-
-	if appearsFemale(dom) && !appearsFemale(sub) ;if the dom is female and the sub is  male
-		DomActor = sub
-		SubActor = dom
+	DomActor = Dom
+	SubActor = Sub
+	If (AppearsFemale(Dom) && !AppearsFemale(Sub)) ; if the dom is female and the sub is male
+		DomActor = Sub
+		SubActor = Dom
 	Else
-		DomActor = dom
-		SubActor = sub
-	endif
+		DomActor = Dom
+		SubActor = Sub
+	EndIf
 
-	undressDom = zundressDom
-	undresssub = zundressSub
-	animateUndress = zanimateUndress
-	startingAnimation = zstartingAnimation
-	thirdActor = zthirdActor
-	pauseAI = false
+	UndressDom = zUndressDom
+	UndressSub = zUndressSub
+	AnimateUndress = zAnimateUndress
+	StartingAnimation = zStartingAnimation
+	ThirdActor = zThirdActor
+	PauseAI = False
 
-	if aggressive
-		if aggressingActor
-			if (aggressingActor != SubActor) && (aggressingActor != DomActor)
-				debug.MessageBox("Programmer:  The aggressing actor you entered is not part of the scene!")
-				return false
+	If (Aggressive)
+		If (AggressingActor)
+			If ((AggressingActor != SubActor) && (AggressingActor != DomActor))
+				debug.MessageBox("Programmer:  The aggressing Actor you entered is not part of the scene!")
+				Return False
 			Else
-				aggressiveActor = aggressingActor
-				aggressiveThemedSexScene = true
-			endif
+				AggressiveActor = AggressingActor
+				AggressiveThemedSexScene = True
+			EndIf
 		Else
-			debug.MessageBox("Programmer: Please enter the aggressor in this aggressive animation")
-			return false
-		endif
+			Debug.MessageBox("Programmer: Please enter the aggressor in this aggressive animation")
+			Return False
+		EndIf
 	Else
-		aggressiveThemedSexScene = False
-		aggressingActor = none
-	endif
+		AggressiveThemedSexScene = False
+		AggressingActor = None
+	EndIf
 
-	if bed
-		usingbed = True
-		currentbed = bed
+	If (Bed)
+		UsingBed = True
+		Currentbed = Bed
 	Else
-		usingBed = false
-	endif
+		UsingBed = False
+	EndIf
 
-	console("Requesting scene start")
+	Console("Requesting scene start")
 	RegisterForSingleUpdate(0.01)
-	sceneRunning = true
+	SceneRunning = True
 
-	return true
+	Return True
 EndFunction
 
 Event OnUpdate()
-	console("Starting scene asynchronously")
+	Console("Starting scene asynchronously")
 
-	if useFades && ((domactor == playerref) || (SubActor == playerref))
-		float time = 1.25
-		game.FadeOutGame(true, true, 0.0, time)
-		utility.Wait(time - 0.25)
-		game.FadeOutGame(false, true, 25.0, 25.0) ;total blackout
-	endif
+	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		Float Time = 1.25
+		Game.FadeOutGame(True, True, 0.0, Time)
+		Utility.Wait(Time - 0.25)
+		Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
+	EndIf
 
-	if enableImprovedCamSupport
-			game.DisablePlayerControls(abcamswitch = true, abMenu = false, abFighting = false, abActivate = false, abMovement = false, aiDisablePOVType = 0)
-	endif
-	int oldtimescale = 0
-	if customTimescale >= 1
-		oldtimescale = getTimeScale()
-		setTimeScale(customTimescale)
-		console("Using custom timescale: " + customTimescale)
-	endif
-	
-	 
+	If (EnableImprovedCamSupport)
+		Game.DisablePlayerControls(abCamswitch = True, abMenu = False, abFighting = False, abActivate = False, abMovement = False, aiDisablePOVType = 0)
+	EndIf
 
-	isFlipped = false
-	currentSpeed = 0
+	Int OldTimescale = 0
+	If (CustomTimescale >= 1)
+		OldTimescale = GetTimeScale()
+		SetTimeScale(CustomTimescale)
+		Console("Using custom Timescale: " + CustomTimescale)
+	EndIf
+
+	IsFlipped = False
+	CurrentSpeed = 0
 	DomExcitement = 0.0
 	SubExcitement = 0.0
-	endedProper = false
-	spankCount = 0
-	subTimesOrgasm = 0
-	domTimesOrgasm = 0
-	mostRecentOrgasmedActor = none
-	spankMax = Utility.RandomInt(1, 6)
-	isFreeCamming = false
-	if !UseAIControl
-		aiRunning = false
+	EndedProper = False
+	SpankCount = 0
+	SubTimesOrgasm = 0
+	DomTimesOrgasm = 0
+	MostRecentOrgasmedActor = None
+	SpankMax = Utility.RandomInt(1, 6)
+	IsFreeCamming = False
+
+	If (!UseAIControl)
+		AIRunning = False
 	Else
-		aiRunning = true
-	endif
+		AIRunning = True
+	EndIf
 
 	Actor[] actro
-	if thirdActor
-		actro  = New Actor[3]
-		actro[2] = thirdActor
-	else 
-		actro  = New Actor[2]
-	endif
-	RegisterForModEvent("0SSO"+_oGlobal.GetFormID_s(domactor.GetActorBase())+"_Sound", "OnSoundDom")
-	RegisterForModEvent("0SSO"+_oGlobal.GetFormID_s(subactor.GetActorBase())+"_Sound", "OnSoundSub")
-
-
-	if thirdActor
-		RegisterForModEvent("0SSO"+_oGlobal.GetFormID_s(thirdActor.GetActorBase())+"_Sound", "OnSoundThird")
-	endif
-	
-	actro[0] = domActor
-	actro[1] = subActor
-	
-	if !usingBed && useBed
-		currentbed = FindBed(domactor, Radius = 1000.0)
-		if currentBed
-			usingBed = true
-		endif
-	endif
-	float domX 
-	float domY
-	float domZ
-	float subX
-	float subY
-	float subZ
-
-	if usingBed
-		domX = DomActor.X
-		domY = DomActor.Y
-		domZ = DomActor.Z
-
-		subX = SubActor.X
-		subY = SubActor.Y
-		subZ = SubActor.Z
+	If (ThirdActor)
+		Actro  = New Actor[3]
+		Actro[2] = ThirdActor
+	Else
+		Actro  = New Actor[2]
 	EndIf
 
-	if usingBed
-		allignActorsWithCurrentBed()
-		if startingAnimation == ""
-			startingAnimation = "0MF|KNy6!KNy6|Ho|KnLap"
-		endif
-	endif
+	RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_Sound", "OnSoundDom")
+	RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_Sound", "OnSoundSub")
 
-	if startingAnimation == ""
-		startingAnimation = "AUTO"
-	endif
-    currScene = osa.makeStage()
-    osa.setActorsStim(currScene, actro)
-    osa.setModule(currScene, "0Sex", startingAnimation, "")
+	If (ThirdActor)
+		RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound", "OnSoundThird")
+	EndIf
 
-    osa.stimstart(currScene)
+	Actro[0] = DomActor
+	Actro[1] = SubActor
 
-    currentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
-    lastHubOID = -1 
+	If (!UsingBed && UseBed)
+		Currentbed = FindBed(DomActor, Radius = 1000.0)
+		If (CurrentBed)
+			UsingBed = True
+		EndIf
+	EndIf
+
+	Float DomX
+	Float DomY
+	Float DomZ
+	Float SubX
+	Float SubY
+	Float SubZ
+
+	If (UsingBed)
+		DomX = DomActor.X
+		DomY = DomActor.Y
+		DomZ = DomActor.Z
+
+		SubX = SubActor.X
+		SubY = SubActor.Y
+		SubZ = SubActor.Z
+
+		AllignActorsWithCurrentBed()
+		If (StartingAnimation == "")
+			StartingAnimation = "0MF|KNy6!KNy6|Ho|KnLap"
+		EndIf
+	EndIf
+
+	If (StartingAnimation == "")
+		StartingAnimation = "AUTO"
+	EndIf
+
+    CurrScene = OSA.MakeStage()
+    OSA.SetActorsStim(currScene, Actro)
+    OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
+    OSA.StimStart(CurrScene)
+
+    CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
+    LastHubOID = -1
     OnAnimationChange()
 
-    
-    if (lowLightLevelLightsOnly && DomActor.GetLightLevel() < 20) || (!lowLightLevelLightsOnly)
-    	if domLightPos > 0
-    		lightActor(domactor, domLightPos, domLightBrightness)
+    If (LowLightLevelLightsOnly && DomActor.GetLightLevel() < 20) || (!LowLightLevelLightsOnly)
+    	If (DomLightPos > 0)
+    		lightActor(DomActor, DomLightPos, DomLightBrightness)
    		EndIf
-    	if subLightPos > 0
-    		lightActor(subactor, subLightPos, subLightBrightness)
-   		endif
-    endif
+    	If (SubLightPos > 0)
+    		lightActor(SubActor, SubLightPos, SubLightBrightness)
+   		EndIf
+    EndIf
 
-    if enableDomBar
-    	setBarPercent(dombar, 0.0)
-    	setBarVisible(dombar, true)
-	endif
-	if enableSubBar
-		setBarPercent(subbar, 0.0)
-    	setBarVisible(subbar, true)
-	endif
+    If (EnableDomBar)
+    	SetBarPercent(DomBar, 0.0)
+    	SetBarVisible(DomBar, True)
+	EndIf
 
-	int password = DomActor.GetFactionRank(OsaFactionStage)
-	RegisterForModEvent("0SAO"+Password+"_AnimateStage", "OnAnimate")
+	If (EnableSubBar)
+		SetBarPercent(SubBar, 0.0)
+    	SetBarVisible(SubBar, True)
+	EndIf
 
-	
+	Int Password = DomActor.GetFactionRank(OsaFactionStage)
+	RegisterForModEvent("0SAO" + Password + "_AnimateStage", "OnAnimate")
 
-	if getActorArousal(DomActor) > 90
+	If (GetActorArousal(DomActor) > 90)
 		DomExcitement = 26.0
 	EndIf
-	if getActorArousal(SubActor) > 90
+
+	If (GetActorArousal(SubActor) > 90)
 		SubExcitement = 26.0
 	EndIf
 
-	if alwaysUndressAtAnimStart
-		undressDom = True
-		undressSub = true
-	endif
-
-	if alwaysAnimateUndress
-		animateUndress = True
-	endif
-
-	if useFreeCam
-		toggleFreeCam(true)
-	endif
-
-
-	domArmor = domactor.GetWornForm(0x00000004)
-	domHelm = domactor.GetWornForm(0x00000002)
-	domGlove = domactor.GetWornForm(0x00000080)
-	domBoot = domactor.GetWornForm(0x00000008)
-	domWep = domactor.GetEquippedObject(1)
-
-	subArmor = subactor.GetWornForm(0x00000004)
-	subHelm = subactor.GetWornForm(0x00000002)
-	subGlove = subactor.GetWornForm(0x00000080)
-	subBoot = subactor.GetWornForm(0x00000008)
-	subWep = subactor.GetEquippedObject(1)
-	if undressDom
-		if animateUndress
-			if onlyUndressChest 
-				animateUndressActor(domactor, "cuirass")
-			Else ; cuirass,boots,weapon,helmet,gloves. 
-			;	animateUndressActor(domactor, "helmet")
-			;	animateUndressActor(domactor, "gloves")
-			;	animateUndressActor(domactor, "weapon")
-				;animateUndressActor(domactor, "boots")
-				
-				animateUndressActor(domactor, "cuirass")
-				undressActor(domActor, domhelm)
-				undressActor(domActor, domboot)
-				undressActor(domActor, domGlove)
-				domactor.UnequipItem(domwep, abPreventEquip = false, abSilent = true)
-			endif
-			
-		Else
-			if onlyUndressChest
-				undressActor(domActor, domArmor)
-			else
-				undressActor(domActor, domhelm)
-				undressActor(domActor, domboot)
-				undressActor(domActor, domGlove)
-				undressActor(domActor, domArmor)
-				domactor.UnequipItem(domwep, abPreventEquip = false, abSilent = true)
-			endif
-		endif
+	If (AlwaysUndressAtAnimStart)
+		UndressDom = True
+		UndressSub = True
 	EndIf
 
-	if undressSub
-		if animateUndress
-			if onlyUndressChest 
-				animateUndressActor(subactor, "cuirass")
-			Else
-			;	animateUndressActor(subactor, "helmet")
-				;animateUndressActor(subactor, "gloves")
-				;animateUndressActor(subactor, "weapon")
-				;animateUndressActor(subactor, "boots")
-				
-				animateUndressActor(subactor, "cuirass")
-				undressActor(subActor, subhelm)
-				undressActor(subActor, subboot)
-				undressActor(subActor, subGlove)
-				subactor.UnequipItem(subwep, abPreventEquip = false, abSilent = true)
-			endif
-			
+	If (AlwaysAnimateUndress)
+		AnimateUndress = True
+	EndIf
+
+	If (UseFreeCam)
+		ToggleFreeCam(True)
+	EndIf
+
+	DomArmor = DomActor.GetWornForm(0x00000004)
+	DomHelm = DomActor.GetWornForm(0x00000002)
+	DomGlove = DomActor.GetWornForm(0x00000080)
+	DomBoot = DomActor.GetWornForm(0x00000008)
+	DomWep = DomActor.GetEquippedObject(1)
+
+	SubArmor = SubActor.GetWornForm(0x00000004)
+	SubHelm = SubActor.GetWornForm(0x00000002)
+	SubGlove = SubActor.GetWornForm(0x00000080)
+	SubBoot = SubActor.GetWornForm(0x00000008)
+	SubWep = SubActor.GetEquippedObject(1)
+
+	If (UndressDom)
+		If (AnimateUndress)
+			If (OnlyUndressChest)
+				AnimateUndressActor(DomActor, "cuirass")
+			Else ; cuirass,boots,weapon,helmet,gloves.
+				;/
+				AnimateUndressActor(DomActor, "helmet")
+				AnimateUndressActor(DomActor, "gloves")
+				AnimateUndressActor(DomActor, "weapon")
+				AnimateUndressActor(DomActor, "boots")
+				/;
+				AnimateUndressActor(DomActor, "cuirass")
+				UndressActor(DomActor, DomHelm)
+				UndressActor(DomActor, DomBoot)
+				UndressActor(DomActor, DomGlove)
+				DomActor.UnequipItem(DomWep, abPreventEquip = False, abSilent = True)
+			EndIf
 		Else
-			if onlyUndressChest
-				undressActor(subActor, subArmor)
+			If (OnlyUndressChest)
+				UndressActor(DomActor, DomArmor)
 			Else
-				undressActor(subActor, subhelm)
-				undressActor(subActor, subboot)
-				undressActor(subActor, subGlove)
-				undressActor(subActor, subArmor)
-				subactor.UnequipItem(subwep, abPreventEquip = false, abSilent = true)
-			endif
-		endif
-	endif
+				UndressActor(DomActor, DomHelm)
+				UndressActor(DomActor, DomBoot)
+				UndressActor(DomActor, DomGlove)
+				UndressActor(DomActor, DomArmor)
+				DomActor.UnequipItem(DomWep, abPreventEquip = False, abSilent = True)
+			EndIf
+		EndIf
+	EndIf
 
+	If (UndressSub)
+		If (AnimateUndress)
+			If (OnlyUndressChest)
+				AnimateUndressActor(SubActor, "cuirass")
+			Else
+			;	animateUndressActor(SubActor, "helmet")
+				;animateUndressActor(SubActor, "gloves")
+				;animateUndressActor(SubActor, "weapon")
+				;animateUndressActor(SubActor, "boots")
 
-	startTime = utility.getcurrentrealtime()
-	
-	bool waitForActorsTouch = (SubActor.GetDistance(domactor) > 1)
-	int waitCycles = 0
-	while waitForActorsTouch 
+				AnimateUndressActor(SubActor, "cuirass")
+				UndressActor(SubActor, SubHelm)
+				UndressActor(SubActor, SubBoot)
+				UndressActor(SubActor, SubGlove)
+				SubActor.UnequipItem(subwep, abPreventEquip = False, abSilent = True)
+			EndIf
+
+		Else
+			If (OnlyUndressChest)
+				UndressActor(SubActor, SubArmor)
+			Else
+				UndressActor(SubActor, SubHelm)
+				UndressActor(SubActor, SubBoot)
+				UndressActor(SubActor, SubGlove)
+				UndressActor(SubActor, SubArmor)
+				SubActor.UnequipItem(SubWep, abPreventEquip = False, abSilent = True)
+			EndIf
+		EndIf
+	EndIf
+
+	StartTime = Utility.GetCurrentRealTime()
+
+	Bool WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1)
+	Int WaitCycles = 0
+	While (WaitForActorsTouch)
 		Utility.Wait(0.1)
-		waitCycles += 1
-		waitForActorsTouch = (SubActor.GetDistance(domactor) > 1)
+		WaitCycles += 1
+		WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1)
 
-		if waitCycles > 50
-			waitForActorsTouch = false
-		endif
+		If (WaitCycles > 50)
+			WaitForActorsTouch = False
+		EndIf
 	EndWhile
-	
-	float loopTimeTotal = 0
-	float loopStartTime
+
+	Float LoopTimeTotal = 0
+	Float LoopStartTime
 	SendModEvent("ostim_start")
 
-	if !aiRunning
-
-		if (DomActor != playerref) && (SubActor != playerref) && (thirdActor != playerref) && useAINPConNPC
-			console("NPC on NPC scene detected. Starting AI")
-			AI.startAI()
-			aiRunning = true
-		elseif (aggressiveActor == playerref) && useAIPlayerAggressor
-			console("Player aggressor. Starting AI")
-			AI.startAI()
-			aiRunning = true
-		elseif (aggressiveActor == getSexPartner(playerref)) && useAIPlayerAggressed
-			console("Player aggressed. Starting AI")
-			AI.startAI()
-			aiRunning = true
-		elseif useAINonAggressive
-			console("Non-aggressive scene. Starting AI")
-			AI.startAI()
-			aiRunning = true
-		endif
-	endif
-
-	if useFades && ((domactor == playerref) || (SubActor == playerref))
-		game.FadeOutGame(false, true, 0.0, 4) ;welcome back
+	If (!AIRunning)
+		If ((DomActor != PlayerRef) && (SubActor != PlayerRef) && (ThirdActor != PlayerRef) && UseAINPConNPC)
+			Console("NPC on NPC scene detected. Starting AI")
+			AI.StartAI()
+			AIRunning = True
+		ElseIf ((AggressiveActor == PlayerRef) && UseAIPlayerAggressor)
+			Console("Player aggressor. Starting AI")
+			AI.StartAI()
+			AIRunning = True
+		ElseIf ((AggressiveActor == getSexPartner(PlayerRef)) && UseAIPlayerAggressed)
+			Console("Player aggressed. Starting AI")
+			AI.StartAI()
+			AIRunning = True
+		ElseIf (UseAINonAggressive)
+			Console("Non-aggressive scene. Starting AI")
+			AI.StartAI()
+			AIRunning = True
+		EndIf
 	EndIf
 
-	while isActorActive(domactor)
-		if loopTimeTotal > 1
-			;console("Loop took: " + loopTimeTotal + " seconds")
-			loopTimeTotal = 0
-		endif
-		Utility.wait(1.0 - loopTimeTotal)
-		loopStartTime = utility.getcurrentrealtime()
+	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		Game.FadeOutGame(False, True, 0.0, 4) ;welcome back
+	EndIf
 
-    	if autoUndressIfNeeded
+	While (IsActorActive(DomActor))
+		If (LoopTimeTotal > 1)
+			;Console("Loop took: " + loopTimeTotal + " seconds")
+			LoopTimeTotal = 0
+		EndIf
+
+		Utility.Wait(1.0 - LoopTimeTotal)
+		LoopStartTime = Utility.GetCurrentRealTime()
+
+    	If (AutoUndressIfNeeded)
     		UndressIfNeeded()
-    	endif
-
-    	if misallignmentProtection && isActorActive(domactor)
-    		if SubActor.GetDistance(domactor) > 1
-    			console("Misallignment detected")
-    			SubActor.MoveTo(domactor)
-    			
-    			;warpToAnimation(ODatabase.getSceneIDByAnimID(currentAnimation))
-    			;warpToAnimation("0MF|Cy6!DOy6|Ho|DoggyLi")
-    			reallign()
-
-    			utility.wait(0.1)
-    			while (SubActor.GetDistance(domactor) > 1) && isActorActive(domactor)
-    				Utility.Wait(0.5)
-    				console("Still misalligned... " + SubActor.GetDistance(domactor))
-    				reallign()
-    			EndWhile
-    			console("Realligned")
-    		endif
-    	endif
-
-    	if autoHideBars && (getTimeSinceLastPlayerInteraction() > 15.0) ;fade out if needed
-    		if isBarVisible(dombar)
-    			setBarVisible(dombar, false)
-    		endif
-    		if isBarVisible(subbar)
-    			setBarVisible(subbar, false)
-    		endif
-    	endif
-    	
-    	if enableActorSpeedControl && !animationIsAtMaxSpeed()
-    		autoIncreaseSpeed()
     	EndIf
 
-		DomExcitement += getCurrentStimulation(DomActor)
-		SubExcitement += getCurrentStimulation(SubActor)
+    	If (MisallignmentProtection && IsActorActive(DomActor))
+    		If (SubActor.GetDistance(DomActor) > 1)
+    			Console("Misallignment detected")
+    			SubActor.MoveTo(DomActor)
 
-		setbarpercent(dombar, DomExcitement)
-		setbarpercent(subbar, SubExcitement)
+    			;WarpToAnimation(ODatabase.GetSceneIDByAnimID(CurrentAnimation))
+    			;WarpToAnimation("0MF|Cy6!DOy6|Ho|DoggyLi")
+    			Reallign()
 
-		if SubExcitement >= 100.0
-			mostRecentOrgasmedActor = SubActor
-			subTimesOrgasm += 1
-			orgasm(SubActor)
-			if getCurrentAnimationClass() == ClassSex
+    			Utility.Wait(0.1)
+    			While ((SubActor.GetDistance(DomActor) > 1) && IsActorActive(DomActor))
+    				Utility.Wait(0.5)
+    				Console("Still misalligned... " + SubActor.GetDistance(DomActor))
+    				Reallign()
+    			EndWhile
+    			Console("Realligned")
+    		EndIf
+    	EndIf
+
+    	If (AutoHideBars && (GetTimeSinceLastPlayerInteraction() > 15.0)) ; fade out if needed
+    		If (IsBarVisible(DomBar))
+    			SetBarVisible(DomBar, False)
+    		EndIf
+    		If (IsBarVisible(SubBar))
+    			SetBarVisible(SubBar, False)
+    		EndIf
+    	EndIf
+
+    	If (EnableActorSpeedControl && !AnimationIsAtMaxSpeed())
+    		AutoIncreaseSpeed()
+    	EndIf
+
+		DomExcitement += GetCurrentStimulation(DomActor)
+		SubExcitement += GetCurrentStimulation(SubActor)
+		SetBarPercent(DomBar, DomExcitement)
+		SetBarPercent(SubBar, SubExcitement)
+
+		If (SubExcitement >= 100.0)
+			MostRecentOrgasmedActor = SubActor
+			SubTimesOrgasm += 1
+			Orgasm(SubActor)
+			If (GetCurrentAnimationClass() == ClassSex)
 				DomExcitement += 5
 			EndIf
-		endif
+		EndIf
 
-		if DomExcitement >= 100.0
-			mostRecentOrgasmedActor = DomActor
-			domTimesOrgasm += 1
-			orgasm(DomActor)
-			if endOnDomOrgasm
+		If (DomExcitement >= 100.0)
+			MostRecentOrgasmedActor = DomActor
+			DomTimesOrgasm += 1
+			Orgasm(DomActor)
+			If (EndOnDomOrgasm)
 				Utility.Wait(4)
-				endAnimation()
-			endif
-		endif
+				EndAnimation()
+			EndIf
+		EndIf
 
-		;console("Dom excitement: " + DomExcitement)
-		;console("Sub excitement: " + SubExcitement)
-		loopTimeTotal = utility.getcurrentrealtime() - loopStartTime
+		;Console("Dom excitement: " + DomExcitement)
+		;Console("Sub excitement: " + SubExcitement)
+		LoopTimeTotal = Utility.GetCurrentRealTime() - LoopStartTime
 	EndWhile
 
-
-	console("Ending scene")
-
-	
-
+	Console("Ending scene")
 
 	SendModEvent("ostim_end")
-	if enableImprovedCamSupport
-		game.EnablePlayerControls(abcamswitch = true)
-	endif
-	ODatabase.unload() 
-	if fixFlippedAnimations
-		SubActor.SetDontMove(false)
-		DomActor.SetDontMove(false)
-	endif
-	if isFreeCamming
-		toggleFreeCam(false)
-	endif
-	if forceFirstPersonAfter && ((domactor == playerref) || (SubActor == playerref))
-		game.ForceFirstPerson()
-	endif
+	If (EnableImprovedCamSupport)
+		Game.EnablePlayerControls(abCamSwitch = True)
+	EndIf
+
+	ODatabase.Unload()
+
+	If (FixFlippedAnimations)
+		SubActor.SetDontMove(False)
+		DomActor.SetDontMove(False)
+	EndIf
+
+	If (IsFreeCamming)
+		ToggleFreeCam(False)
+	EndIf
+
+	If (ForceFirstPersonAfter && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		Game.ForceFirstPerson()
+	EndIf
+
 	Utility.Wait(0.5)
 
-	redress()
-	
-	setBarVisible(dombar, false)
-	setBarPercent(dombar, 0.0)
-	setBarVisible(subbar, false)
-	setBarPercent(subbar, 0.0)
+	Redress()
 
-	
-	
+	SetBarVisible(DomBar, False)
+	SetBarPercent(DomBar, 0.0)
+	SetBarVisible(SubBar, False)
+	SetBarPercent(SubBar, 0.0)
 
-	if usingBed
-		
-		if getInBedAfterBedScene && ((domactor == playerref) || (SubActor == playerref))  && endedProper && !IsSceneAggressiveThemed()
-			actor other = getSexPartner(playerref)
-			other.TranslateTo(subx, suby, subz, subactor.getangleX(), subactor.getangleY(), subactor.getangleZ(), 1000)
+	If (UsingBed)
+		If (GetInBedAfterBedScene && ((DomActor == PlayerRef) || (SubActor == PlayerRef))  && EndedProper && !IsSceneAggressiveThemed())
+			Actor Other = GetSexPartner(PlayerRef)
+			Other.TranslateTo(SubX, SubY, SubZ, SubActor.GetAngleX(), SubActor.GetAngleY(), SubActor.GetAngleZ(), 1000)
 			Utility.Wait(0.5)
-			sleepInBed(currentbed, playerref) ;todo
-		ElseIf  !isBedRoll(currentbed) ;return back to position
-			subactor.TranslateTo(subx, suby, subz, subactor.getangleX(), subactor.getangleY(), subactor.getangleZ(), 10000)
-			domactor.TranslateTo(domx, domy, domz, domactor.getangleX(), domactor.getangleY(), domactor.getangleZ(), 10000)
+			SleepInBed(Currentbed, PlayerRef) ; todo
+		ElseIf (!IsBedRoll(Currentbed)) ; return back to position
+			SubActor.TranslateTo(SubX, SubY, SubZ, SubActor.GetAngleX(), SubActor.GetAngleY(), SubActor.GetAngleZ(), 10000)
+			DomActor.TranslateTo(DomX, DomY, DomZ, DomActor.GetAngleX(), DomActor.GetAngleY(), DomActor.GetAngleZ(), 10000)
 			Utility.Wait(0.1)
-		endif
-	endif
-
-	if useFades && endedProper && ((domactor == playerref) || (SubActor == playerref))
-		game.FadeOutGame(false, true, 0.0, 2) ;welcome back
+		EndIf
 	EndIf
-	
-	UnRegisterForModEvent("0SAO"+Password+"_AnimateStage")
-	unRegisterForModEvent("0SSO"+_oGlobal.GetFormID_s(domactor.GetActorBase())+"_Sound")
-	unRegisterForModEvent("0SSO"+_oGlobal.GetFormID_s(subactor.GetActorBase())+"_Sound")
-	if thirdActor
-		unRegisterForModEvent("0SSO"+_oGlobal.GetFormID_s(thirdActor.GetActorBase())+"_Sound")
-	endif
-	if oldtimescale > 0
-		console("Resetting timescale to: " + oldtimescale)
-		setTimeScale(oldtimescale)
-	endif
 
-	console(utility.getcurrentrealtime() - starttime + " seconds passed")
-	sceneRunning = false
+	If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		Game.FadeOutGame(False, True, 0.0, 2) ; welcome back
+	EndIf
+
+	UnRegisterForModEvent("0SAO" + Password + "_AnimateStage")
+	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_Sound")
+	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_Sound")
+
+	If (ThirdActor)
+		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_Sound")
+	EndIf
+
+	If (OldTimescale > 0)
+		Console("Resetting Timescale to: " + OldTimescale)
+		SetTimeScale(OldTimescale)
+	EndIf
+
+	Console(Utility.GetCurrentRealTime() - StartTime + " seconds passed")
+	SceneRunning = False
 EndEvent
-
 
 
 ;
@@ -868,404 +868,384 @@ EndEvent
 ;			██║   ██║   ██║   ██║██║     ██║   ██║   ██║█████╗  ███████╗
 ;			██║   ██║   ██║   ██║██║     ██║   ██║   ██║██╔══╝  ╚════██║
 ;			╚██████╔╝   ██║   ██║███████╗██║   ██║   ██║███████╗███████║
-;			 ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝   ╚═╝╚══════╝╚══════╝                                                        
+;			 ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝   ╚═╝╚══════╝╚══════╝
 ;
-;				The main API functions
+; 				The main API functions
 
 
-bool function isActorActive(actor act)
-	return act.HasMagicEffect(actra)
+Bool Function IsActorActive(Actor Act)
+	Return Act.HasMagicEffect(Actra)
 EndFunction
 
-ODatabaseScript function getODatabase()
-	while odatabase == none
+ODatabaseScript Function GetODatabase()
+	While (!ODatabase)
 		Utility.Wait(0.5)
-	endwhile
-	return ODatabase
-endfunction
-
-int function getCurrentAnimationSpeed()
-	return currentSpeed
+	Endwhile
+	Return ODatabase
 EndFunction
 
-bool function animationIsAtMaxSpeed() 
-	return currentSpeed == getCurrentAnimationMaxSpeed() 
-endfunction
+Int Function GetCurrentAnimationSpeed()
+	Return CurrentSpeed
+EndFunction
 
-int function getCurrentAnimationMaxSpeed()
-	return ODatabase.getMaxSpeed(currentoid)
-endfunction
+Bool Function AnimationIsAtMaxSpeed()
+	Return CurrentSpeed == GetCurrentAnimationMaxSpeed()
+EndFunction
 
-int function getAPIVersion()
+Int Function GetCurrentAnimationMaxSpeed()
+	Return ODatabase.GetMaxSpeed(CurrentOID)
+EndFunction
+
+Int Function GetAPIVersion()
 	;6 adds better animation flipping, reallign(), soundAPI
 	;5 adds ODatabase, getCurrentLeadingActor
 	;4 added onanimationchange event and decrease speed
 	;3 introduces events and getmostrecentorgasmedactor
-	return 6
-endfunction
+	Return 6
+EndFunction
 
-function increaseAnimationSpeed()
-	if animSpeedAtMax
+Function IncreaseAnimationSpeed()
+	If (AnimSpeedAtMax)
 		Return
-	endif
-	setCurrentAnimationSpeed(currentSpeed + 1)
-endfunction
+	EndIf
+	SetCurrentAnimationSpeed(CurrentSpeed + 1)
+EndFunction
 
-function decreaseAnimationSpeed()
-	if currentSpeed < 1
+Function DecreaseAnimationSpeed()
+	If (CurrentSpeed < 1)
 		Return
-	endif
-	setCurrentAnimationSpeed(currentSpeed - 1)
-endfunction
+	EndIf
+	SetCurrentAnimationSpeed(CurrentSpeed - 1)
+EndFunction
 
-function setCurrentAnimationSpeed(int inspeed) ;untested
-	string speed = normalSpeedToOsexSpeed(inspeed)
-	runOsexCommand("$Speed,0," + speed)
+Function SetCurrentAnimationSpeed(Int InSpeed) ;untested
+	String Speed = NormalSpeedToOsexSpeed(InSpeed)
+	RunOsexCommand("$Speed,0," + Speed)
+
 	Utility.Wait(0.5)
-	
-	if getCurrentAnimation() == "undefined"
-		console("Speed increase broke game state")
-		runOsexCommand("$Speed,0,1") 
-	endif
+	If (GetCurrentAnimation() == "undefined")
+		Console("Speed increase broke game state")
+		RunOsexCommand("$Speed,0,1")
+	EndIf
 EndFunction
 
-string function getCurrentAnimation()
-	return currentAnimation
+String Function GetCurrentAnimation()
+	Return CurrentAnimation
 EndFunction
 
-string function getCurrentAnimationClass()
-	return currAnimClass
-endfunction
+String Function GetCurrentAnimationClass()
+	Return CurrAnimClass
+EndFunction
 
-int function getCurrentAnimationOID()
+Int Function GetCurrentAnimationOID()
 	; the OID is the JMap ID of the current animation. You can feed this in to ODatabase
-	return currentOID
-endfunction
+	Return CurrentOID
+EndFunction
 
-function lightActor(actor act, int pos, int brightness) ;pos 1 - ass, pos 2 - face | brightness - 0 = dim
-	string which
-	if pos == 0
+Function LightActor(Actor Act, Int Pos, Int Brightness) ; pos 1 - ass, pos 2 - face | brightness - 0 = dim
+	If (Pos == 0)
 		Return
-	endif
-	if pos == 1 ; ass
-		if brightness == 0
-			which = "AssDim"
-		Else
-			which = "AssBright"
-		endif
-	elseif pos == 2 ;face
-		if brightness == 0
-			which = "FaceDim"
-		Else
-			which = "FaceBright"
-		endif
-	endif
-	_oGlobal.ActorLight(act, which, osaomni.OLightSP, osaomni.OLightME)
-endfunction
-
-function travelToAnimationIfPossible(string animation) ;travel to animation is BUSTED beyond belief and even this doesn't fix it
-	int id = ODatabase.getAnimationsWithSceneID(odatabase.getDatabaseOArray(), animation)
-	id = ODatabase.getObjectOArray(id, 0)
-	bool transitory = ODatabase.isTransitoryAnimation(id)
-	if transitory
-		warptoanimation(animation)
-	Else
-		traveltoanimation(animation)
-
-		bool useCatch = True
-		if usecatch
-			string lastanimation
-			string lastlastanimation
-			string current = currentAnimation
-			while ODatabase.getSceneIDByAnimID(currentAnimation) != animation
-				Utility.Wait(1)
-
-				if current != currentAnimation
-					lastlastanimation = lastanimation
-					lastanimation = current
-					current = currentAnimation
-
-					if current == lastlastanimation
-						console("Infinite loop during travel detected. Warping")
-						warpToAnimation(animation)
-					endif
-				endif
-			EndWhile
-		endif
-	endif
-EndFunction
-
-function travelToAnimation(string animation) ;does not always work, use above
-	console("Attempting travel to: " + animation)
-	runOsexCommand("$Go," + animation)
-EndFunction
-
-function warpToAnimation(string animation) ; a list of animation ids can be found in osa's xmls. you cannot use the id from getcurrentanimation()
-	console("Warping to animation: " + animation)
-	runOsexCommand("$Warp," + animation)
-EndFunction
-
-function endAnimation(bool smoothEnding = true)
-	if useFades && smoothEnding && ((domactor == playerref) || (SubActor == playerref))
-		float time = 1
-		game.FadeOutGame(true, true, 0.0, time)
-		utility.Wait(time - 0.15)
-		game.FadeOutGame(false, true, 25.0, 25.0) ;total blackout
-	endif
-	endedProper = smoothEnding
-	console("Trying to end scene")
-	runOsexCommand("$endscene")
-	;OSA.oGlyphO(".ctr.END")
-EndFunction
-
-bool function getCurrentAnimIsAggressive() ;if the current animation is tagged aggressive
-	return currentAnimIsAggressive
-endfunction
-
-bool function IsSceneAggressiveThemed() ; if the entire situation should be themed aggressively 
-	return aggressiveThemedSexScene
-EndFunction
-
-actor function getAggressiveActor()
-	return aggressiveactor
-endfunction
-
-function undressAll(actor act) ; seems broke
-	int acto
-	if act == DomActor
-		acto = 0
-	else 
-		acto = 1
-	endif
-	runOsexCommand("$Equndressall," + acto)
-endfunction
-
-function redressAll(actor act) ; seems broke
-	int acto
-	if act == DomActor
-		acto = 0
-	else 
-		acto = 1
-	endif
-
-	runOsexCommand("$Eqredressall," + acto) ; seems broke
-endfunction
-
-function undressActor(actor char, form item)
-	char.UnequipItem(item, false, true)
-endfunction
-
-function animateUndressActor(actor char, string item); cuirass,boots,weapon,helmet,gloves. 
-	;some extra rare options: cape,intlow(i.e. panties),inthigh(i.e. bra),miscarms,misclow,miscmid,miscup,pants,stockings,
-	;options other than cuirass are unreliable right now
-
-	string target
-	if item == "helmet" ; 
-		if !char.GetWornForm(0x00000002) as armor
-			Return
-		endif
-	elseif item == "gloves"
-		if !char.GetWornForm(0x00000008) as armor
-			Return
-		endif
-	elseif item == "weapon"
-		if !char.GetEquippedObject(1) as form
-			Return
-		endif
-	elseif item == "boots"
-		if !char.GetWornForm(0x00000080) as armor
-			Return
-		endif
-	elseif item == "cuirass"
-		if !char.GetWornForm(0x00000004) as armor
-			Return
-		endif
-	endif
-
-	if char == SubActor
-		target = "01"
-	Else
-		target = "10"
-	endif
-	warpToAnimation("EMF|Sy6!Sy9|ApU|St9Dally+" + target + item) 
-
-	Utility.Wait(1)
-	while getCurrentAnimationClass() == ClassApartUndressing
-		Utility.wait(1)
-	endwhile
-endfunction
-
-int function getTimesOrgasm(actor act) ;number of times the actor has orgasmed 
-	if act == DomActor
-		return domTimesOrgasm
-	elseif act == SubActor
-		return subtimesorgasm
-	endif
-endfunction
-
-function waitForRemoveCuirass(actor char) ;remove the cuirass, and don't return until anim is done
-	if isNaked(char)
-		Return
-	endif
-	animateUndressActor(char, "cuirass")
-	while !isNaked(char)
-		Utility.wait(1)
-	endwhile
-	Utility.wait(4)
-endfunction
-
-bool function isNaked(actor npc) ;todo caching
-	return (!(npc.GetWornForm(0x00000004) as bool))
-endfunction
-
-actor function getSexPartner(actor char)
-	if char == SubActor
-		return DomActor
-	else
-		return subactor
-	endif
-EndFunction
-
-actor function getDomActor()
-	return DomActor
-endfunction
-
-actor function getSubActor()
-	return SubActor
-endfunction
-
-actor function getThirdActor()
-	return thirdActor
-endfunction
-
-int function getActorArousal(actor char)
-	int ret = 0
-	if ArousedFaction
-		ret = char.GetFactionRank(ArousedFaction)
-	else
-		ret = 50
 	EndIf
 
-	if ret < 0 ;not yet set
-		ret = 50
-	endif
-	return ret
+	String Which
+	If (Pos == 1) ; ass
+		If (Brightness == 0)
+			Which = "AssDim"
+		Else
+			Which = "AssBright"
+		EndIf
+	ElseIf (Pos == 2) ;face
+		If (Brightness == 0)
+			Which = "FaceDim"
+		Else
+			Which = "FaceBright"
+		EndIf
+	EndIf
+
+	_oGlobal.ActorLight(Act, Which, OSAOmni.OLightSP, OSAOmni.OLightME)
 EndFunction
 
-function setActorArousal(actor char, int level) ;wrong way to do this, may not work
-	if ArousedFaction
-		if level < 1
-			level = 1
-		endif
-		char.SetFactionRank(ArousedFaction, level)
-	endif
-EndFunction
-
-actor function getMostRecentOrgasmedActor()
-	return mostrecentorgasmedactor
-endfunction
-
-function runOsexCommand(string cmd)
-	string[] Plan = new string[2]
-	Plan[1] = cmd
-
-	osa.setPlan(currScene, Plan) 
-	osa.stimstart(currScene)
-EndFunction
-
-float function getTimeSinceLastPlayerInteraction()
-	return Utility.GetCurrentRealTime() - mostRecentOSexInteractionTime
-endfunction
-
-bool function usingBed()
-	return usingbed
-EndFunction
-
-ObjectReference function getBed()
-	return currentbed
-EndFunction
-
-bool function isFemale(actor act)
-	if sexlab
-		;if SexLab.GetGender(act) == 0
-		;	return False
-		;else 
-		;	return true
-		;endif 
-		return (act.getleveledactorbase().getsex() == 1)
+Function TravelToAnimationIfPossible(String Animation) ; travel to animation is BUSTED beyond belief and even this doesn't fix it
+	Int ID = ODatabase.GetAnimationsWithSceneID(ODatabase.GetDatabaseOArray(), Animation)
+	ID = ODatabase.GetObjectOArray(ID, 0)
+	Bool Transitory = ODatabase.IsTransitoryAnimation(ID)
+	If (Transitory)
+		WarpToAnimation(Animation)
 	Else
-		return (act.getleveledactorbase().getsex() == 1)
-	endif
+		TravelToAnimation(Animation)
+		If (True) ; Catch
+			String Lastanimation
+			String Lastlastanimation
+			String Current = CurrentAnimation
+			While (ODatabase.GetSceneIDByAnimID(CurrentAnimation) != Animation)
+				Utility.Wait(1)
+				If (Current != CurrentAnimation)
+					LastLastAnimation = Lastanimation
+					LastAnimation = Current
+					Current = CurrentAnimation
+
+					If (Current == LastLastAnimation)
+						Console("Infinite loop during travel detected. Warping")
+						WarpToAnimation(Animation)
+					EndIf
+				EndIf
+			EndWhile
+		EndIf
+	EndIf
 EndFunction
 
-bool function appearsFemale(actor act)
-	return (act.getleveledactorbase().getsex() == 1)
-endfunction
-
-actor function getCurrentLeadingActor()
-	;in a blowjob type animation, it would be the female, while in most sex animations, it will be the male
-	int actornum = ODatabase.getMainActor(currentoid)
-
-	if actornum == 0
-		return DomActor
-	else
-		return subactor
-	endif
-endfunction
-
-bool function animationRunning()
-	return sceneRunning
-endfunction
-
-bool function isVaginal()
-	return (getCurrentAnimationClass() == ClassSex)
-endfunction
-
-String[] function getScene() ; this is not the sceneID, this is an internal osex thing
-	return currScene
+Function TravelToAnimation(String Animation) ; does not always work, use above
+	Console("Attempting travel to: " + Animation)
+	RunOsexCommand("$Go," + Animation)
 EndFunction
 
-function reallign()
-	sendmodevent("0SAA"+_oGlobal.GetFormID_s(domactor.GetActorBase())+"_AlignStage") ;unknown if this works on bandits
-	sendmodevent("0SAA"+_oGlobal.GetFormID_s(subactor.GetActorBase())+"_AlignStage")
-	if thirdActor
-		sendmodevent("0SAA"+_oGlobal.GetFormID_s(thirdActor.GetActorBase())+"_AlignStage")
-	endif
-endfunction
-
-function UndressIfNeeded()
-	bool domnaked = isNaked(DomActor)
-	bool subnaked = isNaked(SubActor)
-
-	string cclass = getCurrentAnimationClass()
-	if !domnaked
-		if (cclass == ClassSex) || (cclass == ClassMasturbate) || (cclass == ClassHeadHeldMasturbate) || (cclass == ClassPenisjob) || (cclass == ClassHeadHeldPenisjob) || (cclass == ClassHandjob) || (cclass == ClassApartHandjob) || (cclass == ClassDualHandjob) || (cclass == ClassSelfSuck)
-			undressActor(DomActor, domactor.GetWornForm(0x00000004))
-		endif
-	elseif !subnaked
-		if (cclass == ClassSex) || (cclass == ClassCunn) || (cclass == ClassClitRub) || (cclass == ClassOneFingerPen) || (cclass == ClassTwoFingerPen)
-			undressActor(subactor, subactor.GetWornForm(0x00000004))
-		endif
-	endif
-
+Function WarpToAnimation(String Animation) ; a list of animation ids can be found in osa's xmls. you cannot use the id from getcurrentanimation()
+	Console("Warping to animation: " + Animation)
+	RunOsexCommand("$Warp," + Animation)
 EndFunction
 
-function toggleFreeCam(bool on = true)
+Function EndAnimation(Bool SmoothEnding = True)
+	If (UseFades && SmoothEnding && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		Float Time = 1
+		Game.FadeOutGame(True, True, 0.0, Time)
+		Utility.Wait(Time - 0.15)
+		Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
+	EndIf
+	EndedProper = SmoothEnding
+	Console("Trying to end scene")
+	RunOsexCommand("$endscene")
+	;OSA.OGlyphO(".ctr.END")
+EndFunction
+
+Bool Function GetCurrentAnimIsAggressive() ; if the current animation is tagged aggressive
+	Return CurrentAnimIsAggressive
+EndFunction
+
+Bool Function IsSceneAggressiveThemed() ; if the entire situation should be themed aggressively
+	Return AggressiveThemedSexScene
+EndFunction
+
+Actor Function GetAggressiveActor()
+	Return AggressiveActor
+EndFunction
+
+Function UndressAll(Actor Act) ; seems broke
+	Int Acto = 0
+	If (Act == SubActor)
+		Acto = 1
+	EndIf
+	RunOsexCommand("$Equndressall," + Acto)
+EndFunction
+
+Function RedressAll(Actor Act) ; seems broke
+	Int Acto = 0
+	If (Act == SubActor)
+		Acto = 1
+	EndIf
+	RunOsexCommand("$Eqredressall," + acto) ; seems broke
+EndFunction
+
+Function UndressActor(Actor Char, Form Item)
+	Char.UnequipItem(Item, False, True)
+EndFunction
+
+Function AnimateUndressActor(Actor Char, String Item); cuirass,boots,weapon,helmet,gloves.
+	; some extra rare options: cape,intlow(i.e. panties),inthigh(i.e. bra),miscarms,misclow,miscmid,miscup,pants,stockings,
+	; options other than cuirass are unreliable right now
+
+	If (Item == "helmet")
+		If !Char.GetWornForm(0x00000002) as Armor
+			Return
+		EndIf
+	ElseIf (Item == "gloves")
+		If (!Char.GetWornForm(0x00000008) as Armor)
+			Return
+		EndIf
+	ElseIf (Item == "weapon")
+		If (!Char.GetEquippedObject(1) as Form)
+			Return
+		EndIf
+	ElseIf (Item == "boots")
+		If (!Char.GetWornForm(0x00000080) as Armor)
+			Return
+		EndIf
+	ElseIf (Item == "cuirass")
+		If (!Char.GetWornForm(0x00000004) as Armor)
+			Return
+		EndIf
+	EndIf
+
+	String Target = "10"
+	If (Char == SubActor)
+		Target = "01"
+	EndIf
+
+	WarpToAnimation("EMF|Sy6!Sy9|ApU|St9Dally+" + Target + Item)
+
+	Utility.Wait(1)
+	While (GetCurrentAnimationClass() == ClassApartUndressing)
+		Utility.Wait(1)
+	Endwhile
+EndFunction
+
+Int Function GetTimesOrgasm(Actor Act) ; number of times the Actor has orgasmed
+	If (Act == DomActor)
+		Return DomTimesOrgasm
+	ElseIf (Act == SubActor)
+		Return SubTimesOrgasm
+	EndIf
+EndFunction
+
+Function WaitForRemoveCuirass(Actor Char) ; remove the cuirass, and don't return until anim is done
+	If (IsNaked(Char))
+		Return
+	EndIf
+	AnimateUndressActor(Char, "cuirass")
+	While (!IsNaked(Char))
+		Utility.Wait(1)
+	Endwhile
+	Utility.wait(4)
+EndFunction
+
+Bool Function IsNaked(Actor NPC) ; todo caching
+	Return (!(NPC.GetWornForm(0x00000004) as Bool))
+EndFunction
+
+Actor Function GetSexPartner(Actor Char)
+	If (Char == SubActor)
+		Return DomActor
+	EndIf
+	Return SubActor
+EndFunction
+
+Actor Function GetDomActor()
+	Return DomActor
+EndFunction
+
+Actor Function GetSubActor()
+	Return SubActor
+EndFunction
+
+Actor Function GetThirdActor()
+	Return ThirdActor
+EndFunction
+
+Int Function GetActorArousal(Actor Char)
+	Int Ret = 50
+	If (ArousedFaction)
+		Ret = Char.GetFactionRank(ArousedFaction)
+	EndIf
+
+	If (Ret < 0) ; not yet set
+		Ret = 50
+	EndIf
+	Return Ret
+EndFunction
+
+Function SetActorArousal(Actor Char, Int Level) ; wrong way to do this, may not work
+	If (ArousedFaction)
+		If (Level < 1)
+			Level = 1
+		EndIf
+		Char.SetFactionRank(ArousedFaction, Level)
+	EndIf
+EndFunction
+
+Actor Function GetMostRecentOrgasmedActor()
+	Return MostRecentOrgasmedActor
+EndFunction
+
+Function RunOsexCommand(String CMD)
+	String[] Plan = new String[2]
+	Plan[1] = CMD
+
+	OSA.SetPlan(CurrScene, Plan)
+	OSA.StimStart(CurrScene)
+EndFunction
+
+Float Function GetTimeSinceLastPlayerInteraction()
+	Return Utility.GetCurrentRealTime() - MostRecentOSexInteractionTime
+EndFunction
+
+Bool Function UsingBed()
+	Return Usingbed
+EndFunction
+
+ObjectReference Function GetBed()
+	Return Currentbed
+EndFunction
+
+Bool Function IsFemale(Actor Act)
+	If (Sexlab)
+		;If (SexLab.GetGender(Act) == 0)
+		;	Return False
+		;Else
+		;	Return True
+		;EndIf
+	EndIf
+	Return (Act.GetLeveledActorBase().GetSex() == 1)
+EndFunction
+
+Bool Function AppearsFemale(Actor Act)
+	Return (Act.GetLeveledActorBase().GetSex() == 1)
+EndFunction
+
+Actor Function GetCurrentLeadingActor()
+	; in a blowjob type animation, it would be the female, while in most sex animations, it will be the male
+	Int ActorNum = ODatabase.GetMainActor(CurrentOID)
+	If (ActorNum == 0)
+		Return DomActor
+	EndIf
+	Return SubActor
+EndFunction
+
+Bool Function AnimationRunning()
+	Return SceneRunning
+EndFunction
+
+Bool Function IsVaginal()
+	Return (GetCurrentAnimationClass() == ClassSex)
+EndFunction
+
+String[] Function GetScene() ; this is not the sceneID, this is an internal osex thing
+	Return CurrScene
+EndFunction
+
+Function Reallign()
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage") ; unknown if this works on bandits
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AlignStage")
+	If (ThirdActor)
+		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_AlignStage")
+	EndIf
+EndFunction
+
+Function UndressIfNeeded()
+	Bool DomNaked = IsNaked(DomActor)
+	Bool SubNaked = IsNaked(SubActor)
+	String CClass = GetCurrentAnimationClass()
+	If (!DomNaked)
+		If (CClass == ClassSex) || (CClass == ClassMasturbate) || (CClass == ClassHeadHeldMasturbate) || (CClass == ClassPenisjob) || (CClass == ClassHeadHeldPenisjob) || (CClass == ClassHandjob) || (CClass == ClassApartHandjob) || (CClass == ClassDualHandjob) || (CClass == ClassSelfSuck)
+			UndressActor(DomActor, DomActor.GetWornForm(0x00000004))
+		EndIf
+	ElseIf (!SubNaked)
+		If (CClass == ClassSex) || (CClass == ClassCunn) || (CClass == ClassClitRub) || (CClass == ClassOneFingerPen) || (CClass == ClassTwoFingerPen)
+			UndressActor(SubActor, SubActor.GetWornForm(0x00000004))
+		EndIf
+	EndIf
+EndFunction
+
+Function ToggleFreeCam(Bool On = True)
 	ConsoleUtil.ExecuteCommand("tfc")
-	
-
-	if !isFreeCamming
-		ConsoleUtil.ExecuteCommand("sucsm " + freecamSpeed)
-		ConsoleUtil.ExecuteCommand("fov " + freecamFOV)
+	If (!IsFreeCamming)
+		ConsoleUtil.ExecuteCommand("sucsm " + FreecamSpeed)
+		ConsoleUtil.ExecuteCommand("fov " + FreecamFOV)
 	Else
-		ConsoleUtil.ExecuteCommand("fov " + defaultFOV)
-	endif
-		
+		ConsoleUtil.ExecuteCommand("fov " + DefaultFOV)
+	EndIf
+	IsFreeCamming = !IsFreeCamming
+EndFunction
 
-	isFreeCamming = !isFreeCamming
-endfunction
 
-;
 ;
 ;			██████╗ ███████╗██████╗ ███████╗
 ;			██╔══██╗██╔════╝██╔══██╗██╔════╝
@@ -1273,275 +1253,260 @@ endfunction
 ;			██╔══██╗██╔══╝  ██║  ██║╚════██║
 ;			██████╔╝███████╗██████╔╝███████║
 ;			╚═════╝ ╚══════╝╚═════╝ ╚══════╝
-;                               	
-;			Code related to beds
+;
+;				Code related to beds
 
-ObjectReference function FindBed(ObjectReference CenterRef, float Radius = 1000.0, bool IgnoreUsed = true)
-	if useNativeFunctions
-		return FindBedNative(centerref, radius)
-	else
-		return FindBedPapyrus(centerref, radius, ignoreused)
-    endif
-endfunction
+ObjectReference Function FindBed(ObjectReference CenterRef, Float Radius = 1000.0, Bool IgnoreUsed = True)
+	If (UseNativeFunctions)
+		Return FindBedNative(CenterRef, Radius)
+	Else
+		Return FindBedPapyrus(CenterRef, Radius, IgnoreUsed)
+    EndIf
+EndFunction
 
 ObjectReference Function FindBedNative(ObjectReference CenterRef, Float Radius = 0.0)
 	If (Radius > 0.0)
 		Radius = Radius * 64.0
 	Else
-		Radius = bedSearchDistance * 64.0
+		Radius = BedSearchDistance * 64.0
 	EndIf
 
 	ObjectReference[] Beds = OSANative.FindBed(CenterRef, Radius, 96.0)
 	ObjectReference NearRef = None
 
-	Int Index = 0
+	Int i = 0
 	Int Max = Beds.Length
 
-	While Index < Max
-		If (!Beds[Index].IsFurnitureInUse())
-			NearRef = Beds[Index]
-			Index = Max
+	While (i < Max)
+		If (!Beds[i].IsFurnitureInUse())
+			NearRef = Beds[i]
+			i = Max
 		Else
-			Index += 1
+			i += 1
 		EndIf
 	EndWhile
 
 	If (NearRef)
-		console("Bed found")
+		Console("Bed found")
 		;printBedInfo(NearRef)
 		Return NearRef
 	EndIf
 
-	console("Bed not found")
-
+	Console("Bed not found")
 	Return None ; Nothing found in search loop
 EndFunction
 
-ObjectReference function FindBedPapyrus(ObjectReference CenterRef, float Radius = 1000.0, bool IgnoreUsed = true)
-	radius = bedSearchDistance * 64.0
-
-	objectreference nearref = none
+ObjectReference Function FindBedPapyrus(ObjectReference CenterRef, Float Radius = 1000.0, Bool IgnoreUsed = True)
+	Radius = BedSearchDistance * 64.0
+	ObjectReference NearRef = None
 
 	; Current elevation to determine bed being on same floor
-	float Z = CenterRef.GetPositionZ()
+	Float Z = CenterRef.GetPositionZ()
 
-	Keyword word = Keyword.GetKeyword("RaceToScale")
-	ObjectReference[] beds = MiscUtil.ScanCellObjects(40, centerref, radius, HasKeyword = word)
-	;ObjectReference[] beds = MiscUtil.ScanCellObjects(40, centerref, radius)
+	Keyword Word = Keyword.GetKeyword("RaceToScale")
+	ObjectReference[] Beds = MiscUtil.ScanCellObjects(40, CenterRef, Radius, HasKeyword = Word)
+	;ObjectReference[] Beds = MiscUtil.ScanCellObjects(40, CenterRef, Radius)
 
-	int i = 0
-	int max = beds.Length
+	Int i = 0
+	Int L = Beds.Length
 
-	while i < max
-		if isBed(beds[i]) && !beds[i].IsFurnitureInUse() && SameFloor(beds[i], Z)
-			
-			if nearref == none
-				nearref = beds[i]
+	While (i < L)
+		ObjectReference Bed = Beds[i]
+		If (IsBed(Bed) && !Bed.IsFurnitureInUse() && SameFloor(Bed, Z))
+			If (!NearRef)
+				NearRef = Bed
 			Else
-				if nearref.GetDistance(centerref) > beds[i].GetDistance(centerref)
-					nearref = beds[i]
-				endif
-			endif
-		Else
-			if false
-				console("Rejecting---- ")
-				if !isBed(beds[i])
-					console("Not bed")
+				If (NearRef.GetDistance(CenterRef) > Bed.GetDistance(CenterRef))
+					NearRef = Bed
 				EndIf
-				if beds[i].IsFurnitureInUse()
-					console("In use")
-				endif
-				if !SameFloor(beds[i], Z)
-					console("Different floot")
-				endif
-			endif
-		endif
-
+			EndIf
+		Else
+			If (False)
+				Console("Rejecting---- ")
+				If (!IsBed(Bed))
+					Console("Not bed")
+				EndIf
+				If (Bed.IsFurnitureInUse())
+					Console("In use")
+				EndIf
+				If (!SameFloor(Bed, Z))
+					Console("Different floot")
+				EndIf
+			EndIf
+		EndIf
 		i += 1
 	endwhile
 
-	if nearref != none 
-		console("Bed found")
+	If (NearRef)
+		Console("Bed found")
 		;printBedInfo(NearRef)
-		return NearRef
-	endIf
-	
-	console("Bed not found")
-	return none ; Nothing found in search loop
-endFunction
+		Return NearRef
+	EndIf
 
-bool function SameFloor(ObjectReference BedRef, float Z, float Tolerance = 128.0)
-	return (Math.Abs(Z - BedRef.GetPositionZ())) <= Tolerance
-endFunction
-
-bool function CheckBed(ObjectReference BedRef, bool IgnoreUsed = true)
-	return BedRef && BedRef.IsEnabled() && BedRef.Is3DLoaded()
-endFunction
-
-bool function isBed(ObjectReference bed) ;trick so dirty it could only be in an adult mod
-	if (bed.getdisplayname() == "Bed") || (bed.haskeyword(Keyword.getKeyword("FurnitureBedRoll"))) || (bed.getdisplayname() == "Bed (Owned)")
-		return true
-	else
-		return false
-	endif
-endfunction
-
-bool function isBedRoll(objectReference bed)
-	return (bed.haskeyword(Keyword.getKeyword("FurnitureBedRoll")))
-endfunction
-
-function allignActorsWithCurrentBed()
-	DomActor.SetDontMove(true)
-	SubActor.SetDontMove(true)
-
-	bool flip = !isBedRoll(currentbed)
-
-	float flipfloat = 0
-	if flip
-		flipfloat = 180
-	endif
-	float domSpeed = currentbed.GetDistance(domactor) * 100
-
-	float xoffset = 0
-	float yoffset
-	float zoffset = 0
-
-	if !isbedroll(currentbed)
-		console("Current bed is not a bedroll. Moving actors backwards a bit")
-
-		int offset = 31 + bedReallignment
-		if SubActor == playerref
-			console("Player is subActor. adding some extra bed offset")
-			offset += 36
-		endif
-
-		xoffset = Math.Cos( TrigAngleZ(currentbed.GetAngleZ())) * offset
-		yoffset = Math.Sin( TrigAngleZ(currentbed.GetAngleZ())) * offset
-		zoffset = 42
-
-		
-		
-	else
-		console("Bedroll. Not realigning")
-	endif
-	
-
-
-	float bedX = currentBed.GetPositionX() + xoffset
-	float bedY = currentbed.GetPositionY() + yoffset
-	float bedZ = currentBed.GetPositionZ() + zoffset
-
-	float bedAngleX = currentbed.GetAngleX()
-	float bedAngleY = currentbed.GetAngleY()
-	float bedAngleZ = currentbed.getangleZ()
-
-	domactor.TranslateTo(bedX, bedY, bedZ, bedAngleX, bedAngleY, bedAngleZ, domSpeed, afMaxRotationSpeed = 100)
-	domactor.SetAngle(bedAngleX, bedAngleY, bedAngleZ - flipfloat)
-	if useFades && ((domactor == playerref) || (SubActor == playerref))
-		game.FadeOutGame(false, true, 10.0, 5) ;keep the screen black
-	endif
-	
-	Utility.wait(0.05)
-
-	float offsetY = Math.Sin( TrigAngleZ(domactor.GetAngleZ())) * 30
-	float offsetX = Math.Cos( TrigAngleZ(domactor.GetAngleZ())) * 30
-	subactor.MoveTo(domactor, offsetX, offsetY, 0)
-	subactor.SetAngle(bedAngleX, bedAngleY, bedAngleZ - flipfloat)
-	if useFades && ((domactor == playerref) || (SubActor == playerref))
-		game.FadeOutGame(false, true, 10.0, 5) ;keep the screen black
-	endif
-
-	DomActor.SetDontMove(false)
-	SubActor.SetDontMove(false)
-
+	Console("Bed not found")
+	Return None ; Nothing found in search loop
 EndFunction
 
-float function TrigAngleZ(float GameAngleZ) 
- 
-	if ( GameAngleZ < 90 )
-		 return 90 - GameAngleZ
-	else
- 		return 450 - GameAngleZ
-	endif
-endFunction
+Bool Function SameFloor(ObjectReference BedRef, Float Z, Float Tolerance = 128.0)
+	Return (Math.Abs(Z - BedRef.GetPositionZ())) <= Tolerance
+EndFunction
 
-function sleepInBed(objectreference bed, actor act) ;requires GoToBed
-	if act == playerref
-		if bed.GetActorOwner() != playerref.GetActorBase()
-			bed.SetActorOwner(playerref.GetActorBase())
-			console("Setting bed owner to player")
-		endif
-		int i = 0
-		ConsoleUtil.SetSelectedReference(playerref)
-		debug.ToggleCollisions()
-		while (game.GetCurrentCrosshairRef() != bed) && (i < 20)
+Bool Function CheckBed(ObjectReference BedRef, Bool IgnoreUsed = True)
+	Return BedRef && BedRef.IsEnabled() && BedRef.Is3DLoaded()
+EndFunction
+
+Bool Function IsBed(ObjectReference Bed) ; trick so dirty it could only be in an adult mod
+	If (Bed.GetDisplayName() == "Bed") || (Bed.Haskeyword(Keyword.GetKeyword("FurnitureBedRoll"))) || (Bed.GetDisplayname() == "Bed (Owned)")
+		Return True
+	EndIf
+	Return False
+EndFunction
+
+Bool Function IsBedRoll(objectReference Bed)
+	Return (Bed.Haskeyword(Keyword.GetKeyword("FurnitureBedRoll")))
+EndFunction
+
+Function AllignActorsWithCurrentBed()
+	DomActor.SetDontMove(True)
+	SubActor.SetDontMove(True)
+
+	Bool Flip = !IsBedRoll(Currentbed)
+
+	Float Flipfloat = 0
+	If (Flip)
+		Flipfloat = 180
+	EndIf
+
+	Float DomSpeed = CurrentBed.GetDistance(DomActor) * 100
+	Float BedOffsetX = 0
+	Float BedOffsetY
+	Float BedOffsetZ = 0
+
+	If (!IsBedroll(CurrentBed))
+		Console("Current bed is not a bedroll. Moving actors backwards a bit")
+
+		Int Offset = 31 + BedReallignment
+		If (SubActor == PlayerRef)
+			Console("Player is SubActor. Adding some extra bed offset")
+			Offset += 36
+		EndIf
+
+		BedOffsetX = Math.Cos(TrigAngleZ(CurrentBed.GetAngleZ())) * Offset
+		BedOffsetY = Math.Sin(TrigAngleZ(CurrentBed.GetAngleZ())) * Offset
+		BedOffsetZ = 42
+	Else
+		Console("Bedroll. Not realigning")
+	EndIf
+
+	Float BedX = CurrentBed.GetPositionX() + BedOffsetX
+	Float BedY = Currentbed.GetPositionY() + BedOffsetY
+	Float BedZ = CurrentBed.GetPositionZ() + BedOffsetZ
+	Float BedAngleX = Currentbed.GetAngleX()
+	Float BedAngleY = Currentbed.GetAngleY()
+	Float BedAngleZ = Currentbed.GetAngleZ()
+
+	DomActor.TranslateTo(BedX, BedY, BedZ, BedAngleX, BedAngleY, BedAngleZ, DomSpeed, afMaxRotationSpeed = 100)
+	DomActor.SetAngle(BedAngleX, BedAngleY, BedAngleZ - FlipFloat)
+	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
+	EndIf
+
+	Utility.Wait(0.05)
+
+	Float OffsetY = Math.Sin(TrigAngleZ(DomActor.GetAngleZ())) * 30
+	Float OffsetX = Math.Cos(TrigAngleZ(DomActor.GetAngleZ())) * 30
+
+	SubActor.MoveTo(DomActor, OffsetX, OffsetY, 0)
+	SubActor.SetAngle(bedAngleX, bedAngleY, bedAngleZ - flipfloat)
+
+	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
+	EndIf
+
+	DomActor.SetDontMove(False)
+	SubActor.SetDontMove(False)
+EndFunction
+
+Float Function TrigAngleZ(Float GameAngleZ)
+	If (GameAngleZ < 90)
+		 Return (90 - GameAngleZ)
+	EndIf
+ 	Return (450 - GameAngleZ)
+EndFunction
+
+Function SleepInBed(ObjectReference Bed, Actor Act) ; requires GoToBed
+	If (Act == PlayerRef)
+		ActorBase ActBase = PlayerRef.GetActorBase()
+		If (Bed.GetActorOwner() != ActBase)
+			Bed.SetActorOwner(ActBase)
+			Console("Setting bed owner to player")
+		EndIf
+
+		ConsoleUtil.SetSelectedReference(PlayerRef)
+		Debug.ToggleCollisions()
+
+		Int i = 0
+		While ((Game.GetCurrentCrosshairRef() != Bed) && (i < 20))
 			Utility.Wait(0.1)
 			ConsoleUtil.ExecuteCommand("setangle x 75")
-			
 			i += 1
-			
 		EndWhile
-		debug.ToggleCollisions()
-		ConsoleUtil.SetSelectedReference(none)
 
+		Debug.ToggleCollisions()
+		ConsoleUtil.SetSelectedReference(None)
     	Input.TapKey(Input.GetMappedKey("Activate"))
-    	
-    	if useFades
-				game.FadeOutGame(false, true, 25.0, 25.0) ;total blackout
-		endif
 
-    	int times = 0
+    	If (UseFades)
+			Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
+		EndIf
 
-    	float x = act.X
-    	Utility.Wait(0.3)
-    	while (x != act.X) && (times < 200)
-    		x = act.X
-    		times += 1
+    	Float x = Act.X
+		Utility.Wait(0.3)
 
-    		Utility.wait(0.1)
-    		console("Waiting for player to stop moving")
-    	endwhile
+    	i = 0
+		While ((x != Act.X) && (i < 200))
+			i += 1
+    		x = Act.X
 
-    Else
-    	
-	endif
+    		Utility.Wait(0.1)
+    		Console("Waiting for player to stop moving")
+    	EndWhile
+	EndIf
 EndFunction
 
-function flip()
-	console("Flipping")
-	isFlipped = !isFlipped
+Function Flip()
+	Console("Flipping")
+	IsFlipped = !IsFlipped
 
-	objectreference stage = getosastage()
+	ObjectReference Stage = GetOSAStage()
 
+	Stage.SetAngle(Stage.GetAngleX(), Stage.GetAngleY(), Stage.GetAngleZ() + 180) ; flip stage
 
-	stage.SetAngle(stage.GetAngleX(), stage.getangleY(), stage.getangleZ() + 180) ;flip stage
+	DomActor.SetAngle(0, 0, Stage.GetAngleZ()) ; reangle
+	SubActor.SetAngle(0, 0, Stage.GetAngleZ())
 
-	domactor.SetAngle(0, 0, stage.getAngleZ()) ;reangle
-	subactor.SetAngle(0, 0, stage.getAngleZ())
+	DomActor.TranslateTo(Stage.x, Stage.y, Stage.z, 0, 0, Stage.GetAngleZ(), 150.0, 0) ; move into place
+	SubActor.TranslateTo(Stage.x, Stage.y, Stage.z, 0, 0, Stage.GetAngleZ(), 150.0, 0)
 
-	domactor.TranslateTo(stage.x, stage.y, stage.z, 0, 0, stage.getAngleZ(), 150.0, 0) ;move into place
-	subactor.TranslateTo(stage.x, stage.y, stage.z, 0, 0, stage.getAngleZ(), 150.0, 0)
-
-	domactor.SetVehicle(stage)  ; fuse
-	subactor.SetVehicle(stage) 
-
+	DomActor.SetVehicle(Stage)  ; fuse
+	SubActor.SetVehicle(Stage)
 EndFunction
 
-objectreference function getOSAStage() ;the stage is an invisible object that the actors are alligned on
-	int stageID = domactor.getFactionRank(OSAOmni.OFaction[1])
-	objectreference stage = OSAOmni.GlobalPosition[StageID as int]
+ObjectReference Function GetOSAStage() ; the stage is an invisible object that the actors are alligned on
+	Int StageID = DomActor.GetFactionRank(OSAOmni.OFaction[1])
+	ObjectReference stage = OSAOmni.GlobalPosition[StageID as Int]
+	Return Stage
+EndFunction
 
-	return stage
-endfunction
+Function PrintBedInfo(ObjectReference Bed)
+	Console("--------------------------------------------")
+	Console("BED - Name: " + Bed.GetDisplayName())
+	Console("BED - Enabled: " + Bed.IsEnabled())
+	Console("BED - 3D loaded: " + Bed.Is3DLoaded())
+	Console("BED - Bed roll: " + IsBedRoll(Bed))
+	Console("--------------------------------------------")
+EndFunction
 
-function printBedInfo(objectreference bed)
-	console("--------------------------------------------")
-	console("BED - Name: " + bed.GetDisplayName())
-	console("BED - Enabled: " + bed.IsEnabled())
-	console("BED - 3D loaded: " + bed.Is3DLoaded())
-	console("BED - Bed roll: " + isBedRoll(bed))
-	console("--------------------------------------------")
-endfunction
 
 ;
 ;			███████╗██████╗ ███████╗███████╗██████╗     ██╗   ██╗████████╗██╗██╗     ██╗████████╗██╗███████╗███████╗
@@ -1550,58 +1515,59 @@ endfunction
 ;			╚════██║██╔═══╝ ██╔══╝  ██╔══╝  ██║  ██║    ██║   ██║   ██║   ██║██║     ██║   ██║   ██║██╔══╝  ╚════██║
 ;			███████║██║     ███████╗███████╗██████╔╝    ╚██████╔╝   ██║   ██║███████╗██║   ██║   ██║███████╗███████║
 ;			╚══════╝╚═╝     ╚══════╝╚══════╝╚═════╝      ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝   ╚═╝╚══════╝╚══════╝
-;			 
-;				Some code related to the speed system                                                                                                                                                                                                                                                       
+;
+;				Some code related to the speed system
 
-bool currAnimHasIdleSpeed
-function autoIncreaseSpeed()
-	if getTimeSinceLastPlayerInteraction() < 5.0
-		return
-	endif
-	int speed = getCurrentAnimationSpeed()
-    float mainExcitement = getActorExcitement(domactor)
-    if (getCurrentAnimationClass() == "VJ") || (getCurrentAnimationClass() == "Cr") || (getCurrentAnimationClass() == "Pf1") || (getCurrentAnimationClass() == "Pf2")
-    	mainExcitement = getActorExcitement(subactor)
-    endif
-    int maxspeed = getCurrentAnimationMaxSpeed()
-    int numSpeeds = maxspeed
 
-    int aggressionBonusChance = 0
+Bool CurrAnimHasIdleSpeed
+Function AutoIncreaseSpeed()
+	If (GetTimeSinceLastPlayerInteraction() < 5.0)
+		Return
+	EndIf
 
-    if IsSceneAggressiveThemed()
-    	aggressionBonusChance = 80
-    	mainExcitement += 20
-    endif
-    
-    if !currAnimHasIdleSpeed
-    	numSpeeds = numSpeeds + 1
-    Else
-    	if speed == 0
-    		Return
-    	endif
-    endif
+	String CClass = GetCurrentAnimationClass()
+    Float MainExcitement = GetActorExcitement(DomActor)
+    If (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2")
+    	MainExcitement = GetActorExcitement(SubActor)
+	EndIf
 
-    if (mainExcitement >= 85.0) && (speed < numspeeds)
-    	if chanceRoll(80)
-    		increaseAnimationSpeed()
-    	endif
-    elseif (mainExcitement >= 69.0) && (speed <= (numspeeds - 1))
-    	if chanceRoll(50)
-    		increaseAnimationSpeed()
-    	endif
-    elseif (mainExcitement >= 25.0) && (speed <= (numspeeds - 2))
-    	if chanceRoll(20 + aggressionBonusChance)
-    		increaseAnimationSpeed()
-    	endif
-    elseif (mainExcitement >= 05.0) && (speed <= (numspeeds - 3))
-    	if chanceRoll(20 + aggressionBonusChance)
-    		increaseAnimationSpeed()
-    	endif
-    endif
+    Int MaxSpeed = GetCurrentAnimationMaxSpeed()
+	Int NumSpeeds = MaxSpeed
+
+    Int AggressionBonusChance = 0
+    If (IsSceneAggressiveThemed())
+    	AggressionBonusChance = 80
+    	MainExcitement += 20
+    EndIf
+
+	Int Speed = GetCurrentAnimationSpeed()
+    If (!CurrAnimHasIdleSpeed)
+    	NumSpeeds += 1
+    ElseIf (Speed == 0)
+    	Return
+    EndIf
+
+    If ((MainExcitement >= 85.0) && (Speed < NumSpeeds))
+    	If (ChanceRoll(80))
+    		IncreaseAnimationSpeed()
+    	EndIf
+    ElseIf (MainExcitement >= 69.0) && (Speed <= (NumSpeeds - 1))
+    	If (ChanceRoll(50))
+    		IncreaseAnimationSpeed()
+    	EndIf
+    ElseIf (MainExcitement >= 25.0) && (Speed <= (NumSpeeds - 2))
+    	If (ChanceRoll(20 + AggressionBonusChance))
+    		IncreaseAnimationSpeed()
+    	EndIf
+    ElseIf (MainExcitement >= 05.0) && (Speed <= (NumSpeeds - 3))
+    	If (ChanceRoll(20 + AggressionBonusChance))
+    		IncreaseAnimationSpeed()
+    	EndIf
+    EndIf
 EndFunction
 
-string function normalSpeedToOsexSpeed(int speed)
-	return speeds[speed]
+String Function NormalSpeedToOsexSpeed(Int Speed)
+	Return Speeds[Speed]
 EndFunction
 
 
@@ -1612,142 +1578,120 @@ EndFunction
 ;			██║   ██║╚════██║██╔══╝   ██╔██╗╚════╝██╔══██╗██╔══╝  ██║     ██╔══██║   ██║   ██╔══╝  ██║  ██║    ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║   ╚════██║
 ;			╚██████╔╝███████║███████╗██╔╝ ██╗     ██║  ██║███████╗███████╗██║  ██║   ██║   ███████╗██████╔╝    ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
 ;			 ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═════╝     ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
-;                                                                                                                                                      
-;				Event hooks that receive data from OSA                                                                                                                                                      
+;
+;				Event hooks that receive data from OSA
 
 
-Event OnAnimate(string eventName, string zAnimation, float numArg, Form sender) 
-	if currentAnimation != zAnimation
-		currentAnimation = zAnimation
+Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
+	If (CurrentAnimation != zAnimation)
+		CurrentAnimation = zAnimation
 		OnAnimationChange()
 		SendModEvent("ostim_animationchanged")
-	endif
-	
+	EndIf
 EndEvent
 
-function OnAnimationChange()
+Function OnAnimationChange()
+	Console("Changing animation...")
 
-	console("Changing animation...")
-	currentOID = odatabase.getObjectOArray( odatabase.getAnimationWithAnimID(odatabase.getDatabaseOArray(), currentAnimation), 0 )
-	if odatabase.isHubAnimation(currentoid)
-		lastHubOID = currentOID
-		console("On new hub animation")
-	endif
+	CurrentOID = ODatabase.GetObjectOArray(ODatabase.GetAnimationWithAnimID(ODatabase.GetDatabaseOArray(), CurrentAnimation), 0)
+	If (ODatabase.IsHubAnimation(CurrentOID))
+		LastHubOID = CurrentOID
+		Console("On new hub animation")
+	EndIf
 
-	currentAnimIsAggressive =  ODatabase.isAggressive(currentoid)
-	currAnimHasIdleSpeed = ODatabase.hasIdleSpeed(currentoid)
+	CurrentAnimIsAggressive = ODatabase.IsAggressive(CurrentOID)
+	CurrAnimHasIdleSpeed = ODatabase.HasIdleSpeed(CurrentOID)
 
-	int oldSpeed = currentSpeed
-	
-	String[] split = PapyrusUtil.StringSplit(currentAnimation, "_")
-	if split.Length > 2
-		String speedString = split[2]
-		currentSpeed = speedstringtoint(speedString)
+	String[] Split = PapyrusUtil.StringSplit(CurrentAnimation, "_")
+	If (Split.Length > 2)
+		String SpeedString = Split[2]
+		CurrentSpeed = SpeedStringToInt(SpeedString)
 	Else
-		currentSpeed = 0
+		CurrentSpeed = 0
+	EndIf
 
-		
-	endif
+	String CClass = PapyrusUtil.StringSplit(Split[1], "-")[0]
+	If (StringUtil.Find(CClass, "Ag") != -1)
+		CClass = StringUtil.Substring(CClass, 2)
+	EndIf
 
-	string cclass = PapyrusUtil.StringSplit(split[1], "-")[0]
-	if (StringUtil.Find(cclass, "Ag") != -1)
-		cclass = StringUtil.Substring(cclass, 2)
-	endif 
-	currAnimClass = cclass
+	CurrAnimClass = CClass
 
-	if fixFlippedAnimations
-		if !StringArrayContainsValue(ODatabase.originalmodules, ODatabase.getModule(currentoid))
-			console("On third party animation")
-			if !isFlipped
-				if StringUtil.Find(ODatabase.getFullName(currentoid), "noflip") == -1
-					flip()
-				endif
-			endif
+	If (FixFlippedAnimations)
+		If (!StringArrayContainsValue(ODatabase.OriginalModules, ODatabase.GetModule(CurrentOID)))
+			Console("On third party animation")
+			If (!IsFlipped)
+				If (StringUtil.Find(ODatabase.getFullName(CurrentOID), "noflip") == -1)
+					Flip()
+				EndIf
+			EndIf
 		Else
-			if isFlipped
-				console("Back on first-party animation")
-				flip()
-			endif
-		endif
-	endif
+			If (IsFlipped)
+				Console("Back on first-party animation")
+				Flip()
+			EndIf
+		EndIf
+	EndIf
 
-	console("Current animation: " + currentAnimation)
-	console("Current speed: " + currentSpeed)
-	console("Current animation class: " + currAnimClass)
-
-
+	Console("Current animation: " + CurrentAnimation)
+	Console("Current speed: " + CurrentSpeed)
+	Console("Current animation class: " + CurrAnimClass)
 EndFunction
 
-function OnSpank()
-	console("Spank event recieved")
+Function OnSpank()
+	Console("Spank event recieved")
 
-
-	if allowUnlimitedSpanking
+	If (AllowUnlimitedSpanking)
 		SubExcitement += 5
-	else
-		if spankCount < spankMax
+	Else
+		If (SpankCount < SpankMax)
 			SubExcitement += 5
 		Else
-			SubActor.damageav("health", 5.0)
-		endif
-	endif
+			SubActor.DamageAV("health", 5.0)
+		EndIf
+	EndIf
 
-	spankCount += 1
+	SpankCount += 1
 EndFunction
 
-function redress()
-	form next
-	actor zactor = domactor
-	
-	next = domHelm
-	if next
-		zactor.EquipItem(next, false, true)
-	endif
-	next = domGlove
-	if next
-		zactor.EquipItem(next, false, true)
-	endif
-	next = domArmor
-	if next
-		zactor.EquipItem(next, false, true)
-	endif
-	next = domBoot
-	if next
-		zactor.EquipItem(next, false, true)
-	endif
-	next = domWep
-	if next
-		zactor.EquipItem(next, false, true)
-	endif
+Function Redress()
+	If (DomHelm)
+		DomActor.EquipItem(DomHelm, False, True)
+	EndIf
+	If (DomGlove)
+		DomActor.EquipItem(DomGlove, False, True)
+	EndIf
+	If (DomArmor)
+		DomActor.EquipItem(DomArmor, False, True)
+	EndIf
+	If (DomBoot)
+		DomActor.EquipItem(DomBoot, False, True)
+	EndIf
+	If (DomWep)
+		DomActor.EquipItem(DomWep, False, True)
+	EndIf
+	If (SubHelm)
+		SubActor.EquipItem(SubHelm, False, True)
+	EndIf
+	If (SubGlove)
+		SubActor.EquipItem(SubGlove, False, True)
+	EndIf
+	If (SubArmor)
+		SubActor.EquipItem(SubArmor, False, True)
+	EndIf
+	If (SubBoot)
+		SubActor.EquipItem(SubBoot, False, True)
+	EndIf
+	If (SubWep)
+		SubActor.EquipItem(SubWep, False, True)
+	EndIf
+EndFunction
 
-	zactor = SubActor
-	next = subHelm
-	if next
-		zactor.EquipItem(next, false, true)
-	endif
-	next = subGlove
-	if next
-		zactor.EquipItem(next, false, true)
-	endif
-	next = subArmor
-	if next
-		zactor.EquipItem(next, false, true)
-	endif
-	next = subBoot
-	if next
-		zactor.EquipItem(next, false, true)
-	endif
-	next = subWep
-	if next
-		zactor.EquipItem(next, false, true)
-	endif
-endfunction
-
-Event OnActorHit(string eventName, string zAnimation, float numArg, Form sender) 
-	if endAfterActorHit
-		endAnimation(false)
-	endif
-endevent
+Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
+	If (EndAfterActorHit)
+		EndAnimation(False)
+	EndIf
+EndEvent
 
 ;
 ;			███████╗████████╗██╗███╗   ███╗██╗   ██╗██╗      █████╗ ████████╗██╗ ██████╗ ███╗   ██╗    ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗
@@ -1756,470 +1700,441 @@ endevent
 ;			╚════██║   ██║   ██║██║╚██╔╝██║██║   ██║██║     ██╔══██║   ██║   ██║██║   ██║██║╚██╗██║    ╚════██║  ╚██╔╝  ╚════██║   ██║   ██╔══╝  ██║╚██╔╝██║
 ;			███████║   ██║   ██║██║ ╚═╝ ██║╚██████╔╝███████╗██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║    ███████║   ██║   ███████║   ██║   ███████╗██║ ╚═╝ ██║
 ;			╚══════╝   ╚═╝   ╚═╝╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝    ╚══════╝   ╚═╝   ╚══════╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
-;			                                                                                                                                                
-;				All code related to the stimulation simulation 
+;
+;				All code related to the stimulation simulation
 
 
-float function getCurrentStimulation(actor act) ; how much an actor is being stimulated in the current animation
+Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being stimulated in the current animation
+	Float Ret = 0.0
+	String CClass = GetCurrentAnimationClass()
+	;Bool Aggressive = GetCurrentAnimIsAggressive()
+	Bool Sub = (Act == SubActor)
+	Float Excitement = GetActorExcitement(Act)
 
-	float ret = 0.0
-	string cclass = getCurrentAnimationClass()
-	;bool aggressive = getCurrentAnimIsAggressive()
-	bool sub = (act == SubActor)
-	float excitement = getActorExcitement(act)
-
-
-	if cclass == ClassSex
-		if sub
-			ret = getInteractionStim(penis, vagina)
-
-			if excitement > 75.0 ;extra lubrication increases enjoyment
-				ret += 0.2
-			Elseif excitement < 25.0
-				ret -= 0.2
-			endif
+	If (CClass == ClassSex)
+		If (Sub)
+			Ret = GetInteractionStim(Penis, Vagina)
+			If (Excitement > 75.0) ; extra lubrication increases enjoyment
+				Ret += 0.2
+			Elseif (Excitement < 25.0)
+				Ret -= 0.2
+			EndIf
 		Else
-			ret = getInteractionStim(vagina, penis)
-		endif 
-
-	elseif (cclass == ClassHolding) || (cclass == ClassApartUndressing) || (cclass == ClassRoughHolding) ; Lightly exciting
-		if excitement > 50.0
-			ret = -1.0
-		endif
-
-	elseif cclass == ClassEmbracing ; more lightly exciting
-		if excitement > 75.0
-			ret = -1.0
-		endif
-
-	elseif (cclass == ClassApart) 
-		if excitement > 25.0
-			ret = -1.0
-		endif
-
-	elseif (cclass == ClassMasturbate) || (cclass == ClassHeadHeldMasturbate)
-		if sub
-			ret = 0.0
+			Ret = GetInteractionStim(Vagina, Penis)
+		EndIf
+	ElseIf ((CClass == ClassHolding) || (CClass == ClassApartUndressing) || (CClass == ClassRoughHolding)) ; Lightly exciting
+		If (Excitement > 50.0)
+			Ret = -1.0
+		EndIf
+	ElseIf (CClass == ClassEmbracing) ; more lightly exciting
+		If (Excitement > 75.0)
+			Ret = -1.0
+		EndIf
+	ElseIf (CClass == ClassApart)
+		If (Excitement > 25.0)
+			Ret = -1.0
+		EndIf
+	ElseIf ((CClass == ClassMasturbate) || (CClass == ClassHeadHeldMasturbate))
+		If (Sub)
+			Ret = 0.0
 		Else
-			ret = getInteractionStim(hand, penis)
-		endif
-
-	elseif cclass == ClassCunn
-		if sub
-			if chanceRoll(50)
-				ret = getInteractionStim(mouth, clit)
-			else
-				ret = getInteractionStim(mouth, vagina)
-			endif
-		Else
-			ret = 0.0
-		endif
-
-	elseif (cclass == ClassPenisjob) || (cclass == ClassHeadHeldPenisjob)
-		if sub
-			ret = 0.0
-		Else
-			if chanceRoll(10)
-				ret = getInteractionStim(hand, penis) + (getInteractionStim(mouth, penis) - 1.0)
+			Ret = GetInteractionStim(Hand, Penis)
+		EndIf
+	ElseIf (CClass == ClassCunn)
+		If (Sub)
+			If (ChanceRoll(50))
+				Ret = GetInteractionStim(Mouth, Clit)
 			Else
-				ret = getInteractionStim(mouth, penis)
-			endif
-		endif
-
-	elseif (cclass == ClassHandjob) || (cclass == ClassApartHandjob) || (cclass == ClassDualHandjob)
-		if sub
-			ret = 0.0
+				Ret = GetInteractionStim(Mouth, Vagina)
+			EndIf
 		Else
-			ret = getInteractionStim(hand, penis)
-		endif
-
-	elseif (cclass == ClassBlowjob) || (cclass == ClassHeadHeldBlowjob)
-		if sub
-			ret = 0.0
+			Ret = 0.0
+		EndIf
+	ElseIf ((CClass == ClassPenisjob) || (CClass == ClassHeadHeldPenisjob))
+		If (Sub)
+			Ret = 0.0
 		Else
-			ret = getInteractionStim(mouth, penis)
-		endif
-
-	elseif (cclass == Class69Handjob)
-		if sub
-			if getCurrentAnimationSpeed() == 1
-				if chanceRoll(30)
-					ret = getInteractionStim(mouth, clit)
-				else
-					ret = getInteractionStim(mouth, vagina)
-				endif
-			else
-				ret = 0.0 ;this animation is broken
-			endif
-		Else
-			ret = getInteractionStim(hand, penis)
-		endif
-	elseif (cclass == Class69Blowjob)
-		if sub
-			if getCurrentAnimationSpeed() == 1
-				if chanceRoll(30)
-					ret = getInteractionStim(mouth, clit)
-				else
-					ret = getInteractionStim(mouth, vagina)
-				endif
-			else
-				ret = 0.0 ;this animation is broken
-			endif
-		Else
-			ret = getInteractionStim(mouth, penis)
-		endif
-	elseif (cclass == ClassClitRub)
-		if sub
-			ret = getInteractionStim(hand, clit)
-		Else
-			ret = 0.0
-		endif
-
-	elseif cclass == ClassOneFingerPen
-		if sub
-			ret = getInteractionStim(hand, vagina)
-		Else
-			ret = 0.0
-		endif
-
-	elseif cclass == ClassTwoFingerPen
-		if sub
-			ret = getInteractionStim(hand, vagina) * 1.5
-		Else
-			ret = 0.0
-		endif
-
-	elseif cclass == ClassSelfSuck
-		if sub
-			ret = 0.0
-		Else
-			ret = getInteractionStim(mouth, penis)
-		endif
-	elseif (cclass == classanal) 
-		if sub
-			if isFemale(getSubActor())
-				ret = (getInteractionStim(penis, anus)) 
+			If (ChanceRoll(10))
+				Ret = GetInteractionStim(Hand, Penis) + (GetInteractionStim(Mouth, Penis) - 1.0)
 			Else
-				ret = (getInteractionStim(penis, prostate)) + (getInteractionStim(penis, anus)) 
-			endif
+				Ret = GetInteractionStim(Mouth, Penis)
+			EndIf
+		EndIf
+	ElseIf (CClass == ClassHandjob) || (CClass == ClassApartHandjob) || (CClass == ClassDualHandjob)
+		If (Sub)
+			Ret = 0.0
 		Else
-			ret = getInteractionStim(anus, penis)
-		endif
-	elseif (cclass == ClassFootjob) 
-		if sub
-			ret = getInteractionStim(penis, feet)
+			Ret = GetInteractionStim(Hand, Penis)
+		EndIf
+	ElseIf (CClass == ClassBlowjob) || (CClass == ClassHeadHeldBlowjob)
+		If (Sub)
+			Ret = 0.0
 		Else
-			ret = getInteractionStim(feet, penis)
-		endif
-	elseif (cclass == ClassBoobjob) 
-		if sub
-			ret = getInteractionStim(penis, breasts)
+			Ret = GetInteractionStim(Mouth, Penis)
+		EndIf
+	ElseIf (CClass == Class69Handjob)
+		If (Sub)
+			If GetCurrentAnimationSpeed() == 1
+				If chanceRoll(30)
+					Ret = GetInteractionStim(Mouth, Clit)
+				Else
+					Ret = GetInteractionStim(Mouth, Vagina)
+				EndIf
+			Else
+				Ret = 0.0 ;this animation is broken
+			EndIf
 		Else
-			ret = getInteractionStim(breasts, penis)
-		endif
-	elseif (cclass == ClassBreastFeeding) 
-		if sub
-			ret = getInteractionStim(mouth, breasts)
+			Ret = GetInteractionStim(Hand, Penis)
+		EndIf
+	ElseIf (CClass == Class69Blowjob)
+		If (Sub)
+			If (GetCurrentAnimationSpeed() == 1)
+				If (ChanceRoll(30))
+					Ret = GetInteractionStim(Mouth, Clit)
+				Else
+					Ret = GetInteractionStim(Mouth, Vagina)
+				EndIf
+			Else
+				Ret = 0.0 ;this animation is broken
+			EndIf
 		Else
-			ret = getInteractionStim(breasts, mouth)
-		endif
-
-
-	else
-		if getCurrentAnimation() == "undefined" ;osex broke!
-			console("Osex state broken. Returning to default animation")
-			warpToAnimation("0MF|Cy6!DOy6|Ho|DoggyLi")
+			Ret = GetInteractionStim(Mouth, Penis)
+		EndIf
+	ElseIf (CClass == ClassClitRub)
+		If (Sub)
+			Ret = GetInteractionStim(Hand, Clit)
 		Else
-			
-			console("Unknown animation class: " + cclass + ". Please report this to the dev!")
-		endif
-	endif
-
-
-	if ret > 0.0
-		int speed = getCurrentAnimationSpeed()
-		int numSpeeds = getCurrentAnimationMaxSpeed()
-		if !currAnimHasIdleSpeed
-			numSpeeds = numSpeeds + 1
-		endif
-		int halfwaySpeed = (Math.Ceiling((numSpeeds as float) / 2.0)) as int   ; 5 -> 3 | 3 -> 2 etc
-
-
-		if ArousedFaction
-			float arousal = getActorArousal(act)
-			arousal -= 50.0
-			arousal /= 250
-			; 100 arousal -> 0.2 ~ 0 arousal -> -0.2
-			ret += arousal
-		endif
-
-		if !isNaked(getSexPartner(act))
-			ret -= 0.1
-		endif
-
-		if speed == (halfwaySpeed - 2)
-			ret -= 0.4
-		elseif speed == (halfwaySpeed - 1)
-			ret -= 0.2
-		elseif speed == (halfwaySpeed)
-			;do nothing
-		elseif speed == (halfwaySpeed + 1)
-			ret += 0.2
-		elseif speed == (halfwaySpeed + 2)
-			ret += 0.4
-		endif
-
-		if (speed == 0) && currAnimHasIdleSpeed
-			ret = 0.0
-		endif
-
-
-	endif
-
-	if ret > 0.0
-		ret *= sexExcitementMult
-	endif
-	return ret 
-
-endfunction
-
-float function getInteractionStim(int stimulator, int stimulated) ; holds interaction between body parts
-	float[] stimulatorValues
-
-	if stimulator == penis
-		stimulatorValues = penisStimValues
-	elseif stimulator == vagina
-		stimulatorValues = vaginaStimValues 
-	elseif stimulator == mouth
-		stimulatorValues = mouthStimValues
-	elseif stimulator == hand
-		stimulatorValues = handStimValues
-	elseif stimulator == clit
-		stimulatorValues = clitStimValues
-	elseif stimulator == anus
-		stimulatorValues = anusStimValues
-	elseif stimulator == feet
-		stimulatorValues = feetStimValues
-	elseif stimulator == breasts
-		stimulatorValues = breastsStimValues
-	elseif stimulator == prostate
-		stimulatorValues = prostateStimValues
+			Ret = 0.0
+		EndIf
+	ElseIf (CClass == ClassOneFingerPen)
+		If (Sub)
+			Ret = GetInteractionStim(Hand, Vagina)
+		Else
+			Ret = 0.0
+		EndIf
+	ElseIf (CClass == ClassTwoFingerPen)
+		If (Sub)
+			Ret = GetInteractionStim(Hand, Vagina) * 1.5
+		Else
+			Ret = 0.0
+		EndIf
+	ElseIf (CClass == ClassSelfSuck)
+		If (Sub)
+			Ret = 0.0
+		Else
+			Ret = GetInteractionStim(Mouth, Penis)
+		EndIf
+	ElseIf (CClass == ClassAnal)
+		If (Sub)
+			If (IsFemale(GetSubActor()))
+				Ret = (GetInteractionStim(Penis, Anus))
+			Else
+				Ret = (GetInteractionStim(Penis, Prostate)) + (GetInteractionStim(Penis, Anus))
+			EndIf
+		Else
+			Ret = GetInteractionStim(Anus, Penis)
+		EndIf
+	ElseIf (CClass == ClassFootjob)
+		If (Sub)
+			Ret = GetInteractionStim(Penis, Feet)
+		Else
+			Ret = GetInteractionStim(Feet, Penis)
+		EndIf
+	ElseIf (CClass == ClassBoobjob)
+		If (Sub)
+			Ret = GetInteractionStim(Penis, Breasts)
+		Else
+			Ret = GetInteractionStim(Breasts, Penis)
+		EndIf
+	ElseIf (CClass == ClassBreastFeeding)
+		If (Sub)
+			Ret = GetInteractionStim(Mouth, Breasts)
+		Else
+			Ret = GetInteractionStim(Breasts, Mouth)
+		EndIf
 	Else
-		console("Unknown stimulator")
-	endif
+		If (GetCurrentAnimation() == "undefined") ;osex broke!
+			Console("Osex state broken. Returning to default animation")
+			WarpToAnimation("0MF|Cy6!DOy6|Ho|DoggyLi")
+		Else
+			Console("Unknown animation class: " + CClass + ". Please report this to the dev!")
+		EndIf
+	EndIf
 
-	return stimulatorValues[stimulated]
+	If (Ret > 0.0)
+		Int Speed = GetCurrentAnimationSpeed()
+		Int NumSpeeds = GetCurrentAnimationMaxSpeed()
+
+		If (!CurrAnimHasIdleSpeed)
+			NumSpeeds += 1
+		EndIf
+
+		If (ArousedFaction)
+			Float Arousal = GetActorArousal(Act)
+			Arousal -= 50.0
+			Arousal /= 250
+			; 100 arousal -> 0.2 ~ 0 arousal -> -0.2
+			Ret += Arousal
+		EndIf
+
+		If (!IsNaked(GetSexPartner(Act)))
+			Ret -= 0.1
+		EndIf
+
+		Int HalfwaySpeed = (Math.Ceiling((NumSpeeds as Float) / 2.0)) as Int ; 5 -> 3 | 3 -> 2 etc
+		If (Speed == (HalfwaySpeed - 2))
+			Ret -= 0.4
+		ElseIf (Speed == (HalfwaySpeed - 1))
+			Ret -= 0.2
+		ElseIf (Speed == (HalfwaySpeed))
+			;do nothing
+		ElseIf (Speed == (HalfwaySpeed + 1))
+			Ret += 0.2
+		ElseIf (Speed == (HalfwaySpeed + 2))
+			Ret += 0.4
+		EndIf
+
+		If ((Speed == 0) && CurrAnimHasIdleSpeed)
+			Ret = 0.0
+		EndIf
+	EndIf
+
+	If (Ret > 0.0)
+		Ret *= SexExcitementMult
+	EndIf
+
+	Return Ret
 EndFunction
 
-float function getActorExcitement(actor act) ;at 100, actor orgasms
-	if act == DomActor
-		return DomExcitement
-	elseif act == subActor
-		return subexcitement
-	else
-		debug.notification("unknown actor")
-	endif
+Float Function GetInteractionStim(Int Stimulator, Int Stimulated) ; holds interaction between body parts
+	Float[] StimulatorValues
+
+	If (Stimulator == Penis)
+		StimulatorValues = PenisStimValues
+	ElseIf (Stimulator == Vagina)
+		StimulatorValues = VaginaStimValues
+	ElseIf (Stimulator == Mouth)
+		StimulatorValues = MouthStimValues
+	ElseIf (Stimulator == Hand)
+		StimulatorValues = HandStimValues
+	ElseIf (Stimulator == Clit)
+		StimulatorValues = ClitStimValues
+	ElseIf (Stimulator == Anus)
+		StimulatorValues = AnusStimValues
+	ElseIf (Stimulator == Feet)
+		StimulatorValues = FeetStimValues
+	ElseIf (Stimulator == Breasts)
+		StimulatorValues = BreastsStimValues
+	ElseIf (Stimulator == Prostate)
+		StimulatorValues = ProstateStimValues
+	Else
+		Console("Unknown Stimulator")
+	EndIf
+
+	Return StimulatorValues[Stimulated]
 EndFunction
 
-function setActorExcitement(actor act, float value) 
-	if act == DomActor
-		DomExcitement = value
-	elseif act == subActor
-		subexcitement = value
-	else
-		debug.notification("unknown actor")
-	endif
+Float Function GetActorExcitement(Actor Act) ; at 100, Actor orgasms
+	If (Act == DomActor)
+		Return DomExcitement
+	ElseIf (Act == SubActor)
+		Return SubExcitement
+	Else
+		Debug.Notification("Unknown Actor")
+	EndIf
 EndFunction
 
-function orgasm(actor act)
-	setActorExcitement(act, -3.0) 
+Function SetActorExcitement(Actor Act, Float Value)
+	If (Act == DomActor)
+		DomExcitement = Value
+	ElseIf Act == SubActor
+		SubExcitement = Value
+	Else
+		Debug.Notification("Unknown Actor")
+	EndIf
+EndFunction
+
+Function Orgasm(Actor Act)
+	SetActorExcitement(Act, -3.0)
 	SendModEvent("ostim_orgasm")
-	orgasmSound.Play(act)
-	if act == playerref
-		NutEffect.Apply() 
-		if slowMoOnOrgasm
-			setGameSpeed("0.3")
+	OrgasmSound.Play(Act)
+	If (Act == PlayerRef)
+		NutEffect.Apply()
+		If (SlowMoOnOrgasm)
+			SetGameSpeed("0.3")
 			Utility.Wait(2.5)
-			setGameSpeed("1")
-		endif
-		Game.ShakeCamera(none, 1.00, 2.0)
-		shakeController(0.5, 0.7)
-	endif
+			SetGameSpeed("1")
+		EndIf
+		Game.ShakeCamera(None, 1.00, 2.0)
+		ShakeController(0.5, 0.7)
+	EndIf
 
 	Utility.Wait(0.75)
 
-	if sexlab && !isFemale(act) ;spray cum
-		if isvaginal() || (getCurrentAnimationClass() == ClassMasturbate)
-			applyCum(getSexPartner(act), true)
+	If (SexLab && !IsFemale(Act)) ; spray cum
+		If (IsVaginal() || (GetCurrentAnimationClass() == ClassMasturbate))
+			ApplyCum(GetSexPartner(Act), True)
 		Else
-			applyCum(getSexPartner(act), false)
-		endif
-	endif
+			ApplyCum(GetSexPartner(Act), False)
+		EndIf
+	EndIf
 
-	if act == DomActor
-		setCurrentAnimationSpeed(1)
-	endif
-	
+	If (Act == DomActor)
+		SetCurrentAnimationSpeed(1)
+	EndIf
 
-	if orgasmIncreasesRelationship
-		int rank = act.GetRelationshipRank(getSexPartner(act))
+	If (OrgasmIncreasesRelationship)
+		Actor Partner = GetSexPartner(Act)
+		Int Rank = Act.GetRelationshipRank(Partner)
+		If (Rank == 0)
+			Act.SetRelationshipRank(Partner, 1)
+		EndIf
+	EndIf
 
-		if (rank == 0)
-			act.SetRelationshipRank(getSexPartner(act), 1)
-		endif
-	endif
+	SetActorArousal(Act, GetActorArousal(Act) - 50)
 
-	setactorarousal(act, getactorarousal(act) - 50)
+	If (Act == DomActor)
+		SetBarPercent(DomBar, 0)
+	ElseIf (Act == SubActor)
+		SetBarPercent(SubBar, 0)
+	EndIf
 
-	if act == DomActor
-		setBarPercent(dombar, 0)
-	elseif act == subActor
-		setBarPercent(subbar, 0)
-	endif
-
-	act.damageav("stamina", 250.0)
-
-EndFunction 
-
-function applyCum(actor act, bool vaginal)
-	spell Vaginal1 = (Game.GetFormFromFile(0x0008D679, "SexLab.esm")) as spell
-	spell Oral1 = (Game.GetFormFromFile(0x0008D67D, "SexLab.esm")) as spell
-
-	if vaginal
-		vaginal1.Cast(act)
-	Else
-		Oral1.Cast(act)
-	endif
-
+	Act.DamageAV("stamina", 250.0)
 EndFunction
 
-;function HideOSexMenu()
-;	console("hide")
-;	int glyph = OSAOmni.glyph
-;	UI.Invoke("HUD Menu", "_root.WidgetContainer."+glyph+".widget.ctr.sceneMenuDirect")
+Function ApplyCum(Actor Act, Bool Vaginal)
+	Spell Vaginal1 = (Game.GetFormFromFile(0x0008D679, "SexLab.esm")) as Spell
+	Spell Oral1 = (Game.GetFormFromFile(0x0008D67D, "SexLab.esm")) as Spell
+
+	If (Vaginal)
+		Vaginal1.Cast(Act)
+	Else
+		Oral1.Cast(Act)
+	EndIf
+EndFunction
+
+;Function HideOSexMenu()
+;	Console("hide")
+;	Int Glyph = OSAOmni.Glyph
+;	UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.ctr.sceneMenuDirect")
 ;EndFunction
 
-;function ShowOSexMenu()
-;	UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", false)
+;Function ShowOSexMenu()
+;	UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", False)
 ;EndFunction
 
 
-;			███████╗ ██████╗ ██╗   ██╗███╗   ██╗██████╗ 
+;			███████╗ ██████╗ ██╗   ██╗███╗   ██╗██████╗
 ;			██╔════╝██╔═══██╗██║   ██║████╗  ██║██╔══██╗
 ;			███████╗██║   ██║██║   ██║██╔██╗ ██║██║  ██║
 ;			╚════██║██║   ██║██║   ██║██║╚██╗██║██║  ██║
 ;			███████║╚██████╔╝╚██████╔╝██║ ╚████║██████╔╝
-;			╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═════╝ 
-;                                           
-;				Code related to sound                                          
+;			╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═════╝
+;
+;				Code related to Sound
 
-function playDing()
-	OsaDing.Play(playerref)
+Function PlayDing()
+	OSADing.Play(PlayerRef)
 EndFunction
 
-function playTickSmall()
-	OsaTickSmall.Play(playerref)
+Function PlayTickSmall()
+	OSATickSmall.Play(PlayerRef)
 EndFunction
 
-function playTickBig()
-	OsaTickBig.Play(playerref)
-endfunction
+Function playTickBig()
+	OSATickBig.Play(PlayerRef)
+EndFunction
 
-Event OnSoundDom(string eventName, string fi, float ix, Form sender)
-	onsound(DomActor, (fi as int), ix as int)
+Event OnSoundDom(String EventName, String Fi, Float Ix, Form Sender)
+	OnSound(DomActor, (Fi as Int), Ix as Int)
 EndEvent
 
-Event OnSoundSub(string eventName, string fi, float ix, Form sender)
-	onsound(subactor, (fi as int), ix as int)
+Event OnSoundSub(String EventName, String Fi, Float Ix, Form Sender)
+	OnSound(SubActor, (Fi as Int), Ix as Int)
 EndEvent
 
-Event OnSoundThird(string eventName, string fi, float ix, Form sender)
-	onsound(thirdActor, (fi as int), ix as int)
+Event OnSoundThird(String EventName, String Fi, Float Ix, Form Sender)
+	OnSound(ThirdActor, (Fi as Int), Ix as Int)
 EndEvent
 
 ; Below is an event you can easily copy paste into your code to receive sound data
-;RegisterForModEvent("ostim_osasound", "OnOSASound")
-;Event OnOSASound(string eventName, string args, float nothing, Form sender)
-;	string[] argz = new string[3]
-;	argz = StringUtil.Split(args, "")
-;
-;	actor char 
-;	if argz[0] == "dom"
-;		char = ostim.getDomActor()
-;	elseif argz[0] == "sub"
-;		char = ostim.getsubactor()
-;	elseif argz[0] == "third"	
-;		char = ostim.getThirdActor()
-;	EndIf
-;	int formID = argz[1] as Int
-;	int soundID = argz[2] as Int
-;
-;	OsexIntegrationMain.console("Actor: " + char.GetDisplayName() + " FormID: " + formID + " SoundID: " + argz[2])
-;endevent
+;/
+RegisterForModEvent("ostim_osasound", "OnOSASound")
+Event OnOSASound(String EventName, String Args, Float Nothing, Form Sender)
+	String[] Argz = new String[3]
+	Argz = StringUtil.Split(Args, "")
 
-function OnSound(actor act, int soundID, int formNumber)
-	int formID 
-	if appearsFemale(act)
-		if (formNumber == 50) || (formNumber == 60)
-			formID = formNumber
+	Actor Char
+	If (Argz[0] == "dom")
+		Char = OStim.GetDomActor()
+	ElseIf (Argz[0] == "sub")
+		Char = OStim.Getsubactor()
+	ElseIf (Argz[0] == "third")
+		Char = OStim.GetThirdActor()
+	EndIf
+	Int FormID = Argz[1] as Int
+	Int SoundID = Argz[2] as Int
+
+	OsexIntegrationMain.Console("Actor: " + Char.GetDisplayName() + " FormID: " + formID + " SoundID: " + Argz[2])
+EndEvent
+/;
+
+Function OnSound(Actor Act, Int SoundID, Int FormNumber)
+	Int FormID = FormNumber
+	If (AppearsFemale(Act))
+		If ((FormNumber == 50) || (FormNumber == 60))
+			FormID = FormNumber
 		Else
-			formID = formNumber + 5
-		endif
-	Else
-		formID = formNumber
-	endif
+			FormID = FormNumber + 5
+		EndIf
+	EndIf
 
+	If (!MuteOSA)
+		PlayOSASound(Act, Formid, Soundid)
+	EndIf
 
-	if !muteOSA
-		playOSASound(act, formid, soundid)
-	endif
-
-	if (formNumber == 60)
+	If (FormNumber == 60)
 		OnSpank()
-		shakeController(0.3)
-		shakeCamera(0.5)
-	endif
+		ShakeController(0.3)
+		ShakeCamera(0.5)
+	EndIf
 
-	if (formNumber == 50)
-		shakeCamera(0.5)
-		shakeController(0.1)
-	endif
+	If (FormNumber == 50)
+		ShakeCamera(0.5)
+		ShakeController(0.1)
+	EndIf
 
-	string arg
-	if act == DomActor
-		arg = "dom"
-	elseif act == SubActor
-		arg = "sub"
-	Else
-		arg = "third"
-	endif
-	arg = arg + "," + formid
-	arg = arg + "," + soundid
-	SendModEvent("ostim_osasound", strArg = arg)
+	String Arg = "third"
+	If (Act == DomActor)
+		Arg = "dom"
+	ElseIf (Act == SubActor)
+		Arg = "sub"
+	EndIf
 
+	Arg += "," + FormId
+	Arg += "," + SoundId
+	SendModEvent("ostim_osasound", StrArg = Arg)
 EndFunction
 
+Event OnFormBind(String EventName, String zMod, Float IxID, Form Sender)
+	Int Ix = StringUtil.Substring(IxID, 0, 2) as Int
+	Int Fo = StringUtil.Substring(IxID, 2) as Int
+	;OFormSuite[Ix] = Game.GetFormFromFile(Fo, zMod) as FormList
+	Console("System requesting form: " + Fo + " be placed in to slot " + Ix)
+	If (zMod != "OSA.esm")
+		Console(zMod)
+	EndIf
 
-
-Event OnFormBind(string eventName, string zMod, float ixid, Form sender)
-	int Ix = StringUtil.substring(ixid, 0, 2) as int
-	int Fo = StringUtil.substring(ixid, 2) as int
-;OFormSuite[Ix] = Game.GetFormFromFile(Fo, zMod) as FormList
-	console("System requesting form: " + fo + " be placed in to slot " + ix)
-	if zMod != "OSA.esm"
-		console(zmod)
-	endif
-
-	console(game.GetFormFromFile(fo, "OSA.esm").GetName())
+	Console(Game.GetFormFromFile(fo, "OSA.esm").GetName())
 EndEvent
 
-function playOSASound(actor act, int formlistID, int soundID)
-	playSound(act, SoundFormlists[formlistID].GetAt(soundid) as Sound)
-	;console("Playing sound " + soundid + " in form " + formlistID)
+Function PlayOSASound(Actor Act, Int FormlistID, Int SoundID)
+	PlaySound(Act, SoundFormlists[FormlistID].GetAt(SoundID) as Sound)
+	;Console("Playing sound " + soundid + " in form " + formlistID)
 EndFunction
 
-function playSound(actor act, sound sou)
-	int S = (sou).play(act)
+Function PlaySound(Actor Act, Sound Snd)
+	Int S = (Snd).Play(Act)
 	Sound.SetInstanceVolume(S, 1.0)
 EndFunction
 
@@ -2236,30 +2151,30 @@ EndFunction
 ;0spank_spank - 60
 ;0spank_spank - 60
 
-FormList[] SoundFormlists
-function BuildSoundFormlists()
-	SoundFormlists = new formlist[100]
-	string osas = "OSA.esm"
+FormList[] SoundFormLists
+Function BuildSoundFormLists()
+	SoundFormLists = new FormList[100]
+	String Plugin = "OSA.esm"
 
-	SoundFormlists[10] = game.GetFormFromFile(10483, osas) as FormList ;0Guy_ivo
-	SoundFormlists[15] = game.GetFormFromFile(8986, osas) as FormList ;0Gal_ivo
+	SoundFormLists[10] = Game.GetFormFromFile(10483, Plugin) as FormList ;0Guy_ivo
+	SoundFormLists[15] = Game.GetFormFromFile(8986, Plugin) as FormList ;0Gal_ivo
 
-	SoundFormlists[11] = game.GetFormFromFile(8986, osas) as FormList ;0Gal_ivo | wtf? female voice on male?
-	SoundFormlists[16] = game.GetFormFromFile(8987, osas) as FormList ;0Gal_ivos
+	SoundFormLists[11] = Game.GetFormFromFile(8986, Plugin) as FormList ;0Gal_ivo | wtf? female voice on male?
+	SoundFormLists[16] = Game.GetFormFromFile(8987, Plugin) as FormList ;0Gal_ivos
 
-	SoundFormlists[20] = game.GetFormFromFile(17595, osas) as FormList ;0Guy_vo
-	SoundFormlists[25] = game.GetFormFromFile(17570, osas) as FormList ;0Gal_vo
+	SoundFormLists[20] = Game.GetFormFromFile(17595, Plugin) as FormList ;0Guy_vo
+	SoundFormLists[25] = Game.GetFormFromFile(17570, Plugin) as FormList ;0Gal_vo
 
-	SoundFormlists[80] = game.GetFormFromFile(13409, osas) as FormList ;0guy_wvo
-	SoundFormlists[85] = game.GetFormFromFile(13400, osas) as FormList ;FEvenTone_wvo
+	SoundFormLists[80] = Game.GetFormFromFile(13409, Plugin) as FormList ;0guy_wvo
+	SoundFormLists[85] = Game.GetFormFromFile(13400, Plugin) as FormList ;FEvenTone_wvo
 
-	SoundFormlists[50] = game.GetFormFromFile(11972, osas) as FormList ;0bod_ibo
+	SoundFormLists[50] = Game.GetFormFromFile(11972, Plugin) as FormList ;0bod_ibo
 
-	SoundFormlists[60] = game.GetFormFromFile(9037, osas) as FormList ;0spank_spank
-endfunction
+	SoundFormLists[60] = Game.GetFormFromFile(9037, Plugin) as FormList ;0spank_spank
+EndFunction
 
-FormList[] function getSoundFormLists()
-	return SoundFormlists
+FormList[] Function GetSoundFormLists()
+	Return SoundFormLists
 EndFunction
 
 ;
@@ -2269,154 +2184,153 @@ EndFunction
 ;			██╔══██╗██╔══██║██╔══██╗╚════██║
 ;			██████╔╝██║  ██║██║  ██║███████║
 ;			╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
-;                               
-;				Code related to the on-screen bars 
+;
+;				Code related to the on-screen bars
 
 
 
-function initBar(Osexbar bar, bool domsbar)
-	bar.HAnchor = "left"
-	bar.VAnchor = "bottom"
-	bar.X = 200	
-	bar.Alpha = 0.0
-	bar.SetPercent(0.0)
-	bar.FillDirection = "Right"
+Function InitBar(Osexbar Bar, Bool DomsBar)
+	Bar.HAnchor = "left"
+	Bar.VAnchor = "bottom"
+	Bar.X = 200
+	Bar.Alpha = 0.0
+	Bar.SetPercent(0.0)
+	Bar.FillDirection = "Right"
 
-	if domsbar
-		bar.Y = 692
-		bar.SetColors(0xb0b0b0, 0xADD8E6, 0xffffff)
+	If (DomsBar)
+		Bar.Y = 692
+		Bar.SetColors(0xb0b0b0, 0xADD8E6, 0xffffff)
 	Else
-		bar.Y = 647
-		bar.SetColors(0xb0b0b0, 0xffb6c1, 0xffffff)
-	endif
+		Bar.Y = 647
+		Bar.SetColors(0xb0b0b0, 0xffb6c1, 0xffffff)
+	EndIf
 
-	setBarVisible(bar, false)
-endfunction
+	SetBarVisible(Bar, False)
+EndFunction
 
-function setBarVisible(Osexbar bar, bool visible)
-	if (Visible)
-		bar.FadeTo(100.0, 1.0)
-		bar.fadedOut = false
-	else
-		bar.FadeTo(0.0, 1.0)
-		bar.fadedOut = true
+Function SetBarVisible(Osexbar Bar, Bool Visible)
+	If (Visible)
+		Bar.FadeTo(100.0, 1.0)
+		Bar.FadedOut = False
+	Else
+		Bar.FadeTo(0.0, 1.0)
+		Bar.FadedOut = True
 	EndIf
 EndFunction
 
-bool function isBarVisible(osexbar bar)
-	return !bar.fadedOut
-endfunction
-
-function setBarPercent(Osexbar bar, float percent)
-	float zpercent = percent / 100.0
-	bar.SetPercent(percent / 100.0)
-
-	if zpercent >= 1.0
-		flashBar(bar)
-	endif
+Bool Function IsBarVisible(Osexbar Bar)
+	Return (!Bar.FadedOut)
 EndFunction
 
-function flashBar(Osexbar bar)
-	bar.ForceFlash()
+Function SetBarPercent(Osexbar Bar, Float Percent)
+	Bar.SetPercent(Percent / 100.0)
+	Float zPercent = Percent / 100.0
+	If (zPercent >= 1.0)
+		FlashBar(Bar)
+	EndIf
 EndFunction
 
-;			 ██████╗ ████████╗██╗  ██╗███████╗██████╗ 
+Function FlashBar(Osexbar Bar)
+	Bar.ForceFlash()
+EndFunction
+
+
+;			 ██████╗ ████████╗██╗  ██╗███████╗██████╗
 ;			██╔═══██╗╚══██╔══╝██║  ██║██╔════╝██╔══██╗
 ;			██║   ██║   ██║   ███████║█████╗  ██████╔╝
 ;			██║   ██║   ██║   ██╔══██║██╔══╝  ██╔══██╗
 ;			╚██████╔╝   ██║   ██║  ██║███████╗██║  ██║
 ;			 ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
-;                                         
-;				Misc stuff  
-;				https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=ANSI%20Shadow&text=Other                                     
+;
+;				Misc stuff
+;				https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=ANSI%20Shadow&text=Other
 
-function console(string in) global
-	MiscUtil.PrintConsole("OStim: " + in)
+
+Function Console(String In) Global
+	MiscUtil.PrintConsole("OStim: " + In)
 EndFunction
 
-function setGameSpeed(string in)
-	consoleUtil.ExecuteCommand("sgtm " + in)
-endfunction
-
-bool function chanceRoll(int chance) ; input 60: 60% of returning true 
-	int roll = Utility.RandomInt(1, 100)
-
-	if roll <= chance
-		return True
-	Else
-		return false
-	endif
+Function SetGameSpeed(String In)
+	ConsoleUtil.ExecuteCommand("sgtm " + In)
 EndFunction
 
-int function speedStringToInt(string in) ;casting does not work so...
-	if in == "s0"
-		return 0
-	elseif in == "s1"
-		return 1
-	elseif in == "s2"
-		return 2
-	elseif in == "s3"
-		return 3
-	elseif in == "s4"
-		return 4
-	elseif in == "s5"
-		return 5
-	elseif in == "s6"
-		return 6
-	elseif in == "s7"
-		return 7
-	elseif in == "s8"
-		return 8
-	elseif in == "s9"
-		return 9
-	endif
+Bool Function ChanceRoll(Int Chance) ; input 60: 60% of returning true
+	Int Roll = Utility.RandomInt(1, 100)
+	If (Roll <= Chance)
+		Return True
+	EndIf
+	Return False
 EndFunction
 
-function shakeCamera(float power, float duration = 0.1)
-	if useScreenShake && ((DomActor == playerref) || (SubActor == playerref))
-		game.ShakeCamera(playerref, power, duration)
-	endif
-endfunction
+Int Function SpeedStringToInt(String In) ; casting does not work so...
+	If In == "s0"
+		Return 0
+	ElseIf In == "s1"
+		Return 1
+	ElseIf In == "s2"
+		Return 2
+	ElseIf In == "s3"
+		Return 3
+	ElseIf In == "s4"
+		Return 4
+	ElseIf In == "s5"
+		Return 5
+	ElseIf In == "s6"
+		Return 6
+	ElseIf In == "s7"
+		Return 7
+	ElseIf In == "s8"
+		Return 8
+	ElseIf In == "s9"
+		Return 9
+	EndIf
+EndFunction
 
-function shakeController(float power, float duration = 0.1)
-	if useRumble && ((DomActor == playerref) || (SubActor == playerref))
-		game.ShakeController(power, power, duration)
-	endif
-endfunction
+Function ShakeCamera(Float Power, Float Duration = 0.1)
+	If (UseScreenShake && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		Game.ShakeCamera(PlayerRef, Power, Duration)
+	EndIf
+EndFunction
 
-bool function IntArrayContainsValue(int[] arr, int val)
-	int i = 0
-	int max = arr.Length
-	while i < max
-		if arr[i] == val
-			return True
-		endif
+Function ShakeController(Float Power, Float Duration = 0.1)
+	If (UseRumble && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		Game.ShakeController(Power, Power, Duration)
+	EndIf
+EndFunction
+
+Bool Function IntArrayContainsValue(Int[] Arr, Int Val)
+	Int i = 0
+	Int L = Arr.Length
+	While (i < L)
+		If (Arr[i] == Val)
+			Return True
+		EndIf
 		i += 1
-	endwhile
-	return false
-endfunction
-
-bool function StringArrayContainsValue(string[] arr, string val)
-	int i = 0
-	int max = arr.Length
-	while i < max
-		if arr[i] == val
-			return True
-		endif
-		i += 1
-	endwhile
-	return false
-endfunction
-
-int function getTimeScale()
-	return timescale.GetValue() as int
+	EndWhile
+	Return False
 EndFunction
 
-int function setTimeScale(int time)
-	timescale.SetValue(time as float)
-endfunction
+Bool Function StringArrayContainsValue(String[] Arr, String Val)
+	Int i = 0
+	Int L = Arr.Length
+	While (i < L)
+		If (Arr[i] == Val)
+			Return True
+		EndIf
+		i += 1
+	EndWhile
+	Return False
+EndFunction
 
-function setSystemVars()
+Int Function GetTimeScale()
+	Return Timescale.GetValue() as Int
+EndFunction
+
+Int Function SetTimeScale(Int Time)
+	Timescale.SetValue(Time as Float)
+EndFunction
+
+Function SetSystemVars()
 	; vanilla OSex class library
 	ClassSex = "Sx"
 	ClassCunn = "VJ" ;Cunnilingus
@@ -2425,16 +2339,16 @@ function setSystemVars()
 	ClassClitRub = "Cr"
 	ClassOneFingerPen = "Pf1"
 	ClassTwoFingerPen = "Pf2"
-	ClassBlowjob = "BJ"  
+	ClassBlowjob = "BJ"
 	ClassPenisjob = "ApPJ" ;Blowjob with jerking at the same time
 	ClassMasturbate = "Po" ; masturbation
 	ClassHolding = "Ho" ;
 	ClassApart = "Ap" ;standing apart
 	ClassApartUndressing = "ApU"
 	ClassEmbracing = "Em"
-	ClassRoughHolding = "Ro" 
-	ClassSelfSuck = "SJ" 
-	ClassHeadHeldPenisjob = "HhPJ" 
+	ClassRoughHolding = "Ro"
+	ClassSelfSuck = "SJ"
+	ClassHeadHeldPenisjob = "HhPJ"
 	ClassHeadHeldBlowjob = "HhBJ"
 	ClassHeadHeldMasturbate = "HhPo"
 	ClassDualHandjob = "DHJ"
@@ -2447,339 +2361,312 @@ function setSystemVars()
 	ClassBreastFeeding = "BoF"
 	ClassFootjob = "FJ"
 
-
-
-	penis = 0
-	vagina = 1
-	mouth = 2
-	hand = 3
-	clit = 4
+	Penis = 0
+	Vagina = 1
+	Mouth = 2
+	Hand = 3
+	Clit = 4
 	;extra
-	anus = 5
-	feet = 6
-	breasts = 7
-	prostate = 8
+	Anus = 5
+	Feet = 6
+	Breasts = 7
+	Prostate = 8
 
+	PenisStimValues = new Float[9]
+	VaginaStimValues = new Float[9]
+	MouthStimValues = new Float[9]
+	HandStimValues = new Float[9]
+	ClitStimValues = new Float[9]
 
-	penisStimValues = new float[9]
-	vaginaStimValues = new float[9]
-	mouthStimValues = new float[9]
-	handStimValues = new float[9]
-	clitStimValues = new float[9]
+	AnusStimValues = new Float[9]
+	FeetStimValues = new Float[9]
+	BreastsStimValues = new Float[9]
+	ProstateStimValues = new Float[9]
 
-	anusStimValues = new float[9]
-	feetStimValues = new float[9]
-	breastsStimValues = new float[9]
-	prostateStimValues = new float[9]
+	PenisStimValues[Penis] = 0.4
+	PenisStimValues[Vagina] = 0.8
+	PenisStimValues[Mouth] = 0.0
+	PenisStimValues[Hand] = 0.0
+	PenisStimValues[Clit] = 0.85
+	PenisStimValues[Anus] = 0.2
+	PenisStimValues[Feet] = 0.0
+	PenisStimValues[Breasts] = 0
+	PenisStimValues[Prostate] = 0.6
 
-	penisStimValues[penis] = 0.4
-	penisStimValues[vagina] = 0.8
-	penisStimValues[mouth] = 0.0
-	penisStimValues[hand] = 0.0
-	penisStimValues[clit] = 0.85
-	penisStimValues[anus] = 0.2
-	penisStimValues[feet] = 0.0
-	penisStimValues[breasts] = 0
-	penisStimValues[prostate] = 0.6
+	VaginaStimValues[Penis] = 1.0
+	VaginaStimValues[Vagina] = 0.6
+	VaginaStimValues[Mouth] = 0.0
+	VaginaStimValues[Hand] = 0.0
+	VaginaStimValues[Clit] = 1.0
+	VaginaStimValues[Anus] = 0.0
+	VaginaStimValues[Feet] = 0.0
+	VaginaStimValues[Breasts] = 0.0
+	VaginaStimValues[Prostate] = 0.0
 
-	vaginaStimValues[penis] = 1.0
-	vaginaStimValues[vagina] = 0.6
-	vaginaStimValues[mouth] = 0.0
-	vaginaStimValues[hand] = 0.0
-	vaginaStimValues[clit] = 1.0
-	vaginaStimValues[anus] = 0.0
-	vaginaStimValues[feet] = 0.0
-	vaginaStimValues[breasts] = 0.0
-	vaginaStimValues[prostate] = 0.0
+	MouthStimValues[Penis] = 1.4
+	MouthStimValues[Vagina] = 1.0
+	MouthStimValues[Mouth] = 0.1
+	MouthStimValues[Hand] = 0.0
+	MouthStimValues[Clit] = 2.0
+	MouthStimValues[Anus] = 0.1
+	MouthStimValues[Feet] = 0.0
+	MouthStimValues[Breasts] = 0.1
+	MouthStimValues[Prostate] = 0.0
 
-	mouthStimValues[penis] = 1.4
-	mouthStimValues[vagina] = 1.0
-	mouthStimValues[mouth] = 0.1
-	mouthStimValues[hand] = 0.0
-	mouthStimValues[clit] = 2.0
-	mouthStimValues[anus] = 0.1
-	mouthStimValues[feet] = 0.0
-	mouthStimValues[breasts] = 0.1
-	mouthStimValues[prostate] = 0.0
+	HandStimValues[Penis] = 0.9
+	HandStimValues[Vagina] = 0.6
+	HandStimValues[Mouth] = 0.0
+	HandStimValues[Hand] = 0.0
+	HandStimValues[Clit] = 1.3
+	HandStimValues[Anus] = 0.1
+	HandStimValues[Feet] = 0.0
+	HandStimValues[Breasts] = 0.0
+	HandStimValues[Prostate] = 0.5
 
-	handStimValues[penis] = 0.9
-	handStimValues[vagina] = 0.6
-	handStimValues[mouth] = 0.0
-	handStimValues[hand] = 0.0
-	handStimValues[clit] = 1.3
-	handStimValues[anus] = 0.1
-	handStimValues[feet] = 0.0
-	handStimValues[breasts] = 0.0
-	handStimValues[prostate] = 0.5
+	ClitStimValues[Penis] = 0.2
+	ClitStimValues[Vagina] = 0.1
+	ClitStimValues[Mouth] = 0.0
+	ClitStimValues[Hand] = 0.0
+	ClitStimValues[Clit] = 1.1
+	ClitStimValues[Anus] = 0.0
+	ClitStimValues[Feet] = 0.0
+	ClitStimValues[Breasts] = 0.0
+	ClitStimValues[Prostate] = 0.0
 
-	clitStimValues[penis] = 0.2
-	clitStimValues[vagina] = 0.1
-	clitStimValues[mouth] = 0.0
-	clitStimValues[hand] = 0.0
-	clitStimValues[clit] = 1.1
-	clitStimValues[anus] = 0.0
-	clitStimValues[feet] = 0.0
-	clitStimValues[breasts] = 0.0
-	clitStimValues[prostate] = 0.0
+	AnusStimValues[Penis] = 1.2
+	AnusStimValues[Vagina] = 0.2
+	AnusStimValues[Mouth] = 0.0
+	AnusStimValues[Hand] = 0.0
+	AnusStimValues[Clit] = 0.5
+	AnusStimValues[Anus] = 0.0
+	AnusStimValues[Feet] = 0.0
+	AnusStimValues[Breasts] = 0.0
+	AnusStimValues[Prostate] = 0.0
 
-	anusStimValues[penis] = 1.2
-	anusStimValues[vagina] = 0.2
-	anusStimValues[mouth] = 0.0
-	anusStimValues[hand] = 0.0
-	anusStimValues[clit] = 0.5
-	anusStimValues[anus] = 0.0
-	anusStimValues[feet] = 0.0
-	anusStimValues[breasts] = 0.0
-	anusStimValues[prostate] = 0.0
+	FeetStimValues[Penis] = 0.7
+	FeetStimValues[Vagina] = 0.6
+	FeetStimValues[Mouth] = 0.0
+	FeetStimValues[Hand] = 0.0
+	FeetStimValues[Clit] = 0.8
+	FeetStimValues[Anus] = 0.1
+	FeetStimValues[Feet] = 0.0
+	FeetStimValues[Breasts] = 0.0
+	FeetStimValues[Prostate] = 0.3
 
-	feetStimValues[penis] = 0.7
-	feetStimValues[vagina] = 0.6
-	feetStimValues[mouth] = 0.0
-	feetStimValues[hand] = 0.0
-	feetStimValues[clit] = 0.8
-	feetStimValues[anus] = 0.1
-	feetStimValues[feet] = 0.0
-	feetStimValues[breasts] = 0.0
-	feetStimValues[prostate] = 0.3
+	BreastsStimValues[Penis] = 0.8
+	BreastsStimValues[Vagina] = 0.3
+	BreastsStimValues[Mouth] = 0.0
+	BreastsStimValues[Hand] = 0.0
+	BreastsStimValues[Clit] = 1.0
+	BreastsStimValues[Anus] = 0.0
+	BreastsStimValues[Feet] = 0.0
+	BreastsStimValues[Breasts] = 0.1
+	BreastsStimValues[Prostate] = 0.0
 
-	breastsStimValues[penis] = 0.8
-	breastsStimValues[vagina] = 0.3
-	breastsStimValues[mouth] = 0.0
-	breastsStimValues[hand] = 0.0
-	breastsStimValues[clit] = 1.0
-	breastsStimValues[anus] = 0.0
-	breastsStimValues[feet] = 0.0
-	breastsStimValues[breasts] = 0.1
-	breastsStimValues[prostate] = 0.0
+	ProstateStimValues[Penis] = 1.2
+	ProstateStimValues[Vagina] = 0.2
+	ProstateStimValues[Mouth] = 0.0
+	ProstateStimValues[Hand] = 0.0
+	ProstateStimValues[Clit] = 0.5
+	ProstateStimValues[Anus] = 0.0
+	ProstateStimValues[Feet] = 0.0
+	ProstateStimValues[Breasts] = 0.0
+	ProstateStimValues[Prostate] = 0.0
 
-	prostateStimValues[penis] = 1.2
-	prostateStimValues[vagina] = 0.2
-	prostateStimValues[mouth] = 0.0
-	prostateStimValues[hand] = 0.0
-	prostateStimValues[clit] = 0.5
-	prostateStimValues[anus] = 0.0
-	prostateStimValues[feet] = 0.0
-	prostateStimValues[breasts] = 0.0
-	prostateStimValues[prostate] = 0.0
-
-	speeds = new string[9] ;this is the most fucked up progression i have ever seen
-	speeds[0] = "-1"
-	speeds[1] = "0.5"
-	speeds[2] = "1.5"
-	speeds[3] = "2"
-	speeds[4] = "3"
-	speeds[5] = "4"
-	speeds[6] = "4.5"
-	speeds[7] = "5"
-	speeds[8] =  "6"
+	Speeds = new String[9] ;this is the most fucked up progression i have ever seen
+	Speeds[0] = "-1"
+	Speeds[1] = "0.5"
+	Speeds[2] = "1.5"
+	Speeds[3] = "2"
+	Speeds[4] = "3"
+	Speeds[5] = "4"
+	Speeds[6] = "4.5"
+	Speeds[7] = "5"
+	Speeds[8] =  "6"
 EndFunction
 
-function setDefaultSettings()
-	endOnDomOrgasm = true
-	enableSubBar = True
-	enableDomBar = true
-	enableActorSpeedControl = true
-	allowUnlimitedSpanking = false
-	autoUndressIfNeeded = true
+Function SetDefaultSettings()
+	EndOnDomOrgasm = True
+	EnableSubBar = True
+	EnableDomBar = True
+	EnableActorSpeedControl = True
+	AllowUnlimitedSpanking = False
+	AutoUndressIfNeeded = True
 
-	endAfterActorHit = false
+	EndAfterActorHit = False
 
-	domLightBrightness = 0
-	subLightBrightness = 1
-	subLightPos = 0
-	domLightPos = 0
+	DomLightBrightness = 0
+	SubLightBrightness = 1
+	SubLightPos = 0
+	DomLightPos = 0
 
-	customTimescale = 0
-	alwaysUndressAtAnimStart = true
-	onlyUndressChest = false ; currently only chest can be removed with animation 
-	alwaysAnimateUndress = false
+	CustomTimescale = 0
+	AlwaysUndressAtAnimStart = True
+	OnlyUndressChest = False ; currently only chest can be removed with animation
+	AlwaysAnimateUndress = False
 
-	lowLightLevelLightsOnly = false
+	LowLightLevelLightsOnly = False
 
-	sexExcitementMult = 1.0
-	
-	enableImprovedCamSupport = false
+	SexExcitementMult = 1.0
 
-	speedUpNonSexAnimation = false ;game pauses if anim finished early
-	speedUpSpeed = 1.5
+	EnableImprovedCamSupport = False
 
-	usebed = true
-	bedSearchDistance = 15
-	misallignmentProtection = true
+	SpeedUpNonSexAnimation = False ;game pauses if anim finished early
+	SpeedUpSpeed = 1.5
 
-	fixFlippedAnimations = false
-	orgasmIncreasesRelationship = false
-	slowMoOnOrgasm = true
+	Usebed = True
+	BedSearchDistance = 15
+	MisallignmentProtection = True
 
-	useaicontrol = false
-	pauseAI = false
-	autoHideBars = false
-	
-	getInBedAfterBedScene = false
-	useAINPConNPC = true
-	useAIPlayerAggressor = true
-	useAIPlayerAggressed = true
-	useAINonAggressive = false
+	FixFlippedAnimations = False
+	OrgasmIncreasesRelationship = False
+	SlowMoOnOrgasm = True
 
-	forcefirstpersonafter = true
+	UseAIControl = False
+	PauseAI = False
+	AutoHideBars = False
 
-	useFreeCam = false
+	GetInBedAfterBedScene = False
+	UseAINPConNPC = True
+	UseAIPlayerAggressor = True
+	UseAIPlayerAggressed = True
+	UseAINonAggressive = False
 
-	bedReallignment = 0
+	Forcefirstpersonafter = True
 
-	useRumble = game.UsingGamepad()
-	useScreenShake = false
+	UseFreeCam = False
 
-	useFades = True
-	useAutoFades = true
+	BedReallignment = 0
 
-	keymap = 200
-	speedUpKey = 78
-	speedDownKey = 74
+	UseRumble = Game.UsingGamepad()
+	UseScreenShake = False
+
+	UseFades = True
+	UseAutoFades = True
+
+	KeyMap = 200
+	SpeedUpKey = 78
+	SpeedDownKey = 74
 	PullOutKey = 79
 	ControlToggleKey = 82
 
-	muteOSA = False
+	MuteOSA = False
 
-	freecamFOV = 45
-	defaultFOV = 85
-	freecamspeed = 3
+	FreecamFOV = 45
+	DefaultFOV = 85
+	FreecamSpeed = 3
 
-	useNativeFunctions = (skse.GetPluginVersion("OSA") != -1)
-	if !useNativeFunctions
-		console("Native function DLL failed to load. Falling back to papyrus implementations")
-	endif
+	UseNativeFunctions = (SKSE.GetPluginVersion("OSA") != -1)
+	If (!UseNativeFunctions)
+		Console("Native function DLL failed to load. Falling back to papyrus implementations")
+	EndIf
 
-	useBrokenCosaveWorkaround = true
-	remapStartKey(keymap)
-	remapSpeedDownKey(speedDownKey)
-	remapSpeedUpKey(speedUpKey)
-	remapPullOutKey(PullOutKey)
-	remapControlToggleKey(ControlToggleKey)
+	UseBrokenCosaveWorkaround = True
+	RemapStartKey(Keymap)
+	RemapSpeedDownKey(SpeedDownKey)
+	RemapSpeedUpKey(SpeedUpKey)
+	RemapPullOutKey(PullOutKey)
+	RemapControlToggleKey(ControlToggleKey)
 EndFunction
 
-function loadOSexControlKeys()
-	OSexControlKeys = new int[1]
+Function RegisterOSexControlKey(Int zKey)
+	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, zKey)
+	RegisterForKey(zKey)
+EndFunction
 
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, speedUpKey)
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, speedDownKey)
+Function LoadOSexControlKeys()
+	OSexControlKeys = new Int[1]
+	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, SpeedUpKey)
+	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, SpeedDownKey)
 	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, PullOutKey)
 	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, ControlToggleKey)
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, keymap)
+	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, KeyMap)
 
-	int osexkey
-
-	osexkey = 83
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, osexkey)
-	registerForKey(osexkey)
-	osexkey = 156
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, osexkey)
-	registerForKey(osexkey)
-	osexkey = 72
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, osexkey)
-	registerForKey(osexkey)
-	osexkey = 76
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, osexkey)
-	registerForKey(osexkey)
-	osexkey = 75
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, osexkey)
-	registerForKey(osexkey)
-	osexkey = 77
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, osexkey)
-	registerForKey(osexkey)
-	osexkey = 73
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, osexkey)
-	registerForKey(osexkey)
-	osexkey = 71
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, osexkey)
-	registerForKey(osexkey)
-	osexkey = 79
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, osexkey)
-	registerForKey(osexkey)
-	osexkey = 209
-	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, osexkey)
-	registerForKey(osexkey)
-endfunction
-
-function DisplayTextBanner(string txt)
-	UI.InvokeString("HUD Menu", "_root.HUDMovieBaseInstance.QuestUpdateBaseInstance.ShowNotification", txt)
+	RegisterOSexControlKey(83)
+	RegisterOSexControlKey(156)
+	RegisterOSexControlKey(72)
+	RegisterOSexControlKey(76)
+	RegisterOSexControlKey(75)
+	RegisterOSexControlKey(77)
+	RegisterOSexControlKey(73)
+	RegisterOSexControlKey(71)
+	RegisterOSexControlKey(79)
+	RegisterOSexControlKey(209)
 EndFunction
 
-function resetState()
-	console("Resetting thread state")
-	sceneRunning = False
+Function DisplayTextBanner(String Txt)
+	UI.InvokeString("HUD Menu", "_root.HUDMovieBaseInstance.QuestUpdateBaseInstance.ShowNotification", Txt)
+EndFunction
+
+Function ResetState()
+	Console("Resetting thread state")
+	SceneRunning = False
 	Debug.MessageBox("Reset state.")
-
 EndFunction
 
+Function RemapStartKey(Int zKey)
+	UnregisterForKey(KeyMap)
+	RegisterForKey(zKey)
+	KeyMap = zKey
+EndFunction
 
-function remapStartKey(int zkey)
-	UnregisterForKey(keymap)
-
-	RegisterForKey(zkey)
-	keymap = zkey
-endfunction
-
-function remapControlToggleKey(int zkey)
+Function RemapControlToggleKey(Int zKey)
 	UnregisterForKey(ControlToggleKey)
+	RegisterForKey(zKey)
+	ControlToggleKey = zKey
+	LoadOSexControlKeys()
+EndFunction
 
-	RegisterForKey(zkey)
-	ControlToggleKey = zkey
-	loadOSexControlKeys()
-endfunction
+Function RemapSpeedUpKey(Int zKey)
+	UnregisterForKey(SpeedUpKey)
+	RegisterForKey(zKey)
+	speedUpKey = zKey
+	LoadOSexControlKeys()
+EndFunction
 
-function remapSpeedUpKey(int zkey)
-	UnregisterForKey(speedUpKey)
+Function RemapSpeedDownKey(Int zKey)
+	UnregisterForKey(SpeedDownKey)
+	RegisterForKey(zKey)
+	speedDownKey = zKey
+	LoadOSexControlKeys()
+EndFunction
 
-	RegisterForKey(zkey)
-	speedUpKey = zkey
-	loadOSexControlKeys()
-endfunction
-
-function remapSpeedDownKey(int zkey)
-	UnregisterForKey(speedDownKey)
-
-	RegisterForKey(zkey)
-	speedDownKey = zkey
-	loadOSexControlKeys()
-endfunction
-
-function remapPullOutKey(int zkey)
+Function RemapPullOutKey(Int zKey)
 	UnregisterForKey(PullOutKey)
+	RegisterForKey(zKey)
+	PullOutKey = zKey
+	LoadOSexControlKeys()
+EndFunction
 
-	RegisterForKey(zkey)
-	PullOutKey = zkey
-	loadOSexControlKeys()
-endfunction
-
-float profileTime
-function profile(string name = "")
-	
-	if name == ""
-		profileTime = game.GetRealHoursPassed() * 60 * 60
-	Else 
-		console(name + ": " + ((game.GetRealHoursPassed() * 60 * 60) - profileTime) + " seconds")
-	endif
-		
-endfunction
+Float ProfileTime
+Function Profile(String Name = "")
+	If (Name == "")
+		ProfileTime = Game.GetRealHoursPassed() * 60 * 60
+	Else
+		Console(name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
+	EndIf
+EndFunction
 
 ; TODO - support for ABOMB animation
 
-
-bool property useBrokenCosaveWorkaround auto
-function onLoadGame()
-
-	if useBrokenCosaveWorkaround
-		console("Using cosave fix")
+Bool Property UseBrokenCosaveWorkaround Auto
+Function OnLoadGame()
+	If (UseBrokenCosaveWorkaround)
+		Console("Using cosave fix")
 
 		RegisterForModEvent("ostim_actorhit", "OnActorHit")
-		loadOSexControlKeys()
-		registerforkey(speedUpKey)
-		registerforkey(speedDownKey)
-		registerforkey(PullOutKey)
-		registerforkey(ControlToggleKey)
-		registerforkey(keyMap)
+		LoadOSexControlKeys()
+		RegisterForKey(SpeedUpKey)
+		RegisterForKey(SpeedDownKey)
+		RegisterForKey(PullOutKey)
+		RegisterForKey(ControlToggleKey)
+		RegisterForKey(KeyMap)
 
-		ai.OnGameLoad()
-	endif
-endfunction
+		; DEBUG
+		RegisterForKey(26) ; [
+		RegisterForKey(27) ; ]
+		; DEBUG
+
+		AI.OnGameLoad()
+	EndIf
+EndFunction

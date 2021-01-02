@@ -1,468 +1,453 @@
-ScriptName OAiScript extends Quest
-
+ScriptName OAiScript Extends Quest
 
 ; modules & other goodies
 OsexIntegrationMain OStim
 ODatabaseScript ODatabase
-actor playerref
+Actor PlayerRef
 
-;actor stuff
-actor agent
-bool femDom
-bool maledom
+; actor stuff
+Actor Agent
+Bool FemDom
+Bool MaleDom
 
-bool gay
-bool lesbian
+Bool Gay
+Bool Lesbian
 
-int numactors
-string[] property foreplayClasses auto
-string[] property blowjobClasses auto
-string[] property femaleCentricClasses auto
-string[] property maleCentricClasses auto
-string[] property mainSexClasses auto
+Int NumActors
+
+String[] property ForeplayClasses Auto
+String[] property BlowjobClasses Auto
+String[] property FemaleCentricClasses Auto
+String[] property MaleCentricClasses Auto
+String[] property MainSexClasses Auto
 
 Event OnInit()
-	;startup()
-	ostim = (self as quest) as OsexIntegrationMain
-	ODatabase = ostim.getODatabase()
-	playerref = game.GetPlayer()
-	RegisterFormodevent("ostim_start", "Ostim_start")
-	RegisterFormodevent("ostim_start_ai", "AI_Thread")
+	;Startup()
+	OStim = (Self as Quest) as OsexIntegrationMain
+	ODatabase = OStim.GetODatabase()
+	PlayerRef = Game.GetPlayer()
 
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "VJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "ApHJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "HJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "Cr")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "Pf1")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "Pf2")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "BJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "ApPJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "HhPJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "HhBJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "VBJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "VHJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "BJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "BoJ")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "BoF")
-	foreplayClasses = PapyrusUtil.PushString(foreplayClasses, "FJ")
+	RegisterForModEvent("ostim_start", "Ostim_start")
+	RegisterForModEvent("ostim_start_ai", "AI_Thread")
 
-	blowjobClasses = PapyrusUtil.PushString(blowjobClasses, "BJ")
-	blowjobClasses = PapyrusUtil.PushString(blowjobClasses, "ApHJ")
-	blowjobClasses = PapyrusUtil.PushString(blowjobClasses, "HJ")
-	blowjobClasses = PapyrusUtil.PushString(blowjobClasses, "ApPJ")
-	blowjobClasses = PapyrusUtil.PushString(blowjobClasses, "VBJ")
-	blowjobClasses = PapyrusUtil.PushString(blowjobClasses, "HhPJ")
-	blowjobClasses = PapyrusUtil.PushString(blowjobClasses, "HhBJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "VJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "ApHJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "HJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "Cr")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "Pf1")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "Pf2")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "BJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "ApPJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "HhPJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "HhBJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "VBJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "VHJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "BJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "BoJ")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "BoF")
+	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "FJ")
 
-	femaleCentricClasses = PapyrusUtil.PushString(femaleCentricClasses, "VBJ") 
-	femaleCentricClasses = PapyrusUtil.PushString(femaleCentricClasses, "Cr") 
-	femaleCentricClasses = PapyrusUtil.PushString(femaleCentricClasses, "Pf1") 
-	femaleCentricClasses = PapyrusUtil.PushString(femaleCentricClasses, "Pf2") 
-	femaleCentricClasses = PapyrusUtil.PushString(femaleCentricClasses, "VHJ")
-	femaleCentricClasses = PapyrusUtil.PushString(femaleCentricClasses, "VJ")
+	BlowjobClasses = PapyrusUtil.PushString(BlowjobClasses, "BJ")
+	BlowjobClasses = PapyrusUtil.PushString(BlowjobClasses, "ApHJ")
+	BlowjobClasses = PapyrusUtil.PushString(BlowjobClasses, "HJ")
+	BlowjobClasses = PapyrusUtil.PushString(BlowjobClasses, "ApPJ")
+	BlowjobClasses = PapyrusUtil.PushString(BlowjobClasses, "VBJ")
+	BlowjobClasses = PapyrusUtil.PushString(BlowjobClasses, "HhPJ")
+	BlowjobClasses = PapyrusUtil.PushString(BlowjobClasses, "HhBJ")
 
-	maleCentricClasses = blowjobClasses
-	maleCentricClasses = PapyrusUtil.PushString(maleCentricClasses, "An")
+	FemaleCentricClasses = PapyrusUtil.PushString(FemaleCentricClasses, "VBJ")
+	FemaleCentricClasses = PapyrusUtil.PushString(FemaleCentricClasses, "Cr")
+	FemaleCentricClasses = PapyrusUtil.PushString(FemaleCentricClasses, "Pf1")
+	FemaleCentricClasses = PapyrusUtil.PushString(FemaleCentricClasses, "Pf2")
+	FemaleCentricClasses = PapyrusUtil.PushString(FemaleCentricClasses, "VHJ")
+	FemaleCentricClasses = PapyrusUtil.PushString(FemaleCentricClasses, "VJ")
 
-	mainSexClasses = PapyrusUtil.PushString(mainSexClasses, "Sx")
-	mainSexClasses = PapyrusUtil.PushString(mainSexClasses, "An")
+	MaleCentricClasses = BlowjobClasses
+	MaleCentricClasses = PapyrusUtil.PushString(MaleCentricClasses, "An")
 
+	MainSexClasses = PapyrusUtil.PushString(MainSexClasses, "Sx")
+	MainSexClasses = PapyrusUtil.PushString(MainSexClasses, "An")
 EndEvent
 
-Event Ostim_start(string eventName, string strArg, float numArg, Form sender)
-	if !ostim.UseAIControl
+Event OStim_Start(String EventName, String strArg, Float NumArg, Form Sender)
+	If (!OStim.UseAIControl)
 		Return
-	endif
-	startAI()
-endevent
+	EndIf
+	StartAI()
+EndEvent
 
-event AI_Thread(string eventName, string strArg, float numArg, Form sender)
+Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
+	Console("Starting OAI")
 
+	FemDom = False
+	MaleDom = False
 
-	console("Starting OAi")
+	Bool AggressiveScene = OStim.IsSceneAggressiveThemed()
 
-	femdom = false
-	maledom = false
-	if ostim.IsSceneAggressiveThemed()
-		if (ostim.isFemale(ostim.getAggressiveActor())) && !(ostim.isFemale(ostim.getSexPartner(ostim.getAggressiveActor()))) ; if the aggressive actor is female and their partner is not
-			console("Starting femdom scene")
-			femDom = true		
+	Actor DomActor = OStim.GetDomActor()
+	Actor SubActor = OStim.GetSubActor()
+	Actor AggressiveActor = OStim.GetAggressiveActor()
+
+	If (AggressiveScene)
+		If (OStim.IsFemale(AggressiveActor)) && !(OStim.IsFemale(OStim.GetSexPartner(AggressiveActor))) ; If the aggressive actor is female and their partner is not
+			Console("Starting FemDom scene")
+			FemDom = True
 		Else
-			console("Starting maledom scene")
-			maledom = true	
-		endif
-	else
-		if ostim.isActorActive(playerref)
-			agent = ostim.getSexPartner(playerref)
-		else
-			console("Player is not active")
-			agent = ostim.getDomActor()
-		endif
+			Console("Starting MaleDom scene")
+			MaleDom = True
+		EndIf
+	Else
+		If (OStim.IsActorActive(PlayerRef))
+			Agent = OStim.GetSexPartner(PlayerRef)
+		Else
+			Console("Player is not active")
+			Agent = DomActor
+		EndIf
 	EndIf
 
-	lesbian = False
-	gay = false
-	if ostim.isFemale(ostim.getDomActor()) && ostim.isFemale(ostim.getSubActor())
-		lesbian = true
-	elseif !ostim.isFemale(ostim.getDomActor()) && !ostim.isFemale(ostim.getSubActor())
-		gay = true
-	endif
+	Lesbian = False
+	Gay = False
 
-	if ostim.isActorActive(playerref)
-		agent = ostim.getSexPartner(playerref)
-	else
-		console("Player is not active")
-		agent = ostim.getDomActor()
-	endif
+	If (OStim.IsFemale(DomActor) && OStim.IsFemale(SubActor))
+		Lesbian = True
+	ElseIf (!OStim.IsFemale(DomActor) && !OStim.IsFemale(SubActor))
+		Gay = True
+	EndIf
 
-	if ostim.getThirdActor() != None
-		numactors = 3
+	If (OStim.IsActorActive(PlayerRef))
+		Agent = OStim.GetSexPartner(PlayerRef)
 	Else
-		numactors = 2
-	endif
+		Console("Player is not active")
+		Agent = DomActor
+	EndIf
 
-	int pulloutChance
-	if ostim.IsSceneAggressiveThemed()
-		pulloutChance = 0
+	If (OStim.GetThirdActor())
+		NumActors = 3
 	Else
-		int rel = agent.GetRelationshipRank(ostim.getSexPartner(agent))
-		if rel == 0
-			pulloutChance = 75
+		NumActors = 2
+	EndIf
+
+	Int PulloutChance
+	If (AggressiveScene)
+		PulloutChance = 0
+	Else
+		Int Rel = Agent.GetRelationshipRank(OStim.GetSexPartner(Agent))
+		If (Rel == 0)
+			PulloutChance = 75
 		Else
-			pulloutChance = 10
-		endif
-	endif
-	int foreplayChangeChance = 4
-	float foreplayEndThreshold
-	if ostim.IsSceneAggressiveThemed()
-		foreplayEndThreshold = Utility.RandomFloat(15.0, 105.0)
+			PulloutChance = 10
+		EndIf
+	EndIf
+
+	Int ForeplayChangeChance = 4
+	Float ForeplayEndThreshold
+	If (AggressiveScene)
+		ForeplayEndThreshold = Utility.RandomFloat(15.0, 105.0)
 	Else
-		int rel = agent.GetRelationshipRank(ostim.getSexPartner(agent))
-		if rel == 0
-			if chanceroll(50)
-				foreplayEndThreshold = 125.0
+		Int Rel = Agent.GetRelationshipRank(OStim.GetSexPartner(Agent))
+		If (Rel == 0)
+			If (ChanceRoll(50))
+				ForeplayEndThreshold = 125.0
 			Else
-				foreplayEndThreshold = Utility.RandomFloat(10.0, 35.0)
-			endif
+				ForeplayEndThreshold = Utility.RandomFloat(10.0, 35.0)
+			EndIf
 		Else
-			if ostim.chanceRoll(90)
-				foreplayEndThreshold = Utility.RandomFloat(10.0, 35.0)
+			If (OStim.ChanceRoll(90))
+				ForeplayEndThreshold = Utility.RandomFloat(10.0, 35.0)
 			Else
-				foreplayEndThreshold = 125.0
-			endif
-		endif
-	endif
-	int SexChangeChance = 2
-	int foreplayChance
-	if ostim.IsSceneAggressiveThemed()
-		foreplaychance = 20
+				ForeplayEndThreshold = 125.0
+			EndIf
+		EndIf
+	EndIf
+
+	Int SexChangeChance = 2
+	Int ForeplayChance
+	If (AggressiveScene)
+		ForeplayChance = 20
 	Else
-		foreplaychance = 80
-	endif
+		ForeplayChance = 80
+	EndIf
 
-	console("Pullout chance: " + pulloutChance)
-	console("foreplay chance: " + foreplayChance)
-	console("foreplay change chance: " + foreplayChangeChance)
-	console("foreplay end thresh : " + foreplayEndThreshold)
-	console("sex change anim chance: " + SexChangeChance)
+	Console("Pullout chance: " + PulloutChance)
+	Console("foreplay chance: " + ForeplayChance)
+	Console("foreplay change chance: " + ForeplayChangeChance)
+	Console("foreplay end thresh : " + ForeplayEndThreshold)
+	Console("sex change anim chance: " + SexChangeChance)
 
-
-	int stage
-	if chanceroll(foreplaychance)
-		stage = 1 ;foreplay
+	Int Stage
+	If (ChanceRoll(ForeplayChance))
+		Stage = 1 ; foreplay
 	Else
-		stage = 2 ; main
-	endif
+		Stage = 2 ; main
+	EndIf
 
-	actor centralActor
+	Actor CentralActor
 
-	
-
-	bool changeAnimation = True
-	while ostim.animationRunning()
-		
-			
-		if ostim.StringArrayContainsValue(femaleCentricClasses, ostim.getCurrentAnimationClass())
-			centralActor = ostim.getSubActor()
+	Bool ChangeAnimation = True
+	While (OStim.AnimationRunning())
+		If (OStim.StringArrayContainsValue(FemaleCentricClasses, OStim.GetCurrentAnimationClass()))
+			CentralActor = OStim.GetSubActor()
 		Else
-			centralActor = ostim.getDomActor()
-		endif
+			CentralActor = OStim.GetDomActor()
+		EndIf
 
-		
+		If (OStim.GetActorExcitement(OStim.GetDomActor()) > 95)
+			If (ChanceRoll(PulloutChance))
+				ChangeToPulledOutVersion()
+			EndIf
+			Stage = 3
+		EndIf
 
-		if ostim.getActorExcitement(ostim.getDomActor()) > 95
-			if chanceroll(pulloutChance)
-				changeToPulledOutVersion()
-			endif
-			stage = 3
-		endif
+		If (Stage == 1)
+			If (!ChangeAnimation)
+				ChangeAnimation = OStim.ChanceRoll(ForeplayChangeChance)
+			EndIf
 
-		if stage == 1
-			if !changeAnimation
-				changeAnimation = ostim.chanceRoll(foreplayChangeChance) 
-			endif
+			If (ChangeAnimation)
+				ChangeAnimation = False
+				Console("Changing to other foreplay animation")
+				String Animation = GetRandomForeplayAnimation(MaleCentric = MaleDom, FemaleCentric = FemDom, Aggressive = OStim.IsSceneAggressiveThemed())
+				If (Animation != "")
+					Warp(Animation)
+				EndIf
+			EndIf
 
-			
+			If (OStim.GetActorExcitement(CentralActor) > ForeplayEndThreshold)
+				ChangeAnimation = True
+				Console("Changing to sex animation")
+				Stage = 2
+			EndIf
+		ElseIf (Stage == 2)
+			If (!ChangeAnimation)
+				ChangeAnimation = OStim.ChanceRoll(SexChangeChance)
+			EndIf
 
-			if changeAnimation
+			If (ChangeAnimation)
+				ChangeAnimation = False
+				Console("Changing to other sex animation")
+				String Animation = getRandomSexAnimation(MaleCentric = MaleDom, femaleCentric = FemDom, Aggressive = OStim.IsSceneAggressiveThemed())
+				If (Animation != "")
+					Warp(animation)
+				EndIf
+			EndIf
+		EndIf
 
-				changeAnimation = False
-
-				console("Changing to other foreplay animation")
-					
-				string animation2 = getRandomForeplayAnimation(maleCentric = maledom, femaleCentric = femDom, aggressive = ostim.IsSceneAggressiveThemed())
-				if animation2 != ""
-					warp(animation2)
-				endif
-			endif
-
-			if ostim.getActorExcitement(centralActor) > foreplayEndThreshold
-				changeAnimation = true
-				console("Changing to sex animation")
-				stage = 2
-		
-			endif
-
-		elseif stage == 2
-			if !changeAnimation
-				changeAnimation = ostim.chanceRoll(SexChangeChance) 
-			endif
-
-			if changeAnimation
-
-				changeAnimation = False
-
-				console("Changing to other sex animation")
-				string animation = getRandomSexAnimation(maleCentric = maledom, femaleCentric = femDom, aggressive = ostim.IsSceneAggressiveThemed())
-				if animation != ""
-					warp(animation)
-				endif
-
-			endif
-
-			
-
-		endif
 		Utility.Wait(2)
 
-		While ostim.pauseAI && ostim.animationRunning() 
+		While (OStim.PauseAI && OStim.AnimationRunning())
 			Utility.Wait(1)
-		endwhile
+		EndWhile
 	EndWhile
 
-	console("Closed AI thread")
-endevent
+	Console("Closed AI thread")
+EndEvent
 
-function startAI()
-	console("Firing off AI thread")
+Function StartAI()
+	Console("Firing off AI thread")
 	SendModEvent("ostim_start_ai")
-endfunction
-
-string function getRandomForeplayAnimation(bool maleCentric = false, bool femaleCentric = false, bool aggressive = false)
-	int animations = getAllSexualAnimations()
-	animations = filterOutAggressiveAnimations(animations, aggressive)
-	
-	if aggressive
-		if femDom
-			animations = ODatabase.getAnimationsByMainActor(animations, 1)
-		Else
-			animations = ODatabase.getAnimationsByMainActor(animations, 0)
-		endif
-	endif
-
-	int numAnimations = ODatabase.getLengthOArray(animations)
-	if numAnimations < 1
-		console("No foreplay animations with these parameters")
-	endif
-
-	int i = 0
-	int max = 50
-
-	while (i < 50) 
-		int animation = ODatabase.getObjectOArray(animations, utility.RandomInt(0, numAnimations))
-		console("Trying animation: " + ODatabase.getFullName(animation))
-
-		if ostim.StringArrayContainsValue(foreplayClasses, (ODatabase.getAnimationClass(animation)))
-			if maleCentric
-				if ostim.StringArrayContainsValue(maleCentricClasses, (ODatabase.getAnimationClass(animation)))
-					return odatabase.getSceneID(animation)
-				endif
-			Elseif femaleCentric
-				if ostim.StringArrayContainsValue(femaleCentricClasses, (ODatabase.getAnimationClass(animation)))
-					return odatabase.getSceneID(animation)
-				endif
-			Else
-				return odatabase.getSceneID(animation)
-			endif
-
-		EndIf
-
-		i += 1
-	endwhile
-
-	console("No sex animations with these parameters")
-	animations = getAllSexualAnimations()
-	i = 0
-
-	while (i < 50) 
-		int animation = ODatabase.getObjectOArray(animations, utility.RandomInt(0, numAnimations))
-		console("Trying animation: " + ODatabase.getFullName(animation))
-
-		if ostim.StringArrayContainsValue(mainSexClasses, (ODatabase.getAnimationClass(animation)))
-			return odatabase.getSceneID(animation)
-		EndIf
-
-		i += 1
-	endwhile
-
-
-	return ""
-endfunction
-
-string function getRandomSexAnimation(bool maleCentric = false, bool femaleCentric = false, bool aggressive = false)
-	int animations = getAllSexualAnimations()
-	animations = filterOutAggressiveAnimations(animations, aggressive)
-
-	if aggressive
-		if femDom
-			animations = ODatabase.getAnimationsByMainActor(animations, 1) 
-
-			int cowgirlAnims = getAllSexualAnimations()
-			cowgirlAnims = ODatabase.getAnimationsWithName(cowgirlAnims, "cow",  allowPartialResult = true)	
-
-			int[] merge = new Int[2]
-			merge[0] = animations
-			merge[1] = cowgirlAnims
-
-			animations = ODatabase.mergeOArrays(merge)
-		Else
-			animations = ODatabase.getAnimationsByMainActor(animations, 0)
-		endif
-	endif
-
-	int numAnimations = ODatabase.getLengthOArray(animations)
-	if numAnimations < 1
-		console("No sex animations with these parameters")
-		animations = getAllSexualAnimations()
-	endif
-	int i = 0
-	int max = 50
-
-	while (i < 50) 
-		int animation = ODatabase.getObjectOArray(animations, utility.RandomInt(0, numAnimations))
-		console("Trying animation: " + ODatabase.getFullName(animation))
-
-		if ostim.StringArrayContainsValue(mainSexClasses, (ODatabase.getAnimationClass(animation)))
-			return odatabase.getSceneID(animation)
-		EndIf
-
-		i += 1
-	endwhile
-
-	console("No sex animations with these parameters")
-	animations = getAllSexualAnimations()
-	i = 0
-
-	while (i < 50) 
-		int animation = ODatabase.getObjectOArray(animations, utility.RandomInt(0, numAnimations))
-		console("Trying animation: " + ODatabase.getFullName(animation))
-
-		if ostim.StringArrayContainsValue(mainSexClasses, (ODatabase.getAnimationClass(animation)))
-			return odatabase.getSceneID(animation)
-		EndIf
-
-		i += 1
-	endwhile
-
-
-	return ""
-endfunction
-
-function changeToPulledOutVersion()
-	console("trying pullout")
-	string pos = ODatabase.getPositionData(ostim.getCurrentAnimationOID())
-
-	int animations = ODatabase.getAnimationsWithPositionData(getAllSexualAnimations(), pos)
-	animations = ODatabase.getAnimationsWithAnimationClass(animations, "Po")
-
-	if ODatabase.getLengthOArray(animations) > 0
-		int animation = ODatabase.getObjectOArray(animations, 0)
-		ostim.travelToAnimation(ODatabase.getSceneID(animation))
-
-		ostim.setCurrentAnimationSpeed(ODatabase.getMaxSpeed(animation))
-	endif
 EndFunction
 
+String Function GetRandomForeplayAnimation(Bool MaleCentric = False, Bool FemaleCentric = False, Bool Aggressive = False)
+	Int Animations = GetAllSexualAnimations()
+	Animations = FilterOutAggressiveAnimations(Animations, Aggressive)
 
-int function getAllSexualAnimations()
-	int animations
-	animations = odatabase.getAnimationsWithActorCount(ODatabase.getDatabaseOArray(), numactors)
-	animations = odatabase.getHubAnimations(animations, false)
-	animations = odatabase.getTransitoryAnimations(animations, false)
+	If (Aggressive)
+		If (FemDom)
+			Animations = ODatabase.GetAnimationsByMainActor(Animations, 1)
+		Else
+			Animations = ODatabase.GetAnimationsByMainActor(Animations, 0)
+		EndIf
+	EndIf
 
-	if ostim.usingBed()
-		animations = removeStandingAnimations(animations)
-	endif
+	Int NumAnimations = ODatabase.GetLengthOArray(Animations)
+	If (NumAnimations < 1)
+		Console("No foreplay Animations with these parameters")
+	EndIf
 
-	if !gay
-		animations = ODatabase.getAnimationsWithName(animations, "Gay",  allowPartialResult = true, negative = true)
-	endif
+	Int i = 0
+	Int max = 50
+	While (i < max)
+		Int Animation = ODatabase.GetObjectOArray(Animations, Utility.RandomInt(0, NumAnimations))
+		String AnimationClass = ODatabase.GetAnimationClass(Animation)
+		Console("Trying animation: " + ODatabase.GetFullName(Animation))
 
-	if !lesbian
-		animations = ODatabase.getAnimationsWithName(animations, "Lesbian",  allowPartialResult = true, negative = true)
-	endif
-	return animations
-endfunction
-
-int function filterOutAggressiveAnimations(int animations, bool allow = false)
-	return ODatabase.getAnimationsByAggression(animations, allow)
-endfunction
-
-int function removeStandingAnimations(int animations)
-	console("filtering standing animations")
-	int i = 0
-	int max = ODatabase.getLengthOArray(animations)
-
-	int ret = ODatabase.newOArray()
-	while i < max
-		string pos = ODatabase.getPositionData(ODatabase.getObjectOArray(animations, i))
-
-		if StringUtil.Find(pos, "S") == -1
-			ODatabase.appendObjectOArray(ret, ODatabase.getObjectOArray(animations, i))
-		endif
+		If (OStim.StringArrayContainsValue(ForeplayClasses, AnimationClass))
+			If (MaleCentric)
+				If (OStim.StringArrayContainsValue(MaleCentricClasses, AnimationClass))
+					Return ODatabase.GetSceneID(Animation)
+				EndIf
+			Elseif (FemaleCentric)
+				If (OStim.StringArrayContainsValue(FemaleCentricClasses, AnimationClass))
+					Return ODatabase.GetSceneID(Animation)
+				EndIf
+			Else
+				Return ODatabase.GetSceneID(Animation)
+			EndIf
+		EndIf
 
 		i += 1
 	EndWhile
 
-	return ret
-endfunction
+	Console("No sex Animations with these parameters")
+	Animations = GetAllSexualAnimations()
 
-function warp(string ascene)
-	if ostim.useAutoFades && ostim.isActorActive(playerref)
-		float time = 1.00
-		game.FadeOutGame(true, true, 0.0, time)
-		utility.Wait(time - 0.15)
-		game.FadeOutGame(false, true, 25.0, 25.0) ;total blackout
-	endif
+	i = 0
+	While (i < max)
+		Int Animation = ODatabase.GetObjectOArray(Animations, Utility.RandomInt(0, NumAnimations))
+		String AnimationClass = ODatabase.GetAnimationClass(Animation)
+		Console("Trying animation: " + ODatabase.GetFullName(Animation))
 
-	ostim.warpToAnimation(ascene)
+		If (OStim.StringArrayContainsValue(MainSexClasses, AnimationClass))
+			Return ODatabase.GetSceneID(Animation)
+		EndIf
 
-	if ostim.useAutoFades && ostim.isActorActive(playerref)
-		Utility.Wait(0.55)
-		game.FadeOutGame(false, true, 0.0, 1) ;welcome back
-	EndIf
-endfunction
+		i += 1
+	EndWhile
 
-function console(string in) 
-	OsexIntegrationMain.console(in)
+	Return ""
 EndFunction
 
-bool function chanceroll(int chance)
-	return ostim.chanceroll(chance)
-endfunction
+String Function GetRandomSexAnimation(Bool MaleCentric = False, Bool FemaleCentric = False, Bool Aggressive = False)
+	Int Animations = GetAllSexualAnimations()
+	Animations = FilterOutAggressiveAnimations(Animations, Aggressive)
 
-function OnGameLoad()
+	If (Aggressive)
+		If (FemDom)
+			Animations = ODatabase.GetAnimationsByMainActor(Animations, 1)
+
+			Int CowgirlAnims = GetAllSexualAnimations()
+			CowgirlAnims = ODatabase.GetAnimationsWithName(CowgirlAnims, "cow",  AllowPartialResult = True)
+
+			Int[] Merge = new Int[2]
+			Merge[0] = Animations
+			Merge[1] = CowgirlAnims
+
+			Animations = ODatabase.MergeOArrays(Merge)
+		Else
+			Animations = ODatabase.GetAnimationsByMainActor(Animations, 0)
+		EndIf
+	EndIf
+
+	Int NumAnimations = ODatabase.GetLengthOArray(Animations)
+	If (NumAnimations < 1)
+		Console("No sex Animations with these parameters")
+		Animations = GetAllSexualAnimations()
+	EndIf
+
+	Int i = 0
+	Int max = 50
+	While (i < max)
+		Int Animation = ODatabase.GetObjectOArray(Animations, Utility.RandomInt(0, NumAnimations))
+		Console("Trying animation: " + ODatabase.GetFullName(Animation))
+
+		If (OStim.StringArrayContainsValue(MainSexClasses, ODatabase.GetAnimationClass(Animation)))
+			Return ODatabase.GetSceneID(Animation)
+		EndIf
+
+		i += 1
+	EndWhile
+
+	Console("No sex Animations with these parameters")
+	Animations = GetAllSexualAnimations()
+
+	i = 0
+	While (i < max)
+		Int Animation = ODatabase.GetObjectOArray(Animations, Utility.RandomInt(0, NumAnimations))
+		Console("Trying animation: " + ODatabase.GetFullName(Animation))
+
+		If (OStim.StringArrayContainsValue(MainSexClasses, ODatabase.GetAnimationClass(Animation)))
+			Return ODatabase.GetSceneID(Animation)
+		EndIf
+
+		i += 1
+	EndWhile
+
+	Return ""
+EndFunction
+
+Function ChangeToPulledOutVersion()
+	Console("trying pullout")
+	String Pos = ODatabase.GetPositionData(OStim.GetCurrentAnimationOID())
+
+	Int Animations = ODatabase.GetAnimationsWithPositionData(getAllSexualAnimations(), Pos)
+	Animations = ODatabase.GetAnimationsWithAnimationClass(Animations, "Po")
+
+	If (ODatabase.getLengthOArray(Animations) > 0)
+		Int Animation = ODatabase.getObjectOArray(Animations, 0)
+		OStim.TravelToAnimation(ODatabase.GetSceneID(animation))
+		OStim.SetCurrentAnimationSpeed(ODatabase.GetMaxSpeed(Animation))
+	EndIf
+EndFunction
+
+Int Function GetAllSexualAnimations()
+	Int Animations = ODatabase.GetAnimationsWithActorCount(ODatabase.GetDatabaseOArray(), NumActors)
+	Animations = ODatabase.GetHubAnimations(Animations, False)
+	Animations = ODatabase.GetTransitoryAnimations(Animations, False)
+
+	If (OStim.UsingBed())
+		Animations = removeStandingAnimations(Animations)
+	EndIf
+
+	If (!Gay)
+		Animations = ODatabase.GetAnimationsWithName(Animations, "Gay",  AllowPartialResult = True, Negative = True)
+	EndIf
+
+	If (!Lesbian)
+		Animations = ODatabase.GetAnimationsWithName(Animations, "Lesbian",  AllowPartialResult = True, Negative = True)
+	EndIf
+
+	Return Animations
+EndFunction
+
+Int Function FilterOutAggressiveAnimations(Int Animations, Bool Allow = False)
+	Return ODatabase.GetAnimationsByAggression(Animations, Allow)
+EndFunction
+
+Int Function RemoveStandingAnimations(Int Animations)
+	Console("Filtering standing Animations")
+	Int Ret = ODatabase.NewOArray()
+
+	Int i = 0
+	Int max = ODatabase.GetLengthOArray(Animations)
+	While (i < max)
+		String Pos = ODatabase.getPositionData(ODatabase.GetObjectOArray(Animations, i))
+
+		If (StringUtil.Find(Pos, "S") == -1)
+			ODatabase.appendObjectOArray(ret, ODatabase.GetObjectOArray(Animations, i))
+		EndIf
+
+		i += 1
+	EndWhile
+
+	Return Ret
+EndFunction
+
+Function Warp(String aScene)
+	If (OStim.UseAutoFades && OStim.IsActorActive(PlayerRef))
+		Float Time = 1.00
+		Game.FadeOutGame(True, True, 0.0, Time)
+		Utility.Wait(time - 0.15)
+		Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
+	EndIf
+
+	OStim.WarpToAnimation(aScene)
+
+	If (OStim.UseAutoFades && OStim.IsActorActive(PlayerRef))
+		Utility.Wait(0.55)
+		Game.FadeOutGame(False, True, 0.0, 1) ; welcome back
+	EndIf
+EndFunction
+
+Function Console(String In)
+	OsexIntegrationMain.Console(In)
+EndFunction
+
+Bool Function ChanceRoll(Int Chance)
+	Return OStim.ChanceRoll(Chance)
+EndFunction
+
+Function OnGameLoad()
 	Console("Fixing AI thread")
-	RegisterFormodevent("ostim_start", "Ostim_start")
-	RegisterFormodevent("ostim_start_ai", "AI_Thread")
-endfunction
+	RegisterForModEvent("ostim_start", "Ostim_start")
+	RegisterForModEvent("ostim_start_ai", "AI_Thread")
+EndFunction

@@ -1,479 +1,411 @@
-﻿Scriptname _oActra extends activemagiceffect  
+﻿ScriptName _oActra Extends ActiveMagicEffect
 
 
+;  ██████╗ ███████╗ █████╗      █████╗  ██████╗████████╗██████╗  █████╗
+; ██╔═══██╗██╔════╝██╔══██╗    ██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔══██╗
+; ██║   ██║███████╗███████║    ███████║██║        ██║   ██████╔╝███████║
+; ██║   ██║╚════██║██╔══██║    ██╔══██║██║        ██║   ██╔══██╗██╔══██║
+; ╚██████╔╝███████║██║  ██║    ██║  ██║╚██████╗   ██║   ██║  ██║██║  ██║
+;  ╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
+; █████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗
+; ╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝
+; OSA empowered spell effect with all needed scene functionality.
 
-; ██████╗ ███████╗ █████╗      █████╗  ██████╗████████╗██████╗  █████╗                                                                                                
-;██╔═══██╗██╔════╝██╔══██╗    ██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔══██╗                                                                                               
-;██║   ██║███████╗███████║    ███████║██║        ██║   ██████╔╝███████║                                                                                               
-;██║   ██║╚════██║██╔══██║    ██╔══██║██║        ██║   ██╔══██╗██╔══██║                                                                                               
-;╚██████╔╝███████║██║  ██║    ██║  ██║╚██████╗   ██║   ██║  ██║██║  ██║                                                                                               
-; ╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
-;█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗                                                                                             
-;╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝      
-;OSA empowered spell effect with all needed scene functionality.
-
-import _oGlobal
-;OSA Global Functions
 
 Actor Property PlayerRef Auto
 
-_oOmni Property OSO hidden
-    _oOmni function get()
-        return Quest.GetQuest("0SA") as _oOmni 
-    endFunction
-endProperty
 ;Add the _oOmni persistent script based in quest 0SA
+_oOmni Property OSO Hidden
+    _oOmni Function get()
+        Return Quest.GetQuest("0SA") as _oOmni
+    EndFunction
+EndProperty
 
+Actor Actra
+Int Glyph
+Int StageID
+String FormID
 
-actor Actra
-int glyph
-int StageID
-string FormID
+Formlist[] OFormSuite
+EffectShader[] ShaderFX
 
+Int ThrottleMFG = 3
+Float ThrottleScale = 0.2
+String[] OAE
+String CodePage
 
-formlist[] OFormSuite
-effectShader[] shaderFX 
+ObjectReference PosObj
 
-int ThrottleMFG = 3
-float ThrottleScale = 0.2
-string[] OAE
-string codePage
+Bool FirstScale = True
 
-objectReference posObj
+Event OnEffectStart (Actor TarAct, Actor Spot)
+	Actra = tarAct
+	FormID = _oGlobal.GetFormID_S(Actra.GetActorBase())
+	Glyph = OSO.Glyph
+	StageID = Actra.GetFactionRank(OSO.OFaction[1])
+	RegisterEvents()
+	RegisterAnimationEvents()
+	CodePage = OSO.CodePage
+	ShaderFX = new EffectShader[10]
+	OFormSuite = new Formlist[100]
+	OAE = new String[3]
+	OAE[0] = FormID
+	OAE[1] = StageID
+	PosObj = OSO.GlobalPosition[StageID as Int]
 
-bool firstScale = true
+	_oGlobal.SheathWep(Actra, PlayerRef)
+	_oGlobal.ActorLock(Actra, PlayerRef)
+	_oGlobal.ActraReveal(Actra, FormID, StageID)
 
-Event Oneffectstart (actor tarAct, actor Spot)
+	Actra.SetAnimationVariableBool("bHumanoidFootIKDisable", True)
 
-Actra = tarAct
-FormID = GetFormID_s(Actra.GetActorBase())
-glyph = OSO.glyph
-stageID = Actra.getFactionRank(OSO.OFaction[1])
-registerEvents()
-registerAE()
-codePage = oso.codePage
-shaderFX = new effectShader[10]
-OFormSuite = new Formlist[100]
-OAE = new String[3]
-OAE[0] = FormID
-OAE[1] = StageID 
-posObj = OSO.GlobalPosition[StageID as int]
-
-
- sheathWep(actra, PlayerRef)
- actorLock(actra, PlayerRef)
-
-
-
-ActraReveal(Actra, FormID, StageID)
-
-
-Actra.SetAnimationVariableBool("bHumanoidFootIKDisable", true)
-
-if actra == PlayerRef
-UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", false)
-endif
+	If (Actra == PlayerRef)
+		UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", False)
+	EndIf
 EndEvent
 
-
-Function registerAE()
-RegisterForAnimationEvent(Actra, "0S0")
-endFunction
-
-Function registerEvents()
-RegisterForModEvent("0SA"+"_GameLoaded", "OnGameLoaded")
-
-RegisterForModEvent("0SAA"+FormID+"_ActraEnd", "OnActraEnd")
-RegisterForModEvent("0SAA"+FormID+"_NoFuse", "OnNoFuse")
-RegisterForModEvent("0SAA"+FormID+"_ChangeStage", "OnChangeStage")
-RegisterForModEvent("0SAA"+FormID+"_CenterActro", "OnCenterActro")
-RegisterForModEvent("0SAA"+FormID+"_FormBind", "OnFormBind")
-
-RegisterForModEvent("0SAA"+FormID+"_Animate", "OnAnimate")
-RegisterForModEvent("0SAA"+FormID+"_AlignStage", "OnAlignStage")
-RegisterForModEvent("0SAA"+FormID+"_BlendMo", "OnBlendMo")
-RegisterForModEvent("0SAA"+FormID+"_BlendPh", "OnBlendPh")
-RegisterForModEvent("0SAA"+FormID+"_BlendEx", "OnBlendEx")
-RegisterForModEvent("0SAA"+FormID+"_BlendSc", "OnBlendSc")
-RegisterForModEvent("0SAA"+FormID+"_SnapSc", "OnSnapSc")
-RegisterForModEvent("0SAA"+FormID+"_BodyScale", "OnBodyScale")
-
-
-;RegisterForModEvent("0SSO"+FormID+"_Sound", "OnSound")
-RegisterForModEvent("0SAA"+FormID+"_OShader", "OnOShader")
-RegisterForModEvent("0SAA"+FormID+"_Lights", "OnLights")
-RegisterForModEvent("0SAA"+FormID+"_Kill", "OnKill")
-;;ESG Related
-RegisterForModEvent("0SAA"+FormID+"_RequestEQSuite", "OnRequestEQSuite")
-RegisterForModEvent("0SAA"+FormID+"_EqON", "OnEqON")
-RegisterForModEvent("0SAA"+FormID+"_EqOnAutoInt", "OnEqOnAutoInt")
-RegisterForModEvent("0SAA"+FormID+"_EqOFF", "OnEqOFF")
-RegisterForModEvent("0SAA"+FormID+"_EqOffAutoInt", "OnEqOffAutoInt")
-RegisterForModEvent("0SAA"+FormID+"_WepOFF", "OnWepOFF")
-RegisterForModEvent("0SAA"+FormID+"_WepON", "OnWepON")
-
+Function RegisterAnimationEvents()
+	RegisterForAnimationEvent(Actra, "0S0")
 EndFunction
 
-Event OnGameLoaded(string eventName, string zAnimation, float numArg, Form sender)
-loadEnd = true
-Self.Dispel()
+Function RegisterEvents()
+	RegisterForModEvent("0SA" + "_GameLoaded", "OnGameLoaded")
+
+	RegisterForModEvent("0SAA" + FormID + "_ActraEnd", "OnActraEnd")
+	RegisterForModEvent("0SAA" + FormID + "_NoFuse", "OnNoFuse")
+	RegisterForModEvent("0SAA" + FormID + "_ChangeStage", "OnChangeStage")
+	RegisterForModEvent("0SAA" + FormID + "_CenterActro", "OnCenterActro")
+	RegisterForModEvent("0SAA" + FormID + "_FormBind", "OnFormBind")
+
+	RegisterForModEvent("0SAA" + FormID + "_Animate", "OnAnimate")
+	RegisterForModEvent("0SAA" + FormID + "_AlignStage", "OnAlignStage")
+	RegisterForModEvent("0SAA" + FormID + "_BlendMo", "OnBlendMo")
+	RegisterForModEvent("0SAA" + FormID + "_BlendPh", "OnBlendPh")
+	RegisterForModEvent("0SAA" + FormID + "_BlendEx", "OnBlendEx")
+	RegisterForModEvent("0SAA" + FormID + "_BlendSc", "OnBlendSc")
+	RegisterForModEvent("0SAA" + FormID + "_SnapSc", "OnSnapSc")
+	RegisterForModEvent("0SAA" + FormID + "_BodyScale", "OnBodyScale")
+
+	;RegisterForModEvent("0SSO" + FormID + "_Sound", "OnSound")
+	RegisterForModEvent("0SAA" + FormID + "_OShader", "OnOShader")
+	RegisterForModEvent("0SAA" + FormID + "_Lights", "OnLights")
+	RegisterForModEvent("0SAA" + FormID + "_Kill", "OnKill")
+	; ESG Related
+	RegisterForModEvent("0SAA" + FormID + "_RequestEQSuite", "OnRequestEQSuite")
+	RegisterForModEvent("0SAA" + FormID + "_EqON", "OnEqON")
+	RegisterForModEvent("0SAA" + FormID + "_EqOnAutoInt", "OnEqOnAutoInt")
+	RegisterForModEvent("0SAA" + FormID + "_EqOFF", "OnEqOFF")
+	RegisterForModEvent("0SAA" + FormID + "_EqOffAutoInt", "OnEqOffAutoInt")
+	RegisterForModEvent("0SAA" + FormID + "_WepOFF", "OnWepOFF")
+	RegisterForModEvent("0SAA" + FormID + "_WepON", "OnWepON")
+EndFunction
+
+Event OnGameLoaded(String EventName, String zAnimation, Float NumArg, Form Sender)
+	LoadEnd = True
+	Self.Dispel()
 EndEvent
 
+Event OnEffectFinish(Actor Target, Actor Caster)
+	CompleteEnd()
+EndEvent
 
-event OnEffectFinish(Actor akTarget, Actor akCaster)
-completeEnd()
-endEvent
+Event OnCenterActro(String EventName, String NewStageID, Float NumArg, Form Sender)
+	Actra.SetFactionRank(OSO.OFaction[1], NewStageID as Int)
+	StageID = NewStageID as Int
+	RegisterForModEvent("0S0" + StageID + "_StageReady", "OnStageReady")
+	OSO.OSpell[1].cast(Actra, Actra)
+EndEvent
 
-
-event OnCenterActro(string eventName, string newStageID, float numArg, Form sender)
-actra.SetFactionRank(OSO.OFaction[1], newStageID as int)
-stageID = newStageID as int
-RegisterForModEvent("0S0"+StageID+"_StageReady", "OnStageReady")
-OSO.OSpell[1].cast(actra, actra)
-endEvent
-
-event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
+Event OnHit(ObjectReference Aggressor, Form Source, Projectile Projectile, bool PowerAttack, bool SneakAttack, bool BashAttack, bool HitBlocked)
 	SendModEvent("ostim_actorhit")
-endevent
-
-event OnChangeStage(string eventName, string newStageID, float numArg, Form sender)
-actra.SetFactionRank(OSO.OFaction[1], newStageID as int)
-stageID = newStageID as int
-RegisterForModEvent("0S0"+StageID+"_StageReady", "OnStageReady")
-endEvent
-
-event OnStageReady()
-ActraReveal(Actra, FormID, StageID)
-UnRegisterForModEvent("0S0"+StageID+"_StageReady")
-endEvent
-
-Event OnActraEnd(string eventName, string zAnimation, float numArg, Form sender)
-if actra == PlayerRef
-	UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", true)
-endif
-Self.Dispel()
 EndEvent
 
+Event OnChangeStage(String EventName, String NewStageID, Float NumArg, Form Sender)
+	Actra.SetFactionRank(OSO.OFaction[1], NewStageID as Int)
+	StageID = NewStageID as Int
+	RegisterForModEvent("0S0" + StageID + "_StageReady", "OnStageReady")
+EndEvent
 
-bool loadEnd = false
+Event OnStageReady()
+	_oGlobal.ActraReveal(Actra, FormID, StageID)
+	UnRegisterForModEvent("0S0" + StageID + "_StageReady")
+EndEvent
 
-function completeEnd()
-if actra != none ;<-------------------- Shield is in place so I'm not sure how a none actor can get by.
-if (actra.Is3DLoaded()) ;<----------------------------------------------------------------- NEW SHIELD START IF 3D, ISN"T LOADED DO NOTHING
-ActorLight(Actra, "Remove", OSO.OLightSP, OSO.OLightME)
-FactionClean(Actra, OSO.OFaction)
-MfgConsoleFunc.ResetPhonemeModifier(Actra)
-packageClean(Actra, OSO.OPackage)
-Actra.ClearExpressionOverride()
-Actra.SetAnimationVariableBool("bHumanoidFootIKDisable", false)
-if loadEnd
-ActorUnlock(Actra, PlayerRef)
-Else
-objectreference lastPoint = actra.placeAtMe(OSO.OBlankStatic)
-lastPoint.MoveToNode(actra, "NPC COM [COM ]")
-ActorSmoothUnlock(Actra, PlayerRef, lastPoint.X, lastPoint.Y)
-lastPoint.Delete()
-lastPoint= none
-endIf
-endif ;<----------------------------------------------------------------- NEW SHIELD END
-endIf ;<------------------------------------------------ Conclude Shield
-endFunction
- 
- 
+Event OnActraEnd(String EventName, String zAnimation, Float NumArg, Form Sender)
+	If (Actra == PlayerRef)
+		UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", True)
+	EndIf
+	Self.Dispel()
+EndEvent
+
+Bool LoadEnd = False
+Function CompleteEnd()
+	If (Actra != None) ; Shield is in place so I'm not sure how a none Actor can get by.
+		If (Actra.Is3DLoaded()) ; NEW SHIELD START IF 3D, ISN"T LOADED DO NOTHING
+			_oGlobal.ActorLight(Actra, "Remove", OSO.OLightSP, OSO.OLightME)
+			_oGlobal.FactionClean(Actra, OSO.OFaction)
+			MfgConsoleFunc.ResetPhonemeModifier(Actra)
+			_oGlobal.PackageClean(Actra, OSO.OPackage)
+			Actra.ClearExpressionOverride()
+			Actra.SetAnimationVariableBool("bHumanoidFootIKDisable", False)
+			If (LoadEnd)
+				_oGlobal.ActorUnlock(Actra, PlayerRef)
+			Else
+				ObjectReference LastPoint = Actra.PlaceAtMe(OSO.OBlankStatic)
+				LastPoint.MoveToNode(Actra, "NPC COM [COM ]")
+				_oGlobal.ActorSmoothUnlock(Actra, PlayerRef, LastPoint.X, LastPoint.Y)
+				LastPoint.Delete()
+				LastPoint = None
+			EndIf
+		EndIf ; NEW SHIELD END
+	EndIf ; Conclude Shield
+EndFunction
+
 Event OnLoad()
-completeEnd()              ;<---------- When 3D does load try it again
-endEvent
+	CompleteEnd() ; When 3D does load try it again
+EndEvent
 
+;If a module doesn't want the actors stacked and rooted on a specific spot this Function unfuses them.
+;Mainly used for 1 Actor scenes where positioning isn't as important or to convert a 2+ Actor scene
+;into a few 1 Actor scenes and have the actors disperse themselves.
 
+Event OnNoFuse(String EventName, String Huh, Float NumArg, Form Sender)
+	Actra.StopTranslation()
+	Actra.SetVehicle(None)
+EndEvent
 
+Event OnAlignStage()
+	Actra.StopTranslation()
 
-;If a module doesn't want the actors stacked and rooted on a specific spot this function unfuses them.
-;Mainly used for 1 actor scenes where positioning isn't as important or to convert a 2+ actor scene
-;into a few 1 actor scenes and have the actors disperse themselves.
+	; This is the section I'd like to be able to remove and have the TranslateTo handle the rotations
+	; You can see when it does the hard setSangle that the camera gets unsmoothly set to the new location
+	; and that the game sound gets cut and restarted. Not an ideal transtion
 
-event OnNoFuse(string eventName, string huh, float numArg, Form sender)
-actra.StopTranslation()
-actra.SetVehicle(None)
-endEvent
+	If (Math.Abs(Actra.GetAngleZ() - PosObj.getAngleZ()) > 0.5)
+		Actra.SetAngle(0, 0, PosObj.getAngleZ())
+	EndIf
 
+	;The below translateTo does not seem to rotate the player, only setting their position x,y,z
+	;The postObj.getAngleZ() only seems to rotate NPCs however If this could somehow effect the player it would
+	;make this whole thing much bette / smoother
 
-event OnAlignStage()
-
-actra.StopTranslation()
-
-; This is the section I'd like to be able to remove and have the TranslateTo handle the rotations
-; You can see when it does the hard setSangle that the camera gets unsmoothly set to the new location
-; and that the game sound gets cut and restarted. Not an ideal transtion
-
-	if Math.Abs(actra.GetAngleZ() - posObj.getAngleZ()) > 0.5   
-        actra.SetAngle(0, 0, posObj.getAngleZ())
-   EndIf	
-
-;The below translateTo does not seem to rotate the player, only setting their position x,y,z
-;The postObj.getAngleZ() only seems to rotate NPCs however if this could somehow effect the player it would
-;make this whole thing much bette / smoother
- 
-actra.TranslateTo(posObj.x, posObj.y, posObj.z, 0, 0, posObj.getAngleZ(), 150.0, 0)
-actra.SetVehicle(posObj) 
-endEvent
-
+	Actra.TranslateTo(PosObj.x, PosObj.y, PosObj.z, 0, 0, PosObj.getAngleZ(), 150.0, 0)
+	Actra.SetVehicle(PosObj)
+EndEvent
 
 Event OnTranslationComplete()
-
 EndEvent
-
 
 ;Phoneme, Modifier, and Node Scale Blends
 
-Event OnBlendMo(string eventName, string zType, float zAmount, Form sender) 
-int zTy = zType as int	
-blendMo(Actra, zAmount as int, MfgConsoleFunc.GetModifier(Actra, zTy), zTy, ThrottleMFG)
-EndEvent
 ;For Softly Blending Modifiers to a new alignment
-
-Event OnBlendPh(string eventName, string zType, float zAmount, Form sender) 
-int zTy = zType as int
-blendPh(Actra, zAmount as int, MfgConsoleFunc.GetPhoneme(Actra, zTy), zTy, ThrottleMFG)
+Event OnBlendMo(String EventName, String zType, Float zAmount, Form Sender)
+	Int zTy = zType as Int
+	_oGlobal.BlendMo(Actra, zAmount as Int, MfgConsoleFunc.GetModifier(Actra, zTy), zTy, ThrottleMFG)
 EndEvent
+
 ;For Softly Blending Phonemes to a new alignment
-
-Event OnBlendEx(string eventName, string zType, float zAmount, Form sender) 
-Actra.SetExpressionOverride(zType as int, zAmount as int)
+Event OnBlendPh(String EventName, String zType, Float zAmount, Form Sender)
+	Int zTy = zType as Int
+	_oGlobal.BlendPh(Actra, zAmount as Int, MfgConsoleFunc.GetPhoneme(Actra, zTy), zTy, ThrottleMFG)
 EndEvent
+
 ;For Receiving Expressions
-
-Event OnBlendSc(string eventName, string zType, float zAmount, Form sender) 
-if zAmount
-	if NetImmerse.HasNode(Actra, zType, false)
-	blendSc(Actra, zAmount, NetImmerse.GetNodeScale(Actra, zType, false), zType, ThrottleScale)
-    endIf
-endIf
+Event OnBlendEx(String EventName, String zType, Float zAmount, Form Sender)
+	Actra.SetExpressionOverride(zType as Int, zAmount as Int)
 EndEvent
+
 ;For Blending NodeScale softly to a new scale
-
-Event OnSnapSc(string eventName, string zType, float zAmount, Form sender)
-NetImmerse.SetNodeScale(Actra, zType, zAmount, false)
+Event OnBlendSc(String EventName, String zType, Float zAmount, Form Sender)
+	If (zAmount)
+		If (NetImmerse.HasNode(Actra, zType, False))
+			_oGlobal.BlendSc(Actra, zAmount, NetImmerse.GetNodeScale(Actra, zType, False), zType, ThrottleScale)
+		EndIf
+	EndIf
 EndEvent
+
 ;For instantly setting scale back in place at times when
 ;dramatic effect aren't needed
-
-
-Event OnBodyScale(string eventName, string zType, float zAmount, Form sender)
-actra.setScale(zAmount)
-;if firstScale
-;firstScale = false
-utility.wait(2.0)
-actra.setScale(zAmount)
-;endif
+Event OnSnapSc(String EventName, String zType, Float zAmount, Form Sender)
+	NetImmerse.SetNodeScale(Actra, zType, zAmount, False)
 EndEvent
 
-
-Event OnFormBind(string eventName, string zMod, float ixid, Form sender)
-int Ix = StringUtil.substring(ixid, 0, 2) as int
-int Fo = StringUtil.substring(ixid, 2) as int
-OFormSuite[Ix] = Game.GetFormFromFile(Fo, zMod) as FormList
+Event OnBodyScale(String EventName, String zType, Float zAmount, Form Sender)
+	Actra.setScale(zAmount)
+	;If (FirstScale)
+		;FirstScale = False
+		Utility.Wait(2.0)
+		Actra.SetScale(zAmount)
+	;EndIf
 EndEvent
 
+Event OnFormBind(String EventName, String zMod, Float IxID, Form Sender)
+	Int Ix = StringUtil.Substring(IxID, 0, 2) as Int
+	Int Fo = StringUtil.Substring(IxID, 2) as Int
+	OFormSuite[Ix] = Game.GetFormFromFile(Fo, zMod) as FormList
+EndEvent
 
-Event OnSound(string eventName, string fi, float ix, Form sender)
-int S = (OFormSuite[Ix as int].GetAt(fi as int) as Sound).play(Actra)
+Event OnSound(String EventName, String Fi, Float Ix, Form Sender)
+	Int S = (OFormSuite[Ix as Int].GetAt(Fi as Int) as Sound).Play(Actra)
 	Sound.SetInstanceVolume(S, 1.0)
 EndEvent
 
+Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
+	Debug.SendAnimationEvent(Actra, zAnimation)
+	Debug.SendAnimationEvent(Actra, "sosfasterect")
+EndEvent
 
-Event OnAnimate(string eventName, string zAnimation, float numArg, Form sender)
-Debug.SendAnimationEvent(Actra, zAnimation)
-Debug.SendAnimationEvent(Actra, "sosfasterect")
+Event OnKill(String EventName, String KillType, Float IDK, Form Killer)
+	If (KillType == "")
+		Actra.Kill(Killer as Actor)
+	elseif (KillType == "silent")
+		Actra.KillSilent(Killer as Actor)
+	elseif (KillType == "essential")
+		Actra.KillEssential(Killer as Actor)
+	EndIf
+EndEvent
+
+Event OnOShader(String EventName, String ShaderString, Float NumArgggYeScurvyDogs, Form Sender)
+	String[] StringValues = StringUtil.Split(ShaderString, ",")
+	Int i = StringValues[1] as Int
+	ShaderFX[i].Stop(Actra)
+	ShaderFX[i] = OSO.OShader.GetAt(StringValues[0] as Int) as EffectShader
+	ShaderFX[i].Play(Actra, StringValues[2] as Float)
+EndEvent
+
+Event OnLights(String EventName, String zLightType, Float NumArgggYeScurvyDogs, Form Sender)
+	_oGlobal.ActorLight(Actra, zLightType, OSO.OLightSP, OSO.OLightME)
 EndEvent
 
 
-
-Event OnKill(string eventName, string killType, float idk, Form killer)
-if killType == ""
-actra.kill(killer as actor)
-elseif killType == "silent"
-actra.killSilent(killer as actor)
-elseif killType == "essential"
-actra.killEssential(killer as actor)
-endIf
-
-EndEvent
-
-Event OnOShader(string eventName, string shaderString, float numArgggYeScurvyDogs, Form sender)
-String[] stringValues = StringUtil.split(shaderString, ",")
-int index = stringvalues[1] as int 
-shaderFX[index].stop(actra)
-shaderFX[index] = OSO.OShader.GetAt(stringvalues[0] as int) as effectshader
-shaderFX[index].play(actra, stringvalues[2] as float)
-EndEvent
-
-Event OnLights(string eventName, string zLightType, float numArgggYeScurvyDogs, Form sender)
-ActorLight(Actra, zLightType, OSO.OLightSP, OSO.OLightME)
-EndEvent
-
-
-;███████╗███████╗ ██████╗                                                                                                                                             
-;██╔════╝██╔════╝██╔════╝                                                                                                                                             
-;█████╗  ███████╗██║  ███╗                                                                                                                                            
-;██╔══╝  ╚════██║██║   ██║                                                                                                                                            
-;███████╗███████║╚██████╔╝                                                                                                                                            
-;╚══════╝╚══════╝ ╚═════╝                                                                                                                                             
-;███████╗ ██████╗ ██╗   ██╗██╗██████╗     ███████╗██╗      ██████╗ ████████╗     ██████╗ ██████╗  ██████╗ ██╗   ██╗██████╗ ███████╗                                   
-;██╔════╝██╔═══██╗██║   ██║██║██╔══██╗    ██╔════╝██║     ██╔═══██╗╚══██╔══╝    ██╔════╝ ██╔══██╗██╔═══██╗██║   ██║██╔══██╗██╔════╝                                   
-;█████╗  ██║   ██║██║   ██║██║██████╔╝    ███████╗██║     ██║   ██║   ██║       ██║  ███╗██████╔╝██║   ██║██║   ██║██████╔╝███████╗                                   
-;██╔══╝  ██║▄▄ ██║██║   ██║██║██╔═══╝     ╚════██║██║     ██║   ██║   ██║       ██║   ██║██╔══██╗██║   ██║██║   ██║██╔═══╝ ╚════██║                                   
-;███████╗╚██████╔╝╚██████╔╝██║██║         ███████║███████╗╚██████╔╝   ██║       ╚██████╔╝██║  ██║╚██████╔╝╚██████╔╝██║     ███████║                                   
-;╚══════╝ ╚══▀▀═╝  ╚═════╝ ╚═╝╚═╝         ╚══════╝╚══════╝ ╚═════╝    ╚═╝        ╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝     ╚══════╝  
-
-;Managing Papyrus stuff for processing actors equipment, dressing and undressing.
-
+; ███████╗███████╗ ██████╗
+; ██╔════╝██╔════╝██╔════╝
+; █████╗  ███████╗██║  ███╗
+; ██╔══╝  ╚════██║██║   ██║
+; ███████╗███████║╚██████╔╝
+; ╚══════╝╚══════╝ ╚═════╝
+; ███████╗ ██████╗ ██╗   ██╗██╗██████╗     ███████╗██╗      ██████╗ ████████╗     ██████╗ ██████╗  ██████╗ ██╗   ██╗██████╗ ███████╗
+; ██╔════╝██╔═══██╗██║   ██║██║██╔══██╗    ██╔════╝██║     ██╔═══██╗╚══██╔══╝    ██╔════╝ ██╔══██╗██╔═══██╗██║   ██║██╔══██╗██╔════╝
+; █████╗  ██║   ██║██║   ██║██║██████╔╝    ███████╗██║     ██║   ██║   ██║       ██║  ███╗██████╔╝██║   ██║██║   ██║██████╔╝███████╗
+; ██╔══╝  ██║▄▄ ██║██║   ██║██║██╔═══╝     ╚════██║██║     ██║   ██║   ██║       ██║   ██║██╔══██╗██║   ██║██║   ██║██╔═══╝ ╚════██║
+; ███████╗╚██████╔╝╚██████╔╝██║██║         ███████║███████╗╚██████╔╝   ██║       ╚██████╔╝██║  ██║╚██████╔╝╚██████╔╝██║     ███████║
+; ╚══════╝ ╚══▀▀═╝  ╚═════╝ ╚═╝╚═╝         ╚══════╝╚══════╝ ╚═════╝    ╚═╝        ╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝     ╚══════╝
+; Managing Papyrus stuff for processing actors equipment, dressing and undressing.
 
 
 ;Gets the name and Form of slots 30-60 and then sends them to the UI.
-Event OnRequestEQSuite(string eventName, string zNothin, float numArgggYeLanLubers, Form sender)	
-SendEQSuite(actra, formID, glyph, codePage)
+Event OnRequestEQSuite(String EventName, String zNothin, Float NumArgggYeLanLubers, Form Sender)
+	_oGlobal.SendEQSuite(Actra, FormID, Glyph, CodePage)
 EndEvent
 
+Event OnWepOFF(String EventName, String zTrueHand, Float ArrggYeBeWalkingThaPlank, Form Sender)
+	Int zHand = 0
+	Int zExHand = 2
+	If (zTrueHand == 0)
+		zHand = 1
+		zExHand = 1
+	EndIf
 
-
-
-
-Event OnWepOFF(string eventName, string zTrueHand, float ArrggYeBeWalkingThaPlank, Form sender)
-int zHand
-int zExHand
-If zTrueHand == 0
-zHand = 1
-zExHand = 1
-Else
-zHand = 0
-zExHand = 2
-EndIf
-
-Form zWep = Actra.GetEquippedObject(zHand)
-
-If !zWep
-
-ElseIf (zWep as Weapon)
-	Actra.UnequipItemEx(zWep as Weapon, zExHand, false)	
-ElseIf (zWep as Spell)
-	Actra.UnequipSpell(zWep as Spell, zHand)	
-Else
-
-EndIf
+	Form zWep = Actra.GetEquippedObject(zHand)
+	If (zWep)
+		If (zWep as Weapon)
+			Actra.UnequipItemEx(zWep as Weapon, zExHand, False)
+		ElseIf (zWep as Spell)
+			Actra.UnequipSpell(zWep as Spell, zHand)
+		EndIf
+	EndIf
 EndEvent
 
-Event OnWepON(string eventName, string zWeaponFormID, float zTrueHand, Form sender)
-int zHand
-int zExHand
-If zTrueHand == 0
-zHand = 1
-zExHand = 1
-Else
-zHand = 0
-zExHand = 2
-EndIf
+Event OnWepON(String EventName, String zWeaponFormID, Float zTrueHand, Form Sender)
+	Int zHand = 0
+	Int zExHand = 2
+	If (zTrueHand == 0)
+		zHand = 1
+		zExHand = 1
+	EndIf
 
-Form zWep = Game.GetFormEx(zWeaponFormID as int)
-
-If !zWep
-
-ElseIf (zWep as Weapon)
-			Actra.EquipItemEx(zWep as weapon, zExHand, false)
-
-ElseIf (zWep as Spell)
+	Form zWep = Game.GetFormEx(zWeaponFormID as Int)
+	If (zWep)
+		If (zWep as Weapon)
+			Actra.EquipItemEx(zWep as weapon, zExHand, False)
+		ElseIf (zWep as Spell)
 			Actra.EquipSpell(ZWep as spell, zHand)
-Else
-
-EndIf
-
-
+		EndIf
+	EndIf
 EndEvent
 
 ;The player might manually equip or unequip items which the UI would be blind to
 ;To adjust for this the spell uses it's extending Actor ability to register for the
-;actor OnObject(Un)Equipped events. These relay information to the UI when it occurs.
-
+;Actor OnObject(Un)Equipped events. These relay information to the UI when it occurs.
 
 Event OnObjectUnequipped(Form Item, ObjectReference ShitIdontNeed)
-;oi.os(".OAA"+FormID+".equip.RegEqOFF", (Item as armor).GetSlotMask())
-endEvent
+	;OI.OS(".OAA" + FormID + ".equip.RegEqOFF", (Item as armor).GetSlotMask())
+EndEvent
 
 Event OnObjectEquipped(Form Item, ObjectReference ShitIdontNeed)
-;string[] EqOn = New String[4]
-;;armor zItme = Item as Armor 
-;EqOn[0]  = formID
-;EqOn[1]  = zItem.getFormID()
-;EqOn[2]  = zItem.getName()
-;EqOn[3]  = (zItem as armor).GetSlotMask()
-;oi.oSS(".OAA"+FormID+".equip.RegEqON", EqOn)
+	;String[] EqOn = New String[4]
+	;Armor zItem = Item as Armor
+	;EqOn[0]  = FormID
+	;EqOn[1]  = zItem.GetFormID()
+	;EqOn[2]  = zItem.GetName()
+	;EqOn[3]  = (zItem as Armor).GetSlotMask()
+	;OI.OSS(".OAA" + FormID + ".equip.RegEqON", EqOn)
 
-;int zSlot = 0
-;int foundSlot
-;While !foundSlot || zSlot <= 32
-;if Item == Actra.GetWornForm(getOSlot(zSlot)) 
-;foundSlot = zSlot
-;zSlot+=99
-;endIf
-;zSlot+=1
-;EndWhile
+	;Int zSlot = 0
+	;Int FoundSlot
+	;While (!foundSlot || zSlot <= 32)
+		;If (Item == Actra.GetWornForm(GetOSlot(zSlot)))
+			;foundSlot = zSlot
+			;zSlot += 99
+		;EndIf
+		;zSlot += 1
+	;EndWhile
 
-;if foundSlot
-;debug.messageBox(foundSlot)
-;Else
-;	debug.messagebox("nothinfound"+zSlot)
-;endIf
-
-endEvent
-
-Event OnEqOFF(string eventName, string EqSlot, float ArrggYeBeWalkingThaPlank, Form sender)
-actra.UnequipItemSlot(EqSlot as int) 
+	;If (FoundSlot)
+		;Debug.MessageBox(FoundSlot)
+	;Else
+		;Debug.MessageBox("nothinfound" + zSlot)
+	;EndIf
 EndEvent
 
-Event OnEqOffAutoInt(string eventName, string AutoIntCMD, float ArrggYeBeWalkingThaPlank, Form sender)
-String[] data = StringUtil.split(AutoIntCMD, ",")
-
-
-actra.UnequipItemSlot(data[0] as int)
-consoleUtil.SetSelectedReference(actra)
-data[1] = _oGlobal.IntToHex(Game.GetModByName(data[1]))
-consoleUtil.ExecuteCommand("equipitem "+Data[1]+Data[2]+" 1")
+Event OnEqOFF(String EventName, String EqSlot, Float ArrggYeBeWalkingThaPlank, Form Sender)
+	Actra.UnequipItemSlot(EqSlot as Int)
 EndEvent
 
-Event OnEqOnAutoInt(string eventName, string AutoIntCMD, float ArrggYeBeWalkingThaPlank, Form sender)
-String[] data = StringUtil.split(AutoIntCMD, ",")
-consoleUtil.SetSelectedReference(actra)
-data[1] = _oGlobal.IntToHex(Game.GetModByName(data[1]))
-consoleUtil.ExecuteCommand("unequipitem "+Data[1]+Data[2]+" 1")
-actra.EquipItemEx(Game.GetFormEx(data[0] as int) as armor, 0, false, false)
+Event OnEqOffAutoInt(String EventName, String AutoIntCMD, Float ArrggYeBeWalkingThaPlank, Form Sender)
+	String[] Data = StringUtil.Split(AutoIntCMD, ",")
+	Actra.UnequipItemSlot(Data[0] as Int)
+	ConsoleUtil.SetSelectedReference(Actra)
+	Data[1] = _oGlobal.IntToHex(Game.GetModByName(Data[1]))
+	ConsoleUtil.ExecuteCommand("equipitem " + Data[1] + Data[2] + " 1")
 EndEvent
 
+Event OnEqOnAutoInt(String EventName, String AutoIntCMD, Float ArrggYeBeWalkingThaPlank, Form Sender)
+	String[] Data = StringUtil.Split(AutoIntCMD, ",")
+	consoleUtil.SetSelectedReference(Actra)
+	Data[1] = _oGlobal.IntToHex(Game.GetModByName(Data[1]))
+	ConsoleUtil.ExecuteCommand("unequipitem " + Data[1] + Data[2] + " 1")
+	Actra.EquipItemEx(Game.GetFormEx(data[0] as Int) as Armor, 0, False, False)
+EndEvent
 
-Event OnEqON(string eventName, string EquipForm, float ArrrrggMatey, Form sender)	
-actra.EquipItemEx(Game.GetFormEx(EquipForm as int) as armor, 0, false, false)
+Event OnEqON(String EventName, String EquipForm, Float ArrrrggMatey, Form Sender)
+	Actra.EquipItemEx(Game.GetFormEx(EquipForm as Int) as Armor, 0, False, False)
 EndEvent
 
 
+;  █████╗ ███╗   ██╗██╗███╗   ███╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗    ███████╗██╗   ██╗███████╗███╗   ██╗████████╗
+; ██╔══██╗████╗  ██║██║████╗ ████║██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║    ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝
+; ███████║██╔██╗ ██║██║██╔████╔██║███████║   ██║   ██║██║   ██║██╔██╗ ██║    █████╗  ██║   ██║█████╗  ██╔██╗ ██║   ██║
+; ██╔══██║██║╚██╗██║██║██║╚██╔╝██║██╔══██║   ██║   ██║██║   ██║██║╚██╗██║    ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║
+; ██║  ██║██║ ╚████║██║██║ ╚═╝ ██║██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║    ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║
+; ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝    ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝
+; Timed events registered in FNIS for things that need super precision like impact sounds
+; The scripts state is used here as I don't want to clog the animation Event up with a lot of IF checks
+; for the case when Animnation Events are occuring at a rapid pace.
 
 
-; █████╗ ███╗   ██╗██╗███╗   ███╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗    ███████╗██╗   ██╗███████╗███╗   ██╗████████╗                                              
-;██╔══██╗████╗  ██║██║████╗ ████║██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║    ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝                                              
-;███████║██╔██╗ ██║██║██╔████╔██║███████║   ██║   ██║██║   ██║██╔██╗ ██║    █████╗  ██║   ██║█████╗  ██╔██╗ ██║   ██║                                                 
-;██╔══██║██║╚██╗██║██║██║╚██╔╝██║██╔══██║   ██║   ██║██║   ██║██║╚██╗██║    ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║                                                 
-;██║  ██║██║ ╚████║██║██║ ╚═╝ ██║██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║    ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║                                                 
-;╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝    ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝     
-;Timed events registered in FNIS for things that need super precision like impact sounds
-;The scripts state is used here as I don't want to clog the animation event up with a lot of IF checks
-;for the case when Animnation Events are occuring at a rapid pace.
-
-
-
-;Phys is for the basic impact sound + facial expression reaction on sex impacts
-Event OnAnimationEvent(ObjectReference akSource, string zAE)
-
-		OAE[2] = zAE
-		UI.InvokeStringA("HUD Menu", "_root.WidgetContainer."+glyph+".widget.com.skyActraAE", OAE)
-							
+; Phys is for the basic impact sound + facial expression reaction on sex impacts
+Event OnAnimationEvent(ObjectReference Source, String zAE)
+	OAE[2] = zAE
+	UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.com.skyActraAE", OAE)
 EndEvent
-
-
-
