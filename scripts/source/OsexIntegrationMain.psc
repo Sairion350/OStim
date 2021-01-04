@@ -250,7 +250,7 @@ String[] Speeds
 ; -------------------------------------------------------------------------------------------------
 
 Event OnKeyDown(Int KeyPress)
-	If (Utility.IsInMenuMode())
+	If (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
 		Return
 	EndIf
 
@@ -385,13 +385,13 @@ Function Startup()
 	EndIf
 
 	If (SexLab)
-		Console("Sexlab loaded, using its cum effects")
+		Console("SexLab loaded, using its cum effects")
 	Else
 		Debug.Notification("OStim: Sexlab is not loaded. Some orgasm FX will be missing")
 	EndIf
 
 	If (OSA.StimInstalledProper())
-		Console("Osa is installed correctly")
+		Console("OSA is installed correctly")
 	Else
 		Debug.MessageBox("OStim is not loaded after OSA in your mod files, please allow OStim to overwrite OSA's files and restart")
 		Return
@@ -663,7 +663,7 @@ Event OnUpdate()
 			If (OnlyUndressChest)
 				AnimateUndressActor(SubActor, "cuirass")
 			Else
-			;	animateUndressActor(SubActor, "helmet")
+				;animateUndressActor(SubActor, "helmet")
 				;animateUndressActor(SubActor, "gloves")
 				;animateUndressActor(SubActor, "weapon")
 				;animateUndressActor(SubActor, "boots")
@@ -674,7 +674,6 @@ Event OnUpdate()
 				UndressActor(SubActor, SubGlove)
 				SubActor.UnequipItem(subwep, abPreventEquip = False, abSilent = True)
 			EndIf
-
 		Else
 			If (OnlyUndressChest)
 				UndressActor(SubActor, SubArmor)
@@ -1268,90 +1267,54 @@ endfunction
 ;
 ;				Code related to beds
 
-ObjectReference Function FindBed(ObjectReference CenterRef, Float Radius = 1000.0, Bool IgnoreUsed = True)
-	If (UseNativeFunctions)
-		Return FindBedNative(CenterRef, Radius)
-	Else
-		Return FindBedPapyrus(CenterRef, Radius, IgnoreUsed)
-    EndIf
-EndFunction
 
-ObjectReference Function FindBedNative(ObjectReference CenterRef, Float Radius = 0.0)
+ObjectReference Function FindBed(ObjectReference CenterRef, Float Radius = 0.0)
 	If (Radius > 0.0)
 		Radius = Radius * 64.0
 	Else
 		Radius = BedSearchDistance * 64.0
 	EndIf
 
-	ObjectReference[] Beds = OSANative.FindBed(CenterRef, Radius, 96.0)
-	ObjectReference NearRef = None
-
-	Int i = 0
-	Int Max = Beds.Length
-
-	While (i < Max)
-		If (!Beds[i].IsFurnitureInUse())
-			NearRef = Beds[i]
-			i = Max
-		Else
-			i += 1
-		EndIf
-	EndWhile
-
-	If (NearRef)
-		Console("Bed found")
-		;printBedInfo(NearRef)
-		Return NearRef
+	ObjectReference[] Beds = None
+	If (UseNativeFunctions)
+		Beds = OSANative.FindBed(CenterRef, Radius, 96.0)
+	Else
+		Beds = MiscUtil.ScanCellObjects(40, CenterRef, Radius, Keyword.GetKeyword("RaceToScale"))
 	EndIf
 
-	Console("Bed not found")
-	Return None ; Nothing found in search loop
-EndFunction
-
-ObjectReference Function FindBedPapyrus(ObjectReference CenterRef, Float Radius = 1000.0, Bool IgnoreUsed = True)
-	Radius = BedSearchDistance * 64.0
 	ObjectReference NearRef = None
-
-	; Current elevation to determine bed being on same floor
-	Float Z = CenterRef.GetPositionZ()
-
-	Keyword Word = Keyword.GetKeyword("RaceToScale")
-	ObjectReference[] Beds = MiscUtil.ScanCellObjects(40, CenterRef, Radius, HasKeyword = Word)
-	;ObjectReference[] Beds = MiscUtil.ScanCellObjects(40, CenterRef, Radius)
 
 	Int i = 0
 	Int L = Beds.Length
-
-	While (i < L)
-		ObjectReference Bed = Beds[i]
-		If (IsBed(Bed) && !Bed.IsFurnitureInUse() && SameFloor(Bed, Z))
-			If (!NearRef)
-				NearRef = Bed
+	If (UseNativeFunctions)
+		While (i < L)
+			If (!Beds[i].IsFurnitureInUse())
+				NearRef = Beds[i]
+				i = L
 			Else
-				If (NearRef.GetDistance(CenterRef) > Bed.GetDistance(CenterRef))
+				i += 1
+			EndIf
+		EndWhile
+	Else
+		Float Z = CenterRef.GetPositionZ()
+		While (i < L)
+			ObjectReference Bed = Beds[i]
+			If (IsBed(Bed) && !Bed.IsFurnitureInUse() && SameFloor(Bed, Z))
+				If (!NearRef)
 					NearRef = Bed
+				Else
+					If (NearRef.GetDistance(CenterRef) > Bed.GetDistance(CenterRef))
+						NearRef = Bed
+					EndIf
 				EndIf
 			EndIf
-		Else
-			If (False)
-				Console("Rejecting---- ")
-				If (!IsBed(Bed))
-					Console("Not bed")
-				EndIf
-				If (Bed.IsFurnitureInUse())
-					Console("In use")
-				EndIf
-				If (!SameFloor(Bed, Z))
-					Console("Different floot")
-				EndIf
-			EndIf
-		EndIf
-		i += 1
-	endwhile
+			i += 1
+		EndWhile
+	EndIf
 
 	If (NearRef)
 		Console("Bed found")
-		;printBedInfo(NearRef)
+		;PrintBedInfo(NearRef)
 		Return NearRef
 	EndIf
 
@@ -1382,19 +1345,20 @@ Function AllignActorsWithCurrentBed()
 	DomActor.SetDontMove(True)
 	SubActor.SetDontMove(True)
 
-	Bool Flip = !IsBedRoll(Currentbed)
+	Bool BedRoll = IsBedRoll(Currentbed)
+	Bool Flip = !BedRoll
 
-	Float Flipfloat = 0
+	Float FlipFloat = 0
 	If (Flip)
-		Flipfloat = 180
+		FlipFloat = 180
 	EndIf
 
 	Float DomSpeed = CurrentBed.GetDistance(DomActor) * 100
 	Float BedOffsetX = 0
-	Float BedOffsetY
+	Float BedOffsetY = 0
 	Float BedOffsetZ = 0
 
-	If (!IsBedroll(CurrentBed))
+	If (!BedRoll)
 		Console("Current bed is not a bedroll. Moving actors backwards a bit")
 
 		Int Offset = 31 + BedReallignment
@@ -1429,7 +1393,7 @@ Function AllignActorsWithCurrentBed()
 	Float OffsetX = Math.Cos(TrigAngleZ(DomActor.GetAngleZ())) * 30
 
 	SubActor.MoveTo(DomActor, OffsetX, OffsetY, 0)
-	SubActor.SetAngle(bedAngleX, bedAngleY, bedAngleZ - flipfloat)
+	SubActor.SetAngle(BedAngleX, BedAngleY, BedAngleZ - FlipFloat)
 
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
@@ -2275,25 +2239,25 @@ Bool Function ChanceRoll(Int Chance) ; input 60: 60% of returning true
 EndFunction
 
 Int Function SpeedStringToInt(String In) ; casting does not work so...
-	If In == "s0"
+	If (In == "s0")
 		Return 0
-	ElseIf In == "s1"
+	ElseIf (In == "s1")
 		Return 1
-	ElseIf In == "s2"
+	ElseIf (In == "s2")
 		Return 2
-	ElseIf In == "s3"
+	ElseIf (In == "s3")
 		Return 3
-	ElseIf In == "s4"
+	ElseIf (In == "s4")
 		Return 4
-	ElseIf In == "s5"
+	ElseIf (In == "s5")
 		Return 5
-	ElseIf In == "s6"
+	ElseIf (In == "s6")
 		Return 6
-	ElseIf In == "s7"
+	ElseIf (In == "s7")
 		Return 7
-	ElseIf In == "s8"
+	ElseIf (In == "s8")
 		Return 8
-	ElseIf In == "s9"
+	ElseIf (In == "s9")
 		Return 9
 	EndIf
 EndFunction
@@ -2656,7 +2620,7 @@ Function Profile(String Name = "")
 	If (Name == "")
 		ProfileTime = Game.GetRealHoursPassed() * 60 * 60
 	Else
-		Console(name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
+		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
 	EndIf
 EndFunction
 
@@ -2676,8 +2640,8 @@ Function OnLoadGame()
 		RegisterForKey(KeyMap)
 
 		; DEBUG
-		RegisterForKey(26) ; [
-		RegisterForKey(27) ; ]
+		;RegisterForKey(26) ; [
+		;RegisterForKey(27) ; ]
 		; DEBUG
 
 		AI.OnGameLoad()

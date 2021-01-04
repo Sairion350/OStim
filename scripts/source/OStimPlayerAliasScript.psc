@@ -4,7 +4,7 @@ OSexIntegrationMain Property OStim Auto
 
 Event OnInit()
 	OStim = (GetOwningQuest()) as OsexIntegrationMain
-Endevent
+EndEvent
 
 Event OnPlayerLoadGame()
 	OStim.OnLoadGame()

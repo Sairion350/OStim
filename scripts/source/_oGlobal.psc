@@ -48,9 +48,8 @@ Bool Function DirectionCheck_D(Actor Initiator, Actor Target, Int Min, Int Max) 
     Endif
     If (Angle > Min && Angle < Max)
         Return True
-    Else
-        Return False
     Endif
+    Return False
 EndFunction
 
 
@@ -104,20 +103,20 @@ Function ActorSmoothUnlock(Actor Actra, Actor Player, Float Xp, Float Yp) Global
     Actra.StopTranslation()
     Actra.SetVehicle(None)
     Actra.SetPosition(Xp, Yp, Actra.z)
-    Actra.SplineTranslateTo(Xp, Yp, Actra.z, Actra.GetAngleX(), Actra.GetAngleY(), Actra.GetAnglez(), 1.0, 70, 0)
+    Actra.SplineTranslateTo(Xp, Yp, Actra.z, Actra.GetAngleX(), Actra.GetAngleY(), Actra.GetAngleZ(), 1.0, 70, 0)
     Actra.SetAnimationVariableBool("bHumanoidFootIKDisable", False)
     Debug.SendAnimationEvent(Actra, "IdleForceDefaultState")
 EndFunction
 
 ; Overwrites the Actor's package with a DoNothing package.
-Function PackageSquelch(Actor Actra, Package[] oPackage) Global
-    ActorUtil.AddPackageOverride(Actra, oPackage[0], 100, 1)
+Function PackageSquelch(Actor Actra, Package[] OPackage) Global
+    ActorUtil.AddPackageOverride(Actra, OPackage[0], 100, 1)
     Actra.EvaluatePackage()
 EndFunction
 
 ; Reverse the above squelch package override.
-Function PackageClean(Actor Actra, Package[] oPackage) Global
-    ActorUtil.RemovePackageOverride(Actra, oPackage[0])
+Function PackageClean(Actor Actra, Package[] OPackage) Global
+    ActorUtil.RemovePackageOverride(Actra, OPackage[0])
     Actra.EvaluatePackage()
 EndFunction
 
@@ -171,14 +170,14 @@ EndFunction
 
 Function EnforcePosition(Actor Actra, ObjectReference StageSpot, Float[] Loc) Global
     If (Actra.GetDistance(stageSpot) > 0.5)
-        Actra.SetPosition(loc[0], loc[1], loc[2])
-        Actra.SetVehicle(stageSpot)
+        Actra.SetPosition(Loc[0], Loc[1], Loc[2])
+        Actra.SetVehicle(StageSpot)
     EndIf
-    Actra.SplineTranslateTo(loc[0], loc[1], loc[2], loc[3], loc[4], loc[5], 1.0, 10000, 0.0001)
+    Actra.SplineTranslateTo(Loc[0], Loc[1], Loc[2], Loc[3], Loc[4], Loc[5], 1.0, 10000, 0.0001)
     Actra.SetVehicle(stageSpot)
 EndFunction
 
-String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni Oso) Global
+String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni OSO) Global
     ;/
     If (!CPConvert.CPIsValid(Oso.codepage))
         ; CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
@@ -195,7 +194,7 @@ String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni Oso) Globa
     Details[2] = Actra.GetDisplayName()
     Details[3] = ActB.GetSex()
 
-    If Actra == Oso.PlayerRef
+    If (Actra == OSO.PlayerRef)
         Details[4] = "1"
         ConsoleUtil.SetSelectedReference(None)
         Consoleutil.ExecuteCommand("tcl")
@@ -230,7 +229,6 @@ String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni Oso) Globa
     ;details[6] = CPConvert.CPConv(oso.codepage, "UTF-8", ActB.GetRace().GetName())
     Details[6] = ActB.GetRace().GetName()
     Details[5] = Actra.GetScale()
-
     Return Details
 EndFunction
 
@@ -309,8 +307,8 @@ String[] Function AnalyzeWeapon(Int zTrueHand, Actor Actra, String FormID, Int G
     String[] WepUnit = new String[5]
     WepUnit[0] = FormID
     WepUnit[1] = zTrueHand
-    Form zWep = Actra.GetEquippedObject(zHand)
 
+    Form zWep = Actra.GetEquippedObject(zHand)
     If (!zWep)
         WepUnit[2] = 0
         WepUnit[3] = "noeq"
@@ -359,7 +357,7 @@ Function CleanPositionArray(ObjectReference[] PositionObjArray) Global
     Int i = 0
     Int L = PositionObjArray.Length
     While (i < L)
-        If PositionObjArray[i]
+        If (PositionObjArray[i])
             PositionObjArray[i].Delete()
         EndIf
         i += 1
@@ -407,14 +405,14 @@ String Function HeHexMe(String zHex) Global
     EndIf
 EndFunction
 
-String Function IntToHex (Int Dez) Global
+String Function IntToHex(Int Dez) Global
     String Hex = ""
     Int Rest = Dez
     While (Rest > 0)
         Int m16 = Rest % 16
         Rest = Rest / 16
         String Temp = ""
-        If (m16 < 10)
+        If (m16 > 0 && m16 < 10)
             Temp = (m16 as String)
         ElseIf (m16 == 10)
             Temp = "A"
@@ -437,24 +435,9 @@ String Function IntToHex (Int Dez) Global
 EndFunction
 
 Int Function HexTo10(String zHex) Global
-    If (zHex == "1")
-        Return 1
-    ElseIf (zHex == "2")
-        Return 2
-    ElseIf (zHex == "3")
-        Return 3
-    ElseIf (zHex == "4")
-        Return 4
-    ElseIf (zHex == "5")
-        Return 5
-    ElseIf (zHex == "6")
-        Return 6
-    ElseIf (zHex == "7")
-        Return 7
-    ElseIf (zHex == "8")
-        Return 8
-    ElseIf (zHex == "9")
-        Return 9
+    Int AsInt = (zHex as Int)
+    If (AsInt > 0 && AsInt < 10)
+        Return AsInt
     ElseIf (zHex == "A" || zHex == "a")
         Return 10
     ElseIf (zHex == "B" || zHex == "b")
@@ -467,15 +450,15 @@ Int Function HexTo10(String zHex) Global
         Return 14
     ElseIf (zHex == "F" || zHex == "f")
         Return 15
-    Else
-        Return 0
     EndIf
+    Return 0
 EndFunction
 
 Int Function ModNameHex10(String zHex) Global
-    If (StringUtil.getLength(zHex) == 7)
+    Int Len = StringUtil.GetLength(zHex)
+    If (Len == 7)
         Return HexTo10(StringUtil.GetNthChar(zHex, 0))
-    ElseIf (StringUtil.getLength(zHex) == 8)
+    ElseIf (Len == 8)
         Int x1 = HexTo10(StringUtil.GetNthChar(zHex, 0))
         Int x2 = HexTo10(StringUtil.GetNthChar(zHex, 1))
         Return (x1 * 16) + x2
@@ -539,7 +522,7 @@ EndFunction
 
 ; Blends NiNode Scale.
 Function BlendSc(Actor Actra, float zGoal, float zCur, String zNode, float zSpeed) Global
-    If zCur != zGoal
+    If (zCur != zGoal)
         If (zCur >= zGoal)
             zCur -= zSpeed
             If (zCur <= zGoal)
@@ -691,7 +674,7 @@ Function ActorLight(Actor Actra, String zWhich, Spell[] LSP, MagicEffect[] LME) 
     EndIf
 EndFunction
 
-Function oGlyphSet(GlobalVariable Glyph, Int Identifier) Global
+Function OGlyphSet(GlobalVariable Glyph, Int Identifier) Global
     Glyph.SetValue(Identifier)
 EndFunction
 
@@ -713,27 +696,27 @@ EndFunction
 ; speed up the process.
 
 
-Function oSendO(String zMethod, Int Glyph) Global
+Function OSendO(String zMethod, Int Glyph) Global
     UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget" + zMethod)
 EndFunction
 
-Function oSendI(String zMethod, Int zInt, Int Glyph) Global
-    UI.InvokeInt("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget"+zMethod, zInt)
+Function OSendI(String zMethod, Int zInt, Int Glyph) Global
+    UI.InvokeInt("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget" + zMethod, zInt)
 EndFunction
 
-Function oSendS(String zMethod, String zString, Int Glyph) Global
-    UI.InvokeString("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget"+zMethod, zString)
+Function OSendS(String zMethod, String zString, Int Glyph) Global
+    UI.InvokeString("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget" + zMethod, zString)
 EndFunction
 
-Function oSendSS(String zMethod, String[] zStringArray, Int Glyph) Global
+Function OSendSS(String zMethod, String[] zStringArray, Int Glyph) Global
     UI.InvokeStringA("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget" + zMethod, zStringArray)
 EndFunction
 
-String Function oGetS(String path, Int Glyph) Global
+String Function OGetS(String Path, Int Glyph) Global
     Return UI.GetString("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget" + Path)
 EndFunction
 
-Int Function oGetI(String path,Int Glyph) Global
+Int Function OGetI(String Path,Int Glyph) Global
     Return UI.GetInt("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget" + Path)
 EndFunction
 
@@ -764,19 +747,14 @@ Bool Function CheckActra(String StageID, Actor Actra, faction StatusFaction = No
         If (Actra.GetFactionRank(StatusFaction) != 1)
             If (OSA.IsAllowed(Actra, Creature))
                 Return True
-            Else
-                Return False
             EndIf
-        Else
-            Return False
         EndIf
     Else
         If (OSA.IsAllowed(Actra, Creature))
             Return True
-        Else
-            Return False
         EndIf
     EndIf
+    Return False
 EndFunction
 
 Function SystemReport() Global
