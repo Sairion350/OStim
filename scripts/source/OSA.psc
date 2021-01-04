@@ -388,25 +388,25 @@ String Function ScribeSceneFlags()
 EndFunction
 
 ; Ease of life Function that takes a bunch of actors and makes and array as OSA expects it.
-Actor[] Function scribeActors(Actor a0, Actor a1 = None, Actor a2 = None, Actor a3 = None, Actor a4 = None, Actor a5 = None, Actor a6 = None, Actor a7 = None, Actor a8 = None) Global
+Actor[] Function ScribeActors(Actor a0, Actor a1 = None, Actor a2 = None, Actor a3 = None, Actor a4 = None, Actor a5 = None, Actor a6 = None, Actor a7 = None, Actor a8 = None) Global
     Actor[] ActorTeam = new Actor[1]
     ActorTeam[0] = a0
     If (a1)
-        papyrusUtil.PushActor(actorTeam, a1)
+        PapyrusUtil.PushActor(ActorTeam, a1)
         If (a2)
-            papyrusUtil.PushActor(actorTeam, a2)
+            PapyrusUtil.PushActor(ActorTeam, a2)
             If (a3)
-                papyrusUtil.PushActor(actorTeam, a3)
+                PapyrusUtil.PushActor(ActorTeam, a3)
                 If (a4)
-                    papyrusUtil.PushActor(actorTeam, a4)
+                    PapyrusUtil.PushActor(ActorTeam, a4)
                     If (a5)
-                        papyrusUtil.PushActor(actorTeam, a5)
+                        PapyrusUtil.PushActor(ActorTeam, a5)
                         If (a6)
-                            papyrusUtil.PushActor(actorTeam, a6)
+                            PapyrusUtil.PushActor(ActorTeam, a6)
                             If (a7)
-                                papyrusUtil.PushActor(actorTeam, a7)
+                                PapyrusUtil.PushActor(ActorTeam, a7)
                                 If (a8)
-                                    papyrusUtil.PushActor(actorTeam, a8)
+                                    PapyrusUtil.PushActor(ActorTeam, a8)
                                 EndIf
                             EndIf
                         EndIf
