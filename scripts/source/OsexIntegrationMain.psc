@@ -84,6 +84,7 @@ Int Property BedReallignment Auto
 Bool Property ForceFirstPersonAfter Auto
 
 Bool Property UseNativeFunctions Auto
+bool property blockVRInstalls auto
 
 
 ; -------------------------------------------------------------------------------------------------
@@ -364,6 +365,11 @@ Function Startup()
 	SetDefaultSettings()
 	BuildSoundFormlists()
 
+	if (blockVRInstalls && GetGameIsVR())
+		debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
+		return
+	endif
+
 	ODatabase = (Self as Quest) as ODatabaseScript
 	ODatabase.InitDatabase()
 
@@ -394,7 +400,9 @@ Function Startup()
 	If (!_oGlobal.OStimGlobalLoaded())
 		Debug.MessageBox("It appears you have the OSex facial expression fix installed. Please exit and remove that mod, as it is now included in OStim, and having it installed will break some things now!")
 	EndIf
+	OSAOmni.RebootScript()
 
+	Utility.Wait(1)
 	DisplayTextBanner("OStim installed")
 EndFunction
 
@@ -1243,6 +1251,10 @@ Function ToggleFreeCam(Bool On = True)
 	EndIf
 	IsFreeCamming = !IsFreeCamming
 EndFunction
+
+bool function GetGameIsVR()
+	return (PapyrusUtil.GetScriptVersion() == 36) ;obviously this no guarantee but it's the best we've got for now
+endfunction
 
 
 ;
@@ -2507,6 +2519,7 @@ Function SetDefaultSettings()
 
 	UseFades = True
 	UseAutoFades = True
+	blockVRInstalls = true
 
 	KeyMap = 200
 	SpeedUpKey = 78

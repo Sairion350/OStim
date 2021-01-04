@@ -511,14 +511,14 @@ String[] Function SetOINI(Actor Player) Global
     OIN[2]  = ""    ; CodePage
     OIN[3]  = "1"   ; AutoCodePage
     OIN[4]  = "1"   ; HelpMode
-    OIN[5]  = "1"   ; PurityMode
+    OIN[5]  = "0"   ; PurityMode
     OIN[6]  = "0"   ; UseMetric
     OIN[7]  = "0"   ; DevMode (SET TO 0)
     OIN[8]  = "ic"  ; SubColor
     OIN[9]  = "op"  ; ThemeColor
     OIN[10] = "1"   ; SortRoleByAnimGender
     OIN[11] = "1"   ; AllowBodyScaling
-    OIN[12] = "1"   ; AllowMaleGenitalScaling
+    OIN[12] = "0"   ; AllowMaleGenitalScaling
     OIN[13] = "0"
     OIN[14] = ""
     OIN[15] = ""
