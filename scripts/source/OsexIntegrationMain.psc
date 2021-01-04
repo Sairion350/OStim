@@ -400,7 +400,9 @@ Function Startup()
 	If (!_oGlobal.OStimGlobalLoaded())
 		Debug.MessageBox("It appears you have the OSex facial expression fix installed. Please exit and remove that mod, as it is now included in OStim, and having it installed will break some things now!")
 	EndIf
+	OSAOmni.RebootScript()
 
+	Utility.Wait(1)
 	DisplayTextBanner("OStim installed")
 EndFunction
 
