@@ -388,6 +388,8 @@ Function Startup()
 	if (odatabase.getlengthoarray(ODatabase.GetDatabaseOArray()) < 1)
 		debug.Notification("OStim install failed")
 		return
+	Else
+		ODatabase.Unload()
 	EndIf
 
 	If (ArousedFaction)
