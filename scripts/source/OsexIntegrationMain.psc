@@ -370,19 +370,33 @@ Function Startup()
 		return
 	endif
 
+	if (SKSE.GetPluginVersion("JContainers64") == -1)
+		Debug.MessageBox("OStim: JContainers is not installed, please exit and install it immediately")
+		return
+	endif
+
 	ODatabase = (Self as Quest) as ODatabaseScript
 	ODatabase.InitDatabase()
 
 	If (OSAFactionStage)
 		Console("Loaded")
 	Else
-		Debug.MessageBox("Osex and OSA do not appear to be installed, please do not continue using this save file")
+		Debug.MessageBox("OSex and OSA do not appear to be installed, please do not continue using this save file")
 		Return
+	EndIf
+
+	if (odatabase.getlengthoarray(ODatabase.GetDatabaseOArray()) < 1)
+		debug.Notification("OStim install failed")
+		return
 	EndIf
 
 	If (ArousedFaction)
 		Console("Sexlab Aroused loaded")
 	EndIf
+
+	if (SKSE.GetPluginVersion("ConsoleUtilSSE") == -1)
+		Debug.Notification("OStim: ConsoleUtils is not installed, a few features may not work")
+	endif
 
 	If (SexLab)
 		Console("SexLab loaded, using its cum effects")
@@ -397,8 +411,14 @@ Function Startup()
 		Return
 	EndIf
 
+	if (SKSE.GetPluginVersion("ImprovedCamera") == -1)
+		debug.Notification("OStim: Improved Camera is not installed. First person scenes will not be available")
+		debug.Notification("OStim: However, freecam will have extra features")
+	EndIf
+
 	If (!_oGlobal.OStimGlobalLoaded())
 		Debug.MessageBox("It appears you have the OSex facial expression fix installed. Please exit and remove that mod, as it is now included in OStim, and having it installed will break some things now!")
+		return
 	EndIf
 	OSAOmni.RebootScript()
 
@@ -2485,7 +2505,7 @@ Function SetDefaultSettings()
 
 	SexExcitementMult = 1.0
 
-	EnableImprovedCamSupport = False
+	EnableImprovedCamSupport = (SKSE.GetPluginVersion("ImprovedCamera") != -1)
 
 	SpeedUpNonSexAnimation = False ;game pauses if anim finished early
 	SpeedUpSpeed = 1.5
@@ -2510,7 +2530,7 @@ Function SetDefaultSettings()
 
 	Forcefirstpersonafter = True
 
-	UseFreeCam = False
+	UseFreeCam = !(SKSE.GetPluginVersion("ImprovedCamera") != -1)
 
 	BedReallignment = 0
 
@@ -2538,7 +2558,7 @@ Function SetDefaultSettings()
 		Console("Native function DLL failed to load. Falling back to papyrus implementations")
 	EndIf
 
-	UseBrokenCosaveWorkaround = True
+	UseBrokenCosaveWorkaround = true
 	RemapStartKey(Keymap)
 	RemapSpeedDownKey(SpeedDownKey)
 	RemapSpeedUpKey(SpeedUpKey)

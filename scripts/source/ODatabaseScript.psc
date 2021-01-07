@@ -419,7 +419,7 @@ Function CheckForModules()
 
 	Console("Modules found: " + NumModules)
 	If (NumModules == 0)
-		Debug.MessageBox("OStim: ERROR - Your version of PapyrusUtils is out of date - this is ALMOST CERTAINLY because OSA's packaged in (and out of date) PapyrusUtils is overwriting a more recent downloaded version. Please exit without saving, and move PapyrusUtils lower in your mod organizer, or install the latest version if it is not installed so that OStim can Function. ")
+		showPapyrusUtilsError()
 	EndIf
 
 	Int i = 0
@@ -443,7 +443,7 @@ Int Function GetAllAnimationFiles()
 	Console("Modules found: " + NumModules)
 
 	If (NumModules == 0)
-		Debug.MessageBox("OStim: ERROR - Your version of PapyrusUtils is out of date - this is ALMOST CERTAINLY because OSA's packaged in (and out of date) PapyrusUtils is overwriting a more recent downloaded version. Please exit without saving, and move PapyrusUtils lower in your mod organizer, or install the latest version if it is not installed so that OStim can Function. ")
+		showPapyrusUtilsError()
 	EndIf
 
 	While (i < NumModules)
@@ -847,4 +847,12 @@ EndFunction
 Function DumpOmap(Int OMap)
 	JValue.WriteToFile(OMap, "data/ostimdump.txt")
 	Console("Dumped")
+EndFunction
+
+function showPapyrusUtilsError()
+	if ostim.ChanceRoll(1) && ostim.ChanceRoll(10)
+		Debug.MessageBox("OStim: Hey! You! Yes, you. Come here and fix this shit. It ain't my problem that your PapyrusUtils is broke, blame CE0 for that. Don't know how? Just go and move it around your mod manager, preferably lower if you know what I mean...")
+	endif
+	Debug.MessageBox("OStim: ERROR - Your version of PapyrusUtils is out of date - this is ALMOST CERTAINLY because OSA's packaged in (and out of date) PapyrusUtils is overwriting a more recent downloaded version. Please exit without saving, and move PapyrusUtils lower in your mod organizer, or install the latest version if it is not installed so that OStim can Function. ")
+	debug.MessageBox("OStim (continued): Regarding moving papyrusutils lower: PAPYRUSUTILS DOES NOT HAVE AN ESP. Do NOT look for an ESP; instead move it in the LEFT pane of your mod organizer, NOT in the esp area. The load order on the left matters. Search the OStim nexus posts tab for info if you somehow still cannot figure it out. Do not make another bug report or post about this issue, there have been over 50 identical reports made and everyone is told the same thing")
 EndFunction
