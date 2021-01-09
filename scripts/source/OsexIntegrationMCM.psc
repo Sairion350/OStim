@@ -182,7 +182,7 @@ Event OnPageReset(String Page)
 		AddColoredHeader("FreeCam")
 		SetUseFreeCam = AddToggleOption("Switch to freecam mode on start", Main.UseFreeCam)
 		SetFreeCamFOV = AddSliderOption("Freecam FOV", Main.FreecamFOV, "{0}")
-		SetDefaultFOV = AddSliderOption("Freecam FOV", Main.DefaultFOV, "{0}")
+		SetDefaultFOV = AddSliderOption("Default FOV", Main.DefaultFOV, "{0}")
 		SetCameraSpeed = AddSliderOption("Camera speed", Main.FreecamSpeed, "{0}")
 		AddEmptyOption()
 
