@@ -86,6 +86,8 @@ Bool Property ForceFirstPersonAfter Auto
 Bool Property UseNativeFunctions Auto
 bool property blockVRInstalls auto
 
+bool property useAlternateBedSearch auto
+
 
 ; -------------------------------------------------------------------------------------------------
 ; SCRIPTWIDE VARIABLES ----------------------------------------------------------------------------
@@ -554,7 +556,7 @@ Event OnUpdate()
 	Actro[1] = SubActor
 
 	If (!UsingBed && UseBed)
-		Currentbed = FindBed(DomActor, Radius = 1000.0)
+		Currentbed = FindBed(DomActor)
 		If (CurrentBed)
 			UsingBed = True
 		EndIf
@@ -1291,16 +1293,16 @@ endfunction
 
 
 ObjectReference Function FindBed(ObjectReference CenterRef, Float Radius = 0.0)
-	If (Radius > 0.0)
-		Radius = Radius * 64.0
-	Else
+	If !(Radius > 0.0)
 		Radius = BedSearchDistance * 64.0
 	EndIf
 
-	ObjectReference[] Beds = None
-	If (UseNativeFunctions)
+	ObjectReference[] Beds
+	If (!usealternatebedsearch) && (UseNativeFunctions)
+		Console("Using native bed search")
 		Beds = OSANative.FindBed(CenterRef, Radius, 96.0)
 	Else
+		Console("Using papyrus bed search")
 		Beds = MiscUtil.ScanCellObjects(40, CenterRef, Radius, Keyword.GetKeyword("RaceToScale"))
 	EndIf
 
@@ -1308,7 +1310,7 @@ ObjectReference Function FindBed(ObjectReference CenterRef, Float Radius = 0.0)
 
 	Int i = 0
 	Int L = Beds.Length
-	If (UseNativeFunctions)
+	If (!usealternatebedsearch) && (UseNativeFunctions)
 		While (i < L)
 			If (!Beds[i].IsFurnitureInUse())
 				NearRef = Beds[i]
@@ -1366,6 +1368,9 @@ EndFunction
 Function AllignActorsWithCurrentBed()
 	DomActor.SetDontMove(True)
 	SubActor.SetDontMove(True)
+	if ThirdActor
+		thirdActor.SetDontMove(true)
+	endif
 
 	Bool BedRoll = IsBedRoll(Currentbed)
 	Bool Flip = !BedRoll
@@ -1420,6 +1425,18 @@ Function AllignActorsWithCurrentBed()
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
 	EndIf
+
+	if ThirdActor
+		Utility.Wait(0.05)
+
+		OffsetY = Math.Sin(TrigAngleZ(DomActor.GetAngleZ())) * 30
+		OffsetX = Math.Cos(TrigAngleZ(DomActor.GetAngleZ())) * 30
+
+		ThirdActor.MoveTo(DomActor, OffsetX, OffsetY, 0)
+		ThirdActor.SetAngle(BedAngleX, BedAngleY, BedAngleZ - FlipFloat)
+
+		ThirdActor.SetDontMove(false)
+	endif
 
 	DomActor.SetDontMove(False)
 	SubActor.SetDontMove(False)
@@ -2559,6 +2576,8 @@ Function SetDefaultSettings()
 	If (!UseNativeFunctions)
 		Console("Native function DLL failed to load. Falling back to papyrus implementations")
 	EndIf
+	useAlternateBedSearch = !UseNativeFunctions
+	;useAlternateBedSearch = true
 
 	UseBrokenCosaveWorkaround = true
 	RemapStartKey(Keymap)

@@ -50,6 +50,7 @@ String[] DomLightBrightList
 Int SetEnableBeds
 Int SetBedSearchDistance
 Int SetBedReallignment
+int setbedalgo
 
 Int SetAIControl
 Int SetControlToggle
@@ -146,6 +147,7 @@ Event OnPageReset(String Page)
 		SetEnableBeds = AddToggleOption("Use beds", Main.UseBed)
 		SetBedSearchDistance = AddSliderOption("Bed search radius", Main.BedSearchDistance, "{0} meters")
 		SetBedReallignment = AddSliderOption("Bed reallignment", Main.BedReallignment, "{0} units")
+		setbedalgo = AddToggleOption("Use alternate bed search method", Main.useAlternateBedSearch)
 		AddEmptyOption()
 
 		AddColoredHeader("Excitement bars")
@@ -267,6 +269,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetUndressIfneed)
 		Main.AutoUndressIfNeeded = !Main.AutoUndressIfNeeded
 		SetToggleOptionValue(Option, Main.AutoUndressIfNeeded)
+	ElseIf (Option == setbedalgo)
+		Main.useAlternateBedSearch = !Main.useAlternateBedSearch
+		SetToggleOptionValue(Option, Main.useAlternateBedSearch)
 	ElseIf (Option == SetClipinglessFirstPerson)
 		Main.EnableImprovedCamSupport = !Main.EnableImprovedCamSupport
 		SetToggleOptionValue(Option, Main.EnableImprovedCamSupport)
@@ -343,6 +348,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("If actors' genitals are covered by clothes, this will auto-remove the clothes as soon as they need access to their genitals")
 	ElseIf (Option == SetBedSearchDistance)
 		SetInfoText("High values may increase animation start time")
+	ElseIf (Option == setbedalgo)
+		SetInfoText("Use a slower papyrus bed search method rather than a faster native one\n May find more beds but only enable if a bed is not detected")
 	ElseIf (Option == SetUseAutoFades)
 		SetInfoText("Fade to black in between animation transitions")
 	ElseIf (Option == SetFlipFix)
