@@ -1080,8 +1080,9 @@ Function UndressActor(Actor Char, Form Item)
 	Char.UnequipItem(Item, False, True)
 EndFunction
 
-Function AnimateUndressActor(Actor Char, String Item); cuirass,boots,weapon,helmet,gloves.
-	; some extra rare options: cape,intlow(i.e. panties),inthigh(i.e. bra),miscarms,misclow,miscmid,miscup,pants,stockings,
+Function AnimateUndressActor(Actor Char, String Item)
+	; cuirass, boots, weapon, helmet, gloves.
+	; some extra rare options: cape, intlow(i.e. panties), inthigh(i.e. bra), miscarms, misclow, miscmid, miscup, pants, stockings,
 	; options other than cuirass are unreliable right now
 
 	If (Item == "helmet")
