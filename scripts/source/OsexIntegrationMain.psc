@@ -636,10 +636,6 @@ Event OnUpdate()
 		AnimateUndress = True
 	EndIf
 
-	If (UseFreeCam)
-		ToggleFreeCam(True)
-	EndIf
-
 	DomArmor = DomActor.GetWornForm(0x00000004)
 	DomHelm = DomActor.GetWornForm(0x00000002)
 	DomGlove = DomActor.GetWornForm(0x00000080)
@@ -725,6 +721,10 @@ Event OnUpdate()
 		EndIf
 	EndWhile
 
+	If (UseFreeCam)
+		ToggleFreeCam(True)
+	EndIf
+	
 	Float LoopTimeTotal = 0
 	Float LoopStartTime
 	SendModEvent("ostim_start")
