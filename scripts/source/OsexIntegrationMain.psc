@@ -84,9 +84,9 @@ Int Property BedReallignment Auto
 Bool Property ForceFirstPersonAfter Auto
 
 Bool Property UseNativeFunctions Auto
-bool property blockVRInstalls auto
+Bool Property BlockVRInstalls Auto
 
-bool property useAlternateBedSearch auto
+Bool Property UseAlternateBedSearch Auto
 
 
 ; -------------------------------------------------------------------------------------------------
@@ -367,8 +367,8 @@ Function Startup()
 	SetDefaultSettings()
 	BuildSoundFormlists()
 
-	if (blockVRInstalls && GetGameIsVR())
-		debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
+	if (BlockVRInstalls && GetGameIsVR())
+		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
 		return
 	endif
 
@@ -387,8 +387,8 @@ Function Startup()
 		Return
 	EndIf
 
-	if (odatabase.getlengthoarray(ODatabase.GetDatabaseOArray()) < 1)
-		debug.Notification("OStim install failed")
+	if (ODatabase.GetLengthOArray(ODatabase.GetDatabaseOArray()) < 1)
+		Debug.Notification("OStim install failed")
 		return
 	Else
 		ODatabase.Unload()
@@ -416,8 +416,8 @@ Function Startup()
 	EndIf
 
 	if (SKSE.GetPluginVersion("ImprovedCamera") == -1)
-		debug.Notification("OStim: Improved Camera is not installed. First person scenes will not be available")
-		debug.Notification("OStim: However, freecam will have extra features")
+		Debug.Notification("OStim: Improved Camera is not installed. First person scenes will not be available")
+		Debug.Notification("OStim: However, freecam will have extra features")
 	EndIf
 
 	If (!_oGlobal.OStimGlobalLoaded())
@@ -1080,8 +1080,9 @@ Function UndressActor(Actor Char, Form Item)
 	Char.UnequipItem(Item, False, True)
 EndFunction
 
-Function AnimateUndressActor(Actor Char, String Item); cuirass,boots,weapon,helmet,gloves.
-	; some extra rare options: cape,intlow(i.e. panties),inthigh(i.e. bra),miscarms,misclow,miscmid,miscup,pants,stockings,
+Function AnimateUndressActor(Actor Char, String Item)
+	; cuirass, boots, weapon, helmet, gloves.
+	; some extra rare options: cape, intlow(i.e. panties), inthigh(i.e. bra), miscarms, misclow, miscmid, miscup, pants, stockings,
 	; options other than cuirass are unreliable right now
 
 	If (Item == "helmet")
@@ -1298,7 +1299,7 @@ ObjectReference Function FindBed(ObjectReference CenterRef, Float Radius = 0.0)
 	EndIf
 
 	ObjectReference[] Beds
-	If (!usealternatebedsearch) && (UseNativeFunctions)
+	If (!UseAlternateBedSearch) && (UseNativeFunctions)
 		Console("Using native bed search")
 		Beds = OSANative.FindBed(CenterRef, Radius, 96.0)
 	Else
@@ -1310,10 +1311,11 @@ ObjectReference Function FindBed(ObjectReference CenterRef, Float Radius = 0.0)
 
 	Int i = 0
 	Int L = Beds.Length
-	If (!usealternatebedsearch) && (UseNativeFunctions)
+	If (!UseAlternateBedSearch) && (UseNativeFunctions)
 		While (i < L)
-			If (!Beds[i].IsFurnitureInUse())
-				NearRef = Beds[i]
+			ObjectReference Bed = Beds[i]
+			If (!Bed.IsFurnitureInUse())
+				NearRef = Bed
 				i = L
 			Else
 				i += 1
@@ -2558,7 +2560,7 @@ Function SetDefaultSettings()
 
 	UseFades = True
 	UseAutoFades = True
-	blockVRInstalls = true
+	BlockVRInstalls = true
 
 	KeyMap = 200
 	SpeedUpKey = 78
@@ -2576,8 +2578,8 @@ Function SetDefaultSettings()
 	If (!UseNativeFunctions)
 		Console("Native function DLL failed to load. Falling back to papyrus implementations")
 	EndIf
-	useAlternateBedSearch = !UseNativeFunctions
-	;useAlternateBedSearch = true
+	UseAlternateBedSearch = !UseNativeFunctions
+	;UseAlternateBedSearch = true
 
 	UseBrokenCosaveWorkaround = true
 	RemapStartKey(Keymap)
