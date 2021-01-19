@@ -133,6 +133,12 @@ Form SubGlove
 Form SubBoot
 Form SubWep
 
+form ThirdHelm
+form ThirdArmor
+form ThirdGlove
+form ThirdBoot
+form ThirdWep
+
 Bool IsFreeCamming
 
 Int DomTimesOrgasm
@@ -706,6 +712,43 @@ Event OnUpdate()
 			EndIf
 		EndIf
 	EndIf
+	
+	; Assume if sub is to be undressed, third actor should also be provided ThirdActor exists.
+	if (UndressSub == True && ThirdActor != None)
+		; undressing really needs to be its own function.
+		ThirdArmor = ThirdActor.GetWornForm(0x00000004)
+		ThirdHelm = ThirdActor.GetWornForm(0x00000002)
+		ThirdGlove = ThirdActor.GetWornForm(0x00000080)
+		ThirdBoot = ThirdActor.GetWornForm(0x00000008)
+		ThirdWep = ThirdActor.GetEquippedObject(1)
+		if (AnimateUndress)
+			if (OnlyUndressChest)
+				AnimateUndressActor(ThirdActor, "cuirass")
+			Else
+				;animateUndressActor(ThirdActor, "helmet")
+				;animateUndressActor(ThirdActor, "gloves")
+				;animateUndressActor(ThirdActor, "weapon")
+				;animateUndressActor(ThirdActor, "boots")
+
+				AnimateUndressActor(ThirdActor, "cuirass")
+				UndressActor(ThirdActor, ThirdHelm)
+				UndressActor(ThirdActor, ThirdBoot)
+				UndressActor(ThirdActor, ThirdGlove)
+				ThirdActor.UnequipItem(ThirdWep, abPreventEquip = False, abSilent = True)
+			endif
+			
+		Else
+			if (OnlyUndressChest)
+				undressActor(ThirdActor, ThirdArmor)
+			Else
+				UndressActor(ThirdActor, ThirdHelm)
+				UndressActor(ThirdActor, ThirdBoot)
+				UndressActor(ThirdActor, ThirdGlove)
+				UndressActor(ThirdActor, ThirdArmor)
+				ThirdActor.UnequipItem(ThirdWep, abPreventEquip = False, abSilent = True)
+			endif
+		endif
+	endIf
 
 	StartTime = Utility.GetCurrentRealTime()
 
@@ -1702,6 +1745,22 @@ Function Redress()
 	If (SubWep)
 		SubActor.EquipItem(SubWep, False, True)
 	EndIf
+	If (ThirdHelm)
+		ThirdActor.EquipItem(ThirdHelm, False, True)
+	EndIf
+	If (ThirdGlove)
+		ThirdActor.EquipItem(ThirdGlove, False, True)
+	EndIf
+	If (ThirdArmor)
+		ThirdActor.EquipItem(ThirdArmor, False, True)
+	EndIf
+	If (ThirdBoot)
+		ThirdActor.EquipItem(ThirdBoot, False, True)
+	EndIf
+	If (ThirdWep)
+		ThirdActor.EquipItem(ThirdWep, False, True)
+	EndIf
+	; This can't possibly be the best way to do this.
 EndFunction
 
 Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
