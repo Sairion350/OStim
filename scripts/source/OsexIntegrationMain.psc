@@ -449,7 +449,7 @@ Function StartReroutedScene()
 	StartScene(ReroutedDomActor,  ReroutedSubActor)
 EndFunction
 
-Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zUndressSub = False, Bool zAnimateUndress = False, String zStartingAnimation = "", Actor zThirdActor = None, ObjectReference Bed = None, Bool Aggressive = False, Actor AggressingActor = None)
+Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zUndressSub = False, Bool zAnimateUndress = False, String zStartingAnimation = "", ObjectReference Bed = None, Bool Aggressive = False, Actor AggressingActor = None)
 	If (SceneRunning)
 		Debug.Notification("Osex scene already running")
 		Return False
@@ -469,7 +469,6 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	UndressSub = zUndressSub
 	AnimateUndress = zAnimateUndress
 	StartingAnimation = zStartingAnimation
-	ThirdActor = zThirdActor
 	PauseAI = False
 
 	If (Aggressive)
