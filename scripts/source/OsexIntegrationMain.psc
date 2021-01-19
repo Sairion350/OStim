@@ -1300,28 +1300,27 @@ Function UndressIfNeeded()
 	String CClass = GetCurrentAnimationClass()
 	If (!DomNaked)
 		If (CClass == ClassSex) || (CClass == ClassMasturbate) || (CClass == ClassHeadHeldMasturbate) || (CClass == ClassPenisjob) || (CClass == ClassHeadHeldPenisjob) || (CClass == ClassHandjob) || (CClass == ClassApartHandjob) || (CClass == ClassDualHandjob) || (CClass == ClassSelfSuck)
-			undressAllItems(domactor)
+			UndressAllItems(domactor)
 		EndIf
 	ElseIf (!SubNaked)
 		If (CClass == ClassSex) || (CClass == ClassCunn) || (CClass == ClassClitRub) || (CClass == ClassOneFingerPen) || (CClass == ClassTwoFingerPen)
-			undressAllItems(subactor)
+			UndressAllItems(subactor)
 		EndIf
 	EndIf
 EndFunction
 
-function undressAllItems(actor act) ; will be moved to a different script in a later version so do not call!
-	form zArmor = act.GetWornForm(0x00000004)
-	form zHelm = act.GetWornForm(0x00000002)
-	form zGlove = act.GetWornForm(0x00000080)
-	form zBoot = act.GetWornForm(0x00000008)
-	form zWep = act.GetEquippedObject(1)
+function UndressAllItems(Actor Act) ; will be moved to a different script in a later version so do not call!
+	form zArmor = Act.GetWornForm(0x00000004)
+	form zHelm = Act.GetWornForm(0x00000002)
+	form zGlove = Act.GetWornForm(0x00000080)
+	form zBoot = Act.GetWornForm(0x00000008)
+	form zWep = Act.GetEquippedObject(1)
 	
-	UndressActor(act, zHelm)
-	UndressActor(act, zBoot)
-	UndressActor(act, zGlove)
-	UndressActor(act, zArmor)
-	act.UnequipItem(zWep, abPreventEquip = False, abSilent = True)
-
+	UndressActor(Act, zHelm)
+	UndressActor(Act, zBoot)
+	UndressActor(Act, zGlove)
+	UndressActor(Act, zArmor)
+	Act.UnequipItem(zWep, abPreventEquip = False, abSilent = True)
 
 endfunction
 
