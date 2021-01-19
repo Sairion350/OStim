@@ -117,7 +117,6 @@ GlobalVariable Timescale
 
 Bool UndressDom
 Bool UndressSub
-bool UndressThird
 Bool AnimateUndress
 String StartingAnimation
 Actor ThirdActor
@@ -468,8 +467,8 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 
 	UndressDom = zUndressDom
 	UndressSub = zUndressSub
-	; Assume if sub is to be undressed, third actor should also be.
-	UndressThird = zUndressSub
+	Debug.Trace("D: " + UndressDom)
+	Debug.Trace("S: " + UndressSub)
 	AnimateUndress = zAnimateUndress
 	StartingAnimation = zStartingAnimation
 	ThirdActor = zThirdActor
@@ -719,8 +718,9 @@ Event OnUpdate()
 			EndIf
 		EndIf
 	EndIf
-
-	if (UndressThird)
+	
+	; Assume if sub is to be undressed, third actor should also be provided ThirdActor exists.
+	if (UndressSub == True && ThirdActor != None)
 		; undressing really needs to be its own function.
 		ThirdArmor = ThirdActor.GetWornForm(0x00000004)
 		ThirdHelm = ThirdActor.GetWornForm(0x00000002)
