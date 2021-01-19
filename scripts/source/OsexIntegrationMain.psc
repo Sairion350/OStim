@@ -467,8 +467,6 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 
 	UndressDom = zUndressDom
 	UndressSub = zUndressSub
-	Debug.Trace("D: " + UndressDom)
-	Debug.Trace("S: " + UndressSub)
 	AnimateUndress = zAnimateUndress
 	StartingAnimation = zStartingAnimation
 	ThirdActor = zThirdActor
