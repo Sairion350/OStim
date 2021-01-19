@@ -1309,7 +1309,13 @@ Function UndressIfNeeded()
 	EndIf
 EndFunction
 
-function UndressAllItems(Actor Act) ; will be moved to a different script in a later version so do not call!
+Function UndressAllItems(Actor Act) ; will be moved to a different script in a later version so do not call!
+	bool DidToggle = False
+	If IsFreeCamming
+		DidToggle = True
+		ToggleFreeCam()
+	EndIf
+
 	form zArmor = Act.GetWornForm(0x00000004)
 	form zHelm = Act.GetWornForm(0x00000002)
 	form zGlove = Act.GetWornForm(0x00000080)
@@ -1322,7 +1328,11 @@ function UndressAllItems(Actor Act) ; will be moved to a different script in a l
 	UndressActor(Act, zArmor)
 	Act.UnequipItem(zWep, abPreventEquip = False, abSilent = True)
 
-endfunction
+	If DidToggle
+		ToggleFreeCam()
+	EndIf	
+	Console("Doing mid-animation strip")
+Endfunction
 
 Function ToggleFreeCam(Bool On = True)
 	ConsoleUtil.ExecuteCommand("tfc")
