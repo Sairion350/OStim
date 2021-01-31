@@ -1297,6 +1297,10 @@ EndFunction
 Function UndressIfNeeded()
 	Bool DomNaked = IsNaked(DomActor)
 	Bool SubNaked = IsNaked(SubActor)
+	Bool ThirdNaked = true
+	if ThirdActor
+		ThirdNaked = IsNaked(ThirdActor)
+	endif
 	String CClass = GetCurrentAnimationClass()
 	If (!DomNaked)
 		If (CClass == ClassSex) || (CClass == ClassMasturbate) || (CClass == ClassHeadHeldMasturbate) || (CClass == ClassPenisjob) || (CClass == ClassHeadHeldPenisjob) || (CClass == ClassHandjob) || (CClass == ClassApartHandjob) || (CClass == ClassDualHandjob) || (CClass == ClassSelfSuck)
@@ -1305,6 +1309,10 @@ Function UndressIfNeeded()
 	ElseIf (!SubNaked)
 		If (CClass == ClassSex) || (CClass == ClassCunn) || (CClass == ClassClitRub) || (CClass == ClassOneFingerPen) || (CClass == ClassTwoFingerPen)
 			UndressAllItems(subactor)
+		EndIf
+	ElseIf (!ThirdNaked)
+		If (CClass == ClassSex) || (CClass == ClassCunn) || (CClass == ClassClitRub) || (CClass == ClassOneFingerPen) || (CClass == ClassTwoFingerPen)
+			UndressAllItems(ThirdActor)
 		EndIf
 	EndIf
 EndFunction
@@ -1716,6 +1724,40 @@ Function OnAnimationChange()
 				Flip()
 			EndIf
 		EndIf
+	EndIf
+
+	int CorrectActorCount = ODatabase.GetNumActors(currentoid)
+
+	If !ThirdActor && (CorrectActorCount == 3) ; no third actor, but there should be
+		Console("Third actor has joined scene ")
+
+		actor[] nearbyActors = MiscUtil.ScanCellNPCs(domactor, radius = 64.0) ;epic hackjob time
+		int max = nearbyActors.Length
+		int i = 0
+
+		while i < max
+			actor act = nearbyActors[i]
+
+			if (act != DomActor) && (act != SubActor) && (IsActorActive(act))
+				ThirdActor = act
+				i = max
+			endif
+			i += 1
+		EndWhile
+
+		If ThirdActor
+			Console("Third actor: + " + ThirdActor.GetDisplayName() + " has joined the scene")
+
+			If AlwaysUndressAtAnimStart
+				UndressAllItems(ThirdActor)
+			EndIf
+		Else
+			Console("Warning - Third Actor not found")
+		endif
+
+	ElseIf ThirdActor && (CorrectActorCount == 2) ; third actor, but there should not be.
+		Console("Third actor has left the scene")
+		ThirdActor = none
 	EndIf
 
 	Console("Current animation: " + CurrentAnimation)
