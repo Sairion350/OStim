@@ -454,6 +454,10 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 		Debug.Notification("Osex scene already running")
 		Return False
 	EndIf
+	If IsActorActive(dom) || IsActorActive(sub)
+		Debug.Notification("One of the actors is already in a OSA scene")
+		Return False
+	EndIf
 
 	DomActor = Dom
 	SubActor = Sub
