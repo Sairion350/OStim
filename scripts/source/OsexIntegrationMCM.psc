@@ -211,6 +211,12 @@ Event OnPageReset(String Page)
 		Main.PlayTickBig()
 		SetCursorFillMode(TOP_TO_BOTTOM)
 		LoadCustomContent("Ostim/info.dds")
+	ElseIf (Page == "Debug")
+		UnloadCustomContent()
+		Main.playTickBig()
+		AddColoredHeader("Save and load settings.")
+		ExportSettings = AddTextOption("Export Settings")
+		ImportSettings = AddTextOption("Import Settings")
 	EndIf
 EndEvent
 
@@ -311,6 +317,12 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetOnlyLightInDark)
 		Main.LowLightLevelLightsOnly = !Main.LowLightLevelLightsOnly
 		SetToggleOptionValue(Option, Main.LowLightLevelLightsOnly)
+	ElseIf (Option == ExportSettings)
+		ExportSettings()
+		; will probably need to do a popup or something here to cover the delay.
+	ElseIf (Option == ImportSettings)
+		ImportSettings()
+		; will probably need to do a popup or something here to cover the delay.
 	EndIf
 EndEvent
 
@@ -414,6 +426,10 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Only usable in manual mode\nWhen pressed during a sexual animation, causes your character to immediately cancel and \"pull out\" of the current animation")
 	ElseIf (Option == SetThanks)
 		SetInfoText("Thank you for downloading OStim\nLeave a comment and also share it with others online if you enjoy it, to help others find it")
+	ElseIf (Option == ExportSettings)
+		SetInfoText("Click this button to export the Ostim MCM settings.")
+	ElseIf (Option == ImportSettings)
+		SetInfoText("Click this button to import the Ostim MCM settings.")
 	EndIf
 EndEvent
 
@@ -553,4 +569,34 @@ Function AddColoredHeader(String In)
 	EndIf
 
 	AddHeaderOption("<font color='" + Color +"'>" + In)
+EndFunction
+
+Function ExportSettings()
+	; Test export
+	int ExportOstimSettings = JMap.object()
+	; Sex settings export
+	JMap.SetInt(ExportOstimSettings, "SetEndOnOrgasm", SetEndOnOrgasm)
+	JMap.SetInt(ExportOstimSettings, "SetActorSpeedControl", SetActorSpeedControl)
+	JMap.SetInt(ExportOstimSettings, "SetUndressIfNeed", SetUndressIfNeed)
+	JMap.SetInt(ExportOstimSettings, "SetsexExcitementMult", SetsexExcitementMult)
+	JMap.SetInt(ExportOstimSettings, "SetClipinglessFirstPerson", SetClipinglessFirstPerson)
+	JMap.SetInt(ExportOstimSettings, "SetEndAfterActorHit", SetEndAfterActorHit)
+	JMap.SetInt(ExportOstimSettings, "SetUseRumble", SetUseRumble)
+	JMap.SetInt(ExportOstimSettings, "SetUseScreenShake", SetUseScreenShake)
+	
+	Jvalue.WriteToFile(ExportOstimSettings, JContainers.UserDirectory() + "OstimMCMSettings.json")
+EndFunction
+
+Function ImportSettings()
+	; Test import
+	int ImportOstimSettings = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
+	; Sex settings import
+	Int SetEndOnOrgasm = Jmap.GetInt(ImportOstimSettings, "SetEndOnOrgasm")
+	Int SetActorSpeedControl = Jmap.GetInt(ImportOstimSettings, "SetActorSpeedControl")
+	Int SetUndressIfNeed = Jmap.GetInt(ImportOstimSettings, "SetUndressIfNeed")
+	Int SetsexExcitementMult = Jmap.GetInt(ImportOstimSettings, "SetsexExcitementMult")
+	Int SetClipinglessFirstPerson = Jmap.GetInt(ImportOstimSettings, "SetClipinglessFirstPerson")
+	Int SetEndAfterActorHit = Jmap.GetInt(ImportOstimSettings, "SetEndAfterActorHit")
+	Int SetUseRumble = Jmap.GetInt(ImportOstimSettings, "SetUseRumble")
+	Int SetUseScreenShake = Jmap.GetInt(ImportOstimSettings, "SetUseScreenShake")
 EndFunction
