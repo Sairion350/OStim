@@ -76,6 +76,7 @@ Int SetCameraSpeed
 Int SetForceFirstPerson
 
 Int SetUseCosaveWorkaround
+
 Int ExportSettings
 Int ImportSettings
 
@@ -579,9 +580,79 @@ Function ExportSettings()
 	
 	; Sex settings export
 	JMap.SetInt(ExportOstimSettings, "SetEndOnOrgasm", Main.EndOnDomOrgasm as Int)
+	JMap.SetInt(ExportOstimSettings, "SetActorSpeedControl", Main.SetActorSpeedControl as Int)
+	JMap.SetInt(ExportOstimSettings, "SetUndressIfNeed", Main.SetUndressIfNeed as Int)
+	JMap.SetInt(ExportOstimSettings, "SetsexExcitementMult", Main.SetsexExcitementMult as Int)
+	JMap.SetInt(ExportOstimSettings, "SetClipinglessFirstPerson", Main.SetClipinglessFirstPerson as Int)
+	JMap.SetInt(ExportOstimSettings, "SetEndAfterActorHit", Main.SetEndAfterActorHit as Int)
+	JMap.SetInt(ExportOstimSettings, "SetUseRumble", Main.SetUseRumble as Int)
+	JMap.SetInt(ExportOstimSettings, "SetUseScreenShake", Main.SetUseScreenShake as Int)
 	
+	; Clothes settings export
+	JMap.SetInt(ExportOstimSettings, "SetAlwaysAnimateUndress", Main.SetAlwaysAnimateUndress as Int)
+	JMap.SetInt(ExportOstimSettings, "SetAlwaysUndressAtStart", Main.SetAlwaysUndressAtStart as Int)
+	JMap.SetInt(ExportOstimSettings, "SetonlyUndressChest", Main.SetonlyUndressChest as Int)
+
+	; Bar settings export
+	JMap.SetInt(ExportOstimSettings, "SetSubBar", Main.SetSubBar as Int)
+	JMap.SetInt(ExportOstimSettings, "SetDomBar", Main.SetDomBar as Int)
+	JMap.SetInt(ExportOstimSettings, "SetAutoHideBar", Main.SetAutoHideBar as Int)
+
+	; Orgasm settings export
+	JMap.SetInt(ExportOstimSettings, "SetSlowMoOrgasms", Main.SetSlowMoOrgasms as Int)
+	JMap.SetInt(ExportOstimSettings, "SetOrgasmBoostsRel", Main.SetOrgasmBoostsRel as Int)
+
+	; Light settings export
+	Jmap.SetInt(ExportOstimSettings, "SetDomLightMode", Main.SetDomLightMode as Int)
+	Jmap.SetInt(ExportOstimSettings, "SetSubLightMode", Main.SetSubLightMode as Int)
+	Jmap.SetInt(ExportOstimSettings, "SetSubLightBrightness", Main.SetSubLightBrightness as Int)
+	Jmap.SetInt(ExportOstimSettings, "SetDomLightBrightness", Main.SetDomLightBrightness as Int)
+	Jmap.SetInt(ExportOstimSettings, "SetOnlyLightInDark", Main.SetOnlyLightInDark as Int)
+	
+	; Keys settings export
+	JMap.SetInt(ExportOstimSettings, "SetKeymap", Main.SetKeymap as Int)
+	JMap.SetInt(ExportOstimSettings, "SetKeyUp", Main.SetKeyUp as Int)
+	JMap.SetInt(ExportOstimSettings, "SetKeyDown", Main.SetKeyDown as Int)
+	JMap.SetInt(ExportOstimSettings, "SetPullOut", Main.SetPullOut as Int)
+
+	; Bed settings export
+	JMap.SetInt(ExportOstimSettings, "SetEnableBeds", Main.SetEnableBeds as Int)
+	JMap.SetInt(ExportOstimSettings, "SetBedSearchDistance", Main.SetBedSearchDistance as Int)
+	JMap.SetInt(ExportOstimSettings, "SetBedReallignment", Main.SetBedReallignment as Int)
+	JMap.SetInt(ExportOstimSettings, "SetBedAlgo", Main.SetBedAlgo as Int)
+
+	; Ai/Control settings export
+	JMap.SetInt(ExportOstimSettings, "SetAIControl", Main.SetAIControl as Int)
+	JMap.SetInt(ExportOstimSettings, "SetControlToggle", Main.SetControlToggle as Int)
+	JMap.SetInt(ExportOstimSettings, "SetForceAIIfAttacking", Main.SetForceAIIfAttacking as Int)
+	JMap.SetInt(ExportOstimSettings, "SetForceAIIfAttacked", Main.SetForceAIIfAttacked as Int)
+	JMap.SetInt(ExportOstimSettings, "SetForceAIInConsensualScenes", Main.SetForceAIInConsensualScenes as Int)
+
+	; Misc settings export
+	JMap.SetInt(ExportOstimSettings, "SetCustomTimescale", Main.SetCustomTimescale as Int)
+
+	JMap.SetInt(ExportOstimSettings, "SetMisallignmentOption", Main.SetMisallignmentOption as Int)
+	JMap.SetInt(ExportOstimSettings, "SetFlipFix", Main.SetFlipFix as Int)
+
+	JMap.SetInt(ExportOstimSettings, "SetUseFades", Main.SetUseFades as Int)
+	JMap.SetInt(ExportOstimSettings, "SetUseAutoFades", Main.SetUseAutoFades as Int)
+
+	JMap.SetInt(ExportOstimSettings, "SetMute", Main.SetMute as Int)
+
+	; Camera settings export
+	JMap.SetInt(ExportOstimSettings, "SetUseFreeCam", Main.SetUseFreeCam as Int)
+	JMap.SetInt(ExportOstimSettings, "SetFreeCamFOV", Main.SetFreeCamFOV as Int)
+	JMap.SetInt(ExportOstimSettings, "SetDefaultFOV", Main.SetDefaultFOV as Int)
+	JMap.SetInt(ExportOstimSettings, "SetCameraSpeed", Main.SetCameraSpeed as Int)
+
+	JMap.SetInt(ExportOstimSettings, "SetForceFirstPerson", Main.SetForceFirstPerson as Int)
+
+
+
 	; Save to file.
 	Jvalue.WriteToFile(ExportOstimSettings, JContainers.UserDirectory() + "OstimMCMSettings.json")
+	
+	; Force page reset to show updated changes.
 	ForcePageReset()
 EndFunction
 
@@ -594,5 +665,7 @@ Function ImportSettings()
 	
 	; Sex settings import
 	Main.EndOnDomOrgasm = Jmap.GetInt(ImportOstimSettings, "SetEndOnOrgasm")
+	
+	; Force page reset to show updated changes.
 	ForcePageReset()
 EndFunction
