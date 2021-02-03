@@ -594,6 +594,7 @@ Function ImportSettings()
 	int ImportOstimSettings = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
 	; Sex settings import
 	SetEndOnOrgasm = Jmap.GetInt(ImportOstimSettings, "SetEndOnOrgasm")
+	SetToggleOptionValue(SetEndOnOrgasm, Main.EndOnDomOrgasm)
 	SetActorSpeedControl = Jmap.GetInt(ImportOstimSettings, "SetActorSpeedControl")
 	SetUndressIfNeed = Jmap.GetInt(ImportOstimSettings, "SetUndressIfNeed")
 	SetsexExcitementMult = Jmap.GetInt(ImportOstimSettings, "SetsexExcitementMult")
