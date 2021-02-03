@@ -576,30 +576,25 @@ EndFunction
 Function ExportSettings()
 	; Test export
 	int ExportOstimSettings = JMap.object()
-	; Sex settings export
-	JMap.SetInt(ExportOstimSettings, "SetEndOnOrgasm", SetEndOnOrgasm)
-	JMap.SetInt(ExportOstimSettings, "SetActorSpeedControl", SetActorSpeedControl)
-	JMap.SetInt(ExportOstimSettings, "SetUndressIfNeed", SetUndressIfNeed)
-	JMap.SetInt(ExportOstimSettings, "SetsexExcitementMult", SetsexExcitementMult)
-	JMap.SetInt(ExportOstimSettings, "SetClipinglessFirstPerson", SetClipinglessFirstPerson)
-	JMap.SetInt(ExportOstimSettings, "SetEndAfterActorHit", SetEndAfterActorHit)
-	JMap.SetInt(ExportOstimSettings, "SetUseRumble", SetUseRumble)
-	JMap.SetInt(ExportOstimSettings, "SetUseScreenShake", SetUseScreenShake)
 	
+	Debug.MessageBox("Exporting to file...")
+	
+	; Sex settings export
+	JMap.SetInt(ExportOstimSettings, "SetEndOnOrgasm", Main.EndOnDomOrgasm as Int)
+	
+	; Save to file.
 	Jvalue.WriteToFile(ExportOstimSettings, JContainers.UserDirectory() + "OstimMCMSettings.json")
+	
 EndFunction
 
 Function ImportSettings()
 	; Test import
+	; Import from file.
 	int ImportOstimSettings = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
+	
+	Debug.MessageBox("Importing from file...")
+	
 	; Sex settings import
-	SetEndOnOrgasm = Jmap.GetInt(ImportOstimSettings, "SetEndOnOrgasm")
-	SetToggleOptionValue(SetEndOnOrgasm, Main.EndOnDomOrgasm)
-	SetActorSpeedControl = Jmap.GetInt(ImportOstimSettings, "SetActorSpeedControl")
-	SetUndressIfNeed = Jmap.GetInt(ImportOstimSettings, "SetUndressIfNeed")
-	SetsexExcitementMult = Jmap.GetInt(ImportOstimSettings, "SetsexExcitementMult")
-	SetClipinglessFirstPerson = Jmap.GetInt(ImportOstimSettings, "SetClipinglessFirstPerson")
-	SetEndAfterActorHit = Jmap.GetInt(ImportOstimSettings, "SetEndAfterActorHit")
-	SetUseRumble = Jmap.GetInt(ImportOstimSettings, "SetUseRumble")
-	SetUseScreenShake = Jmap.GetInt(ImportOstimSettings, "SetUseScreenShake")
+	Main.EndOnDomOrgasm = Jmap.GetInt(ImportOstimSettings, "SetEndOnOrgasm")
+	
 EndFunction
