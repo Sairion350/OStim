@@ -586,12 +586,12 @@ Function ExportSettings()
 	; Export to file.
 	int OstimSettingsFile = JMap.object()
 	
-	Debug.MessageBox("Exporting to file...")
+	Debug.MessageBox("Importing to file, wait a second or two before clicking OK.")
 	
 	; Sex settings export
 	JMap.SetInt(OstimSettingsFile, "SetEndOnOrgasm", Main.EndOnDomOrgasm as Int)
 	JMap.SetInt(OstimSettingsFile, "SetActorSpeedControl", Main.EnableActorSpeedControl as Int)
-	JMap.SetInt(OstimSettingsFile, "SetsexExcitementMult", Main.SexExcitementMult as Int)
+	JMap.SetFlt(OstimSettingsFile, "SetsexExcitementMult", Main.SexExcitementMult as Float)
 	JMap.SetInt(OstimSettingsFile, "SetClipinglessFirstPerson", Main.EnableImprovedCamSupport as Int)
 	JMap.SetInt(OstimSettingsFile, "SetEndAfterActorHit", Main.EndAfterActorHit as Int)
 	JMap.SetInt(OstimSettingsFile, "SetUseRumble", Main.UseRumble as Int)
@@ -614,10 +614,10 @@ Function ExportSettings()
 	;JMap.SetInt(OstimSettingsFile, "SetOrgasmBoostsRel", Main.OrgasmBoostsRel as Int)
 
 	; Light settings export
-	Jmap.SetInt(OstimSettingsFile, "SetDomLightMode", DomLightModeList[Main.DomLightPos] as Int)
-	Jmap.SetInt(OstimSettingsFile, "SetSubLightMode", SubLightModeList[Main.SubLightPos] as Int)
-	Jmap.SetInt(OstimSettingsFile, "SetSubLightBrightness", DomLightBrightList[Main.DomLightBrightness] as Int)
-	Jmap.SetInt(OstimSettingsFile, "SetDomLightBrightness", SubLightBrightList[Main.SubLightBrightness] as Int)
+	Jmap.SetInt(OstimSettingsFile, "SetDomLightMode", Main.DomLightPos as Int)
+	Jmap.SetInt(OstimSettingsFile, "SetSubLightMode", Main.SubLightPos as Int)
+	Jmap.SetInt(OstimSettingsFile, "SetSubLightBrightness", Main.SubLightBrightness as Int)
+	Jmap.SetInt(OstimSettingsFile, "SetDomLightBrightness", Main.DomLightBrightness as Int)
 	Jmap.SetInt(OstimSettingsFile, "SetOnlyLightInDark", Main.LowLightLevelLightsOnly as Int)
 	
 	; Keys settings export MAKE SURE TO TEST THESE
@@ -673,12 +673,12 @@ Function ImportSettings()
 	; Import from file.
 	int OstimSettingsFile = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
 	
-	Debug.MessageBox("Importing from file...")
+	Debug.MessageBox("Importing from file, wait a second or two before clicking OK.")
 	
 	; Sex settings import
 	Main.EndOnDomOrgasm = Jmap.GetInt(OstimSettingsFile, "SetEndOnOrgasm")
 	Main.EnableActorSpeedControl = JMap.GetInt(OstimSettingsFile, "SetActorSpeedControl")
-	Main.SexExcitementMult = JMap.GetInt(OstimSettingsFile, "SetsexExcitementMult")
+	Main.SexExcitementMult = JMap.GetFlt(OstimSettingsFile, "SetsexExcitementMult")
 	Main.EnableImprovedCamSupport = JMap.GetInt(OstimSettingsFile, "SetClipinglessFirstPerson")
 	Main.EndAfterActorHit = JMap.GetInt(OstimSettingsFile, "SetEndAfterActorHit")
 	Main.UseRumble = JMap.GetInt(OstimSettingsFile, "SetUseRumble")
@@ -695,11 +695,11 @@ Function ImportSettings()
 	Main.EnableDomBar = JMap.GetInt(OstimSettingsFile, "SetDomBar")
 	Main.AutoHideBars = JMap.GetInt(OstimSettingsFile, "SetAutoHideBar")
 
-	; Light settings import
-	DomLightModeList[Main.DomLightPos] = Jmap.GetInt(OstimSettingsFile, "SetDomLightMode")
-	SubLightModeList[Main.SubLightPos] = Jmap.GetInt(OstimSettingsFile, "SetSubLightMode")
-	DomLightBrightList[Main.DomLightBrightness] = Jmap.GetInt(OstimSettingsFile, "SetSubLightBrightness")
-	SubLightBrightList[Main.SubLightBrightness] = Jmap.GetInt(OstimSettingsFile, "SetDomLightBrightness")
+	; Light settings export
+	Main.DomLightPos = Jmap.GetInt(OstimSettingsFile, "SetDomLightMode")
+	Main.SubLightPos = Jmap.GetInt(OstimSettingsFile, "SetSubLightMode")
+	Main.SubLightBrightness = Jmap.GetInt(OstimSettingsFile, "SetSubLightBrightness")
+	Main.DomLightBrightness = Jmap.GetInt(OstimSettingsFile, "SetDomLightBrightness")
 	Main.LowLightLevelLightsOnly = Jmap.GetInt(OstimSettingsFile, "SetOnlyLightInDark")
 	
 	; Keys settings import
