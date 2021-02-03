@@ -703,11 +703,11 @@ Function ImportSettings()
 	Main.LowLightLevelLightsOnly = Jmap.GetInt(OstimSettingsFile, "SetOnlyLightInDark")
 	
 	; Keys settings import MAKE SURE TO TEST THESE
-	JMap.SetInt(OstimSettingsFile, "SetKeymap", Main.KeyMap)
-	JMap.SetInt(OstimSettingsFile, "SetKeyUp", Main.SpeedUpKey)
-	JMap.SetInt(OstimSettingsFile, "SetKeyDown", Main.SpeedDownKey)
-	JMap.SetInt(OstimSettingsFile, "SetPullOut", Main.PullOutKey)
-	JMap.SetInt(OstimSettingsFile, "SetControlToggle", Main.ControlToggleKey)
+	Main.RemapStartKey(JMap.GetInt(OstimSettingsFile, "SetKeymap"))
+	Main.RemapSpeedUpKey(JMap.GetInt(OstimSettingsFile, "SetKeyUp"))
+	Main.RemapSpeedDownKey(JMap.GetInt(OstimSettingsFile, "SetKeyDown"))
+	Main.RemapPullOutKey(JMap.GetInt(OstimSettingsFile, "SetPullOut"))
+	Main.RemapControlToggleKey(JMap.GetInt(OstimSettingsFile, "SetControlToggle"))
 	
 	; Bed settings export
 	Main.UseBed = JMap.GetInt(OstimSettingsFile, "SetEnableBeds")
