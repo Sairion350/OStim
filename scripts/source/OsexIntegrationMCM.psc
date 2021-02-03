@@ -76,6 +76,8 @@ Int SetCameraSpeed
 Int SetForceFirstPerson
 
 Int SetUseCosaveWorkaround
+Int ExportSettings
+Int ImportSettings
 
 OsexIntegrationMain Main
 
@@ -215,8 +217,8 @@ Event OnPageReset(String Page)
 		UnloadCustomContent()
 		Main.playTickBig()
 		AddColoredHeader("Save and load settings.")
-		ExportSettings = AddTextOption("Export Settings")
-		ImportSettings = AddTextOption("Import Settings")
+		ExportSettings = AddTextOption("Export Settings", "Done")
+		ImportSettings = AddTextOption("Import Settings", "Done")
 	EndIf
 EndEvent
 
