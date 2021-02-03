@@ -205,6 +205,10 @@ Event OnPageReset(String Page)
 		SetSubLightBrightness = AddMenuOption("Second actor light brightness", SubLightBrightList[Main.SubLightBrightness])
 		SetOnlyLightInDark = AddToggleOption("Only use lights in darkness", Main.LowLightLevelLightsOnly)
 		AddEmptyOption()
+
+		AddColoredHeader("Save and load settings.")
+		ExportSettings = AddTextOption("Export Settings", "Done")
+		ImportSettings = AddTextOption("Import Settings", "Done")
 	ElseIf (Page == "")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayDing()
@@ -213,12 +217,6 @@ Event OnPageReset(String Page)
 		Main.PlayTickBig()
 		SetCursorFillMode(TOP_TO_BOTTOM)
 		LoadCustomContent("Ostim/info.dds")
-	ElseIf (Page == "Debug")
-		UnloadCustomContent()
-		Main.playTickBig()
-		AddColoredHeader("Save and load settings.")
-		ExportSettings = AddTextOption("Export Settings", "Done")
-		ImportSettings = AddTextOption("Import Settings", "Done")
 	EndIf
 EndEvent
 
@@ -584,7 +582,7 @@ Function ExportSettings()
 	
 	; Save to file.
 	Jvalue.WriteToFile(ExportOstimSettings, JContainers.UserDirectory() + "OstimMCMSettings.json")
-	
+	ForcePageReset()
 EndFunction
 
 Function ImportSettings()
@@ -596,5 +594,5 @@ Function ImportSettings()
 	
 	; Sex settings import
 	Main.EndOnDomOrgasm = Jmap.GetInt(ImportOstimSettings, "SetEndOnOrgasm")
-	
+	ForcePageReset()
 EndFunction
