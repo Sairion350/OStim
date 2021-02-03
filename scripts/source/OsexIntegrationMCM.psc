@@ -580,74 +580,72 @@ Function ExportSettings()
 	
 	; Sex settings export
 	JMap.SetInt(ExportOstimSettings, "SetEndOnOrgasm", Main.EndOnDomOrgasm as Int)
-	JMap.SetInt(ExportOstimSettings, "SetActorSpeedControl", Main.SetActorSpeedControl as Int)
-	JMap.SetInt(ExportOstimSettings, "SetUndressIfNeed", Main.SetUndressIfNeed as Int)
-	JMap.SetInt(ExportOstimSettings, "SetsexExcitementMult", Main.SetsexExcitementMult as Int)
-	JMap.SetInt(ExportOstimSettings, "SetClipinglessFirstPerson", Main.SetClipinglessFirstPerson as Int)
-	JMap.SetInt(ExportOstimSettings, "SetEndAfterActorHit", Main.SetEndAfterActorHit as Int)
-	JMap.SetInt(ExportOstimSettings, "SetUseRumble", Main.SetUseRumble as Int)
-	JMap.SetInt(ExportOstimSettings, "SetUseScreenShake", Main.SetUseScreenShake as Int)
+	JMap.SetInt(ExportOstimSettings, "SetActorSpeedControl", Main.EnableActorSpeedControl as Int)
+	JMap.SetInt(ExportOstimSettings, "SetsexExcitementMult", Main.SexExcitementMult as Int)
+	JMap.SetInt(ExportOstimSettings, "SetClipinglessFirstPerson", Main.EnableImprovedCamSupport as Int)
+	JMap.SetInt(ExportOstimSettings, "SetEndAfterActorHit", Main.EndAfterActorHit as Int)
+	JMap.SetInt(ExportOstimSettings, "SetUseRumble", Main.UseRumble as Int)
+	JMap.SetInt(ExportOstimSettings, "SetUseScreenShake", Main.UseScreenShake as Int)
 	
 	; Clothes settings export
-	JMap.SetInt(ExportOstimSettings, "SetAlwaysAnimateUndress", Main.SetAlwaysAnimateUndress as Int)
-	JMap.SetInt(ExportOstimSettings, "SetAlwaysUndressAtStart", Main.SetAlwaysUndressAtStart as Int)
-	JMap.SetInt(ExportOstimSettings, "SetonlyUndressChest", Main.SetonlyUndressChest as Int)
+	JMap.SetInt(ExportOstimSettings, "SetUndressIfNeed", Main.AutoUndressIfNeeded as Int)
+	JMap.SetInt(ExportOstimSettings, "SetAlwaysAnimateUndress", Main.AlwaysAnimateUndress as Int)
+	JMap.SetInt(ExportOstimSettings, "SetAlwaysUndressAtStart", Main.AlwaysUndressAtAnimStart as Int)
+	JMap.SetInt(ExportOstimSettings, "SetonlyUndressChest", Main.OnlyUndressChest as Int)
 
 	; Bar settings export
-	JMap.SetInt(ExportOstimSettings, "SetSubBar", Main.SetSubBar as Int)
-	JMap.SetInt(ExportOstimSettings, "SetDomBar", Main.SetDomBar as Int)
-	JMap.SetInt(ExportOstimSettings, "SetAutoHideBar", Main.SetAutoHideBar as Int)
+	JMap.SetInt(ExportOstimSettings, "SetSubBar", Main.EnableSubBar as Int)
+	JMap.SetInt(ExportOstimSettings, "SetDomBar", Main.EnableDomBar as Int)
+	JMap.SetInt(ExportOstimSettings, "SetAutoHideBar", Main.AutoHideBars as Int)
 
 	; Orgasm settings export
-	JMap.SetInt(ExportOstimSettings, "SetSlowMoOrgasms", Main.SetSlowMoOrgasms as Int)
-	JMap.SetInt(ExportOstimSettings, "SetOrgasmBoostsRel", Main.SetOrgasmBoostsRel as Int)
+	; These might have been removed from the mcm.
+	;JMap.SetInt(ExportOstimSettings, "SetSlowMoOrgasms", Main.SlowMoOrgasms as Int)
+	;JMap.SetInt(ExportOstimSettings, "SetOrgasmBoostsRel", Main.OrgasmBoostsRel as Int)
 
 	; Light settings export
-	Jmap.SetInt(ExportOstimSettings, "SetDomLightMode", Main.SetDomLightMode as Int)
-	Jmap.SetInt(ExportOstimSettings, "SetSubLightMode", Main.SetSubLightMode as Int)
-	Jmap.SetInt(ExportOstimSettings, "SetSubLightBrightness", Main.SetSubLightBrightness as Int)
-	Jmap.SetInt(ExportOstimSettings, "SetDomLightBrightness", Main.SetDomLightBrightness as Int)
-	Jmap.SetInt(ExportOstimSettings, "SetOnlyLightInDark", Main.SetOnlyLightInDark as Int)
+	Jmap.SetInt(ExportOstimSettings, "SetDomLightMode", DomLightModeList[Main.DomLightPos] as Int)
+	Jmap.SetInt(ExportOstimSettings, "SetSubLightMode", SubLightModeList[Main.SubLightPos] as Int)
+	Jmap.SetInt(ExportOstimSettings, "SetSubLightBrightness", DomLightBrightList[Main.DomLightBrightness] as Int)
+	Jmap.SetInt(ExportOstimSettings, "SetDomLightBrightness", SubLightBrightList[Main.SubLightBrightness] as Int)
+	Jmap.SetInt(ExportOstimSettings, "SetOnlyLightInDark", Main.LowLightLevelLightsOnly as Int)
 	
-	; Keys settings export
-	JMap.SetInt(ExportOstimSettings, "SetKeymap", Main.SetKeymap as Int)
-	JMap.SetInt(ExportOstimSettings, "SetKeyUp", Main.SetKeyUp as Int)
-	JMap.SetInt(ExportOstimSettings, "SetKeyDown", Main.SetKeyDown as Int)
-	JMap.SetInt(ExportOstimSettings, "SetPullOut", Main.SetPullOut as Int)
+	; Keys settings export MAKE SURE TO TEST THESE
+	JMap.SetInt(ExportOstimSettings, "SetKeymap", Main.KeyMap as Int)
+	JMap.SetInt(ExportOstimSettings, "SetKeyUp", Main.SpeedUpKey as Int)
+	JMap.SetInt(ExportOstimSettings, "SetKeyDown", Main.SpeedDownKey as Int)
+	JMap.SetInt(ExportOstimSettings, "SetPullOut", Main.PullOutKey as Int)
+	JMap.SetInt(ExportOstimSettings, "SetControlToggle", Main.ControlToggleKey as Int)
 
 	; Bed settings export
-	JMap.SetInt(ExportOstimSettings, "SetEnableBeds", Main.SetEnableBeds as Int)
-	JMap.SetInt(ExportOstimSettings, "SetBedSearchDistance", Main.SetBedSearchDistance as Int)
-	JMap.SetInt(ExportOstimSettings, "SetBedReallignment", Main.SetBedReallignment as Int)
-	JMap.SetInt(ExportOstimSettings, "SetBedAlgo", Main.SetBedAlgo as Int)
+	JMap.SetInt(ExportOstimSettings, "SetEnableBeds", Main.UseBed as Int)
+	JMap.SetInt(ExportOstimSettings, "SetBedSearchDistance", Main.BedSearchDistance as Int)
+	JMap.SetInt(ExportOstimSettings, "SetBedReallignment", Main.BedReallignment as Int)
+	JMap.SetInt(ExportOstimSettings, "SetBedAlgo", Main.UseAlternateBedSearch as Int)
 
 	; Ai/Control settings export
-	JMap.SetInt(ExportOstimSettings, "SetAIControl", Main.SetAIControl as Int)
-	JMap.SetInt(ExportOstimSettings, "SetControlToggle", Main.SetControlToggle as Int)
-	JMap.SetInt(ExportOstimSettings, "SetForceAIIfAttacking", Main.SetForceAIIfAttacking as Int)
-	JMap.SetInt(ExportOstimSettings, "SetForceAIIfAttacked", Main.SetForceAIIfAttacked as Int)
-	JMap.SetInt(ExportOstimSettings, "SetForceAIInConsensualScenes", Main.SetForceAIInConsensualScenes as Int)
-
-	; Misc settings export
-	JMap.SetInt(ExportOstimSettings, "SetCustomTimescale", Main.SetCustomTimescale as Int)
-
-	JMap.SetInt(ExportOstimSettings, "SetMisallignmentOption", Main.SetMisallignmentOption as Int)
-	JMap.SetInt(ExportOstimSettings, "SetFlipFix", Main.SetFlipFix as Int)
-
-	JMap.SetInt(ExportOstimSettings, "SetUseFades", Main.SetUseFades as Int)
-	JMap.SetInt(ExportOstimSettings, "SetUseAutoFades", Main.SetUseAutoFades as Int)
-
-	JMap.SetInt(ExportOstimSettings, "SetMute", Main.SetMute as Int)
+	JMap.SetInt(ExportOstimSettings, "SetAIControl", Main.UseAIControl as Int)
+	JMap.SetInt(ExportOstimSettings, "SetForceAIIfAttacking", Main.UseAIPlayerAggressor as Int)
+	JMap.SetInt(ExportOstimSettings, "SetForceAIIfAttacked", Main.UseAIPlayerAggressed as Int)
+	JMap.SetInt(ExportOstimSettings, "SetForceAIInConsensualScenes", Main.UseAINonAggressive as Int)
 
 	; Camera settings export
-	JMap.SetInt(ExportOstimSettings, "SetUseFreeCam", Main.SetUseFreeCam as Int)
-	JMap.SetInt(ExportOstimSettings, "SetFreeCamFOV", Main.SetFreeCamFOV as Int)
-	JMap.SetInt(ExportOstimSettings, "SetDefaultFOV", Main.SetDefaultFOV as Int)
-	JMap.SetInt(ExportOstimSettings, "SetCameraSpeed", Main.SetCameraSpeed as Int)
+	JMap.SetInt(ExportOstimSettings, "SetUseFreeCam", Main.UseFreeCam as Int)
+	JMap.SetInt(ExportOstimSettings, "SetFreeCamFOV", Main.FreecamFOV as Int)
+	JMap.SetInt(ExportOstimSettings, "SetDefaultFOV", Main.DefaultFOV as Int)
+	JMap.SetInt(ExportOstimSettings, "SetCameraSpeed", Main.FreecamSpeed as Int)
+	JMap.SetInt(ExportOstimSettings, "SetForceFirstPerson", Main.ForceFirstPersonAfter as Int)
 
-	JMap.SetInt(ExportOstimSettings, "SetForceFirstPerson", Main.SetForceFirstPerson as Int)
+	; Misc settings export
+	JMap.SetInt(ExportOstimSettings, "SetCustomTimescale", Main.CustomTimescale as Int)
 
+	JMap.SetInt(ExportOstimSettings, "SetMisallignmentOption", Main.MisallignmentProtection as Int)
+	JMap.SetInt(ExportOstimSettings, "SetFlipFix", Main.FixFlippedAnimations as Int)
 
+	JMap.SetInt(ExportOstimSettings, "SetUseFades", Main.UseFades as Int)
+	JMap.SetInt(ExportOstimSettings, "SetUseAutoFades", Main.UseAutoFades as Int)
+
+	JMap.SetInt(ExportOstimSettings, "SetMute", Main.MuteOSA as Int)
 
 	; Save to file.
 	Jvalue.WriteToFile(ExportOstimSettings, JContainers.UserDirectory() + "OstimMCMSettings.json")
