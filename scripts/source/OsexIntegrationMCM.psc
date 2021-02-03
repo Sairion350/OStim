@@ -586,7 +586,7 @@ Function ExportSettings()
 	; Export to file.
 	int OstimSettingsFile = JMap.object()
 	
-	Debug.MessageBox("Importing to file, wait a second or two before clicking OK.")
+	Debug.MessageBox("Exporting to file, wait a second or two before clicking OK.")
 	
 	; Sex settings export
 	JMap.SetInt(OstimSettingsFile, "SetEndOnOrgasm", Main.EndOnDomOrgasm as Int)
