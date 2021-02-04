@@ -581,8 +581,6 @@ Function AddColoredHeader(String In)
 EndFunction
 
 Function ExportSettings()
-	; Temp setting for performance testing.
-	float ftimestart = Utility.GetCurrentRealTime()
 	; Export to file.
 	int OstimSettingsFile = JMap.object()
 	
@@ -662,14 +660,9 @@ Function ExportSettings()
 	
 	; Force page reset to show updated changes.
 	ForcePageReset()
-	; Temp setting for performance testing.
-	float ftimeEnd = Utility.GetCurrentRealTime()
-	Debug.Trace("We took " + (ftimeEnd - ftimeStart) + " seconds to run")
 EndFunction
 
 Function ImportSettings()
-	; Temp setting for performance testing.
-	float ftimestart = Utility.GetCurrentRealTime()
 	; Import from file.
 	int OstimSettingsFile = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
 	
@@ -746,7 +739,4 @@ Function ImportSettings()
 	
 	; Force page reset to show updated changes.
 	ForcePageReset()
-	; Temp setting for performance testing.
-	float ftimeEnd = Utility.GetCurrentRealTime()
-	Debug.Trace("We took " + (ftimeEnd - ftimeStart) + " seconds to run")
 EndFunction
