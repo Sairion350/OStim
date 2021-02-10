@@ -174,6 +174,9 @@ OAiScript AI
 
 Bool IsFlipped
 
+float DomStimMult
+float SubStimMult
+float ThirdStimMult
 ; -------------------------------------------------------------------------------------------------
 ; OSA SPECIFIC  -----------------------------------------------------------------------------------
 
@@ -536,6 +539,9 @@ Event OnUpdate()
 	DomExcitement = 0.0
 	SubExcitement = 0.0
 	ThirdExcitement = 0.0
+	DomStimMult = 1.0
+	SubStimMult = 1.0
+	ThirdStimMult = 1.0
 	EndedProper = False
 	SpankCount = 0
 	SubTimesOrgasm = 0
@@ -849,10 +855,10 @@ Event OnUpdate()
     		AutoIncreaseSpeed()
     	EndIf
 
-		DomExcitement += GetCurrentStimulation(DomActor)
-		SubExcitement += GetCurrentStimulation(SubActor)
+		DomExcitement += GetCurrentStimulation(DomActor) * DomStimMult
+		SubExcitement += GetCurrentStimulation(SubActor) * SubStimMult
 		If ThirdActor
-			ThirdExcitement += GetCurrentStimulation(SubActor)
+			ThirdExcitement += GetCurrentStimulation(SubActor) * ThirdStimMult
 		EndIf
 		SetBarPercent(DomBar, DomExcitement)
 		SetBarPercent(SubBar, SubExcitement)
@@ -1376,6 +1382,30 @@ EndFunction
 
 Function ShowNavMenu() ;only works during SEX animations
 	UI.Invoke("HUD Menu", "_root.WidgetContainer."+OSAomni.glyph+".widget.hud.NavMenu.light") 
+EndFunction
+
+float Function GetStimMult(actor act)
+	if act == DomActor
+		return DomStimMult
+	elseif act == subactor
+		return SubStimMult
+	elseif act == ThirdActor
+		return thirdstimmult
+	else
+		Console("Unknown actor")
+	endif	
+EndFunction
+
+Function SetStimMult(actor act, float value)
+	If act == DomActor
+		DomStimMult = value
+	elseif act == subactor
+		SubStimMult = value
+	elseif act == ThirdActor
+		ThirdStimMult = value
+	else
+		Console("Unknown actor")
+	endif	
 EndFunction
 
 bool function GetGameIsVR()
