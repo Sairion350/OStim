@@ -88,6 +88,8 @@ Bool Property BlockVRInstalls Auto
 
 Bool Property UseAlternateBedSearch Auto
 
+Int Property AiSwitchChance Auto
+
 
 ; -------------------------------------------------------------------------------------------------
 ; SCRIPTWIDE VARIABLES ----------------------------------------------------------------------------
