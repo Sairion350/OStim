@@ -18,6 +18,7 @@ Int SetonlyUndressChest
 ; bar settings
 Int SetSubBar
 Int SetDomBar
+Int SetThirdBar
 Int SetAutoHideBar
 
 ; orgasm settings
@@ -154,6 +155,7 @@ Event OnPageReset(String Page)
 		AddColoredHeader("Excitement bars")
 		SetDomBar = AddToggleOption("Main actor HUD bar", Main.EnableDomBar)
 		SetSubBar = AddToggleOption("Second actor HUD bar", Main.EnableSubBar)
+		SetThirdBar = AddToggleOption("Third actor HUD bar", Main.EnableThirdBar)
 		SetAutoHideBar = AddToggleOption("Autohide bars", Main.AutoHideBars)
 		AddEmptyOption()
 
@@ -292,6 +294,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetDomBar)
 		Main.EnableDomBar = !Main.EnableDomBar
 		SetToggleOptionValue(Option, Main.EnableDomBar)
+	ElseIf (Option == SetThirdBar)
+		Main.EnableThirdBar = !Main.EnableThirdBar
+		SetToggleOptionValue(Option, Main.EnableThirdBar)
 	ElseIf (Option == SetMisallignmentOption)
 		Main.MisallignmentProtection = !Main.MisallignmentProtection
 		SetToggleOptionValue(Option, Main.MisallignmentProtection)
@@ -365,9 +370,11 @@ Event OnOptionHighlight(Int Option)
 	ElseIf (Option == SetonlyUndressChest)
 		SetInfoText("Only remove the chest piece during undressing\nNote: due to bugginess with Osex, if using Undress Animation, only the chest piece is currently removed even with this not checked")
 	ElseIf (Option == SetDomBar)
-		SetInfoText("Enable the on-screen bar that track's the dominant actor's Excitement\nActor's orgasm when their Excitement maxes out")
+		SetInfoText("Enable the on-screen bar that tracks the dominant actor's Excitement\nActor's orgasm when their Excitement maxes out")
+	ElseIf (Option == SetthirdBar)
+				SetInfoText("Enable the on-screen bar that tracks the third actor's Excitement\nActor's orgasm when their Excitement maxes out")
 	ElseIf (Option == SetSubBar)
-		SetInfoText("Enable the on-screen bar that track's the second actor's Excitement\nActor's orgasm when their Excitement maxes out")
+		SetInfoText("Enable the on-screen bar that tracks the second actor's Excitement\nActor's orgasm when their Excitement maxes out")
 	ElseIf (Option == SetMisallignmentOption)
 		SetInfoText("Enable automatic misalignment detection\nYou may want to disable this if you want to do some custom realigning.")
 	ElseIf (Option == SetEnableBeds)

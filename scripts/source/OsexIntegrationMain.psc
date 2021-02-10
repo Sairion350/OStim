@@ -9,6 +9,7 @@ Bool Property EndOnDomOrgasm Auto
 
 Bool Property EnableDomBar Auto
 Bool Property EnableSubBar Auto
+Bool property EnableThirdBar Auto
 Bool Property AutoHideBars Auto
 Bool Property EnableImprovedCamSupport Auto
 
@@ -89,6 +90,8 @@ Bool Property BlockVRInstalls Auto
 Bool Property UseAlternateBedSearch Auto
 
 Int Property AiSwitchChance Auto
+
+
 
 
 ; -------------------------------------------------------------------------------------------------
@@ -276,6 +279,9 @@ Event OnKeyDown(Int KeyPress)
 				EndIf
 				If (!obars.IsBarVisible(obars.SubBar))
 					obars.SetBarVisible(obars.SubBar, True)
+				EndIf
+				If (!obars.IsBarVisible(obars.ThirdBar))
+					obars.SetBarVisible(obars.ThirdBar, True)
 				EndIf
 			EndIf
 		EndIf
@@ -838,7 +844,7 @@ Event OnUpdate()
 		DomExcitement += GetCurrentStimulation(DomActor) * DomStimMult
 		SubExcitement += GetCurrentStimulation(SubActor) * SubStimMult
 		If ThirdActor
-			ThirdExcitement += GetCurrentStimulation(SubActor) * ThirdStimMult
+			ThirdExcitement += GetCurrentStimulation(ThirdActor) * ThirdStimMult
 		EndIf
 
 		If (SubExcitement >= 100.0)
@@ -1783,13 +1789,18 @@ Function OnAnimationChange()
 			If AlwaysUndressAtAnimStart
 				UndressAllItems(ThirdActor)
 			EndIf
+
+			SendModEvent("ostim_thirdactor_join")
 		Else
 			Console("Warning - Third Actor not found")
 		endif
 
+		
 	ElseIf ThirdActor && (CorrectActorCount == 2) ; third actor, but there should not be.
 		Console("Third actor has left the scene")
 		ThirdActor = none
+
+		SendModEvent("ostim_thirdactor_leave")
 	EndIf
 
 	Console("Current animation: " + CurrentAnimation)
@@ -2173,11 +2184,7 @@ Function Orgasm(Actor Act)
 
 ;	SetActorArousal(Act, GetActorArousal(Act) - 50)
 
-	If (Act == DomActor)
-		obars.SetBarPercent(obars.DomBar, 0)
-	ElseIf (Act == SubActor)
-		obars.SetBarPercent(obars.SubBar, 0)
-	EndIf
+
 
 	Act.DamageAV("stamina", 250.0)
 EndFunction
@@ -2614,6 +2621,7 @@ Function SetDefaultSettings()
 	EndOnDomOrgasm = True
 	EnableSubBar = True
 	EnableDomBar = True
+	EnableThirdBar = True
 	EnableActorSpeedControl = True
 	AllowUnlimitedSpanking = False
 	AutoUndressIfNeeded = True
@@ -2650,6 +2658,8 @@ Function SetDefaultSettings()
 	UseAIControl = False
 	PauseAI = False
 	AutoHideBars = False
+
+	AiSwitchChance = 6
 
 	GetInBedAfterBedScene = False
 	UseAINPConNPC = True
