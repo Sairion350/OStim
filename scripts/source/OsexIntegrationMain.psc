@@ -629,13 +629,13 @@ Event OnUpdate()
 	Int Password = DomActor.GetFactionRank(OsaFactionStage)
 	RegisterForModEvent("0SAO" + Password + "_AnimateStage", "OnAnimate")
 
-	If (GetActorArousal(DomActor) > 90)
-		DomExcitement = 26.0
-	EndIf
+;	If (GetActorArousal(DomActor) > 90)
+;		DomExcitement = 26.0
+;	EndIf
 
-	If (GetActorArousal(SubActor) > 90)
-		SubExcitement = 26.0
-	EndIf
+;	If (GetActorArousal(SubActor) > 90)
+;		SubExcitement = 26.0
+;	EndIf
 
 	If (AlwaysUndressAtAnimStart)
 		UndressDom = True
@@ -1213,27 +1213,27 @@ EndFunction
 Actor Function GetThirdActor()
 	Return ThirdActor
 EndFunction
-
-Int Function GetActorArousal(Actor Char)
-	Int Ret = 50
-	If (ArousedFaction)
-		Ret = Char.GetFactionRank(ArousedFaction)
-	EndIf
-
-	If (Ret < 0) ; not yet set
-		Ret = 50
-	EndIf
-	Return Ret
-EndFunction
-
-Function SetActorArousal(Actor Char, Int Level) ; wrong way to do this, may not work
-	If (ArousedFaction)
-		If (Level < 1)
-			Level = 1
-		EndIf
-		Char.SetFactionRank(ArousedFaction, Level)
-	EndIf
-EndFunction
+;
+;Int Function GetActorArousal(Actor Char)
+;	Int Ret = 50
+;	If (ArousedFaction)
+;		Ret = Char.GetFactionRank(ArousedFaction)
+;	EndIf
+;
+;	If (Ret < 0) ; not yet set
+;		Ret = 50
+;	EndIf
+;	Return Ret
+;EndFunction
+;
+;Function SetActorArousal(Actor Char, Int Level) ; wrong way to do this, may not work
+;	If (ArousedFaction)
+;		If (Level < 1)
+;			Level = 1
+;		EndIf
+;		Char.SetFactionRank(ArousedFaction, Level)
+;	EndIf
+;EndFunction
 
 Actor Function GetMostRecentOrgasmedActor()
 	Return MostRecentOrgasmedActor
@@ -2029,13 +2029,11 @@ Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being sti
 			NumSpeeds += 1
 		EndIf
 
-		If (ArousedFaction)
-			Float Arousal = GetActorArousal(Act)
-			Arousal -= 50.0
-			Arousal /= 250
-			; 100 arousal -> 0.2 ~ 0 arousal -> -0.2
-			Ret += Arousal
-		EndIf
+;		If (ArousedFaction)
+;			Float Arousal = GetActorArousal(Act)
+;			Arousal -= 50.0
+;			Arousal /= 250
+;		EndIf
 
 		If (!IsNaked(GetSexPartner(Act)))
 			Ret -= 0.1
@@ -2151,7 +2149,7 @@ Function Orgasm(Actor Act)
 		EndIf
 	EndIf
 
-	SetActorArousal(Act, GetActorArousal(Act) - 50)
+;	SetActorArousal(Act, GetActorArousal(Act) - 50)
 
 	If (Act == DomActor)
 		SetBarPercent(DomBar, 0)
