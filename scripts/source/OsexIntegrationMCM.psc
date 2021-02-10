@@ -54,6 +54,7 @@ int SetBedAlgo
 
 Int SetAIControl
 Int SetControlToggle
+Int SetAIChangeChance
 
 Int SetForceAIIfAttacking
 Int SetForceAIIfAttacked
@@ -179,6 +180,7 @@ Event OnPageReset(String Page)
 		SetForceAIIfAttacked = AddToggleOption("Force full-auto control if player is attacked", Main.UseAIPlayerAggressed)
 		SetForceAIInConsensualScenes = AddToggleOption("Force full-auto control in consensual scenes", Main.UseAINonAggressive)
 		SetUseAutoFades = AddToggleOption("Fade out in between animation transitions", Main.UseAutoFades)
+		SetAIChangeChance = AddSliderOption("AI Animation Change Chance", Main.AiSwitchChance, "{0}")
 		AddEmptyOption()
 
 		AddColoredHeader("FreeCam")
@@ -352,6 +354,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Use a slower papyrus bed search method rather than a faster native one\n May find more beds but only enable if a bed is not detected")
 	ElseIf (Option == SetUseAutoFades)
 		SetInfoText("Fade to black in between animation transitions")
+	ElseIf (Option == SetAIChangeChance)
+		SetInfoText("Chance that characters will switch animations mid scene\nDoes not affect chance of a foreplay -> full sex transition")
 	ElseIf (Option == SetFlipFix)
 		SetInfoText("Fix some third party animations being flipped 180 degrees")
 	ElseIf (Option == SetAlwaysUndressAtStart)
@@ -486,6 +490,11 @@ Event OnOptionSliderOpen(Int Option)
 		SetSliderDialogDefaultValue(0.0)
 		SetSliderDialogRange(-250, 250)
 		SetSliderDialogInterval(1)
+	ElseIf (Option == SetAIChangeChance)
+		SetSliderDialogStartValue(Main.AiSwitchChance)
+		SetSliderDialogDefaultValue(6.0)
+		SetSliderDialogRange(0, 100)
+		SetSliderDialogInterval(1)
 	EndIf
 EndEvent
 
@@ -512,6 +521,9 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 	ElseIf (Option == SetBedReallignment)
 		Main.BedReallignment = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0} units")
+	ElseIf (Option == SetAIChangeChance)
+		Main.AiSwitchChance = (Value as Int)
+		SetSliderOptionValue(Option, Value, "{0}")
 	EndIf
 EndEvent
 
