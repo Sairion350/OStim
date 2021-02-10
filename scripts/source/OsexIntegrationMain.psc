@@ -1362,6 +1362,14 @@ Function ToggleFreeCam(Bool On = True)
 	IsFreeCamming = !IsFreeCamming
 EndFunction
 
+Function HideNavMenu() ;only works during SEX animations
+	UI.Invoke("HUD Menu", "_root.WidgetContainer."+OSAomni.glyph+".widget.hud.NavMenu.dim") 
+EndFunction
+
+Function ShowNavMenu() ;only works during SEX animations
+	UI.Invoke("HUD Menu", "_root.WidgetContainer."+OSAomni.glyph+".widget.hud.NavMenu.light") 
+EndFunction
+
 bool function GetGameIsVR()
 	return (PapyrusUtil.GetScriptVersion() == 36) ;obviously this no guarantee but it's the best we've got for now
 endfunction
