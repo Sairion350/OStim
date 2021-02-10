@@ -98,6 +98,7 @@ Actor SubActor
 
 Float DomExcitement
 Float SubExcitement
+Float ThirdExcitement
 
 Bool SceneRunning
 String CurrentAnimation
@@ -143,6 +144,7 @@ Bool IsFreeCamming
 
 Int DomTimesOrgasm
 Int SubTimesOrgasm
+Int ThirdTimesOrgasm
 
 Actor MostRecentOrgasmedActor
 
@@ -533,10 +535,12 @@ Event OnUpdate()
 	CurrentSpeed = 0
 	DomExcitement = 0.0
 	SubExcitement = 0.0
+	ThirdExcitement = 0.0
 	EndedProper = False
 	SpankCount = 0
 	SubTimesOrgasm = 0
 	DomTimesOrgasm = 0
+	ThirdTimesOrgasm = 0
 	MostRecentOrgasmedActor = None
 	SpankMax = Utility.RandomInt(1, 6)
 	IsFreeCamming = False
@@ -847,6 +851,9 @@ Event OnUpdate()
 
 		DomExcitement += GetCurrentStimulation(DomActor)
 		SubExcitement += GetCurrentStimulation(SubActor)
+		If ThirdActor
+			ThirdExcitement += GetCurrentStimulation(SubActor)
+		EndIf
 		SetBarPercent(DomBar, DomExcitement)
 		SetBarPercent(SubBar, SubExcitement)
 
@@ -857,6 +864,12 @@ Event OnUpdate()
 			If (GetCurrentAnimationClass() == ClassSex)
 				DomExcitement += 5
 			EndIf
+		EndIf
+
+		If (ThirdExcitement >= 100.0)
+			MostRecentOrgasmedActor = ThirdActor
+			ThirdTimesOrgasm += 1
+			Orgasm(ThirdActor)
 		EndIf
 
 		If (DomExcitement >= 100.0)
@@ -1177,6 +1190,8 @@ Int Function GetTimesOrgasm(Actor Act) ; number of times the Actor has orgasmed
 		Return DomTimesOrgasm
 	ElseIf (Act == SubActor)
 		Return SubTimesOrgasm
+	ElseIf (Act == ThirdActor)
+		return ThirdTimesOrgasm
 	EndIf
 EndFunction
 
@@ -1260,13 +1275,6 @@ ObjectReference Function GetBed()
 EndFunction
 
 Bool Function IsFemale(Actor Act)
-	If (Sexlab)
-		;If (SexLab.GetGender(Act) == 0)
-		;	Return False
-		;Else
-		;	Return True
-		;EndIf
-	EndIf
 	Return (Act.GetLeveledActorBase().GetSex() == 1)
 EndFunction
 
@@ -1869,6 +1877,9 @@ Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being sti
 	String CClass = GetCurrentAnimationClass()
 	;Bool Aggressive = GetCurrentAnimIsAggressive()
 	Bool Sub = (Act == SubActor)
+	If ThirdActor == Act
+		sub = AppearsFemale(ThirdActor)
+	EndIf
 	Float Excitement = GetActorExcitement(Act)
 
 	If (CClass == ClassSex)
@@ -2097,6 +2108,8 @@ Float Function GetActorExcitement(Actor Act) ; at 100, Actor orgasms
 		Return DomExcitement
 	ElseIf (Act == SubActor)
 		Return SubExcitement
+	ElseIf (Act == ThirdActor)
+		return ThirdExcitement
 	Else
 		Debug.Notification("Unknown Actor")
 	EndIf
@@ -2107,6 +2120,8 @@ Function SetActorExcitement(Actor Act, Float Value)
 		DomExcitement = Value
 	ElseIf Act == SubActor
 		SubExcitement = Value
+	ElseIf (Act == ThirdActor)
+		ThirdExcitement = Value
 	Else
 		Debug.Notification("Unknown Actor")
 	EndIf
