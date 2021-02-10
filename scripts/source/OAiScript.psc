@@ -139,7 +139,7 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 		EndIf
 	EndIf
 
-	Int ForeplayChangeChance = ostim.AiSwitchChance * 4
+	Int ForeplayChangeChance = ostim.AiSwitchChance * 2
 	Float ForeplayEndThreshold
 	If (AggressiveScene)
 		ForeplayEndThreshold = Utility.RandomFloat(15.0, 105.0)
