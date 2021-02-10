@@ -986,25 +986,30 @@ Function IncreaseAnimationSpeed()
 	If (AnimSpeedAtMax)
 		Return
 	EndIf
-	SetCurrentAnimationSpeed(CurrentSpeed + 1)
+	AdjustAnimationSpeed(1)
 EndFunction
 
 Function DecreaseAnimationSpeed()
 	If (CurrentSpeed < 1)
 		Return
 	EndIf
-	SetCurrentAnimationSpeed(CurrentSpeed - 1)
+	AdjustAnimationSpeed(-1)
 EndFunction
 
-Function SetCurrentAnimationSpeed(Int InSpeed) ;untested
-	String Speed = NormalSpeedToOsexSpeed(InSpeed)
-	RunOsexCommand("$Speed,0," + Speed)
-
-	Utility.Wait(0.5)
-	If (GetCurrentAnimation() == "undefined")
-		Console("Speed increase broke game state")
-		RunOsexCommand("$Speed,0,1")
+Function AdjustAnimationSpeed(float amount)
+	If amount < 0
+		int times = math.abs((amount / 0.5)) as int
+		While times > 0
+			UI.Invokefloat("HUD Menu", "_root.WidgetContainer."+OSAOmni.Glyph+".widget.hud.NavMenu.beaconSpeed.m.dia.scena.speedAdjust", -0.5)
+			times -= 1
+		EndWhile
+	Else
+		UI.Invokefloat("HUD Menu", "_root.WidgetContainer."+OSAOmni.Glyph+".widget.hud.NavMenu.beaconSpeed.m.dia.scena.speedAdjust", amount)
 	EndIf
+EndFunction
+
+Function SetCurrentAnimationSpeed(Int InSpeed) 
+	AdjustAnimationSpeed(inspeed - CurrentSpeed)
 EndFunction
 
 String Function GetCurrentAnimation()
