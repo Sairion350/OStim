@@ -2249,7 +2249,7 @@ EndEvent
 RegisterForModEvent("ostim_osasound", "OnOSASound")
 Event OnOSASound(String EventName, String Args, Float Nothing, Form Sender)
 	String[] Argz = new String[3]
-	Argz = StringUtil.Split(Args, "")
+	Argz = StringUtil.Split(Args, ",")
 
 	Actor Char
 	If (Argz[0] == "dom")

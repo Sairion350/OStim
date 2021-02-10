@@ -44,6 +44,8 @@ Event OnInit()
 	InititializeAllBars()
 
 	OnGameLoad()
+
+	lastsmacktime = 0
 EndEvent
 
 Function InititializeAllBars()
@@ -96,6 +98,10 @@ Function SetBarPercent(Osexbar Bar, Float Percent)
 	EndIf
 EndFunction
 
+float Function GetBarPercent(Osexbar Bar)
+	return bar.Percent * 100.0
+EndFunction
+
 Function FlashBar(Osexbar Bar)
 	Bar.ForceFlash()
 EndFunction
@@ -130,12 +136,9 @@ Event OstimStart(string eventName, string strArg, float numArg, Form sender)
     		EndIf
     	EndIf
 
-    	SetBarPercent(DomBar, ostim.getactorexcitement(ostim.GetDomActor()))
-		SetBarPercent(SubBar, ostim.getactorexcitement(ostim.GetSubActor()))
-		if ostim.GetThirdActor()
-			SetBarPercent(ThirdBar, ostim.getactorexcitement(ostim.GetThirdActor()))
-		EndIf
-
+    	if ((Game.GetRealHoursPassed() * 60 * 60) - lastSmackTime) > 3 ; 3 seconds with no update data... time to fall back
+    		SetBarFullnessProper()
+        endif
 		Utility.wait(1)
 	EndWhile
 
@@ -177,12 +180,96 @@ Event OstimThirdLeave(string eventName, string strArg, float numArg, Form sender
 	SetBarPercent(ThirdBar, 0.0)
 Endevent
 
+float lastSmackTime
+int lastSpeed
+Event OnOSASound(string eventName, string args, float nothing, Form sender)
+	string[] argz = new string[3]
+	argz = StringUtil.Split(args, ",")
+
+	int formID = argz[1] as Int
+
+	If (formID == 50) || (formID == 60) ; we are getting a smacking sound, bodies have collided.
+		;osexintegrationmain.Console("Smack recieved")
+		if formid == 60 ;better sync with spank
+			Utility.Wait(0.2)
+		endif
+		float currTime = Game.GetRealHoursPassed() * 60 * 60
+		float timediff = currTime - lastSmackTime ; time since last smack sound
+		osexintegrationmain.console(timediff + " seconds")
+
+		if (timediff > 2.5) ; it's been a long time since we got a smacking sound 
+			SetBarFullnessProper() ; set bar to the correct value
+		Else
+			float correctnessdiffdom 
+			float correctnessdiffsub 
+			float correctnessdiffthird
+			
+			correctnessdiffdom = GetBarCorrectnessDifference(0) ;get how far off the current dom bar is
+			correctnessdiffsub = GetBarCorrectnessDifference(1)
+			if ostim.getthirdActor()
+				correctnessdiffthird = GetBarCorrectnessDifference(2) 
+			EndIf
+			;osexintegrationmain.console("Bar difference: " + correctnessdiffdom)
+
+			if timediff < 1 
+				 ; events are coming in at a rate of more than 1/second. Change the error correction to be smaller
+				correctnessdiffdom = correctnessdiffdom * timediff	
+				correctnessdiffsub = correctnessdiffsub * timediff	
+				correctnessdiffthird = correctnessdiffthird * timediff	
+			endif
+
+
+			;osexintegrationmain.console("adding: " + correctnessdiffdom)
+			AddBarFullness(0, correctnessdiffdom)
+			AddBarFullness(1, correctnessdiffsub)
+			AddBarFullness(2, correctnessdiffthird)
+
+
+		EndIf
+
+		lastSmackTime = currtime
+	EndIf
+
+	
+endevent
+
+Function SetBarFullnessProper()
+	SetBarPercent(DomBar, ostim.getactorexcitement(ostim.GetDomActor()))
+	SetBarPercent(SubBar, ostim.getactorexcitement(ostim.GetSubActor()))
+	if ostim.GetThirdActor()
+		SetBarPercent(ThirdBar, ostim.getactorexcitement(ostim.GetThirdActor()))
+	EndIf
+EndFunction
+
+Function AddBarFullness(int bar, float amount)
+	if bar == 0
+		SetBarPercent(DomBar, GetBarPercent(dombar) + amount)
+	elseif bar == 1
+		SetBarPercent(SubBar, GetBarPercent(subbar) + amount)
+    elseif bar == 2
+		SetBarPercent(ThirdBar, GetBarPercent(thirdbar) + amount)
+	EndIf
+EndFunction
+
+float Function GetBarCorrectnessDifference(int barID)
+	if barID == 0
+		return ostim.getactorexcitement(ostim.GetDomActor()) - GetBarPercent(dombar)
+	elseif barID == 1
+		return ostim.getactorexcitement(ostim.GetSubActor()) - GetBarPercent(subbar)
+	elseif barID == 2
+		return ostim.getactorexcitement(ostim.GetThirdActor()) - GetBarPercent(thirdbar)
+	endif
+EndFunction
+
 Function OnGameLoad()
 	RegisterForModEvent("ostim_start", "OstimStart")
 	RegisterForModEvent("ostim_orgasm", "OstimOrgasm")
 
 	RegisterForModEvent("ostim_thirdactor_join", "OstimThirdJoin")
 	RegisterForModEvent("ostim_thirdactor_leave", "OstimThirdLeave")
+
+	RegisterForModEvent("ostim_osasound", "OnOSASound")
+
 
 	osexintegrationmain.Console("Fixing Bars thread")
 EndFunction
