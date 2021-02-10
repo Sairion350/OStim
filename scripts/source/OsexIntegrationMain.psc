@@ -173,6 +173,7 @@ Bool AggressiveThemedSexScene
 Actor AggressiveActor
 
 OAiScript AI
+OBarsScript obars
 
 Bool IsFlipped
 
@@ -375,6 +376,7 @@ Function Startup()
 	InitBar(subbar, False)
 
 	AI = ((Self as Quest) as OAiScript)
+	obars = ((Self as Quest) as obarsscript)
 	RegisterForModEvent("ostim_actorhit", "OnActorHit")
 	SetSystemVars()
 	SetDefaultSettings()
