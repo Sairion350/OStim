@@ -199,10 +199,7 @@ Sound OSATickBig
 ;_oUI OSAUI
 ;---------
 
-;--------- bars
-Osexbar DomBar
-Osexbar SubBar
-;---------
+
 
 ;--------- database
 ODatabaseScript ODatabase
@@ -274,11 +271,11 @@ Event OnKeyDown(Int KeyPress)
 		If (IntArrayContainsValue(OSexControlKeys, KeyPress))
 			MostRecentOSexInteractionTime = Utility.GetCurrentRealTime()
 			If (AutoHideBars)
-				If (!IsBarVisible(DomBar))
-					SetBarVisible(DomBar, True)
+				If (!obars.IsBarVisible(obars.DomBar))
+					obars.SetBarVisible(obars.DomBar, True)
 				EndIf
-				If (!IsBarVisible(SubBar))
-					SetBarVisible(SubBar, True)
+				If (!obars.IsBarVisible(obars.SubBar))
+					obars.SetBarVisible(obars.SubBar, True)
 				EndIf
 			EndIf
 		EndIf
@@ -369,11 +366,9 @@ Function Startup()
 		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as Faction
 	EndIf
 
-	DomBar = (Self as Quest) as Osexbar
-	SubBar = (Game.GetFormFromFile(0x000804, "Ostim.esp")) as Osexbar
+	
 	Timescale = (Game.GetFormFromFile(0x00003A, "Skyrim.esm")) as GlobalVariable
-	InitBar(dombar, True)
-	InitBar(subbar, False)
+	
 
 	AI = ((Self as Quest) as OAiScript)
 	obars = ((Self as Quest) as obarsscript)
@@ -381,7 +376,8 @@ Function Startup()
 	SetSystemVars()
 	SetDefaultSettings()
 	BuildSoundFormlists()
-
+	obars.InititializeAllBars()
+	
 	if (BlockVRInstalls && GetGameIsVR())
 		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
 		return
@@ -631,13 +627,13 @@ Event OnUpdate()
     EndIf
 
     If (EnableDomBar)
-    	SetBarPercent(DomBar, 0.0)
-    	SetBarVisible(DomBar, True)
+    	obars.SetBarPercent(obars.DomBar, 0.0)
+    	obars.SetBarVisible(obars.DomBar, True)
 	EndIf
 
 	If (EnableSubBar)
-		SetBarPercent(SubBar, 0.0)
-    	SetBarVisible(SubBar, True)
+		obars.SetBarPercent(obars.SubBar, 0.0)
+    	obars.SetBarVisible(obars.SubBar, True)
 	EndIf
 
 	Int Password = DomActor.GetFactionRank(OsaFactionStage)
@@ -847,11 +843,11 @@ Event OnUpdate()
     	EndIf
 
     	If (AutoHideBars && (GetTimeSinceLastPlayerInteraction() > 15.0)) ; fade out if needed
-    		If (IsBarVisible(DomBar))
-    			SetBarVisible(DomBar, False)
+    		If (obars.IsBarVisible(obars.DomBar))
+    			obars.SetBarVisible(obars.DomBar, False)
     		EndIf
-    		If (IsBarVisible(SubBar))
-    			SetBarVisible(SubBar, False)
+    		If (obars.IsBarVisible(obars.SubBar))
+    			obars.SetBarVisible(obars.SubBar, False)
     		EndIf
     	EndIf
 
@@ -864,8 +860,8 @@ Event OnUpdate()
 		If ThirdActor
 			ThirdExcitement += GetCurrentStimulation(SubActor) * ThirdStimMult
 		EndIf
-		SetBarPercent(DomBar, DomExcitement)
-		SetBarPercent(SubBar, SubExcitement)
+		obars.SetBarPercent(obars.DomBar, DomExcitement)
+		obars.SetBarPercent(obars.SubBar, SubExcitement)
 
 		If (SubExcitement >= 100.0)
 			MostRecentOrgasmedActor = SubActor
@@ -923,10 +919,10 @@ Event OnUpdate()
 
 	Redress()
 
-	SetBarVisible(DomBar, False)
-	SetBarPercent(DomBar, 0.0)
-	SetBarVisible(SubBar, False)
-	SetBarPercent(SubBar, 0.0)
+	obars.SetBarVisible(obars.DomBar, False)
+	obars.SetBarPercent(obars.DomBar, 0.0)
+	obars.SetBarVisible(obars.SubBar, False)
+	obars.SetBarPercent(obars.SubBar, 0.0)
 
 	If (UsingBed)
 		If (GetInBedAfterBedScene && ((DomActor == PlayerRef) || (SubActor == PlayerRef))  && EndedProper && !IsSceneAggressiveThemed())
@@ -2201,9 +2197,9 @@ Function Orgasm(Actor Act)
 ;	SetActorArousal(Act, GetActorArousal(Act) - 50)
 
 	If (Act == DomActor)
-		SetBarPercent(DomBar, 0)
+		obars.SetBarPercent(obars.DomBar, 0)
 	ElseIf (Act == SubActor)
-		SetBarPercent(SubBar, 0)
+		obars.SetBarPercent(obars.SubBar, 0)
 	EndIf
 
 	Act.DamageAV("stamina", 250.0)
@@ -2396,50 +2392,8 @@ EndFunction
 
 
 
-Function InitBar(Osexbar Bar, Bool DomsBar)
-	Bar.HAnchor = "left"
-	Bar.VAnchor = "bottom"
-	Bar.X = 200
-	Bar.Alpha = 0.0
-	Bar.SetPercent(0.0)
-	Bar.FillDirection = "Right"
 
-	If (DomsBar)
-		Bar.Y = 692
-		Bar.SetColors(0xb0b0b0, 0xADD8E6, 0xffffff)
-	Else
-		Bar.Y = 647
-		Bar.SetColors(0xb0b0b0, 0xffb6c1, 0xffffff)
-	EndIf
 
-	SetBarVisible(Bar, False)
-EndFunction
-
-Function SetBarVisible(Osexbar Bar, Bool Visible)
-	If (Visible)
-		Bar.FadeTo(100.0, 1.0)
-		Bar.FadedOut = False
-	Else
-		Bar.FadeTo(0.0, 1.0)
-		Bar.FadedOut = True
-	EndIf
-EndFunction
-
-Bool Function IsBarVisible(Osexbar Bar)
-	Return (!Bar.FadedOut)
-EndFunction
-
-Function SetBarPercent(Osexbar Bar, Float Percent)
-	Bar.SetPercent(Percent / 100.0)
-	Float zPercent = Percent / 100.0
-	If (zPercent >= 1.0)
-		FlashBar(Bar)
-	EndIf
-EndFunction
-
-Function FlashBar(Osexbar Bar)
-	Bar.ForceFlash()
-EndFunction
 
 
 ;			 ██████╗ ████████╗██╗  ██╗███████╗██████╗
