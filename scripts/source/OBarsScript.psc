@@ -1,5 +1,18 @@
 ScriptName OBarsScript Extends Quest
-;On-screen bar manager
+
+;
+;			██████╗  █████╗ ██████╗ ███████╗
+;			██╔══██╗██╔══██╗██╔══██╗██╔════╝
+;			██████╔╝███████║██████╔╝███████╗
+;			██╔══██╗██╔══██║██╔══██╗╚════██║
+;			██████╔╝██║  ██║██║  ██║███████║
+;			╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
+;
+;				Code related to the on-screen bars
+
+
+
+
 
 OsexIntegrationMain OStim
 
@@ -14,6 +27,10 @@ Event OnInit()
 
 	DomBar = (Self as Quest) as Osexbar
 	SubBar = (Game.GetFormFromFile(0x000804, "Ostim.esp")) as Osexbar
+
+	InititializeAllBars()
+
+	OnGameLoad()
 EndEvent
 
 Function InititializeAllBars()
@@ -64,4 +81,59 @@ EndFunction
 
 Function FlashBar(Osexbar Bar)
 	Bar.ForceFlash()
+EndFunction
+
+Event OstimStart(string eventName, string strArg, float numArg, Form sender)
+	If (ostim.EnableDomBar)
+    	SetBarPercent(DomBar, 0.0)
+    	SetBarVisible(DomBar, True)
+	EndIf
+
+	If (ostim.EnableSubBar)
+		SetBarPercent(SubBar, 0.0)
+    	SetBarVisible(SubBar, True)
+	EndIf
+
+
+	While ostim.AnimationRunning()
+		If (ostim.AutoHideBars && (ostim.GetTimeSinceLastPlayerInteraction() > 15.0)) ; fade out if needed
+    		If (IsBarVisible(DomBar))
+    			SetBarVisible(DomBar, False)
+    		EndIf
+    		If (IsBarVisible(SubBar))
+    			SetBarVisible(SubBar, False)
+    		EndIf
+    	EndIf
+
+    	SetBarPercent(DomBar, ostim.getactorexcitement(ostim.GetDomActor()))
+		SetBarPercent(SubBar, ostim.getactorexcitement(ostim.GetSubActor()))
+
+		Utility.wait(1)
+	EndWhile
+
+
+	SetBarVisible(DomBar, False)
+	SetBarPercent(DomBar, 0.0)
+	SetBarVisible(SubBar, False)
+	SetBarPercent(SubBar, 0.0)
+EndEvent
+
+Event OstimOrgasm(string eventName, string strArg, float numArg, Form sender)
+	actor act = ostim.getmostrecentorgasmedactor()
+
+	If (Act == ostim.GetDomActor())
+		FlashBar(dombar)
+		SetBarPercent(DomBar, 0)
+	ElseIf (Act == ostim.GetSubActor())
+		FlashBar(subbar)
+		SetBarPercent(SubBar, 0)
+	EndIf
+endevent
+
+
+Function OnGameLoad()
+	RegisterForModEvent("ostim_start", "OstimStart")
+	RegisterForModEvent("ostim_orgasm", "OstimOrgasm")
+
+	osexintegrationmain.Console("Fixing Bars thread")
 EndFunction

@@ -376,8 +376,7 @@ Function Startup()
 	SetSystemVars()
 	SetDefaultSettings()
 	BuildSoundFormlists()
-	obars.InititializeAllBars()
-	
+
 	if (BlockVRInstalls && GetGameIsVR())
 		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
 		return
@@ -626,16 +625,6 @@ Event OnUpdate()
    		EndIf
     EndIf
 
-    If (EnableDomBar)
-    	obars.SetBarPercent(obars.DomBar, 0.0)
-    	obars.SetBarVisible(obars.DomBar, True)
-	EndIf
-
-	If (EnableSubBar)
-		obars.SetBarPercent(obars.SubBar, 0.0)
-    	obars.SetBarVisible(obars.SubBar, True)
-	EndIf
-
 	Int Password = DomActor.GetFactionRank(OsaFactionStage)
 	RegisterForModEvent("0SAO" + Password + "_AnimateStage", "OnAnimate")
 
@@ -842,15 +831,6 @@ Event OnUpdate()
     		EndIf
     	EndIf
 
-    	If (AutoHideBars && (GetTimeSinceLastPlayerInteraction() > 15.0)) ; fade out if needed
-    		If (obars.IsBarVisible(obars.DomBar))
-    			obars.SetBarVisible(obars.DomBar, False)
-    		EndIf
-    		If (obars.IsBarVisible(obars.SubBar))
-    			obars.SetBarVisible(obars.SubBar, False)
-    		EndIf
-    	EndIf
-
     	If (EnableActorSpeedControl && !AnimationIsAtMaxSpeed())
     		AutoIncreaseSpeed()
     	EndIf
@@ -860,8 +840,6 @@ Event OnUpdate()
 		If ThirdActor
 			ThirdExcitement += GetCurrentStimulation(SubActor) * ThirdStimMult
 		EndIf
-		obars.SetBarPercent(obars.DomBar, DomExcitement)
-		obars.SetBarPercent(obars.SubBar, SubExcitement)
 
 		If (SubExcitement >= 100.0)
 			MostRecentOrgasmedActor = SubActor
@@ -919,11 +897,6 @@ Event OnUpdate()
 
 	Redress()
 
-	obars.SetBarVisible(obars.DomBar, False)
-	obars.SetBarPercent(obars.DomBar, 0.0)
-	obars.SetBarVisible(obars.SubBar, False)
-	obars.SetBarPercent(obars.SubBar, 0.0)
-
 	If (UsingBed)
 		If (GetInBedAfterBedScene && ((DomActor == PlayerRef) || (SubActor == PlayerRef))  && EndedProper && !IsSceneAggressiveThemed())
 			Actor Other = GetSexPartner(PlayerRef)
@@ -979,6 +952,10 @@ ODatabaseScript Function GetODatabase()
 		Utility.Wait(0.5)
 	Endwhile
 	Return ODatabase
+EndFunction
+
+OBarsScript Function GetBarScript()
+	return obars
 EndFunction
 
 Int Function GetCurrentAnimationSpeed()
@@ -2380,19 +2357,6 @@ FormList[] Function GetSoundFormLists()
 	Return SoundFormLists
 EndFunction
 
-;
-;			██████╗  █████╗ ██████╗ ███████╗
-;			██╔══██╗██╔══██╗██╔══██╗██╔════╝
-;			██████╔╝███████║██████╔╝███████╗
-;			██╔══██╗██╔══██║██╔══██╗╚════██║
-;			██████╔╝██║  ██║██║  ██║███████║
-;			╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
-;
-;				Code related to the on-screen bars
-
-
-
-
 
 
 
@@ -2832,5 +2796,6 @@ Function OnLoadGame()
 		; DEBUG
 
 		AI.OnGameLoad()
+		obars.OnGameLoad()
 	EndIf
 EndFunction
