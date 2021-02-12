@@ -121,9 +121,9 @@ Actor PlayerRef
 
 GlobalVariable Timescale
 
-Bool UndressDom
-Bool UndressSub
-Bool AnimateUndress
+Bool property UndressDom auto
+Bool property UndressSub auto
+Bool property AnimateUndress auto
 String StartingAnimation
 Actor ThirdActor
 
@@ -177,6 +177,7 @@ Actor AggressiveActor
 
 OAiScript AI
 OBarsScript obars
+OUndressScript oundress
 
 Bool IsFlipped
 
@@ -378,6 +379,7 @@ Function Startup()
 
 	AI = ((Self as Quest) as OAiScript)
 	obars = ((Self as Quest) as obarsscript)
+	oundress = ((Self as Quest) as oundressscript)
 	RegisterForModEvent("ostim_actorhit", "OnActorHit")
 	SetSystemVars()
 	SetDefaultSettings()
@@ -528,6 +530,8 @@ Event OnUpdate()
 		Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
 	EndIf
 
+	SendModEvent("ostim_prestart") ; fires as soon as the screen goes black. be careful, some settings you normally expect may not be set yet. Use ostim_start to run code when the OSA scene begins.
+
 	If (EnableImprovedCamSupport)
 		Game.DisablePlayerControls(abCamswitch = True, abMenu = False, abFighting = False, abActivate = False, abMovement = False, aiDisablePOVType = 0)
 	EndIf
@@ -642,123 +646,7 @@ Event OnUpdate()
 ;		SubExcitement = 26.0
 ;	EndIf
 
-	If (AlwaysUndressAtAnimStart)
-		UndressDom = True
-		UndressSub = True
-	EndIf
-
-	If (AlwaysAnimateUndress)
-		AnimateUndress = True
-	EndIf
-
-	DomArmor = DomActor.GetWornForm(0x00000004)
-	DomHelm = DomActor.GetWornForm(0x00000002)
-	DomGlove = DomActor.GetWornForm(0x00000080)
-	DomBoot = DomActor.GetWornForm(0x00000008)
-	DomWep = DomActor.GetEquippedObject(1)
-
-	SubArmor = SubActor.GetWornForm(0x00000004)
-	SubHelm = SubActor.GetWornForm(0x00000002)
-	SubGlove = SubActor.GetWornForm(0x00000080)
-	SubBoot = SubActor.GetWornForm(0x00000008)
-	SubWep = SubActor.GetEquippedObject(1)
-
-	If (UndressDom)
-		If (AnimateUndress)
-			If (OnlyUndressChest)
-				AnimateUndressActor(DomActor, "cuirass")
-			Else ; cuirass,boots,weapon,helmet,gloves.
-				;/
-				AnimateUndressActor(DomActor, "helmet")
-				AnimateUndressActor(DomActor, "gloves")
-				AnimateUndressActor(DomActor, "weapon")
-				AnimateUndressActor(DomActor, "boots")
-				/;
-				AnimateUndressActor(DomActor, "cuirass")
-				UndressActor(DomActor, DomHelm)
-				UndressActor(DomActor, DomBoot)
-				UndressActor(DomActor, DomGlove)
-				DomActor.UnequipItem(DomWep, abPreventEquip = False, abSilent = True)
-			EndIf
-		Else
-			If (OnlyUndressChest)
-				UndressActor(DomActor, DomArmor)
-			Else
-				UndressActor(DomActor, DomHelm)
-				UndressActor(DomActor, DomBoot)
-				UndressActor(DomActor, DomGlove)
-				UndressActor(DomActor, DomArmor)
-				DomActor.UnequipItem(DomWep, abPreventEquip = False, abSilent = True)
-			EndIf
-		EndIf
-	EndIf
-
-	If (UndressSub)
-		If (AnimateUndress)
-			If (OnlyUndressChest)
-				AnimateUndressActor(SubActor, "cuirass")
-			Else
-				;animateUndressActor(SubActor, "helmet")
-				;animateUndressActor(SubActor, "gloves")
-				;animateUndressActor(SubActor, "weapon")
-				;animateUndressActor(SubActor, "boots")
-
-				AnimateUndressActor(SubActor, "cuirass")
-				UndressActor(SubActor, SubHelm)
-				UndressActor(SubActor, SubBoot)
-				UndressActor(SubActor, SubGlove)
-				SubActor.UnequipItem(subwep, abPreventEquip = False, abSilent = True)
-			EndIf
-		Else
-			If (OnlyUndressChest)
-				UndressActor(SubActor, SubArmor)
-			Else
-				UndressActor(SubActor, SubHelm)
-				UndressActor(SubActor, SubBoot)
-				UndressActor(SubActor, SubGlove)
-				UndressActor(SubActor, SubArmor)
-				SubActor.UnequipItem(SubWep, abPreventEquip = False, abSilent = True)
-			EndIf
-		EndIf
-	EndIf
 	
-	; Assume if sub is to be undressed, third actor should also be provided ThirdActor exists.
-	if (UndressSub == True && ThirdActor != None)
-		; undressing really needs to be its own function.
-		ThirdArmor = ThirdActor.GetWornForm(0x00000004)
-		ThirdHelm = ThirdActor.GetWornForm(0x00000002)
-		ThirdGlove = ThirdActor.GetWornForm(0x00000080)
-		ThirdBoot = ThirdActor.GetWornForm(0x00000008)
-		ThirdWep = ThirdActor.GetEquippedObject(1)
-		if (AnimateUndress)
-			if (OnlyUndressChest)
-				AnimateUndressActor(ThirdActor, "cuirass")
-			Else
-				;animateUndressActor(ThirdActor, "helmet")
-				;animateUndressActor(ThirdActor, "gloves")
-				;animateUndressActor(ThirdActor, "weapon")
-				;animateUndressActor(ThirdActor, "boots")
-
-				AnimateUndressActor(ThirdActor, "cuirass")
-				UndressActor(ThirdActor, ThirdHelm)
-				UndressActor(ThirdActor, ThirdBoot)
-				UndressActor(ThirdActor, ThirdGlove)
-				ThirdActor.UnequipItem(ThirdWep, abPreventEquip = False, abSilent = True)
-			endif
-			
-		Else
-			if (OnlyUndressChest)
-				undressActor(ThirdActor, ThirdArmor)
-			Else
-				UndressActor(ThirdActor, ThirdHelm)
-				UndressActor(ThirdActor, ThirdBoot)
-				UndressActor(ThirdActor, ThirdGlove)
-				UndressActor(ThirdActor, ThirdArmor)
-				ThirdActor.UnequipItem(ThirdWep, abPreventEquip = False, abSilent = True)
-			endif
-		endif
-	endIf
-
 	StartTime = Utility.GetCurrentRealTime()
 
 	Bool WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1)
@@ -779,7 +667,7 @@ Event OnUpdate()
 	
 	Float LoopTimeTotal = 0
 	Float LoopStartTime
-	SendModEvent("ostim_start")
+	
 
 	If (!AIRunning)
 		If ((DomActor != PlayerRef) && (SubActor != PlayerRef) && (ThirdActor != PlayerRef) && UseAINPConNPC)
@@ -800,6 +688,8 @@ Event OnUpdate()
 			AIRunning = True
 		EndIf
 	EndIf
+
+	SendModEvent("ostim_start")
 
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		Game.FadeOutGame(False, True, 0.0, 4) ;welcome back
@@ -2692,6 +2582,14 @@ Function SetDefaultSettings()
 	DefaultFOV = 85
 	FreecamSpeed = 3
 
+	int[] slots = new int[1]
+	slots[0] = 32
+	slots = PapyrusUtil.PushInt(slots, 33)
+	slots = PapyrusUtil.PushInt(slots, 30)
+	slots = PapyrusUtil.PushInt(slots, 37)
+	oundress.strippingslots = slots
+	oundress.updatefakearmor()
+
 	UseNativeFunctions = (SKSE.GetPluginVersion("OSA") != -1)
 	If (!UseNativeFunctions)
 		Console("Native function DLL failed to load. Falling back to papyrus implementations")
@@ -2807,5 +2705,6 @@ Function OnLoadGame()
 
 		AI.OnGameLoad()
 		obars.OnGameLoad()
+		oundress.onGameLoad()
 	EndIf
 EndFunction
