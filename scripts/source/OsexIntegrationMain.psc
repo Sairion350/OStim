@@ -31,6 +31,7 @@ Bool Property SlowMoOnOrgasm Auto
 Bool Property AlwaysUndressAtAnimStart Auto
 Bool Property OnlyUndressChest Auto
 Bool Property AlwaysAnimateUndress Auto
+Bool Property TossClothesOntoGround auto ;MCM todo
 
 Bool  SpeedUpNonSexAnimation
 Float SpeedUpSpeed
@@ -92,7 +93,7 @@ Bool Property UseAlternateBedSearch Auto
 Int Property AiSwitchChance Auto
 
 
-
+Int[] Property StrippingSlots auto
 
 ; -------------------------------------------------------------------------------------------------
 ; SCRIPTWIDE VARIABLES ----------------------------------------------------------------------------
@@ -789,9 +790,7 @@ Event OnUpdate()
 		Game.ForceFirstPerson()
 	EndIf
 
-	Utility.Wait(0.5)
-
-	Redress()
+	Utility.Wait(0.5) ;delete?
 
 	If (UsingBed)
 		If (GetInBedAfterBedScene && ((DomActor == PlayerRef) || (SubActor == PlayerRef))  && EndedProper && !IsSceneAggressiveThemed())
@@ -1714,54 +1713,7 @@ Function OnSpank()
 	SpankCount += 1
 EndFunction
 
-Function Redress()
-	If (DomHelm)
-		DomActor.EquipItem(DomHelm, False, True)
-	EndIf
-	If (DomGlove)
-		DomActor.EquipItem(DomGlove, False, True)
-	EndIf
-	If (DomArmor)
-		DomActor.EquipItem(DomArmor, False, True)
-	EndIf
-	If (DomBoot)
-		DomActor.EquipItem(DomBoot, False, True)
-	EndIf
-	If (DomWep)
-		DomActor.EquipItem(DomWep, False, True)
-	EndIf
-	If (SubHelm)
-		SubActor.EquipItem(SubHelm, False, True)
-	EndIf
-	If (SubGlove)
-		SubActor.EquipItem(SubGlove, False, True)
-	EndIf
-	If (SubArmor)
-		SubActor.EquipItem(SubArmor, False, True)
-	EndIf
-	If (SubBoot)
-		SubActor.EquipItem(SubBoot, False, True)
-	EndIf
-	If (SubWep)
-		SubActor.EquipItem(SubWep, False, True)
-	EndIf
-	If (ThirdHelm)
-		ThirdActor.EquipItem(ThirdHelm, False, True)
-	EndIf
-	If (ThirdGlove)
-		ThirdActor.EquipItem(ThirdGlove, False, True)
-	EndIf
-	If (ThirdArmor)
-		ThirdActor.EquipItem(ThirdArmor, False, True)
-	EndIf
-	If (ThirdBoot)
-		ThirdActor.EquipItem(ThirdBoot, False, True)
-	EndIf
-	If (ThirdWep)
-		ThirdActor.EquipItem(ThirdWep, False, True)
-	EndIf
-	; This can't possibly be the best way to do this.
-EndFunction
+
 
 Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
 	If (EndAfterActorHit)
@@ -2527,6 +2479,7 @@ Function SetDefaultSettings()
 	AlwaysUndressAtAnimStart = True
 	OnlyUndressChest = False ; currently only chest can be removed with animation
 	AlwaysAnimateUndress = False
+	TossClothesOntoGround = true
 
 	LowLightLevelLightsOnly = False
 
@@ -2587,7 +2540,7 @@ Function SetDefaultSettings()
 	slots = PapyrusUtil.PushInt(slots, 33)
 	slots = PapyrusUtil.PushInt(slots, 30)
 	slots = PapyrusUtil.PushInt(slots, 37)
-	oundress.strippingslots = slots
+	strippingslots = slots
 	oundress.updatefakearmor()
 
 	UseNativeFunctions = (SKSE.GetPluginVersion("OSA") != -1)

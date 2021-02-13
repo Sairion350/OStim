@@ -2,43 +2,73 @@ ScriptName OUndressScript Extends Quest
 
 OsexIntegrationMain OStim
 
-ObjectReference[] property DomEquipment auto
-ObjectReference[] property SubEquipment auto
-ObjectReference[] property ThirdEquipment auto
+Form[] property DomEquipmentForms auto ;in-inventory versions
+Form[] property SubEquipmentForms auto
+Form[] property ThirdEquipmentForms auto
+
+ObjectReference[] property DomEquipmentDrops auto ; on-the-ground versions
+ObjectReference[] property SubEquipmentDrops auto
+ObjectReference[] property ThirdEquipmentDrops auto
 
 Armor Property FakeArmor  Auto  
-Int[] Property StrippingSlots auto
 
+actor playerref
 
 Event OnInit()
 	OStim = (Self as Quest) as OsexIntegrationMain
 	FakeArmor = (Game.GetFormFromFile(0x000800, "Ostim.esp")) as armor
 
+	DomEquipmentDrops = new ObjectReference[1]
+	SubEquipmentDrops = new ObjectReference[1]
+	ThirdEquipmentDrops = new ObjectReference[1]
+
 	ongameload()
+	playerref = game.GetPlayer()
 EndEvent
 
 function strip(actor target)
-	EquipFakeArmor(target)
+	if ostim.TossClothesOntoGround
+		StripAndtoss(target)
+	else
+		EquipFakeArmor(target)
+	endif
+EndFunction
+
+function redress(actor target)
+	if ostim.TossClothesOntoGround
+		ObjectReference[] things
+		if target == ostim.GetDomActor()
+			things = DomEquipmentDrops
+		elseif target == ostim.GetSubActor()
+			things = SubEquipmentDrops
+		elseif target == ostim.GetThirdActor()
+			things = ThirdEquipmentDrops
+		endif
+
+		PickUpThings(target, things)
+	else
+		
+	endif
 EndFunction
 
 function UpdateFakeArmor()
 	Console("Updating fake armor....")
 
-	int i = 28
-	While i < 65
-		SetSlotInFakeArmor(i, false)
+	int i = 30
+	While i < 62
+		SetSlotInFakeArmor(Armor.GetMaskForSlot(i), false)
 		i += 1
 	EndWhile
 
 	i = 0
-	int l = StrippingSlots.Length
+	int l = ostim.StrippingSlots.Length
 	while i < l
-		SetSlotInFakeArmor(StrippingSlots[i], true)
+		SetSlotInFakeArmor(ostim.StrippingSlots[i], true)
 
 		i += 1
 	endwhile
 
-	console("Fake armor set.")
+	console("Fake armor update complete.")
 endfunction	
 
 Function SetSlotInFakeArmor(int iSlot, bool bSlot)
@@ -56,18 +86,86 @@ Function EquipFakeArmor(actor target)
     Target.RemoveItem(FakeArmor,99,true,None)
 EndFunction
 
+function StripAndtoss(actor target)
+	int arrayID
 
-function stripandthrow(actor target, form item, bool drop = true, bool doImpulse = true)
+	if target == ostim.GetDomActor()
+		arrayid = 0
+	elseif target == ostim.GetSubActor()
+		arrayid = 1
+	elseif target == ostim.GetThirdActor()
+		arrayid = 2
+	endif
+
+	int i = 0
+	int l = ostim.StrippingSlots.Length
+	
+	while i < l
+		form item = target.GetEquippedArmorInSlot(ostim.Strippingslots[i]) as form ;se exclusive function
+
+		StripAndTossItem(target, item, arrayID)
+
+		i += 1
+	endwhile
+endfunction
+
+function StripAndTossItem(actor target, form item, int arrayID, bool doImpulse = true)
 	if item
 		objectreference thing = target.dropObject(item)
 		thing.SetPosition(thing.GetPositionx(), thing.GetPositionY(), thing.GetPositionZ() + 64)
 		if doImpulse
-			thing.applyHavokImpulse(Utility.RandomFloat(-2.0, 2.0), Utility.RandomFloat(-2.0, 2.0), Utility.RandomFloat(0.2, 1.8), Utility.RandomFloat(10, 50))
+			thing.applyHavokImpulse(Utility.RandomFloat(-2.0, 2.0), Utility.RandomFloat(-2.0, 2.0), Utility.RandomFloat(0.2, 1.8), Utility.RandomFloat(5, 25))
 		endif
-		;things[0] = thing
+		
+		if arrayID == 0 ; store the item for lter
+			DomEquipmentDrops = PapyrusUtil.PushObjRef(DomEquipmentDrops, thing)
+		elseif arrayID == 1
+			SubEquipmentDrops = PapyrusUtil.PushObjRef(SubEquipmentDrops, thing)
+		elseif arrayID == 2
+			ThirdEquipmentDrops = PapyrusUtil.PushObjRef(ThirdEquipmentDrops, thing)
+		endif
 	endif
 endfunction
 
+Function PickUpThings(actor target, ObjectReference[] items)
+	int i = 0
+
+	if target.IsDead() 
+		Return
+	endif
+
+	while i < items.Length
+		
+		if items[i]
+			if playerref.GetItemCount(items[i]) < 1
+
+				target.additem(items[i], 1, true)
+
+				target.EquipItem(items[i].GetBaseObject(), false, true)
+			endif
+		EndIf
+
+		i += 1
+	endwhile
+EndFunction
+
+Event OStimEnd(String EventName, String strArg, Float NumArg, Form Sender)
+	Console("Redressing...")
+
+
+	redress(ostim.GetDomActor())
+	redress(ostim.GetSubActor())
+	if ostim.GetThirdActor()
+		redress(ostim.GetThirdActor())
+	endif
+
+	DomEquipmentDrops = new ObjectReference[1]
+	SubEquipmentDrops = new ObjectReference[1]
+	ThirdEquipmentDrops = new ObjectReference[1]
+
+
+	
+EndEvent
 
 
 Event OStimPreStart(String EventName, String strArg, Float NumArg, Form Sender)
@@ -106,4 +204,5 @@ EndFunction
 
 Function onGameLoad()
 	RegisterForModEvent("ostim_prestart", "OStimPreStart")
+	RegisterForModEvent("ostim_end", "OstimEnd")
 EndFunction
