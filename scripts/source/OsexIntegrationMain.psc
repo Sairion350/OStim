@@ -29,9 +29,10 @@ Bool Property LowLightLevelLightsOnly Auto
 Bool Property SlowMoOnOrgasm Auto
 
 Bool Property AlwaysUndressAtAnimStart Auto
-Bool Property OnlyUndressChest Auto
+;Bool Property OnlyUndressChest Auto 							Removed in 4.0
 Bool Property AlwaysAnimateUndress Auto
 Bool Property TossClothesOntoGround auto ;MCM todo
+Bool Property UseStrongerUnequipMethod auto ;MCM todo
 
 Bool  SpeedUpNonSexAnimation
 Float SpeedUpSpeed
@@ -705,10 +706,6 @@ Event OnUpdate()
 		Utility.Wait(1.0 - LoopTimeTotal)
 		LoopStartTime = Utility.GetCurrentRealTime()
 
-    	If (AutoUndressIfNeeded)
-    		UndressIfNeeded()
-    	EndIf
-
     	If (MisallignmentProtection && IsActorActive(DomActor))
     		If (SubActor.GetDistance(DomActor) > 1)
     			Console("Misallignment detected")
@@ -1003,26 +1000,6 @@ Actor Function GetAggressiveActor()
 	Return AggressiveActor
 EndFunction
 
-Function UndressAll(Actor Act) ; seems broke
-	Int Acto = 0
-	If (Act == SubActor)
-		Acto = 1
-	EndIf
-	RunOsexCommand("$Equndressall," + Acto)
-EndFunction
-
-Function RedressAll(Actor Act) ; seems broke
-	Int Acto = 0
-	If (Act == SubActor)
-		Acto = 1
-	EndIf
-	RunOsexCommand("$Eqredressall," + acto) ; seems broke
-EndFunction
-
-Function UndressActor(Actor Char, Form Item)
-	Char.UnequipItem(Item, False, True)
-EndFunction
-
 Function AnimateUndressActor(Actor Char, String Item)
 	; cuirass, boots, weapon, helmet, gloves.
 	; some extra rare options: cape, intlow(i.e. panties), inthigh(i.e. bra), miscarms, misclow, miscmid, miscup, pants, stockings,
@@ -1189,63 +1166,16 @@ Function Reallign()
 	EndIf
 EndFunction
 
-Function UndressIfNeeded()
-	Bool DomNaked = IsNaked(DomActor)
-	Bool SubNaked = IsNaked(SubActor)
-	Bool ThirdNaked = true
-	if ThirdActor
-		ThirdNaked = IsNaked(ThirdActor)
-	endif
-	String CClass = GetCurrentAnimationClass()
-	If (!DomNaked)
-		If (CClass == ClassSex) || (CClass == ClassMasturbate) || (CClass == ClassHeadHeldMasturbate) || (CClass == ClassPenisjob) || (CClass == ClassHeadHeldPenisjob) || (CClass == ClassHandjob) || (CClass == ClassApartHandjob) || (CClass == ClassDualHandjob) || (CClass == ClassSelfSuck)
-			UndressAllItems(domactor)
-		EndIf
-	ElseIf (!SubNaked)
-		If (CClass == ClassSex) || (CClass == ClassCunn) || (CClass == ClassClitRub) || (CClass == ClassOneFingerPen) || (CClass == ClassTwoFingerPen)
-			UndressAllItems(subactor)
-		EndIf
-	ElseIf (!ThirdNaked)
-		If (CClass == ClassSex) || (CClass == ClassCunn) || (CClass == ClassClitRub) || (CClass == ClassOneFingerPen) || (CClass == ClassTwoFingerPen)
-			UndressAllItems(ThirdActor)
-		EndIf
-	EndIf
-EndFunction
-
-Function UndressAllItems(Actor Act) ; will be moved to a different script in a later version so do not call!
-	bool DidToggle = False
-	If IsFreeCamming
-		DidToggle = True
-		ToggleFreeCam()
-	EndIf
-
-	form zArmor = Act.GetWornForm(0x00000004)
-	form zHelm = Act.GetWornForm(0x00000002)
-	form zGlove = Act.GetWornForm(0x00000080)
-	form zBoot = Act.GetWornForm(0x00000008)
-	form zWep = Act.GetEquippedObject(1)
-	
-	UndressActor(Act, zHelm)
-	UndressActor(Act, zBoot)
-	UndressActor(Act, zGlove)
-	UndressActor(Act, zArmor)
-	Act.UnequipItem(zWep, abPreventEquip = False, abSilent = True)
-
-	If DidToggle
-		ToggleFreeCam()
-	EndIf	
-	Console("Doing mid-animation strip")
-Endfunction
-
 Function ToggleFreeCam(Bool On = True)
 	ConsoleUtil.ExecuteCommand("tfc")
 	If (!IsFreeCamming)
 		ConsoleUtil.ExecuteCommand("sucsm " + FreecamSpeed)
 		ConsoleUtil.ExecuteCommand("fov " + FreecamFOV)
+		IsFreeCamming = true
 	Else
 		ConsoleUtil.ExecuteCommand("fov " + DefaultFOV)
+		IsFreeCamming = false
 	EndIf
-	IsFreeCamming = !IsFreeCamming
 EndFunction
 
 Function HideNavMenu() ;only works during SEX animations
@@ -1255,6 +1185,10 @@ EndFunction
 Function ShowNavMenu() ;only works during SEX animations
 	UI.Invoke("HUD Menu", "_root.WidgetContainer."+OSAomni.glyph+".widget.hud.NavMenu.light") 
 EndFunction
+
+bool function IsInFreeCam()
+	return IsFreeCamming
+endfunction
 
 float Function GetStimMult(actor act)
 	if act == DomActor
@@ -1675,10 +1609,6 @@ Function OnAnimationChange()
 		If ThirdActor
 			Console("Third actor: + " + ThirdActor.GetDisplayName() + " has joined the scene")
 
-			If AlwaysUndressAtAnimStart
-				UndressAllItems(ThirdActor)
-			EndIf
-
 			SendModEvent("ostim_thirdactor_join")
 		Else
 			Console("Warning - Third Actor not found")
@@ -1689,7 +1619,7 @@ Function OnAnimationChange()
 		Console("Third actor has left the scene")
 		ThirdActor = none
 
-		SendModEvent("ostim_thirdactor_leave")
+		SendModEvent("ostim_thirdactor_leave") ; careful, getthirdactor() won't work in this event
 	EndIf
 
 	Console("Current animation: " + CurrentAnimation)
@@ -2466,7 +2396,7 @@ Function SetDefaultSettings()
 	EnableThirdBar = True
 	EnableActorSpeedControl = True
 	AllowUnlimitedSpanking = False
-	AutoUndressIfNeeded = True
+	AutoUndressIfNeeded = false
 
 	EndAfterActorHit = False
 
@@ -2476,10 +2406,10 @@ Function SetDefaultSettings()
 	DomLightPos = 0
 
 	CustomTimescale = 0
-	AlwaysUndressAtAnimStart = True
-	OnlyUndressChest = False ; currently only chest can be removed with animation
-	AlwaysAnimateUndress = False
+	AlwaysUndressAtAnimStart = true
+	AlwaysAnimateUndress = False ;remove
 	TossClothesOntoGround = true
+	UseStrongerUnequipMethod = false
 
 	LowLightLevelLightsOnly = False
 
