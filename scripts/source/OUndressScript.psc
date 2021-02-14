@@ -24,7 +24,7 @@ Event OnInit()
 	playerref = game.GetPlayer()
 EndEvent
 
-function strip(actor target) ; if you do a toggle mid scene, you MUST disable free cam or else!
+function strip(actor target) ; if you do a strip mid scene, you MUST disable free cam or else!
 	if ostim.TossClothesOntoGround
 		StripAndtoss(target)
 	elseif ostim.UseStrongerUnequipMethod
@@ -40,6 +40,7 @@ function redress(actor target)
 	if target.IsDead() 
 		Return
 	endif
+
 
 	if ostim.TossClothesOntoGround
 		ObjectReference[] things
@@ -62,7 +63,11 @@ function redress(actor target)
 			things = ThirdEquipmentForms
 		endif
 
-		EquipForms(target, things)
+		if ostim.FullyAnimateRedress && (target != playerref) && !(ostim.IsSceneAggressiveThemed())
+			FullyAnimateRedress(target, things)
+		else
+			EquipForms(target, things)
+		endif
 	endif
 EndFunction
 
@@ -345,6 +350,55 @@ Event OstimThirdLeave(string eventName, string strArg, float numArg, Form sender
 	Console("Redressing third actor")
 	redress(ThirdActorAfterLeaving)
 EndEvent
+
+function FullyAnimateRedress(actor target, Form[] items)
+	Utility.Wait(0.5)
+
+	int i = 0
+	while i < items.Length
+		
+		if items[i]
+			Console((items[i] as armor).getslotmask() + " slot for " + items[i].getname())
+			armor armorpiece = (items[i] as armor)
+			int slotmask = armorpiece.GetSlotMask()
+
+			string undressAnim = ""
+			float AnimLen = 0
+			float dressPoint = 0
+
+			if armorpiece.IsCuirass() || armorpiece.IsClothingBody()
+				undressAnim = "0Eq0ER_F_ST_D_cuirass_0"
+				AnimLen = 9
+				dressPoint = 4.5
+			ElseIf armorpiece.IsBoots() || armorpiece.IsClothingFeet()
+				undressAnim = "0Eq0ER_F_SI_D_boots_0"
+				AnimLen = 17
+				dressPoint = 4.5
+			elseif armorpiece.IsHelmet() || armorpiece.IsClothingHead()
+				undressAnim = "0Eq0ER_F_ST_D_helmet_0"
+				AnimLen = 12.5
+				dressPoint = 9.5
+			endif			;more need to be added
+
+
+
+			if undressAnim != ""
+				debug.SendAnimationEvent(target, undressAnim)
+			EndIf
+			Utility.Wait(dressPoint)
+			target.EquipItem(items[i], false, true)
+			Utility.Wait(AnimLen - dressPoint)
+
+
+		EndIf
+
+
+		i += 1
+	endwhile
+
+	Debug.SendAnimationEvent(target, "IdleForceDefaultState")
+
+EndFunction
 
 Function Console(String In)
 	OsexIntegrationMain.Console(In)

@@ -33,6 +33,7 @@ Bool Property AlwaysUndressAtAnimStart Auto
 Bool Property AlwaysAnimateUndress Auto
 Bool Property TossClothesOntoGround auto ;MCM todo
 Bool Property UseStrongerUnequipMethod auto ;MCM todo
+Bool Property FullyAnimateRedress auto ;mcm todo
 
 Bool  SpeedUpNonSexAnimation
 Float SpeedUpSpeed
@@ -2407,8 +2408,9 @@ Function SetDefaultSettings()
 
 	CustomTimescale = 0
 	AlwaysUndressAtAnimStart = true
+	FullyAnimateRedress = true
 	AlwaysAnimateUndress = False ;remove
-	TossClothesOntoGround = true
+	TossClothesOntoGround = false
 	UseStrongerUnequipMethod = false
 
 	LowLightLevelLightsOnly = False
@@ -2468,7 +2470,7 @@ Function SetDefaultSettings()
 	int[] slots = new int[1]
 	slots[0] = 32
 	slots = PapyrusUtil.PushInt(slots, 33)
-	slots = PapyrusUtil.PushInt(slots, 30)
+	slots = PapyrusUtil.PushInt(slots, 31)
 	slots = PapyrusUtil.PushInt(slots, 37)
 	strippingslots = slots
 	oundress.updatefakearmor()
