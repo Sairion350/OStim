@@ -1,5 +1,5 @@
 ScriptName OUndressScript Extends Quest
-
+; todo ammo unequip?
 OsexIntegrationMain OStim
 
 Form[] property DomEquipmentForms auto ;in-inventory versions
@@ -52,7 +52,12 @@ function redress(actor target)
 			things = ThirdEquipmentDrops
 		endif
 
-		PickUpThings(target, things)
+		if ostim.FullyAnimateRedress && (target != playerref) && !(ostim.IsSceneAggressiveThemed())
+			Form[] stuff = AddDroppedThingsToInv(target, things)
+			FullyAnimateRedress(target, stuff)
+		else
+			PickUpThings(target, things)
+		endif 
 	else
 		Form[] things
 		if target == ostim.GetDomActor()
@@ -104,6 +109,9 @@ Function EquipFakeArmor(actor target)
 	Target.EquipItem(FakeArmor,False,True)
     Utility.Wait(0.15)
     Target.RemoveItem(FakeArmor,99,true,None)
+
+    target.unequipitem(target.GetEquippedObject(0))
+	target.unequipitem(target.GetEquippedObject(1))
 EndFunction
 
 function UnequipForms(actor target, Form[] items)
@@ -117,6 +125,9 @@ function UnequipForms(actor target, Form[] items)
 
 		i += 1
 	endwhile
+
+	target.unequipitem(target.GetEquippedObject(0))
+	target.unequipitem(target.GetEquippedObject(1))
 endfunction
 
 Form[] Function StoreEquipmentForms(actor target)
@@ -148,6 +159,29 @@ Form[] Function StoreEquipmentForms(actor target)
 		i += 1
 	endwhile
 
+
+	if target.GetEquippedObject(0)
+		form thing = target.GetEquippedObject(0)
+		if arrayID == 0 ; store the item for lter
+			DomEquipmentForms = PapyrusUtil.PushForm(DomEquipmentForms, thing)
+		elseif arrayID == 1
+			SubEquipmentForms = PapyrusUtil.PushForm(SubEquipmentForms, thing)
+		elseif arrayID == 2
+			ThirdEquipmentForms = PapyrusUtil.PushForm(ThirdEquipmentForms, thing)
+		endif
+	endif
+	if target.GetEquippedObject(1)
+		form thing = target.GetEquippedObject(1)
+		if arrayID == 0 ; store the item for lter
+			DomEquipmentForms = PapyrusUtil.PushForm(DomEquipmentForms, thing)
+		elseif arrayID == 1
+			SubEquipmentForms = PapyrusUtil.PushForm(SubEquipmentForms, thing)
+		elseif arrayID == 2
+			ThirdEquipmentForms = PapyrusUtil.PushForm(ThirdEquipmentForms, thing)
+		endif
+	endif
+
+
 	if target == ostim.GetDomActor() ;I wish we had pointers of some kind
 		return DomEquipmentForms
 	elseif target == ostim.GetSubActor()
@@ -178,6 +212,13 @@ function StripAndtoss(actor target)
 
 		i += 1
 	endwhile
+
+	if target.GetEquippedObject(0)
+		StripAndTossItem(target, target.GetEquippedObject(0), arrayID)
+	endif
+	if target.GetEquippedObject(1)
+		StripAndTossItem(target, target.GetEquippedObject(1), arrayID)
+	endif
 endfunction
 
 function StripAndTossItem(actor target, form item, int arrayID, bool doImpulse = true)
@@ -216,6 +257,25 @@ Function PickUpThings(actor target, ObjectReference[] items)
 	endwhile
 EndFunction
 
+Form[] Function AddDroppedThingsToInv(actor target, ObjectReference[] items)
+	form[] forms = new form[1]
+	int i = 0
+
+	while i < items.Length
+		
+		if items[i]
+			if playerref.GetItemCount(items[i]) < 1
+				target.additem(items[i], 1, true)
+				forms = PapyrusUtil.PushForm(forms, items[i].GetBaseObject())
+			endif
+		EndIf
+
+		i += 1
+	endwhile
+
+	return forms
+EndFunction
+
 Function EquipForms(actor target, Form[] items)
 	int i = 0
 
@@ -242,6 +302,7 @@ Event OStimEnd(String EventName, String strArg, Float NumArg, Form Sender)
 
 	ThirdActorAfterLeaving = none
 	
+	SendModEvent("ostim_redresscomplete")
 EndEvent
 
 
@@ -282,6 +343,8 @@ Event OStimPreStart(String EventName, String strArg, Float NumArg, Form Sender)
 	endIf
 
 	Console("Stripped.")
+
+	SendModEvent("ostim_undresscomplete")
 EndEvent
 
 Event OstimChange(string eventName, string strArg, float numArg, Form sender)
@@ -351,14 +414,40 @@ Event OstimThirdLeave(string eventName, string strArg, float numArg, Form sender
 	redress(ThirdActorAfterLeaving)
 EndEvent
 
-function FullyAnimateRedress(actor target, Form[] items)
-	Utility.Wait(0.5)
+form[] set1
+form[] set2
+form[] set3
+
+actor act1
+actor act2
+actor act3
+
+Event AnimatedRedressThread(string eventName, string strArg, float numArg, Form sender)
+	form[] items
+	actor target
+
+	if numArg == 1.0
+		items = set1
+		target = act1
+	elseif numarg == 2.0
+		items = set2
+		target = act2
+	elseif numarg == 3.0
+		items = set3
+		target = act3
+	endif
+
+	;items = PapyrusUtil.
+	bool female = ostim.AppearsFemale(target)
+
+	Utility.Wait(Utility.RandomFloat(0.45, afMax = 0.65))
 
 	int i = 0
 	while i < items.Length
 		
 		if items[i]
-			Console((items[i] as armor).getslotmask() + " slot for " + items[i].getname())
+			bool loaded = target.is3dloaded()
+
 			armor armorpiece = (items[i] as armor)
 			int slotmask = armorpiece.GetSlotMask()
 
@@ -367,27 +456,59 @@ function FullyAnimateRedress(actor target, Form[] items)
 			float dressPoint = 0
 
 			if armorpiece.IsCuirass() || armorpiece.IsClothingBody()
-				undressAnim = "0Eq0ER_F_ST_D_cuirass_0"
-				AnimLen = 9
-				dressPoint = 4.5
+				if female
+					undressAnim = "0Eq0ER_F_ST_D_cuirass_0"
+					AnimLen = 9
+					dressPoint = 4.5
+				else 
+					undressAnim = "0Eq0ER_M_ST_D_cuirass_0"
+					AnimLen = 8
+					dressPoint = 5
+				endif
 			ElseIf armorpiece.IsBoots() || armorpiece.IsClothingFeet()
-				undressAnim = "0Eq0ER_F_SI_D_boots_0"
-				AnimLen = 17
-				dressPoint = 4.5
+				if female
+					undressAnim = "0Eq0ER_F_SI_D_boots_0"
+					AnimLen = 17
+					dressPoint = 4.5
+				else
+					undressAnim = "0Eq0ER_M_ST_D_boots_0"
+					AnimLen = 8
+					dressPoint = 5
+				endif
 			elseif armorpiece.IsHelmet() || armorpiece.IsClothingHead()
-				undressAnim = "0Eq0ER_F_ST_D_helmet_0"
-				AnimLen = 12.5
-				dressPoint = 9.5
-			endif			;more need to be added
+				if female
+					undressAnim = "0Eq0ER_F_ST_D_helmet_0"
+					AnimLen = 12.5
+					dressPoint = 9.5
+				else
+					undressAnim = "0Eq0ER_M_ST_D_helmet_0"
+					AnimLen = 5
+					dressPoint = 3
+				endif
+			elseif armorpiece.IsGauntlets() || armorpiece.IsClothingHands()
+				if female
+					undressAnim = "0Eq0ER_F_ST_D_gloves_0"
+					AnimLen = 12
+					dressPoint = 3
+				else
+					undressAnim = "0Eq0ER_M_ST_D_gloves_0"
+					AnimLen = 8
+					dressPoint = 6.5
+				endif
+			endif			
 
 
 
-			if undressAnim != ""
+			if undressAnim != "" && loaded
 				debug.SendAnimationEvent(target, undressAnim)
 			EndIf
-			Utility.Wait(dressPoint)
+			if loaded
+				Utility.Wait(dressPoint)
+			endif
 			target.EquipItem(items[i], false, true)
-			Utility.Wait(AnimLen - dressPoint)
+			if loaded
+				Utility.Wait(AnimLen - dressPoint)
+			endif
 
 
 		EndIf
@@ -397,6 +518,37 @@ function FullyAnimateRedress(actor target, Form[] items)
 	endwhile
 
 	Debug.SendAnimationEvent(target, "IdleForceDefaultState")
+
+	if numArg == 1.0
+		act1 = none 
+		set1 = new form[1]
+	elseif numarg == 2.0
+		act2 = none 
+		set2 = new form[1]
+	elseif numarg == 3.0
+		act3 = none 
+		set3 = new form[1]
+	endif
+EndEvent
+
+function FullyAnimateRedress(actor target, Form[] items)
+	float arg
+
+	if act1 == none
+		arg = 1.0
+		act1 = target 
+		set1 = items
+	elseif act2 == none
+		arg = 2.0
+		act2 = target 
+		set2 = items
+	elseif act3 == none
+		arg = 3.0
+		act3 = target 
+		set3 = items
+	endif
+
+	SendModEvent("ostim_redressthread", numArg = arg)
 
 EndFunction
 
@@ -412,4 +564,7 @@ Function onGameLoad()
 
 	RegisterForModEvent("ostim_thirdactor_join", "OstimThirdJoin")
 	RegisterForModEvent("ostim_thirdactor_leave", "OstimThirdLeave")
+
+	
+	RegisterForModEvent("ostim_redressthread", "AnimatedRedressThread")
 EndFunction

@@ -14,6 +14,9 @@ Int SetUseScreenShake
 Int SetAlwaysAnimateUndress
 Int SetAlwaysUndressAtStart
 Int SetonlyUndressChest
+Int SetDropClothes
+int SetAnimateRedress
+Int SetStrongerUnequip
 
 ; bar settings
 Int SetSubBar
@@ -170,10 +173,13 @@ Event OnPageReset(String Page)
 
 		SetCursorPosition(3)
 		AddColoredHeader("Undressing")
-		SetUndressIfneed = AddToggleOption("Auto-remove clothes", Main.AutoUndressIfNeeded)
-		SetAlwaysUndressAtStart = AddToggleOption("Always undress at start", Main.AlwaysUndressAtAnimStart)
-		SetAlwaysAnimateUndress = AddToggleOption("Use undress animation", Main.AlwaysAnimateUndress)
-		SetonlyUndressChest = AddToggleOption("Only undress chest piece", Main.OnlyUndressChest)
+		SetAlwaysUndressAtStart = AddToggleOption("Fully undress at start", Main.AlwaysUndressAtAnimStart)
+		SetUndressIfneed = AddToggleOption("Remove clothes mid-scene", Main.AutoUndressIfNeeded)
+		SetDropClothes = AddToggleOption("Toss clothes onto ground", Main.TossClothesOntoGround)
+		SetStrongerUnequip = AddToggleOption("Use stronger unequip method", Main.UseStrongerUnequipMethod)
+		SetAnimateRedress= AddToggleOption("Use animated redress", Main.FullyAnimateRedress)
+		;SetAlwaysAnimateUndress = AddToggleOption("Use undress animation", Main.AlwaysAnimateUndress) Removed in 4.0, may be reimplemented but it was bugged
+		;SetonlyUndressChest = AddToggleOption("Only undress chest piece", Main.OnlyUndressChest) REMOVED in 4.0
 		AddEmptyOption()
 
 		AddColoredHeader("AI Control")
@@ -237,6 +243,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetUseRumble)
 		Main.UseRumble = !Main.UseRumble
 		SetToggleOptionValue(Option, Main.UseRumble)
+	ElseIf (Option == SetStrongerUnequip)
+		Main.UseStrongerUnequipMethod = !Main.UseStrongerUnequipMethod
+		SetToggleOptionValue(Option, Main.UseStrongerUnequipMethod)
 	ElseIf (Option == SetFlipFix)
 		Main.FixFlippedAnimations = !Main.FixFlippedAnimations
 		SetToggleOptionValue(Option, Main.FixFlippedAnimations)
@@ -246,6 +255,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetForceAIInConsensualScenes)
 		Main.UseAINonAggressive = !Main.UseAINonAggressive
 		SetToggleOptionValue(Option, Main.UseAINonAggressive)
+	ElseIf (Option == SetDropClothes)
+		Main.TossClothesOntoGround = !Main.TossClothesOntoGround
+		SetToggleOptionValue(Option, Main.TossClothesOntoGround)
 	ElseIf (Option == SetForceAIIfAttacked)
 		Main.UseAIPlayerAggressed = !Main.UseAIPlayerAggressed
 		SetToggleOptionValue(Option, Main.UseAIPlayerAggressed)
@@ -288,15 +300,18 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetAlwaysAnimateUndress)
 		Main.AlwaysAnimateUndress = !Main.AlwaysAnimateUndress
 		SetToggleOptionValue(Option, Main.AlwaysAnimateUndress)
-	ElseIf (Option == SetonlyUndressChest)
-		Main.OnlyUndressChest = !Main.OnlyUndressChest
-		SetToggleOptionValue(Option, Main.OnlyUndressChest)
+	;ElseIf (Option == SetonlyUndressChest)
+	;	Main.OnlyUndressChest = !Main.OnlyUndressChest
+	;	SetToggleOptionValue(Option, Main.OnlyUndressChest)
 	ElseIf (Option == SetDomBar)
 		Main.EnableDomBar = !Main.EnableDomBar
 		SetToggleOptionValue(Option, Main.EnableDomBar)
 	ElseIf (Option == SetThirdBar)
 		Main.EnableThirdBar = !Main.EnableThirdBar
 		SetToggleOptionValue(Option, Main.EnableThirdBar)
+	ElseIf (Option == SetAnimateRedress)
+		Main.FullyAnimateRedress = !Main.FullyAnimateRedress
+		SetToggleOptionValue(Option, Main.FullyAnimateRedress)
 	ElseIf (Option == SetMisallignmentOption)
 		Main.MisallignmentProtection = !Main.MisallignmentProtection
 		SetToggleOptionValue(Option, Main.MisallignmentProtection)
@@ -341,8 +356,12 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("The field of view of the camera when in freecam mode\nThis is incompatible with Improved Camera")
 	ElseIf (Option == SetUseRumble)
 		SetInfoText("Rumble a controller on thrust, if a controller is being used")
+	ElseIf (Option == SetStrongerUnequip)
+		SetInfoText("Use an alternate unequip method that may catch more armor pieces, especially armor with auto-reequip scripts\nHowever, some armor it unequips may not be reequiped in redress\nHas no effect if drop clothes on to ground is enabled")
 	ElseIf (Option == SetEndAfterActorHit)
 		SetInfoText("End the scene after someone in the scene is hit\n Can misfire with certain other mods")
+	ElseIf (Option == SetAnimateRedress)
+		SetInfoText("Makes NPCs play redressing animations after a scene ends if they need to redress")
 	ElseIf (Option == SetForceFirstPerson)
 		SetInfoText("Return to first person after scene ends.\nFixes the hybrid-camera bug in Improved Camera")
 	ElseIf (Option == SetCustomTimescale)
@@ -363,6 +382,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Chance that characters will switch animations mid scene\nDoes not affect chance of a foreplay -> full sex transition")
 	ElseIf (Option == SetFlipFix)
 		SetInfoText("Fix some third party animations being flipped 180 degrees")
+	ElseIf (Option == SetDropClothes)
+		SetInfoText("Characters will drop clothes they take off onto the ground instead of storing them in their inventory\nCharacters will automatically pick them up when redressing")
 	ElseIf (Option == SetAlwaysUndressAtStart)
 		SetInfoText("Actors will always get undressed as a scene starts \nMods using this mod's API can force an undress to occur even if this isn't checked")
 	ElseIf (Option == SetAlwaysAnimateUndress)

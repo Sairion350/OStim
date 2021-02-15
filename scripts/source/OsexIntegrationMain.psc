@@ -29,10 +29,10 @@ Bool Property LowLightLevelLightsOnly Auto
 Bool Property SlowMoOnOrgasm Auto
 
 Bool Property AlwaysUndressAtAnimStart Auto
-;Bool Property OnlyUndressChest Auto 							Removed in 4.0
-Bool Property AlwaysAnimateUndress Auto
-Bool Property TossClothesOntoGround auto ;MCM todo
-Bool Property UseStrongerUnequipMethod auto ;MCM todo
+Bool Property OnlyUndressChest Auto 		;	Removed in 4.0
+Bool Property AlwaysAnimateUndress Auto      ;	Removed in 4.0
+Bool Property TossClothesOntoGround auto  
+Bool Property UseStrongerUnequipMethod auto 
 Bool Property FullyAnimateRedress auto ;mcm todo
 
 Bool  SpeedUpNonSexAnimation
@@ -2410,7 +2410,7 @@ Function SetDefaultSettings()
 	AlwaysUndressAtAnimStart = true
 	FullyAnimateRedress = true
 	AlwaysAnimateUndress = False ;remove
-	TossClothesOntoGround = false
+	TossClothesOntoGround = true
 	UseStrongerUnequipMethod = false
 
 	LowLightLevelLightsOnly = False
