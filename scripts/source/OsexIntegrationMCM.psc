@@ -84,6 +84,14 @@ Int SetUseCosaveWorkaround
 
 OsexIntegrationMain Main
 
+
+string currPage
+int[] SlotSets
+
+actor playerref
+
+int SetUndressingAbout
+
 Event OnInit()
 	Init()
 EndEvent
@@ -109,10 +117,14 @@ Function Init()
 	DomLightBrightList = new String[2]
 	DomLightBrightList[0] = "Dim"
 	DomLightBrightList[1] = "Bright"
+
+	playerref = game.getplayer()
 EndFunction
 
 Event OnPageReset(String Page)
 	{Called when a new page is selected, including the initial empty page}
+	currPage = page
+
 	If (Page == "Configuration")
 		If (!Main)
 			Init()
@@ -216,6 +228,21 @@ Event OnPageReset(String Page)
 	ElseIf (Page == "")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayDing()
+	ElseIf (Page == "Undressing")
+		LoadCustomContent("Ostim/logo.dds", 184, 31)
+		Main.PlayTickBig()
+		UnloadCustomContent()
+		SetInfoText(" ")
+		Main.playTickBig()
+		SetCursorFillMode(LEFT_TO_RIGHT)
+		SetUndressingAbout = AddTextOption("What is this?", "")
+		SetCursorPosition(1)
+		AddTextOption("<font color='" + "#939292" +"'>" + "OStim Undressing", "")
+		SetCursorPosition(2)
+		AddColoredHeader("Undressing slots")
+		AddColoredHeader("")
+
+		DrawSlotPage()
 	ElseIf (Page == "About")
 		UnloadCustomContent()
 		Main.PlayTickBig()
@@ -226,6 +253,10 @@ EndEvent
 
 Event OnOptionSelect(Int Option)
 	Main.PlayTickBig()
+	if currPage == "Undressing"
+		OnSlotSelect(option)
+	EndIf
+
 	If (Option == SetEndOnOrgasm)
 		Main.EndOnDomOrgasm = !Main.EndOnDomOrgasm
 		SetToggleOptionValue(SetEndOnOrgasm, Main.EndOnDomOrgasm)
@@ -338,10 +369,15 @@ EndEvent
 
 Event OnOptionHighlight(Int Option)
 	;Main.playTickSmall()
+	if currPage == "Undressing"
+		OnSlotMouseOver(option)
+	EndIf
 	If (Option == SetEndOnOrgasm)
 		SetInfoText("End the Osex scene automatically when the dominant actor (usually the male) orgasms")
 	ElseIf (Option == SetResetState)
 		SetInfoText("Click this if you keep getting a Scene Already Running type error")
+	ElseIf (Option == SetUndressingAbout)
+		SetInfoText("This panel lets you select what armor slots are stripped by OStim. See this if you don't know what that is\nhttps://www.creationkit.com/index.php?title=Biped_Object\nSlots where the name is green mean that Bethesda designated that slot to be used that way\nCyan names mean that the community has designated that slot to be used that way\nMany mods do not use the proper slots, so take the names with a grain of salt\nMouse over the names to see if you are wearing an armor piece in that slot")
 	ElseIf (Option == SetForceAIIfAttacked)
 		SetInfoText("If using manual mode by default, this will force automatic mode to activate if the player is the victim in an aggressive scene")
 	ElseIf (Option == SetForceAIIfAttacking)
@@ -574,6 +610,92 @@ Event OnOptionKeyMapChange(Int Option, Int KeyCode, String ConflictControl, Stri
 		SetKeyMapOptionValue(Option, KeyCode)
 	EndIf
 EndEvent
+
+
+
+function DrawSlotPage()
+	SlotSets = new int[128]
+
+	string[] names = new string[128]
+
+	names[30] = "<font color='#317335'> Head"
+	names[31] = "<font color='#317335'> Head/hair"
+	names[32] = "<font color='#317335'> Body armor/clothes"
+	names[33] = "<font color='#317335'> Gloves/gauntlets"
+	names[34] = "<font color='#317335'> Forearms"
+	names[35] = "<font color='#317335'> Amulet"
+	names[36] = "<font color='#317335'> Ring"
+	names[37] = "<font color='#317335'> Shoes"
+	names[38] = "<font color='#317335'> Calves"
+	names[39] = "<font color='#317335'> Shield"
+	names[40] = "<font color='#317335'> Tail"
+	names[41] = "<font color='#317335'> Long hair"
+	names[42] = "<font color='#317335'> Circlet"
+	names[43] = "<font color='#317335'> Ear rings"
+
+	names[44] = "<font color='#31755c'> Face/mouth"
+	names[45] = "<font color='#31755c'> Neck/scarf. Sometimes panties"
+	names[46] = "<font color='#31755c'> Extra chest piece"
+	names[47] = "<font color='#31755c'> Back (backpack, wings, etc)"
+	names[48] = "<font color='#31755c'> Misc"
+	names[49] = "<font color='#31755c'> Extra pelvis piece"
+	names[52] = "<font color='#31755c'> Extra pelvis piece 2 | SchlongsofSkyrim"
+	names[53] = "<font color='#31755c'> Extra leg piece"
+	names[54] = "<font color='#31755c'> Extra leg piece 2"
+	names[55] = "<font color='#31755c'> Face alternate or jewelry"
+	names[56] = "<font color='#31755c'> Extra chest piece 2"
+	names[57] = "<font color='#31755c'> Shoulder"
+	names[58] = "<font color='#31755c'> Extra arm piece 2"
+	names[59] = "<font color='#31755c'> Extra arm piece"
+	names[60] = "<font color='#31755c'> Misc"
+
+
+	int i = 30
+	int max = 62
+
+	While i < max
+		string additional = ""
+		if names[i] != ""
+			additional = " " + names[i]
+		endif
+		SlotSets[i] = AddToggleOption("S. " + i as string + additional, Main.IntArrayContainsValue(main.StrippingSlots, i))
+
+		i += 1
+	EndWhile
+
+endfunction
+
+Function OnSlotSelect(int option)
+	 
+
+	 int slot = option - 486
+
+	 osexintegrationmain.console(slot)
+
+	 if Main.IntArrayContainsValue(main.StrippingSlots, slot)
+	 	; remove this from the array
+	 	main.StrippingSlots = PapyrusUtil.RemoveInt(main.StrippingSlots, slot)
+	 	SetToggleOptionValue(Option, false)
+	 else 
+	 	;add this to the array
+	 	main.StrippingSlots = PapyrusUtil.PushInt(main.StrippingSlots, slot)
+	 	SetToggleOptionValue(Option, true)
+	 endif
+
+	 main.GetUndressScript().UpdateFakeArmor()
+EndFunction
+
+Function OnSlotMouseOver(int option)
+	int slot = option - 486
+
+	armor equipped = playerref.getEquippedArmorInSlot(slot) ; se exclusive
+
+	if equipped
+		SetInfoText("Player has armor equipped that matches this slot\nName: " + equipped.getname() + "\nFull slotmask: " + equipped.GetSlotMask())
+	else
+		SetInfoText("No armor matching this slot on player")
+	endif
+endfunction
 
 Event OnGameReload()
 	Parent.OnGameReload()

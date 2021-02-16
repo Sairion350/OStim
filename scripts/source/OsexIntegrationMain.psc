@@ -851,6 +851,10 @@ OBarsScript Function GetBarScript()
 	return obars
 EndFunction
 
+OUndressScript function GetUndressScript()
+	return Oundress
+EndFunction
+
 Int Function GetCurrentAnimationSpeed()
 	Return CurrentSpeed
 EndFunction
