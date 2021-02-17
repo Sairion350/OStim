@@ -1,6 +1,35 @@
 ScriptName OsexIntegrationMain Extends Quest
 
 
+;		What is this? Am I in the right place? How do I use this???
+
+; This script is the core of OStim. If you want to start OStim scenes and/or manipulate them, you are in the right place
+
+;	Structure of this script
+; At the very top here, are the Properties. They are the settings you see in the MCM. You can toggle these at will on this script and it
+; will update the MCM and everything. Below that are the OStim local variables, you can safely ignore those. Below those variables,
+; you will find OStim's main loop and the StartScene() function. OStim's core logic runs in there, I recommend giving it a read. 
+; Below that is the UTILITIES area. These functions are going to be very useful to you and will let you access data in OStim as 
+; well as manipulate the currently running scene. Below the utilities area are some more specific groups of functions.
+
+; Some parts of code, including undressing, on-screen bar, and animation data lookups, are in other scripts to make this script easier to 
+; read. You can call functions in the below utilities area to return those script objects.
+
+; Want a list of all Events you can register with? CTRL + F this script for "SendModEvent" and you can see them all as well as the exact point they fire
+; With the exception of the sound event, OStim events do not include data with them. They only let you know when something has happened. You can access
+; OStim and get all of the data you need through the normal API here
+
+
+
+;			 ██████╗ ███████╗████████╗██╗███╗   ███╗
+;			██╔═══██╗██╔════╝╚══██╔══╝██║████╗ ████║
+;			██║   ██║███████╗   ██║   ██║██╔████╔██║
+;			██║   ██║╚════██║   ██║   ██║██║╚██╔╝██║
+;			╚██████╔╝███████║   ██║   ██║██║ ╚═╝ ██║
+;			 ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝     ╚═╝
+                                        
+
+
 ; -------------------------------------------------------------------------------------------------
 ; SETTINGS  ---------------------------------------------------------------------------------------
 
@@ -33,7 +62,7 @@ Bool Property OnlyUndressChest Auto 		;	Removed in 4.0
 Bool Property AlwaysAnimateUndress Auto      ;	Removed in 4.0
 Bool Property TossClothesOntoGround auto  
 Bool Property UseStrongerUnequipMethod auto 
-Bool Property FullyAnimateRedress auto ;mcm todo
+Bool Property FullyAnimateRedress auto 
 
 Bool  SpeedUpNonSexAnimation
 Float SpeedUpSpeed
@@ -207,6 +236,8 @@ Sound OSATickBig
 ;---------
 
 
+Actor ReroutedDomActor
+Actor ReroutedSubActor
 
 ;--------- database
 ODatabaseScript ODatabase
@@ -269,201 +300,13 @@ String[] Speeds
 ; -------------------------------------------------------------------------------------------------
 ; -------------------------------------------------------------------------------------------------
 
-Event OnKeyDown(Int KeyPress)
-	If (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
-		Return
-	EndIf
-
-	If (AnimationRunning())
-		If (IntArrayContainsValue(OSexControlKeys, KeyPress))
-			MostRecentOSexInteractionTime = Utility.GetCurrentRealTime()
-			If (AutoHideBars)
-				If (!obars.IsBarVisible(obars.DomBar))
-					obars.SetBarVisible(obars.DomBar, True)
-				EndIf
-				If (!obars.IsBarVisible(obars.SubBar))
-					obars.SetBarVisible(obars.SubBar, True)
-				EndIf
-				If (!obars.IsBarVisible(obars.ThirdBar))
-					obars.SetBarVisible(obars.ThirdBar, True)
-				EndIf
-			EndIf
-		EndIf
-
-		If (KeyPress == SpeedUpKey)
-			IncreaseAnimationSpeed()
-			PlayTickSmall()
-		ElseIf (KeyPress == SpeedDownKey)
-			DecreaseAnimationSpeed()
-			PlayTickSmall()
-		ElseIf ((KeyPress == PullOutKey) && !AIRunning)
-			If (ODatabase.IsSexAnimation(CurrentOID))
-				If (LastHubOID != -1)
-					TravelToAnimationIfPossible(ODatabase.GetSceneID(LastHubOID))
-				EndIf
-			EndIf
-		EndIf
-	EndIf
-
-	If (KeyPress == ControlToggleKey)
-		If (AnimationRunning())
-			If (AIRunning)
-				AIRunning = False
-				PauseAI = True
-				Debug.Notification("Switched to manual control mode")
-				Console("Switched to manual control mode")
-			Else
-				If (PauseAI)
-					PauseAI = False
-				Else
-					AI.StartAI()
-				EndIf
-				AIRunning = True
-				Debug.Notification("Switched to automatic control mode")
-				Console("Switched to automatic control mode")
-			EndIf
-		Else
-			If (UseAIControl)
-				UseAIControl = False
-				Debug.Notification("Switched to manual control mode")
-				Console("Switched to manual control mode")
-			Else
-				UseAIControl = True
-				Debug.Notification("Switched to automatic control mode")
-				Console("Switched to automatic control mode")
-			EndIf
-		EndIf
-		PlayTickBig()
-	EndIf
-
-	Actor Target = Game.GetCurrentCrosshairRef() as Actor
-	If (KeyPress == KeyMap)
-		If (Target)
-			If (Target.IsInDialogueWithPlayer())
-				Return
-			EndIf
-			If (!Target.IsDead())
-				StartScene(PlayerRef,  Target)
-			EndIf
-		EndIf
-	EndIf
-EndEvent
 
 Event OnInit()
-	Startup()
+	Startup() ; OStim install script
 EndEvent
 
-Function Startup()
-	Debug.Notification("Installing OStim. Please wait...")
-	SceneRunning = False
-	Actra = Game.GetFormFromFile(0x000D63, "OSA.ESM") as MagicEffect
-	OsaFactionStage = Game.GetFormFromFile(0x00182F, "OSA.ESM") as Faction
-	OSAOmni = (Quest.GetQuest("0SA") as _oOmni)
-;	OSAUI = (Quest.GetQuest("0SA") as _oui)
-	PlayerRef = Game.GetPlayer()
-	NutEffect = Game.GetFormFromFile(0x000805, "Ostim.esp") as ImageSpaceModifier
 
-	OSADing = Game.GetFormFromFile(0x000D6D, "Ostim.esp") as Sound
-	OSATickSmall = Game.GetFormFromFile(0x000D6E, "Ostim.esp") as Sound
-	OSATickBig = Game.GetFormFromFile(0x000D6F, "Ostim.esp") as Sound
-
-	If (Game.GetModByName("SexLab.esm") != 255)
-		SexLab = (Game.GetFormFromFile(0x00000D62, "SexLab.esm")) as Quest
-		OrgasmSound = (Game.GetFormFromFile(0x00065A34, "SexLab.esm")) as Sound
-	EndIf
-
-	If (Game.GetModByName("SexlabAroused.esm") != 255)
-		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as Faction
-	EndIf
-
-	
-	Timescale = (Game.GetFormFromFile(0x00003A, "Skyrim.esm")) as GlobalVariable
-	
-
-	AI = ((Self as Quest) as OAiScript)
-	obars = ((Self as Quest) as obarsscript)
-	oundress = ((Self as Quest) as oundressscript)
-	RegisterForModEvent("ostim_actorhit", "OnActorHit")
-	SetSystemVars()
-	SetDefaultSettings()
-	BuildSoundFormlists()
-
-	if (BlockVRInstalls && GetGameIsVR())
-		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
-		return
-	endif
-
-	if (SKSE.GetPluginVersion("JContainers64") == -1)
-		Debug.MessageBox("OStim: JContainers is not installed, please exit and install it immediately")
-		return
-	endif
-
-	ODatabase = (Self as Quest) as ODatabaseScript
-	ODatabase.InitDatabase()
-
-	If (OSAFactionStage)
-		Console("Loaded")
-	Else
-		Debug.MessageBox("OSex and OSA do not appear to be installed, please do not continue using this save file")
-		Return
-	EndIf
-
-	if (ODatabase.GetLengthOArray(ODatabase.GetDatabaseOArray()) < 1)
-		Debug.Notification("OStim install failed")
-		return
-	Else
-		ODatabase.Unload()
-	EndIf
-
-	If (ArousedFaction)
-		Console("Sexlab Aroused loaded")
-	EndIf
-
-	if (SKSE.GetPluginVersion("ConsoleUtilSSE") == -1)
-		Debug.Notification("OStim: ConsoleUtils is not installed, a few features may not work")
-	endif
-
-	If (SexLab)
-		Console("SexLab loaded, using its cum effects")
-	Else
-		Debug.Notification("OStim: Sexlab is not loaded. Some orgasm FX will be missing")
-	EndIf
-
-	If (OSA.StimInstalledProper())
-		Console("OSA is installed correctly")
-	Else
-		Debug.MessageBox("OStim is not loaded after OSA in your mod files, please allow OStim to overwrite OSA's files and restart")
-		Return
-	EndIf
-
-	if (SKSE.GetPluginVersion("ImprovedCamera") == -1)
-		Debug.Notification("OStim: Improved Camera is not installed. First person scenes will not be available")
-		Debug.Notification("OStim: However, freecam will have extra features")
-	EndIf
-
-	If (!_oGlobal.OStimGlobalLoaded())
-		Debug.MessageBox("It appears you have the OSex facial expression fix installed. Please exit and remove that mod, as it is now included in OStim, and having it installed will break some things now!")
-		return
-	EndIf
-	OSAOmni.RebootScript()
-
-	Utility.Wait(1)
-	DisplayTextBanner("OStim installed")
-EndFunction
-
-Actor ReroutedDomActor
-Actor ReroutedSubActor
-Function AcceptReroutingActors(Actor Act1, Actor Act2)
-	ReroutedDomActor = Act1
-	ReroutedSubActor = Act2
-	Console("Recieved rerouted actors")
-EndFunction
-
-Function StartReroutedScene()
-	Console("Rerouting scene")
-	StartScene(ReroutedDomActor,  ReroutedSubActor)
-EndFunction
-
+; Call this function to start a new OStim scene
 Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zUndressSub = False, Bool zAnimateUndress = False, String zStartingAnimation = "", Actor zThirdActor = None, ObjectReference Bed = None, Bool Aggressive = False, Actor AggressingActor = None)
 	If (SceneRunning)
 		Debug.Notification("Osex scene already running")
@@ -517,13 +360,13 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	EndIf
 
 	Console("Requesting scene start")
-	RegisterForSingleUpdate(0.01)
+	RegisterForSingleUpdate(0.01) ; start main loop
 	SceneRunning = True
 
 	Return True
 EndFunction
 
-Event OnUpdate()
+Event OnUpdate() ;OStim main logic loop
 	Console("Starting scene asynchronously")
 
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
@@ -712,8 +555,6 @@ Event OnUpdate()
     			Console("Misallignment detected")
     			SubActor.MoveTo(DomActor)
 
-    			;WarpToAnimation(ODatabase.GetSceneIDByAnimID(CurrentAnimation))
-    			;WarpToAnimation("0MF|Cy6!DOy6|Ho|DoggyLi")
     			Reallign()
 
     			Utility.Wait(0.1)
@@ -788,7 +629,7 @@ Event OnUpdate()
 		Game.ForceFirstPerson()
 	EndIf
 
-	Utility.Wait(0.5) ;delete?
+	;Utility.Wait(0.5) ;delete?
 
 	If (UsingBed)
 		If (GetInBedAfterBedScene && ((DomActor == PlayerRef) || (SubActor == PlayerRef))  && EndedProper && !IsSceneAggressiveThemed())
@@ -835,6 +676,8 @@ EndEvent
 ;
 ; 				The main API functions
 
+; Most of what you want to do in OStim is available here, i advise reading through this entire Utilities section
+
 
 Bool Function IsActorActive(Actor Act)
 	Return Act.HasMagicEffect(Actra)
@@ -868,11 +711,12 @@ Int Function GetCurrentAnimationMaxSpeed()
 EndFunction
 
 Int Function GetAPIVersion()
+	;7 version 4.0, moves a lot of code around and reimplements speed control
 	;6 adds better animation flipping, reallign(), soundAPI
 	;5 adds ODatabase, getCurrentLeadingActor
 	;4 added onanimationchange event and decrease speed
 	;3 introduces events and getmostrecentorgasmedactor
-	Return 6
+	Return 7
 EndFunction
 
 Function IncreaseAnimationSpeed()
@@ -975,7 +819,7 @@ Function TravelToAnimation(String Animation) ; does not always work, use above
 	RunOsexCommand("$Go," + Animation)
 EndFunction
 
-Function WarpToAnimation(String Animation) ; a list of animation ids can be found in osa's xmls. you cannot use the id from getcurrentanimation()
+Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy9|HhPo|MoShoPo
 	Console("Warping to animation: " + Animation)
 	RunOsexCommand("$Warp," + Animation)
 EndFunction
@@ -1005,46 +849,6 @@ Actor Function GetAggressiveActor()
 	Return AggressiveActor
 EndFunction
 
-Function AnimateUndressActor(Actor Char, String Item)
-	; cuirass, boots, weapon, helmet, gloves.
-	; some extra rare options: cape, intlow(i.e. panties), inthigh(i.e. bra), miscarms, misclow, miscmid, miscup, pants, stockings,
-	; options other than cuirass are unreliable right now
-
-	If (Item == "helmet")
-		If !Char.GetWornForm(0x00000002) as Armor
-			Return
-		EndIf
-	ElseIf (Item == "gloves")
-		If (!Char.GetWornForm(0x00000008) as Armor)
-			Return
-		EndIf
-	ElseIf (Item == "weapon")
-		If (!Char.GetEquippedObject(1) as Form)
-			Return
-		EndIf
-	ElseIf (Item == "boots")
-		If (!Char.GetWornForm(0x00000080) as Armor)
-			Return
-		EndIf
-	ElseIf (Item == "cuirass")
-		If (!Char.GetWornForm(0x00000004) as Armor)
-			Return
-		EndIf
-	EndIf
-
-	String Target = "10"
-	If (Char == SubActor)
-		Target = "01"
-	EndIf
-
-	WarpToAnimation("EMF|Sy6!Sy9|ApU|St9Dally+" + Target + Item)
-
-	Utility.Wait(1)
-	While (GetCurrentAnimationClass() == ClassApartUndressing)
-		Utility.Wait(1)
-	Endwhile
-EndFunction
-
 Int Function GetTimesOrgasm(Actor Act) ; number of times the Actor has orgasmed
 	If (Act == DomActor)
 		Return DomTimesOrgasm
@@ -1053,17 +857,6 @@ Int Function GetTimesOrgasm(Actor Act) ; number of times the Actor has orgasmed
 	ElseIf (Act == ThirdActor)
 		return ThirdTimesOrgasm
 	EndIf
-EndFunction
-
-Function WaitForRemoveCuirass(Actor Char) ; remove the cuirass, and don't return until anim is done
-	If (IsNaked(Char))
-		Return
-	EndIf
-	AnimateUndressActor(Char, "cuirass")
-	While (!IsNaked(Char))
-		Utility.Wait(1)
-	Endwhile
-	Utility.wait(4)
 EndFunction
 
 Bool Function IsNaked(Actor NPC) ; todo caching
@@ -1164,7 +957,7 @@ String[] Function GetScene() ; this is not the sceneID, this is an internal osex
 EndFunction
 
 Function Reallign()
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage") ; unknown if this works on bandits
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage") 
 	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AlignStage")
 	If (ThirdActor)
 		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_AlignStage")
@@ -2519,6 +2312,18 @@ Function LoadOSexControlKeys()
 	RegisterOSexControlKey(209)
 EndFunction
 
+
+Function AcceptReroutingActors(Actor Act1, Actor Act2) ;compatibility thing, never call this one directly
+	ReroutedDomActor = Act1
+	ReroutedSubActor = Act2
+	Console("Recieved rerouted actors")
+EndFunction
+
+Function StartReroutedScene()
+	Console("Rerouting scene")
+	StartScene(ReroutedDomActor,  ReroutedSubActor)
+EndFunction
+
 Function DisplayTextBanner(String Txt)
 	UI.InvokeString("HUD Menu", "_root.HUDMovieBaseInstance.QuestUpdateBaseInstance.ShowNotification", Txt)
 EndFunction
@@ -2563,16 +2368,195 @@ Function RemapPullOutKey(Int zKey)
 	LoadOSexControlKeys()
 EndFunction
 
-Float ProfileTime
-Function Profile(String Name = "")
-	If (Name == "")
-		ProfileTime = Game.GetRealHoursPassed() * 60 * 60
-	Else
-		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
+;Float ProfileTime
+;Function Profile(String Name = "");
+;	If (Name == "")
+;		ProfileTime = Game.GetRealHoursPassed() * 60 * 60
+;	Else
+;		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
+;	EndIf
+;EndFunction
+
+Event OnKeyDown(Int KeyPress)
+	If (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
+		Return
 	EndIf
+
+	If (AnimationRunning())
+		If (IntArrayContainsValue(OSexControlKeys, KeyPress))
+			MostRecentOSexInteractionTime = Utility.GetCurrentRealTime()
+			If (AutoHideBars)
+				If (!obars.IsBarVisible(obars.DomBar))
+					obars.SetBarVisible(obars.DomBar, True)
+				EndIf
+				If (!obars.IsBarVisible(obars.SubBar))
+					obars.SetBarVisible(obars.SubBar, True)
+				EndIf
+				If (!obars.IsBarVisible(obars.ThirdBar))
+					obars.SetBarVisible(obars.ThirdBar, True)
+				EndIf
+			EndIf
+		EndIf
+
+		If (KeyPress == SpeedUpKey)
+			IncreaseAnimationSpeed()
+			PlayTickSmall()
+		ElseIf (KeyPress == SpeedDownKey)
+			DecreaseAnimationSpeed()
+			PlayTickSmall()
+		ElseIf ((KeyPress == PullOutKey) && !AIRunning)
+			If (ODatabase.IsSexAnimation(CurrentOID))
+				If (LastHubOID != -1)
+					TravelToAnimationIfPossible(ODatabase.GetSceneID(LastHubOID))
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+
+	If (KeyPress == ControlToggleKey)
+		If (AnimationRunning())
+			If (AIRunning)
+				AIRunning = False
+				PauseAI = True
+				Debug.Notification("Switched to manual control mode")
+				Console("Switched to manual control mode")
+			Else
+				If (PauseAI)
+					PauseAI = False
+				Else
+					AI.StartAI()
+				EndIf
+				AIRunning = True
+				Debug.Notification("Switched to automatic control mode")
+				Console("Switched to automatic control mode")
+			EndIf
+		Else
+			If (UseAIControl)
+				UseAIControl = False
+				Debug.Notification("Switched to manual control mode")
+				Console("Switched to manual control mode")
+			Else
+				UseAIControl = True
+				Debug.Notification("Switched to automatic control mode")
+				Console("Switched to automatic control mode")
+			EndIf
+		EndIf
+		PlayTickBig()
+	EndIf
+
+	Actor Target = Game.GetCurrentCrosshairRef() as Actor
+	If (KeyPress == KeyMap)
+		If (Target)
+			If (Target.IsInDialogueWithPlayer())
+				Return
+			EndIf
+			If (!Target.IsDead())
+				StartScene(PlayerRef,  Target)
+			EndIf
+		EndIf
+	EndIf
+EndEvent
+
+
+Function Startup()
+	Debug.Notification("Installing OStim. Please wait...")
+	SceneRunning = False
+	Actra = Game.GetFormFromFile(0x000D63, "OSA.ESM") as MagicEffect
+	OsaFactionStage = Game.GetFormFromFile(0x00182F, "OSA.ESM") as Faction
+	OSAOmni = (Quest.GetQuest("0SA") as _oOmni)
+;	OSAUI = (Quest.GetQuest("0SA") as _oui)
+	PlayerRef = Game.GetPlayer()
+	NutEffect = Game.GetFormFromFile(0x000805, "Ostim.esp") as ImageSpaceModifier
+
+	OSADing = Game.GetFormFromFile(0x000D6D, "Ostim.esp") as Sound
+	OSATickSmall = Game.GetFormFromFile(0x000D6E, "Ostim.esp") as Sound
+	OSATickBig = Game.GetFormFromFile(0x000D6F, "Ostim.esp") as Sound
+
+	If (Game.GetModByName("SexLab.esm") != 255)
+		SexLab = (Game.GetFormFromFile(0x00000D62, "SexLab.esm")) as Quest
+		OrgasmSound = (Game.GetFormFromFile(0x00065A34, "SexLab.esm")) as Sound
+	EndIf
+
+	If (Game.GetModByName("SexlabAroused.esm") != 255)
+		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as Faction
+	EndIf
+
+	
+	Timescale = (Game.GetFormFromFile(0x00003A, "Skyrim.esm")) as GlobalVariable
+	
+
+	AI = ((Self as Quest) as OAiScript)
+	obars = ((Self as Quest) as obarsscript)
+	oundress = ((Self as Quest) as oundressscript)
+	RegisterForModEvent("ostim_actorhit", "OnActorHit")
+	SetSystemVars()
+	SetDefaultSettings()
+	BuildSoundFormlists()
+
+	if (BlockVRInstalls && GetGameIsVR())
+		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
+		return
+	endif
+
+	if (SKSE.GetPluginVersion("JContainers64") == -1)
+		Debug.MessageBox("OStim: JContainers is not installed, please exit and install it immediately")
+		return
+	endif
+
+	ODatabase = (Self as Quest) as ODatabaseScript
+	ODatabase.InitDatabase()
+
+	If (OSAFactionStage)
+		Console("Loaded")
+	Else
+		Debug.MessageBox("OSex and OSA do not appear to be installed, please do not continue using this save file")
+		Return
+	EndIf
+
+	if (ODatabase.GetLengthOArray(ODatabase.GetDatabaseOArray()) < 1)
+		Debug.Notification("OStim install failed")
+		return
+	Else
+		ODatabase.Unload()
+	EndIf
+
+	If (ArousedFaction)
+		Console("Sexlab Aroused loaded")
+	EndIf
+
+	if (SKSE.GetPluginVersion("ConsoleUtilSSE") == -1)
+		Debug.Notification("OStim: ConsoleUtils is not installed, a few features may not work")
+	endif
+
+	If (SexLab)
+		Console("SexLab loaded, using its cum effects")
+	Else
+		Debug.Notification("OStim: Sexlab is not loaded. Some orgasm FX will be missing")
+	EndIf
+
+	If (OSA.StimInstalledProper())
+		Console("OSA is installed correctly")
+	Else
+		Debug.MessageBox("OStim is not loaded after OSA in your mod files, please allow OStim to overwrite OSA's files and restart")
+		Return
+	EndIf
+
+	if (SKSE.GetPluginVersion("ImprovedCamera") == -1)
+		Debug.Notification("OStim: Improved Camera is not installed. First person scenes will not be available")
+		Debug.Notification("OStim: However, freecam will have extra features")
+	EndIf
+
+	If (!_oGlobal.OStimGlobalLoaded())
+		Debug.MessageBox("It appears you have the OSex facial expression fix installed. Please exit and remove that mod, as it is now included in OStim, and having it installed will break some things now!")
+		return
+	EndIf
+	OSAOmni.RebootScript()
+
+	Utility.Wait(1)
+	DisplayTextBanner("OStim installed")
 EndFunction
 
-; TODO - support for ABOMB animation
+
 
 Bool Property UseBrokenCosaveWorkaround Auto
 Function OnLoadGame()

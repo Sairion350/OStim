@@ -672,6 +672,10 @@ Function OnSlotSelect(int option)
 
 	 osexintegrationmain.console(slot)
 
+	 if (slot < 0) || slot > 100
+	 	debug.messagebox("Slot error. report to dev please")
+	 endif
+
 	 if Main.IntArrayContainsValue(main.StrippingSlots, slot)
 	 	; remove this from the array
 	 	main.StrippingSlots = PapyrusUtil.RemoveInt(main.StrippingSlots, slot)
