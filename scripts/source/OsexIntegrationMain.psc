@@ -598,6 +598,10 @@ Event OnUpdate() ;OStim main logic loop
 			DomTimesOrgasm += 1
 			Orgasm(DomActor)
 			If (EndOnDomOrgasm)
+				if ODatabase.HasIdleSpeed(CurrentOID)
+					SetCurrentAnimationSpeed(0)
+					utility.Wait(1)
+				endif
 				Utility.Wait(4)
 				EndAnimation()
 			EndIf
@@ -2550,7 +2554,7 @@ Function Startup()
 	If (SexLab)
 		Console("SexLab loaded, using its cum effects")
 	Else
-		Debug.Notification("OStim: Sexlab is not loaded. Some orgasm FX will be missing")
+		Console("Sexlab is not loaded.")
 	EndIf
 
 	If (OSA.StimInstalledProper())
