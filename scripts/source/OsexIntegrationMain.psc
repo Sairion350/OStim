@@ -928,7 +928,15 @@ ObjectReference Function GetBed()
 EndFunction
 
 Bool Function IsFemale(Actor Act)
-	Return (Act.GetLeveledActorBase().GetSex() == 1)
+	If SoSInstalled
+		if act.IsInFaction(SoSFaction)
+			return false
+		else 
+			return true
+		endif
+	else 
+		Return (Act.GetLeveledActorBase().GetSex() == 1)
+	endif
 EndFunction
 
 Bool Function AppearsFemale(Actor Act)
@@ -2457,6 +2465,8 @@ Event OnKeyDown(Int KeyPress)
 	EndIf
 EndEvent
 
+bool SoSInstalled
+faction SoSFaction
 
 Function Startup()
 	Debug.Notification("Installing OStim. Please wait...")
@@ -2527,6 +2537,14 @@ Function Startup()
 	if (SKSE.GetPluginVersion("ConsoleUtilSSE") == -1)
 		Debug.Notification("OStim: ConsoleUtils is not installed, a few features may not work")
 	endif
+
+	if (Game.GetModByName("Schlongs of Skyrim.esp") != 255)
+		Console("Schlongs of Skyrim loaded")
+		SoSInstalled = true
+		SoSFaction = (Game.GetFormFromFile(0x0000AFF8, "Schlongs of Skyrim.esp")) as faction
+	else 
+		SoSInstalled = false
+	EndIf
 
 	If (SexLab)
 		Console("SexLab loaded, using its cum effects")
