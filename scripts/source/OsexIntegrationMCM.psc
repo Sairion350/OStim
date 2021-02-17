@@ -23,6 +23,7 @@ Int SetSubBar
 Int SetDomBar
 Int SetThirdBar
 Int SetAutoHideBar
+Int SetMatchColorToGender
 
 ; orgasm settings
 Int SetSlowMoOrgasms
@@ -172,6 +173,7 @@ Event OnPageReset(String Page)
 		SetSubBar = AddToggleOption("Second actor HUD bar", Main.EnableSubBar)
 		SetThirdBar = AddToggleOption("Third actor HUD bar", Main.EnableThirdBar)
 		SetAutoHideBar = AddToggleOption("Autohide bars", Main.AutoHideBars)
+		SetAutoHideBar = AddToggleOption("Match color to gender", Main.MatchBarColorToGender)
 		AddEmptyOption()
 
 		AddColoredHeader("System")
@@ -298,6 +300,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetUseAutoFades)
 		Main.UseAutoFades = !Main.UseAutoFades
 		SetToggleOptionValue(Option, Main.UseAutoFades)
+	ElseIf (Option == SetMatchColorToGender)
+		Main.MatchBarColorToGender = !Main.MatchBarColorToGender
+		SetToggleOptionValue(Option, Main.MatchBarColorToGender)
 	ElseIf (Option == SetMute)
 		Main.MuteOSA = !Main.MuteOSA
 		SetToggleOptionValue(Option, Main.MuteOSA)
@@ -392,6 +397,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("The field of view of the camera when in freecam mode\nThis is incompatible with Improved Camera")
 	ElseIf (Option == SetUseRumble)
 		SetInfoText("Rumble a controller on thrust, if a controller is being used")
+	ElseIf (Option == SetMatchColorToGender)
+		SetInfoText("Change the color of the bars to match the gender of the character")
 	ElseIf (Option == SetStrongerUnequip)
 		SetInfoText("Use an alternate unequip method that may catch more armor pieces, especially armor with auto-reequip scripts\nHowever, some armor it unequips may not be reequiped in redress\nHas no effect if drop clothes on to ground is enabled")
 	ElseIf (Option == SetEndAfterActorHit)

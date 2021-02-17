@@ -86,6 +86,21 @@ Function SetBarVisible(Osexbar Bar, Bool Visible)
 	EndIf
 EndFunction
 
+Function ColorBar(OSexbar bar, bool female = true, int colorz = -1)
+	int color
+	if !female 
+		color = blue
+	else 
+		color = pink 
+	endif
+
+	if colorz > 0
+		color = colorz
+	endif
+
+	Bar.SetColors(gray, color, white)
+Endfunction
+
 Bool Function IsBarVisible(Osexbar Bar)
 	Return (!Bar.FadedOut)
 EndFunction
@@ -107,6 +122,18 @@ Function FlashBar(Osexbar Bar)
 EndFunction
 
 Event OstimStart(string eventName, string strArg, float numArg, Form sender)
+	
+	if ostim.MatchBarColorToGender
+		ColorBar(dombar, ostim.AppearsFemale(ostim.GetDomActor()))
+		ColorBar(subbar, ostim.AppearsFemale(ostim.GetSubActor()))
+		ColorBar(ThirdBar, ostim.AppearsFemale(ostim.GetThirdActor()))
+
+	else
+		ColorBar(dombar, colorz = blue)
+		ColorBar(subbar, colorz = pink)
+		ColorBar(thirdbar, colorz = yellow)
+	endif 
+
 	If (ostim.EnableDomBar)
     	SetBarPercent(DomBar, 0.0)
     	SetBarVisible(DomBar, True)
@@ -155,13 +182,19 @@ Event OstimOrgasm(string eventName, string strArg, float numArg, Form sender)
 	actor act = ostim.getmostrecentorgasmedactor()
 
 	If (Act == ostim.GetDomActor())
+		SetBarPercent(DomBar, 100)
 		FlashBar(dombar)
+		Utility.Wait(2)
 		SetBarPercent(DomBar, 0)
 	ElseIf (Act == ostim.GetSubActor())
+		SetBarPercent(DomBar, 100)
 		FlashBar(subbar)
+		Utility.Wait(2)
 		SetBarPercent(SubBar, 0)
 	ElseIf (Act == ostim.GetThirdActor())
+		SetBarPercent(DomBar, 100)
 		FlashBar(ThirdBar)
+		Utility.Wait(2)
 		SetBarPercent(ThirdBar, 0)
 	EndIf
 endevent

@@ -40,6 +40,7 @@ Bool Property EnableDomBar Auto
 Bool Property EnableSubBar Auto
 Bool property EnableThirdBar Auto
 Bool Property AutoHideBars Auto
+Bool Property MatchBarColorToGender auto
 Bool Property EnableImprovedCamSupport Auto
 
 Bool Property EnableActorSpeedControl Auto
@@ -2214,7 +2215,6 @@ Function SetDefaultSettings()
 	CustomTimescale = 0
 	AlwaysUndressAtAnimStart = true
 	FullyAnimateRedress = true
-	AlwaysAnimateUndress = False ;remove
 	TossClothesOntoGround = true
 	UseStrongerUnequipMethod = false
 
@@ -2238,6 +2238,7 @@ Function SetDefaultSettings()
 	UseAIControl = False
 	PauseAI = False
 	AutoHideBars = False
+	MatchBarColorToGender = false
 
 	AiSwitchChance = 6
 
