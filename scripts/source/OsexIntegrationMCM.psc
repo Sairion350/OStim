@@ -3,7 +3,6 @@ ScriptName OsexIntegrationMCM Extends SKI_ConfigBase
 ; sex settings
 Int SetEndOnOrgasm
 Int SetActorSpeedControl
-Int SetUndressIfNeed
 Int SetsexExcitementMult
 Int SetClipinglessFirstPerson
 Int SetEndAfterActorHit
@@ -11,6 +10,7 @@ Int SetUseRumble
 Int SetUseScreenShake
 
 ; clothes settings
+Int SetUndressIfNeed
 Int SetAlwaysAnimateUndress
 Int SetAlwaysUndressAtStart
 Int SetonlyUndressChest
@@ -26,6 +26,7 @@ Int SetAutoHideBar
 Int SetMatchColorToGender
 
 ; orgasm settings
+; are these still used??
 Int SetSlowMoOrgasms
 Int SetOrgasmBoostsRel
 
@@ -39,6 +40,7 @@ Int SetOnlyLightInDark
 Int SetResetState
 Int SetRebuildDatabase
 
+; keymapping settings
 Int SetKeymap
 Int SetKeyUp
 Int SetKeyDown
@@ -46,17 +48,20 @@ Int SetPullOut
 
 Int SetThanks
 
+; light settings
 String[] DomLightModeList
 String[] SubLightModeList
 
 String[] SubLightBrightList
 String[] DomLightBrightList
 
+; bed settings
 Int SetEnableBeds
 Int SetBedSearchDistance
 Int SetBedReallignment
 int SetBedAlgo
 
+; ai control settings
 Int SetAIControl
 Int SetControlToggle
 Int SetAIChangeChance
@@ -65,6 +70,7 @@ Int SetForceAIIfAttacking
 Int SetForceAIIfAttacked
 Int SetForceAIInConsensualScenes
 
+; misc settings afaik
 Int SetCustomTimescale
 
 Int SetMisallignmentOption
@@ -75,6 +81,7 @@ Int SetUseAutoFades
 
 Int SetMute
 
+; camera settings
 Int SetUseFreeCam
 Int SetFreeCamFOV
 Int SetDefaultFOV
@@ -82,6 +89,10 @@ Int SetCameraSpeed
 Int SetForceFirstPerson
 
 Int SetUseCosaveWorkaround
+
+; mcm save/load settings
+Int ExportSettings
+Int ImportSettings
 
 OsexIntegrationMain Main
 
@@ -173,7 +184,7 @@ Event OnPageReset(String Page)
 		SetSubBar = AddToggleOption("Second actor HUD bar", Main.EnableSubBar)
 		SetThirdBar = AddToggleOption("Third actor HUD bar", Main.EnableThirdBar)
 		SetAutoHideBar = AddToggleOption("Autohide bars", Main.AutoHideBars)
-		SetAutoHideBar = AddToggleOption("Match color to gender", Main.MatchBarColorToGender)
+		SetMatchColorToGender = AddToggleOption("Match color to gender", Main.MatchBarColorToGender)
 		AddEmptyOption()
 
 		AddColoredHeader("System")
@@ -227,6 +238,10 @@ Event OnPageReset(String Page)
 		SetSubLightBrightness = AddMenuOption("Second actor light brightness", SubLightBrightList[Main.SubLightBrightness])
 		SetOnlyLightInDark = AddToggleOption("Only use lights in darkness", Main.LowLightLevelLightsOnly)
 		AddEmptyOption()
+
+		AddColoredHeader("Save and load settings.")
+		ExportSettings = AddTextOption("Export Settings", "Done")
+		ImportSettings = AddTextOption("Import Settings", "Done")
 	ElseIf (Page == "")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayDing()
@@ -369,6 +384,12 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetOnlyLightInDark)
 		Main.LowLightLevelLightsOnly = !Main.LowLightLevelLightsOnly
 		SetToggleOptionValue(Option, Main.LowLightLevelLightsOnly)
+	ElseIf (Option == ExportSettings)
+		ExportSettings()
+		; will probably need to do a popup or something here to cover the delay.
+	ElseIf (Option == ImportSettings)
+		ImportSettings()
+		; will probably need to do a popup or something here to cover the delay.
 	EndIf
 EndEvent
 
@@ -489,6 +510,10 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Only usable in manual mode\nWhen pressed during a sexual animation, causes your character to immediately cancel and \"pull out\" of the current animation")
 	ElseIf (Option == SetThanks)
 		SetInfoText("Thank you for downloading OStim\nLeave a comment and also share it with others online if you enjoy it, to help others find it")
+	ElseIf (Option == ExportSettings)
+		SetInfoText("Click this button to export the Ostim MCM settings.")
+	ElseIf (Option == ImportSettings)
+		SetInfoText("Click this button to import the Ostim MCM settings.")
 	EndIf
 EndEvent
 
@@ -618,8 +643,6 @@ Event OnOptionKeyMapChange(Int Option, Int KeyCode, String ConflictControl, Stri
 	EndIf
 EndEvent
 
-
-
 function DrawSlotPage()
 	SlotSets = new int[128]
 
@@ -656,7 +679,6 @@ function DrawSlotPage()
 	names[59] = "<font color='#31755c'> Extra arm piece"
 	names[60] = "<font color='#31755c'> Misc"
 
-
 	int i = 30
 	int max = 62
 
@@ -673,7 +695,6 @@ function DrawSlotPage()
 endfunction
 
 Function OnSlotSelect(int option)
-	 
 
 	 int slot = option - 486
 
@@ -726,4 +747,178 @@ Function AddColoredHeader(String In)
 	EndIf
 
 	AddHeaderOption("<font color='" + Color +"'>" + In)
+EndFunction
+
+Function ExportSettings()
+	; Export to file.
+	int OstimSettingsFile = JMap.object()
+	
+	Debug.MessageBox("Exporting to file, wait a second or two before clicking OK.")
+	
+	; Sex settings export.
+	JMap.SetInt(OstimSettingsFile, "SetEndOnOrgasm", Main.EndOnDomOrgasm as Int)
+	JMap.SetInt(OstimSettingsFile, "SetActorSpeedControl", Main.EnableActorSpeedControl as Int)
+	JMap.SetFlt(OstimSettingsFile, "SetsexExcitementMult", Main.SexExcitementMult as Float)
+	JMap.SetInt(OstimSettingsFile, "SetClipinglessFirstPerson", Main.EnableImprovedCamSupport as Int)
+	JMap.SetInt(OstimSettingsFile, "SetEndAfterActorHit", Main.EndAfterActorHit as Int)
+	JMap.SetInt(OstimSettingsFile, "SetUseRumble", Main.UseRumble as Int)
+	JMap.SetInt(OstimSettingsFile, "SetUseScreenShake", Main.UseScreenShake as Int)
+	
+	; Clothes settings export.
+	JMap.SetInt(OstimSettingsFile, "SetUndressIfNeed", Main.AutoUndressIfNeeded as Int)
+	JMap.SetInt(OstimSettingsFile, "SetAlwaysUndressAtStart", Main.AlwaysUndressAtAnimStart as Int)
+	JMap.SetInt(OstimSettingsFile, "SetDropClothes", Main.TossClothesOntoGround as Int)
+	JMap.SetInt(OstimSettingsFile, "SetAnimateRedress", Main.FullyAnimateRedress as Int)
+	JMap.SetInt(OstimSettingsFile, "SetStrongerUnequip", Main.UseStrongerUnequipMethod as Int)
+
+	; JMap.SetInt(OstimSettingsFile, "SetAlwaysAnimateUndress", Main.AlwaysAnimateUndress as Int) These have been removed in 4.0
+	; JMap.SetInt(OstimSettingsFile, "SetonlyUndressChest", Main.OnlyUndressChest as Int) These have been removed in 4.0
+
+	; Bar settings export.
+	JMap.SetInt(OstimSettingsFile, "SetSubBar", Main.EnableSubBar as Int)
+	JMap.SetInt(OstimSettingsFile, "SetDomBar", Main.EnableDomBar as Int)
+	JMap.SetInt(OstimSettingsFile, "SetThirdBar", Main.EnableThirdBar as Int)
+	JMap.SetInt(OstimSettingsFile, "SetAutoHideBar", Main.AutoHideBars as Int)
+	JMap.SetInt(OstimSettingsFile, "SetMatchColorToGender", Main.MatchBarColorToGender as Int)
+
+	; Orgasm settings export.
+	; These might have been removed from the mcm.
+	;JMap.SetInt(OstimSettingsFile, "SetSlowMoOrgasms", Main.SlowMoOrgasms as Int)
+	;JMap.SetInt(OstimSettingsFile, "SetOrgasmBoostsRel", Main.OrgasmBoostsRel as Int)
+
+	; Light settings export.
+	Jmap.SetInt(OstimSettingsFile, "SetDomLightMode", Main.DomLightPos as Int)
+	Jmap.SetInt(OstimSettingsFile, "SetSubLightMode", Main.SubLightPos as Int)
+	Jmap.SetInt(OstimSettingsFile, "SetSubLightBrightness", Main.SubLightBrightness as Int)
+	Jmap.SetInt(OstimSettingsFile, "SetDomLightBrightness", Main.DomLightBrightness as Int)
+	Jmap.SetInt(OstimSettingsFile, "SetOnlyLightInDark", Main.LowLightLevelLightsOnly as Int)
+	
+	; Keys settings export.
+	JMap.SetInt(OstimSettingsFile, "SetKeymap", Main.KeyMap as Int)
+	JMap.SetInt(OstimSettingsFile, "SetKeyUp", Main.SpeedUpKey as Int)
+	JMap.SetInt(OstimSettingsFile, "SetKeyDown", Main.SpeedDownKey as Int)
+	JMap.SetInt(OstimSettingsFile, "SetPullOut", Main.PullOutKey as Int)
+	JMap.SetInt(OstimSettingsFile, "SetControlToggle", Main.ControlToggleKey as Int)
+
+	; Bed settings export.
+	JMap.SetInt(OstimSettingsFile, "SetEnableBeds", Main.UseBed as Int)
+	JMap.SetInt(OstimSettingsFile, "SetBedSearchDistance", Main.BedSearchDistance as Int)
+	JMap.SetInt(OstimSettingsFile, "SetBedReallignment", Main.BedReallignment as Int)
+	JMap.SetInt(OstimSettingsFile, "SetBedAlgo", Main.UseAlternateBedSearch as Int)
+
+	; Ai/Control settings export.
+	JMap.SetInt(OstimSettingsFile, "SetAIControl", Main.UseAIControl as Int)
+	JMap.SetInt(OstimSettingsFile, "SetForceAIIfAttacking", Main.UseAIPlayerAggressor as Int)
+	JMap.SetInt(OstimSettingsFile, "SetForceAIIfAttacked", Main.UseAIPlayerAggressed as Int)
+	JMap.SetInt(OstimSettingsFile, "SetForceAIInConsensualScenes", Main.UseAINonAggressive as Int)
+	JMap.SetInt(OstimSettingsFile, "SetAIChangeChance", Main.AiSwitchChance as Int)
+
+	; Camera settings export.
+	JMap.SetInt(OstimSettingsFile, "SetUseFreeCam", Main.UseFreeCam as Int)
+	JMap.SetInt(OstimSettingsFile, "SetFreeCamFOV", Main.FreecamFOV as Int)
+	JMap.SetInt(OstimSettingsFile, "SetDefaultFOV", Main.DefaultFOV as Int)
+	JMap.SetInt(OstimSettingsFile, "SetCameraSpeed", Main.FreecamSpeed as Int)
+	JMap.SetInt(OstimSettingsFile, "SetForceFirstPerson", Main.ForceFirstPersonAfter as Int)
+
+	; Misc settings export.
+	JMap.SetInt(OstimSettingsFile, "SetCustomTimescale", Main.CustomTimescale as Int)
+
+	JMap.SetInt(OstimSettingsFile, "SetMisallignmentOption", Main.MisallignmentProtection as Int)
+	JMap.SetInt(OstimSettingsFile, "SetFlipFix", Main.FixFlippedAnimations as Int)
+
+	JMap.SetInt(OstimSettingsFile, "SetUseFades", Main.UseFades as Int)
+	JMap.SetInt(OstimSettingsFile, "SetUseAutoFades", Main.UseAutoFades as Int)
+	JMap.SetInt(OstimSettingsFile, "SetMute", Main.MuteOSA as Int)
+	
+	; Save to file.
+	Jvalue.WriteToFile(OstimSettingsFile, JContainers.UserDirectory() + "OstimMCMSettings.json")
+	
+	; Force page reset to show updated changes.
+	ForcePageReset()
+EndFunction
+
+Function ImportSettings()
+	; Import from file.
+	int OstimSettingsFile = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
+	
+	Debug.MessageBox("Importing from file, wait a second or two before clicking OK.")
+	
+	; Sex settings import.
+	Main.EndOnDomOrgasm = Jmap.GetInt(OstimSettingsFile, "SetEndOnOrgasm")
+	Main.EnableActorSpeedControl = JMap.GetInt(OstimSettingsFile, "SetActorSpeedControl")
+	Main.SexExcitementMult = JMap.GetFlt(OstimSettingsFile, "SetsexExcitementMult")
+	Main.EnableImprovedCamSupport = JMap.GetInt(OstimSettingsFile, "SetClipinglessFirstPerson")
+	Main.EndAfterActorHit = JMap.GetInt(OstimSettingsFile, "SetEndAfterActorHit")
+	Main.UseRumble = JMap.GetInt(OstimSettingsFile, "SetUseRumble")
+	Main.UseScreenShake = JMap.GetInt(OstimSettingsFile, "SetUseScreenShake")
+	
+	; Clothes settings import.
+	Main.AutoUndressIfNeeded = JMap.GetInt(OstimSettingsFile, "SetUndressIfNeed")
+	Main.AlwaysAnimateUndress = JMap.GetInt(OstimSettingsFile, "SetAlwaysAnimateUndress")
+	Main.TossClothesOntoGround = JMap.GetInt(OstimSettingsFile, "SetDropClothes")
+	Main.FullyAnimateRedress = JMap.GetInt(OstimSettingsFile, "SetAnimateRedress")
+	Main.UseStrongerUnequipMethod = JMap.GetInt(OstimSettingsFile, "SetStrongerUnequip")
+	
+	; Main.AlwaysUndressAtAnimStart = JMap.GetInt(OstimSettingsFile, "SetAlwaysUndressAtStart") These have been removed in 4.0
+	; Main.OnlyUndressChest = JMap.GetInt(OstimSettingsFile, "SetonlyUndressChest") These have been removed in 4.0
+	
+	; Bar settings import.
+	Main.EnableSubBar = JMap.GetInt(OstimSettingsFile, "SetSubBar")
+	Main.EnableDomBar = JMap.GetInt(OstimSettingsFile, "SetDomBar")
+	Main.EnableThirdBar = JMap.GetInt(OstimSettingsFile, "SetThirdBar")
+	Main.AutoHideBars = JMap.GetInt(OstimSettingsFile, "SetAutoHideBar")
+	Main.MatchBarColorToGender = JMap.GetInt(OstimSettingsFile, "SetMatchColorToGender")
+
+	; Light settings export.
+	Main.DomLightPos = Jmap.GetInt(OstimSettingsFile, "SetDomLightMode")
+	Main.SubLightPos = Jmap.GetInt(OstimSettingsFile, "SetSubLightMode")
+	Main.SubLightBrightness = Jmap.GetInt(OstimSettingsFile, "SetSubLightBrightness")
+	Main.DomLightBrightness = Jmap.GetInt(OstimSettingsFile, "SetDomLightBrightness")
+	Main.LowLightLevelLightsOnly = Jmap.GetInt(OstimSettingsFile, "SetOnlyLightInDark")
+	
+	; Keys settings import.
+	Main.KeyMap = JMap.GetInt(OstimSettingsFile, "SetKeymap")
+	Main.RemapStartKey(Main.KeyMap)
+	Main.SpeedUpKey = JMap.GetInt(OstimSettingsFile, "SetKeyUp")
+	Main.RemapSpeedUpKey(Main.SpeedUpKey)
+	Main.SpeedDownKey = JMap.GetInt(OstimSettingsFile, "SetKeyDown")
+	Main.RemapSpeedDownKey(Main.SpeedDownKey)
+	Main.PullOutKey = JMap.GetInt(OstimSettingsFile, "SetPullOut")
+	Main.RemapPullOutKey(Main.PullOutKey)
+	Main.ControlToggleKey = JMap.GetInt(OstimSettingsFile, "SetControlToggle")
+	Main.RemapControlToggleKey(Main.ControlToggleKey)
+	
+	; Bed settings export.
+	Main.UseBed = JMap.GetInt(OstimSettingsFile, "SetEnableBeds")
+	Main.BedSearchDistance = JMap.GetInt(OstimSettingsFile, "SetBedSearchDistance")
+	Main.BedReallignment = JMap.GetInt(OstimSettingsFile, "SetBedReallignment")
+	Main.UseAlternateBedSearch = JMap.GetInt(OstimSettingsFile, "SetBedAlgo")
+	Main.AiSwitchChance = JMap.GetInt(OstimSettingsFile, "SetAIChangeChance")
+	
+	; Ai/Control settings export.
+	Main.UseAIControl = JMap.GetInt(OstimSettingsFile, "SetAIControl")
+	Main.UseAIPlayerAggressor = JMap.GetInt(OstimSettingsFile, "SetForceAIIfAttacking")
+	Main.UseAIPlayerAggressed = JMap.GetInt(OstimSettingsFile, "SetForceAIIfAttacked")
+	Main.UseAINonAggressive = JMap.GetInt(OstimSettingsFile, "SetForceAIInConsensualScenes")
+	
+	; Camera settings export.
+	Main.UseFreeCam = JMap.GetInt(OstimSettingsFile, "SetUseFreeCam")
+	Main.FreecamFOV = JMap.GetInt(OstimSettingsFile, "SetFreeCamFOV")
+	Main.DefaultFOV = JMap.GetInt(OstimSettingsFile, "SetDefaultFOV")
+	Main.FreecamSpeed = JMap.GetInt(OstimSettingsFile, "SetCameraSpeed")
+	Main.ForceFirstPersonAfter = JMap.GetInt(OstimSettingsFile, "SetForceFirstPerson")
+
+	; Misc settings export.
+	Main.CustomTimescale = JMap.GetInt(OstimSettingsFile, "SetCustomTimescale")
+	
+	Main.MisallignmentProtection = JMap.GetInt(OstimSettingsFile, "SetMisallignmentOption")
+	Main.FixFlippedAnimations = JMap.GetInt(OstimSettingsFile, "SetFlipFix")
+	
+	Main.UseFades = JMap.GetInt(OstimSettingsFile, "SetUseFades")
+	Main.UseAutoFades = JMap.GetInt(OstimSettingsFile, "SetUseAutoFades")
+	
+	Main.MuteOSA = JMap.GetInt(OstimSettingsFile, "SetMute")
+	
+	; Force page reset to show updated changes.
+	ForcePageReset()
 EndFunction
