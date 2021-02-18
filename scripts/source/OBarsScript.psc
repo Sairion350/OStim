@@ -228,7 +228,6 @@ Event OnOSASound(string eventName, string args, float nothing, Form sender)
 		endif
 		float currTime = Game.GetRealHoursPassed() * 60 * 60
 		float timediff = currTime - lastSmackTime ; time since last smack sound
-		osexintegrationmain.console(timediff + " seconds")
 
 		if (timediff > 2.5) ; it's been a long time since we got a smacking sound 
 			SetBarFullnessProper() ; set bar to the correct value
