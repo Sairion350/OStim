@@ -14,11 +14,16 @@ Int SetUndressIfNeed
 Int SetAlwaysAnimateUndress
 Int SetAlwaysUndressAtStart
 Int SetonlyUndressChest
+Int SetDropClothes
+int SetAnimateRedress
+Int SetStrongerUnequip
 
 ; bar settings
 Int SetSubBar
 Int SetDomBar
+Int SetThirdBar
 Int SetAutoHideBar
+Int SetMatchColorToGender
 
 ; orgasm settings
 ; are these still used??
@@ -59,6 +64,7 @@ int SetBedAlgo
 ; ai control settings
 Int SetAIControl
 Int SetControlToggle
+Int SetAIChangeChance
 
 Int SetForceAIIfAttacking
 Int SetForceAIIfAttacked
@@ -90,6 +96,14 @@ Int ImportSettings
 
 OsexIntegrationMain Main
 
+
+string currPage
+int[] SlotSets
+
+actor playerref
+
+int SetUndressingAbout
+
 Event OnInit()
 	Init()
 EndEvent
@@ -115,10 +129,14 @@ Function Init()
 	DomLightBrightList = new String[2]
 	DomLightBrightList[0] = "Dim"
 	DomLightBrightList[1] = "Bright"
+
+	playerref = game.getplayer()
 EndFunction
 
 Event OnPageReset(String Page)
 	{Called when a new page is selected, including the initial empty page}
+	currPage = page
+
 	If (Page == "Configuration")
 		If (!Main)
 			Init()
@@ -164,7 +182,9 @@ Event OnPageReset(String Page)
 		AddColoredHeader("Excitement bars")
 		SetDomBar = AddToggleOption("Main actor HUD bar", Main.EnableDomBar)
 		SetSubBar = AddToggleOption("Second actor HUD bar", Main.EnableSubBar)
+		SetThirdBar = AddToggleOption("Third actor HUD bar", Main.EnableThirdBar)
 		SetAutoHideBar = AddToggleOption("Autohide bars", Main.AutoHideBars)
+		SetAutoHideBar = AddToggleOption("Match color to gender", Main.MatchBarColorToGender)
 		AddEmptyOption()
 
 		AddColoredHeader("System")
@@ -178,10 +198,13 @@ Event OnPageReset(String Page)
 
 		SetCursorPosition(3)
 		AddColoredHeader("Undressing")
-		SetUndressIfneed = AddToggleOption("Auto-remove clothes", Main.AutoUndressIfNeeded)
-		SetAlwaysUndressAtStart = AddToggleOption("Always undress at start", Main.AlwaysUndressAtAnimStart)
-		SetAlwaysAnimateUndress = AddToggleOption("Use undress animation", Main.AlwaysAnimateUndress)
-		SetonlyUndressChest = AddToggleOption("Only undress chest piece", Main.OnlyUndressChest)
+		SetAlwaysUndressAtStart = AddToggleOption("Fully undress at start", Main.AlwaysUndressAtAnimStart)
+		SetUndressIfneed = AddToggleOption("Remove clothes mid-scene", Main.AutoUndressIfNeeded)
+		SetDropClothes = AddToggleOption("Toss clothes onto ground", Main.TossClothesOntoGround)
+		SetStrongerUnequip = AddToggleOption("Use stronger unequip method", Main.UseStrongerUnequipMethod)
+		SetAnimateRedress= AddToggleOption("Use animated redress", Main.FullyAnimateRedress)
+		;SetAlwaysAnimateUndress = AddToggleOption("Use undress animation", Main.AlwaysAnimateUndress) Removed in 4.0, may be reimplemented but it was bugged
+		;SetonlyUndressChest = AddToggleOption("Only undress chest piece", Main.OnlyUndressChest) REMOVED in 4.0
 		AddEmptyOption()
 
 		AddColoredHeader("AI Control")
@@ -190,6 +213,7 @@ Event OnPageReset(String Page)
 		SetForceAIIfAttacked = AddToggleOption("Force full-auto control if player is attacked", Main.UseAIPlayerAggressed)
 		SetForceAIInConsensualScenes = AddToggleOption("Force full-auto control in consensual scenes", Main.UseAINonAggressive)
 		SetUseAutoFades = AddToggleOption("Fade out in between animation transitions", Main.UseAutoFades)
+		SetAIChangeChance = AddSliderOption("AI Animation Change Chance", Main.AiSwitchChance, "{0}")
 		AddEmptyOption()
 
 		AddColoredHeader("FreeCam")
@@ -221,6 +245,21 @@ Event OnPageReset(String Page)
 	ElseIf (Page == "")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayDing()
+	ElseIf (Page == "Undressing")
+		LoadCustomContent("Ostim/logo.dds", 184, 31)
+		Main.PlayTickBig()
+		UnloadCustomContent()
+		SetInfoText(" ")
+		Main.playTickBig()
+		SetCursorFillMode(LEFT_TO_RIGHT)
+		SetUndressingAbout = AddTextOption("What is this?", "")
+		SetCursorPosition(1)
+		AddTextOption("<font color='" + "#939292" +"'>" + "OStim Undressing", "")
+		SetCursorPosition(2)
+		AddColoredHeader("Undressing slots")
+		AddColoredHeader("")
+
+		DrawSlotPage()
 	ElseIf (Page == "About")
 		UnloadCustomContent()
 		Main.PlayTickBig()
@@ -231,6 +270,10 @@ EndEvent
 
 Event OnOptionSelect(Int Option)
 	Main.PlayTickBig()
+	if currPage == "Undressing"
+		OnSlotSelect(option)
+	EndIf
+
 	If (Option == SetEndOnOrgasm)
 		Main.EndOnDomOrgasm = !Main.EndOnDomOrgasm
 		SetToggleOptionValue(SetEndOnOrgasm, Main.EndOnDomOrgasm)
@@ -248,6 +291,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetUseRumble)
 		Main.UseRumble = !Main.UseRumble
 		SetToggleOptionValue(Option, Main.UseRumble)
+	ElseIf (Option == SetStrongerUnequip)
+		Main.UseStrongerUnequipMethod = !Main.UseStrongerUnequipMethod
+		SetToggleOptionValue(Option, Main.UseStrongerUnequipMethod)
 	ElseIf (Option == SetFlipFix)
 		Main.FixFlippedAnimations = !Main.FixFlippedAnimations
 		SetToggleOptionValue(Option, Main.FixFlippedAnimations)
@@ -257,6 +303,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetForceAIInConsensualScenes)
 		Main.UseAINonAggressive = !Main.UseAINonAggressive
 		SetToggleOptionValue(Option, Main.UseAINonAggressive)
+	ElseIf (Option == SetDropClothes)
+		Main.TossClothesOntoGround = !Main.TossClothesOntoGround
+		SetToggleOptionValue(Option, Main.TossClothesOntoGround)
 	ElseIf (Option == SetForceAIIfAttacked)
 		Main.UseAIPlayerAggressed = !Main.UseAIPlayerAggressed
 		SetToggleOptionValue(Option, Main.UseAIPlayerAggressed)
@@ -266,6 +315,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetUseAutoFades)
 		Main.UseAutoFades = !Main.UseAutoFades
 		SetToggleOptionValue(Option, Main.UseAutoFades)
+	ElseIf (Option == SetMatchColorToGender)
+		Main.MatchBarColorToGender = !Main.MatchBarColorToGender
+		SetToggleOptionValue(Option, Main.MatchBarColorToGender)
 	ElseIf (Option == SetMute)
 		Main.MuteOSA = !Main.MuteOSA
 		SetToggleOptionValue(Option, Main.MuteOSA)
@@ -299,12 +351,18 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetAlwaysAnimateUndress)
 		Main.AlwaysAnimateUndress = !Main.AlwaysAnimateUndress
 		SetToggleOptionValue(Option, Main.AlwaysAnimateUndress)
-	ElseIf (Option == SetonlyUndressChest)
-		Main.OnlyUndressChest = !Main.OnlyUndressChest
-		SetToggleOptionValue(Option, Main.OnlyUndressChest)
+	;ElseIf (Option == SetonlyUndressChest)
+	;	Main.OnlyUndressChest = !Main.OnlyUndressChest
+	;	SetToggleOptionValue(Option, Main.OnlyUndressChest)
 	ElseIf (Option == SetDomBar)
 		Main.EnableDomBar = !Main.EnableDomBar
 		SetToggleOptionValue(Option, Main.EnableDomBar)
+	ElseIf (Option == SetThirdBar)
+		Main.EnableThirdBar = !Main.EnableThirdBar
+		SetToggleOptionValue(Option, Main.EnableThirdBar)
+	ElseIf (Option == SetAnimateRedress)
+		Main.FullyAnimateRedress = !Main.FullyAnimateRedress
+		SetToggleOptionValue(Option, Main.FullyAnimateRedress)
 	ElseIf (Option == SetMisallignmentOption)
 		Main.MisallignmentProtection = !Main.MisallignmentProtection
 		SetToggleOptionValue(Option, Main.MisallignmentProtection)
@@ -337,10 +395,15 @@ EndEvent
 
 Event OnOptionHighlight(Int Option)
 	;Main.playTickSmall()
+	if currPage == "Undressing"
+		OnSlotMouseOver(option)
+	EndIf
 	If (Option == SetEndOnOrgasm)
 		SetInfoText("End the Osex scene automatically when the dominant actor (usually the male) orgasms")
 	ElseIf (Option == SetResetState)
 		SetInfoText("Click this if you keep getting a Scene Already Running type error")
+	ElseIf (Option == SetUndressingAbout)
+		SetInfoText("This panel lets you select what armor slots are stripped by OStim. See this if you don't know what that is\nhttps://www.creationkit.com/index.php?title=Biped_Object\nSlots where the name is green mean that Bethesda designated that slot to be used that way\nCyan names mean that the community has designated that slot to be used that way\nMany mods do not use the proper slots, so take the names with a grain of salt\nMouse over the names to see if you are wearing an armor piece in that slot")
 	ElseIf (Option == SetForceAIIfAttacked)
 		SetInfoText("If using manual mode by default, this will force automatic mode to activate if the player is the victim in an aggressive scene")
 	ElseIf (Option == SetForceAIIfAttacking)
@@ -355,8 +418,14 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("The field of view of the camera when in freecam mode\nThis is incompatible with Improved Camera")
 	ElseIf (Option == SetUseRumble)
 		SetInfoText("Rumble a controller on thrust, if a controller is being used")
+	ElseIf (Option == SetMatchColorToGender)
+		SetInfoText("Change the color of the bars to match the gender of the character")
+	ElseIf (Option == SetStrongerUnequip)
+		SetInfoText("Use an alternate unequip method that may catch more armor pieces, especially armor with auto-reequip scripts\nHowever, some armor it unequips may not be reequiped in redress\nHas no effect if drop clothes on to ground is enabled")
 	ElseIf (Option == SetEndAfterActorHit)
 		SetInfoText("End the scene after someone in the scene is hit\n Can misfire with certain other mods")
+	ElseIf (Option == SetAnimateRedress)
+		SetInfoText("Makes NPCs play redressing animations after a scene ends if they need to redress")
 	ElseIf (Option == SetForceFirstPerson)
 		SetInfoText("Return to first person after scene ends.\nFixes the hybrid-camera bug in Improved Camera")
 	ElseIf (Option == SetCustomTimescale)
@@ -373,8 +442,12 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Use a slower papyrus bed search method rather than a faster native one\n May find more beds but only enable if a bed is not detected")
 	ElseIf (Option == SetUseAutoFades)
 		SetInfoText("Fade to black in between animation transitions")
+	ElseIf (Option == SetAIChangeChance)
+		SetInfoText("Chance that characters will switch animations mid scene\nDoes not affect chance of a foreplay -> full sex transition")
 	ElseIf (Option == SetFlipFix)
 		SetInfoText("Fix some third party animations being flipped 180 degrees")
+	ElseIf (Option == SetDropClothes)
+		SetInfoText("Characters will drop clothes they take off onto the ground instead of storing them in their inventory\nCharacters will automatically pick them up when redressing")
 	ElseIf (Option == SetAlwaysUndressAtStart)
 		SetInfoText("Actors will always get undressed as a scene starts \nMods using this mod's API can force an undress to occur even if this isn't checked")
 	ElseIf (Option == SetAlwaysAnimateUndress)
@@ -382,9 +455,11 @@ Event OnOptionHighlight(Int Option)
 	ElseIf (Option == SetonlyUndressChest)
 		SetInfoText("Only remove the chest piece during undressing\nNote: due to bugginess with Osex, if using Undress Animation, only the chest piece is currently removed even with this not checked")
 	ElseIf (Option == SetDomBar)
-		SetInfoText("Enable the on-screen bar that track's the dominant actor's Excitement\nActor's orgasm when their Excitement maxes out")
+		SetInfoText("Enable the on-screen bar that tracks the dominant actor's Excitement\nActor's orgasm when their Excitement maxes out")
+	ElseIf (Option == SetthirdBar)
+				SetInfoText("Enable the on-screen bar that tracks the third actor's Excitement\nActor's orgasm when their Excitement maxes out")
 	ElseIf (Option == SetSubBar)
-		SetInfoText("Enable the on-screen bar that track's the second actor's Excitement\nActor's orgasm when their Excitement maxes out")
+		SetInfoText("Enable the on-screen bar that tracks the second actor's Excitement\nActor's orgasm when their Excitement maxes out")
 	ElseIf (Option == SetMisallignmentOption)
 		SetInfoText("Enable automatic misalignment detection\nYou may want to disable this if you want to do some custom realigning.")
 	ElseIf (Option == SetEnableBeds)
@@ -511,6 +586,11 @@ Event OnOptionSliderOpen(Int Option)
 		SetSliderDialogDefaultValue(0.0)
 		SetSliderDialogRange(-250, 250)
 		SetSliderDialogInterval(1)
+	ElseIf (Option == SetAIChangeChance)
+		SetSliderDialogStartValue(Main.AiSwitchChance)
+		SetSliderDialogDefaultValue(6.0)
+		SetSliderDialogRange(0, 100)
+		SetSliderDialogInterval(1)
 	EndIf
 EndEvent
 
@@ -537,6 +617,9 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 	ElseIf (Option == SetBedReallignment)
 		Main.BedReallignment = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0} units")
+	ElseIf (Option == SetAIChangeChance)
+		Main.AiSwitchChance = (Value as Int)
+		SetSliderOptionValue(Option, Value, "{0}")
 	EndIf
 EndEvent
 
@@ -559,6 +642,96 @@ Event OnOptionKeyMapChange(Int Option, Int KeyCode, String ConflictControl, Stri
 		SetKeyMapOptionValue(Option, KeyCode)
 	EndIf
 EndEvent
+
+
+
+function DrawSlotPage()
+	SlotSets = new int[128]
+
+	string[] names = new string[128]
+
+	names[30] = "<font color='#317335'> Head"
+	names[31] = "<font color='#317335'> Head/hair"
+	names[32] = "<font color='#317335'> Body armor/clothes"
+	names[33] = "<font color='#317335'> Gloves/gauntlets"
+	names[34] = "<font color='#317335'> Forearms"
+	names[35] = "<font color='#317335'> Amulet"
+	names[36] = "<font color='#317335'> Ring"
+	names[37] = "<font color='#317335'> Shoes"
+	names[38] = "<font color='#317335'> Calves"
+	names[39] = "<font color='#317335'> Shield"
+	names[40] = "<font color='#317335'> Tail"
+	names[41] = "<font color='#317335'> Long hair"
+	names[42] = "<font color='#317335'> Circlet"
+	names[43] = "<font color='#317335'> Ear rings"
+
+	names[44] = "<font color='#31755c'> Face/mouth"
+	names[45] = "<font color='#31755c'> Neck/scarf. Sometimes panties"
+	names[46] = "<font color='#31755c'> Extra chest piece"
+	names[47] = "<font color='#31755c'> Back (backpack, wings, etc)"
+	names[48] = "<font color='#31755c'> Misc"
+	names[49] = "<font color='#31755c'> Extra pelvis piece"
+	names[52] = "<font color='#31755c'> Extra pelvis piece 2 | SchlongsofSkyrim"
+	names[53] = "<font color='#31755c'> Extra leg piece"
+	names[54] = "<font color='#31755c'> Extra leg piece 2"
+	names[55] = "<font color='#31755c'> Face alternate or jewelry"
+	names[56] = "<font color='#31755c'> Extra chest piece 2"
+	names[57] = "<font color='#31755c'> Shoulder"
+	names[58] = "<font color='#31755c'> Extra arm piece 2"
+	names[59] = "<font color='#31755c'> Extra arm piece"
+	names[60] = "<font color='#31755c'> Misc"
+
+
+	int i = 30
+	int max = 62
+
+	While i < max
+		string additional = ""
+		if names[i] != ""
+			additional = " " + names[i]
+		endif
+		SlotSets[i] = AddToggleOption("S. " + i as string + additional, Main.IntArrayContainsValue(main.StrippingSlots, i))
+
+		i += 1
+	EndWhile
+
+endfunction
+
+Function OnSlotSelect(int option)
+	 
+
+	 int slot = option - 486
+
+	 osexintegrationmain.console(slot)
+
+	 if (slot < 0) || slot > 100
+	 	debug.messagebox("Slot error. report to dev please")
+	 endif
+
+	 if Main.IntArrayContainsValue(main.StrippingSlots, slot)
+	 	; remove this from the array
+	 	main.StrippingSlots = PapyrusUtil.RemoveInt(main.StrippingSlots, slot)
+	 	SetToggleOptionValue(Option, false)
+	 else 
+	 	;add this to the array
+	 	main.StrippingSlots = PapyrusUtil.PushInt(main.StrippingSlots, slot)
+	 	SetToggleOptionValue(Option, true)
+	 endif
+
+	 main.GetUndressScript().UpdateFakeArmor()
+EndFunction
+
+Function OnSlotMouseOver(int option)
+	int slot = option - 486
+
+	armor equipped = playerref.getEquippedArmorInSlot(slot) ; se exclusive
+
+	if equipped
+		SetInfoText("Player has armor equipped that matches this slot\nName: " + equipped.getname() + "\nFull slotmask: " + equipped.GetSlotMask())
+	else
+		SetInfoText("No armor matching this slot on player")
+	endif
+endfunction
 
 Event OnGameReload()
 	Parent.OnGameReload()

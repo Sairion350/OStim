@@ -139,7 +139,7 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 		EndIf
 	EndIf
 
-	Int ForeplayChangeChance = 4
+	Int ForeplayChangeChance = ostim.AiSwitchChance * 2
 	Float ForeplayEndThreshold
 	If (AggressiveScene)
 		ForeplayEndThreshold = Utility.RandomFloat(15.0, 105.0)
@@ -160,7 +160,7 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 		EndIf
 	EndIf
 
-	Int SexChangeChance = 2
+	Int SexChangeChance = ostim.AiSwitchChance
 	Int ForeplayChance
 	If (AggressiveScene)
 		ForeplayChance = 20
@@ -232,7 +232,7 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 			EndIf
 		EndIf
 
-		Utility.Wait(2)
+		Utility.Wait(6)
 
 		While (OStim.PauseAI && OStim.AnimationRunning())
 			Utility.Wait(1)

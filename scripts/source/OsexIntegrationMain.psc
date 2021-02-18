@@ -1,6 +1,35 @@
 ScriptName OsexIntegrationMain Extends Quest
 
 
+;		What is this? Am I in the right place? How do I use this???
+
+; This script is the core of OStim. If you want to start OStim scenes and/or manipulate them, you are in the right place
+
+;	Structure of this script
+; At the very top here, are the Properties. They are the settings you see in the MCM. You can toggle these at will on this script and it
+; will update the MCM and everything. Below that are the OStim local variables, you can safely ignore those. Below those variables,
+; you will find OStim's main loop and the StartScene() function. OStim's core logic runs in there, I recommend giving it a read. 
+; Below that is the UTILITIES area. These functions are going to be very useful to you and will let you access data in OStim as 
+; well as manipulate the currently running scene. Below the utilities area are some more specific groups of functions.
+
+; Some parts of code, including undressing, on-screen bar, and animation data lookups, are in other scripts to make this script easier to 
+; read. You can call functions in the below utilities area to return those script objects.
+
+; Want a list of all Events you can register with? CTRL + F this script for "SendModEvent" and you can see them all as well as the exact point they fire
+; With the exception of the sound event, OStim events do not include data with them. They only let you know when something has happened. You can access
+; OStim and get all of the data you need through the normal API here
+
+
+
+;			 ██████╗ ███████╗████████╗██╗███╗   ███╗
+;			██╔═══██╗██╔════╝╚══██╔══╝██║████╗ ████║
+;			██║   ██║███████╗   ██║   ██║██╔████╔██║
+;			██║   ██║╚════██║   ██║   ██║██║╚██╔╝██║
+;			╚██████╔╝███████║   ██║   ██║██║ ╚═╝ ██║
+;			 ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝     ╚═╝
+                                        
+
+
 ; -------------------------------------------------------------------------------------------------
 ; SETTINGS  ---------------------------------------------------------------------------------------
 
@@ -9,7 +38,9 @@ Bool Property EndOnDomOrgasm Auto
 
 Bool Property EnableDomBar Auto
 Bool Property EnableSubBar Auto
+Bool property EnableThirdBar Auto
 Bool Property AutoHideBars Auto
+Bool Property MatchBarColorToGender auto
 Bool Property EnableImprovedCamSupport Auto
 
 Bool Property EnableActorSpeedControl Auto
@@ -28,8 +59,11 @@ Bool Property LowLightLevelLightsOnly Auto
 Bool Property SlowMoOnOrgasm Auto
 
 Bool Property AlwaysUndressAtAnimStart Auto
-Bool Property OnlyUndressChest Auto
-Bool Property AlwaysAnimateUndress Auto
+Bool Property OnlyUndressChest Auto 		;	Removed in 4.0
+Bool Property AlwaysAnimateUndress Auto      ;	Removed in 4.0
+Bool Property TossClothesOntoGround auto  
+Bool Property UseStrongerUnequipMethod auto 
+Bool Property FullyAnimateRedress auto 
 
 Bool  SpeedUpNonSexAnimation
 Float SpeedUpSpeed
@@ -88,6 +122,10 @@ Bool Property BlockVRInstalls Auto
 
 Bool Property UseAlternateBedSearch Auto
 
+Int Property AiSwitchChance Auto
+
+
+Int[] Property StrippingSlots auto
 
 ; -------------------------------------------------------------------------------------------------
 ; SCRIPTWIDE VARIABLES ----------------------------------------------------------------------------
@@ -98,6 +136,7 @@ Actor SubActor
 
 Float DomExcitement
 Float SubExcitement
+Float ThirdExcitement
 
 Bool SceneRunning
 String CurrentAnimation
@@ -115,9 +154,9 @@ Actor PlayerRef
 
 GlobalVariable Timescale
 
-Bool UndressDom
-Bool UndressSub
-Bool AnimateUndress
+Bool property UndressDom auto
+Bool property UndressSub auto
+Bool property AnimateUndress auto
 String StartingAnimation
 Actor ThirdActor
 
@@ -143,6 +182,7 @@ Bool IsFreeCamming
 
 Int DomTimesOrgasm
 Int SubTimesOrgasm
+Int ThirdTimesOrgasm
 
 Actor MostRecentOrgasmedActor
 
@@ -169,9 +209,14 @@ Bool AggressiveThemedSexScene
 Actor AggressiveActor
 
 OAiScript AI
+OBarsScript obars
+OUndressScript oundress
 
 Bool IsFlipped
 
+float DomStimMult
+float SubStimMult
+float ThirdStimMult
 ; -------------------------------------------------------------------------------------------------
 ; OSA SPECIFIC  -----------------------------------------------------------------------------------
 
@@ -191,10 +236,9 @@ Sound OSATickBig
 ;_oUI OSAUI
 ;---------
 
-;--------- bars
-Osexbar DomBar
-Osexbar SubBar
-;---------
+
+Actor ReroutedDomActor
+Actor ReroutedSubActor
 
 ;--------- database
 ODatabaseScript ODatabase
@@ -257,198 +301,13 @@ String[] Speeds
 ; -------------------------------------------------------------------------------------------------
 ; -------------------------------------------------------------------------------------------------
 
-Event OnKeyDown(Int KeyPress)
-	If (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
-		Return
-	EndIf
-
-	If (AnimationRunning())
-		If (IntArrayContainsValue(OSexControlKeys, KeyPress))
-			MostRecentOSexInteractionTime = Utility.GetCurrentRealTime()
-			If (AutoHideBars)
-				If (!IsBarVisible(DomBar))
-					SetBarVisible(DomBar, True)
-				EndIf
-				If (!IsBarVisible(SubBar))
-					SetBarVisible(SubBar, True)
-				EndIf
-			EndIf
-		EndIf
-
-		If (KeyPress == SpeedUpKey)
-			IncreaseAnimationSpeed()
-			PlayTickSmall()
-		ElseIf (KeyPress == SpeedDownKey)
-			DecreaseAnimationSpeed()
-			PlayTickSmall()
-		ElseIf ((KeyPress == PullOutKey) && !AIRunning)
-			If (ODatabase.IsSexAnimation(CurrentOID))
-				If (LastHubOID != -1)
-					TravelToAnimationIfPossible(ODatabase.GetSceneID(LastHubOID))
-				EndIf
-			EndIf
-		EndIf
-	EndIf
-
-	If (KeyPress == ControlToggleKey)
-		If (AnimationRunning())
-			If (AIRunning)
-				AIRunning = False
-				PauseAI = True
-				Debug.Notification("Switched to manual control mode")
-				Console("Switched to manual control mode")
-			Else
-				If (PauseAI)
-					PauseAI = False
-				Else
-					AI.StartAI()
-				EndIf
-				AIRunning = True
-				Debug.Notification("Switched to automatic control mode")
-				Console("Switched to automatic control mode")
-			EndIf
-		Else
-			If (UseAIControl)
-				UseAIControl = False
-				Debug.Notification("Switched to manual control mode")
-				Console("Switched to manual control mode")
-			Else
-				UseAIControl = True
-				Debug.Notification("Switched to automatic control mode")
-				Console("Switched to automatic control mode")
-			EndIf
-		EndIf
-		PlayTickBig()
-	EndIf
-
-	Actor Target = Game.GetCurrentCrosshairRef() as Actor
-	If (KeyPress == KeyMap)
-		If (Target)
-			If (Target.IsInDialogueWithPlayer())
-				Return
-			EndIf
-			If (!Target.IsDead())
-				StartScene(PlayerRef,  Target)
-			EndIf
-		EndIf
-	EndIf
-EndEvent
 
 Event OnInit()
-	Startup()
+	Startup() ; OStim install script
 EndEvent
 
-Function Startup()
-	Debug.Notification("Installing OStim. Please wait...")
-	SceneRunning = False
-	Actra = Game.GetFormFromFile(0x000D63, "OSA.ESM") as MagicEffect
-	OsaFactionStage = Game.GetFormFromFile(0x00182F, "OSA.ESM") as Faction
-	OSAOmni = (Quest.GetQuest("0SA") as _oOmni)
-;	OSAUI = (Quest.GetQuest("0SA") as _oui)
-	PlayerRef = Game.GetPlayer()
-	NutEffect = Game.GetFormFromFile(0x000805, "Ostim.esp") as ImageSpaceModifier
 
-	OSADing = Game.GetFormFromFile(0x000D6D, "Ostim.esp") as Sound
-	OSATickSmall = Game.GetFormFromFile(0x000D6E, "Ostim.esp") as Sound
-	OSATickBig = Game.GetFormFromFile(0x000D6F, "Ostim.esp") as Sound
-
-	If (Game.GetModByName("SexLab.esm") != 255)
-		SexLab = (Game.GetFormFromFile(0x00000D62, "SexLab.esm")) as Quest
-		OrgasmSound = (Game.GetFormFromFile(0x00065A34, "SexLab.esm")) as Sound
-	EndIf
-
-	If (Game.GetModByName("SexlabAroused.esm") != 255)
-		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as Faction
-	EndIf
-
-	DomBar = (Self as Quest) as Osexbar
-	SubBar = (Game.GetFormFromFile(0x000804, "Ostim.esp")) as Osexbar
-	Timescale = (Game.GetFormFromFile(0x00003A, "Skyrim.esm")) as GlobalVariable
-	InitBar(dombar, True)
-	InitBar(subbar, False)
-
-	AI = ((Self as Quest) as OAiScript)
-	RegisterForModEvent("ostim_actorhit", "OnActorHit")
-	SetSystemVars()
-	SetDefaultSettings()
-	BuildSoundFormlists()
-
-	if (BlockVRInstalls && GetGameIsVR())
-		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
-		return
-	endif
-
-	if (SKSE.GetPluginVersion("JContainers64") == -1)
-		Debug.MessageBox("OStim: JContainers is not installed, please exit and install it immediately")
-		return
-	endif
-
-	ODatabase = (Self as Quest) as ODatabaseScript
-	ODatabase.InitDatabase()
-
-	If (OSAFactionStage)
-		Console("Loaded")
-	Else
-		Debug.MessageBox("OSex and OSA do not appear to be installed, please do not continue using this save file")
-		Return
-	EndIf
-
-	if (ODatabase.GetLengthOArray(ODatabase.GetDatabaseOArray()) < 1)
-		Debug.Notification("OStim install failed")
-		return
-	Else
-		ODatabase.Unload()
-	EndIf
-
-	If (ArousedFaction)
-		Console("Sexlab Aroused loaded")
-	EndIf
-
-	if (SKSE.GetPluginVersion("ConsoleUtilSSE") == -1)
-		Debug.Notification("OStim: ConsoleUtils is not installed, a few features may not work")
-	endif
-
-	If (SexLab)
-		Console("SexLab loaded, using its cum effects")
-	Else
-		Debug.Notification("OStim: Sexlab is not loaded. Some orgasm FX will be missing")
-	EndIf
-
-	If (OSA.StimInstalledProper())
-		Console("OSA is installed correctly")
-	Else
-		Debug.MessageBox("OStim is not loaded after OSA in your mod files, please allow OStim to overwrite OSA's files and restart")
-		Return
-	EndIf
-
-	if (SKSE.GetPluginVersion("ImprovedCamera") == -1)
-		Debug.Notification("OStim: Improved Camera is not installed. First person scenes will not be available")
-		Debug.Notification("OStim: However, freecam will have extra features")
-	EndIf
-
-	If (!_oGlobal.OStimGlobalLoaded())
-		Debug.MessageBox("It appears you have the OSex facial expression fix installed. Please exit and remove that mod, as it is now included in OStim, and having it installed will break some things now!")
-		return
-	EndIf
-	OSAOmni.RebootScript()
-
-	Utility.Wait(1)
-	DisplayTextBanner("OStim installed")
-EndFunction
-
-Actor ReroutedDomActor
-Actor ReroutedSubActor
-Function AcceptReroutingActors(Actor Act1, Actor Act2)
-	ReroutedDomActor = Act1
-	ReroutedSubActor = Act2
-	Console("Recieved rerouted actors")
-EndFunction
-
-Function StartReroutedScene()
-	Console("Rerouting scene")
-	StartScene(ReroutedDomActor,  ReroutedSubActor)
-EndFunction
-
+; Call this function to start a new OStim scene
 Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zUndressSub = False, Bool zAnimateUndress = False, String zStartingAnimation = "", Actor zThirdActor = None, ObjectReference Bed = None, Bool Aggressive = False, Actor AggressingActor = None)
 	If (SceneRunning)
 		Debug.Notification("Osex scene already running")
@@ -502,13 +361,13 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	EndIf
 
 	Console("Requesting scene start")
-	RegisterForSingleUpdate(0.01)
+	RegisterForSingleUpdate(0.01) ; start main loop
 	SceneRunning = True
 
 	Return True
 EndFunction
 
-Event OnUpdate()
+Event OnUpdate() ;OStim main logic loop
 	Console("Starting scene asynchronously")
 
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
@@ -517,6 +376,8 @@ Event OnUpdate()
 		Utility.Wait(Time - 0.25)
 		Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
 	EndIf
+
+	SendModEvent("ostim_prestart") ; fires as soon as the screen goes black. be careful, some settings you normally expect may not be set yet. Use ostim_start to run code when the OSA scene begins.
 
 	If (EnableImprovedCamSupport)
 		Game.DisablePlayerControls(abCamswitch = True, abMenu = False, abFighting = False, abActivate = False, abMovement = False, aiDisablePOVType = 0)
@@ -533,10 +394,15 @@ Event OnUpdate()
 	CurrentSpeed = 0
 	DomExcitement = 0.0
 	SubExcitement = 0.0
+	ThirdExcitement = 0.0
+	DomStimMult = 1.0
+	SubStimMult = 1.0
+	ThirdStimMult = 1.0
 	EndedProper = False
 	SpankCount = 0
 	SubTimesOrgasm = 0
 	DomTimesOrgasm = 0
+	ThirdTimesOrgasm = 0
 	MostRecentOrgasmedActor = None
 	SpankMax = Utility.RandomInt(1, 6)
 	IsFreeCamming = False
@@ -616,144 +482,18 @@ Event OnUpdate()
    		EndIf
     EndIf
 
-    If (EnableDomBar)
-    	SetBarPercent(DomBar, 0.0)
-    	SetBarVisible(DomBar, True)
-	EndIf
-
-	If (EnableSubBar)
-		SetBarPercent(SubBar, 0.0)
-    	SetBarVisible(SubBar, True)
-	EndIf
-
 	Int Password = DomActor.GetFactionRank(OsaFactionStage)
 	RegisterForModEvent("0SAO" + Password + "_AnimateStage", "OnAnimate")
 
-	If (GetActorArousal(DomActor) > 90)
-		DomExcitement = 26.0
-	EndIf
+;	If (GetActorArousal(DomActor) > 90)
+;		DomExcitement = 26.0
+;	EndIf
 
-	If (GetActorArousal(SubActor) > 90)
-		SubExcitement = 26.0
-	EndIf
+;	If (GetActorArousal(SubActor) > 90)
+;		SubExcitement = 26.0
+;	EndIf
 
-	If (AlwaysUndressAtAnimStart)
-		UndressDom = True
-		UndressSub = True
-	EndIf
-
-	If (AlwaysAnimateUndress)
-		AnimateUndress = True
-	EndIf
-
-	DomArmor = DomActor.GetWornForm(0x00000004)
-	DomHelm = DomActor.GetWornForm(0x00000002)
-	DomGlove = DomActor.GetWornForm(0x00000080)
-	DomBoot = DomActor.GetWornForm(0x00000008)
-	DomWep = DomActor.GetEquippedObject(1)
-
-	SubArmor = SubActor.GetWornForm(0x00000004)
-	SubHelm = SubActor.GetWornForm(0x00000002)
-	SubGlove = SubActor.GetWornForm(0x00000080)
-	SubBoot = SubActor.GetWornForm(0x00000008)
-	SubWep = SubActor.GetEquippedObject(1)
-
-	If (UndressDom)
-		If (AnimateUndress)
-			If (OnlyUndressChest)
-				AnimateUndressActor(DomActor, "cuirass")
-			Else ; cuirass,boots,weapon,helmet,gloves.
-				;/
-				AnimateUndressActor(DomActor, "helmet")
-				AnimateUndressActor(DomActor, "gloves")
-				AnimateUndressActor(DomActor, "weapon")
-				AnimateUndressActor(DomActor, "boots")
-				/;
-				AnimateUndressActor(DomActor, "cuirass")
-				UndressActor(DomActor, DomHelm)
-				UndressActor(DomActor, DomBoot)
-				UndressActor(DomActor, DomGlove)
-				DomActor.UnequipItem(DomWep, abPreventEquip = False, abSilent = True)
-			EndIf
-		Else
-			If (OnlyUndressChest)
-				UndressActor(DomActor, DomArmor)
-			Else
-				UndressActor(DomActor, DomHelm)
-				UndressActor(DomActor, DomBoot)
-				UndressActor(DomActor, DomGlove)
-				UndressActor(DomActor, DomArmor)
-				DomActor.UnequipItem(DomWep, abPreventEquip = False, abSilent = True)
-			EndIf
-		EndIf
-	EndIf
-
-	If (UndressSub)
-		If (AnimateUndress)
-			If (OnlyUndressChest)
-				AnimateUndressActor(SubActor, "cuirass")
-			Else
-				;animateUndressActor(SubActor, "helmet")
-				;animateUndressActor(SubActor, "gloves")
-				;animateUndressActor(SubActor, "weapon")
-				;animateUndressActor(SubActor, "boots")
-
-				AnimateUndressActor(SubActor, "cuirass")
-				UndressActor(SubActor, SubHelm)
-				UndressActor(SubActor, SubBoot)
-				UndressActor(SubActor, SubGlove)
-				SubActor.UnequipItem(subwep, abPreventEquip = False, abSilent = True)
-			EndIf
-		Else
-			If (OnlyUndressChest)
-				UndressActor(SubActor, SubArmor)
-			Else
-				UndressActor(SubActor, SubHelm)
-				UndressActor(SubActor, SubBoot)
-				UndressActor(SubActor, SubGlove)
-				UndressActor(SubActor, SubArmor)
-				SubActor.UnequipItem(SubWep, abPreventEquip = False, abSilent = True)
-			EndIf
-		EndIf
-	EndIf
 	
-	; Assume if sub is to be undressed, third actor should also be provided ThirdActor exists.
-	if (UndressSub == True && ThirdActor != None)
-		; undressing really needs to be its own function.
-		ThirdArmor = ThirdActor.GetWornForm(0x00000004)
-		ThirdHelm = ThirdActor.GetWornForm(0x00000002)
-		ThirdGlove = ThirdActor.GetWornForm(0x00000080)
-		ThirdBoot = ThirdActor.GetWornForm(0x00000008)
-		ThirdWep = ThirdActor.GetEquippedObject(1)
-		if (AnimateUndress)
-			if (OnlyUndressChest)
-				AnimateUndressActor(ThirdActor, "cuirass")
-			Else
-				;animateUndressActor(ThirdActor, "helmet")
-				;animateUndressActor(ThirdActor, "gloves")
-				;animateUndressActor(ThirdActor, "weapon")
-				;animateUndressActor(ThirdActor, "boots")
-
-				AnimateUndressActor(ThirdActor, "cuirass")
-				UndressActor(ThirdActor, ThirdHelm)
-				UndressActor(ThirdActor, ThirdBoot)
-				UndressActor(ThirdActor, ThirdGlove)
-				ThirdActor.UnequipItem(ThirdWep, abPreventEquip = False, abSilent = True)
-			endif
-			
-		Else
-			if (OnlyUndressChest)
-				undressActor(ThirdActor, ThirdArmor)
-			Else
-				UndressActor(ThirdActor, ThirdHelm)
-				UndressActor(ThirdActor, ThirdBoot)
-				UndressActor(ThirdActor, ThirdGlove)
-				UndressActor(ThirdActor, ThirdArmor)
-				ThirdActor.UnequipItem(ThirdWep, abPreventEquip = False, abSilent = True)
-			endif
-		endif
-	endIf
-
 	StartTime = Utility.GetCurrentRealTime()
 
 	Bool WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1)
@@ -774,7 +514,7 @@ Event OnUpdate()
 	
 	Float LoopTimeTotal = 0
 	Float LoopStartTime
-	SendModEvent("ostim_start")
+	
 
 	If (!AIRunning)
 		If ((DomActor != PlayerRef) && (SubActor != PlayerRef) && (ThirdActor != PlayerRef) && UseAINPConNPC)
@@ -796,6 +536,8 @@ Event OnUpdate()
 		EndIf
 	EndIf
 
+	SendModEvent("ostim_start")
+
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		Game.FadeOutGame(False, True, 0.0, 4) ;welcome back
 	EndIf
@@ -809,17 +551,11 @@ Event OnUpdate()
 		Utility.Wait(1.0 - LoopTimeTotal)
 		LoopStartTime = Utility.GetCurrentRealTime()
 
-    	If (AutoUndressIfNeeded)
-    		UndressIfNeeded()
-    	EndIf
-
     	If (MisallignmentProtection && IsActorActive(DomActor))
     		If (SubActor.GetDistance(DomActor) > 1)
     			Console("Misallignment detected")
     			SubActor.MoveTo(DomActor)
 
-    			;WarpToAnimation(ODatabase.GetSceneIDByAnimID(CurrentAnimation))
-    			;WarpToAnimation("0MF|Cy6!DOy6|Ho|DoggyLi")
     			Reallign()
 
     			Utility.Wait(0.1)
@@ -832,23 +568,15 @@ Event OnUpdate()
     		EndIf
     	EndIf
 
-    	If (AutoHideBars && (GetTimeSinceLastPlayerInteraction() > 15.0)) ; fade out if needed
-    		If (IsBarVisible(DomBar))
-    			SetBarVisible(DomBar, False)
-    		EndIf
-    		If (IsBarVisible(SubBar))
-    			SetBarVisible(SubBar, False)
-    		EndIf
-    	EndIf
-
     	If (EnableActorSpeedControl && !AnimationIsAtMaxSpeed())
     		AutoIncreaseSpeed()
     	EndIf
 
-		DomExcitement += GetCurrentStimulation(DomActor)
-		SubExcitement += GetCurrentStimulation(SubActor)
-		SetBarPercent(DomBar, DomExcitement)
-		SetBarPercent(SubBar, SubExcitement)
+		DomExcitement += GetCurrentStimulation(DomActor) * DomStimMult
+		SubExcitement += GetCurrentStimulation(SubActor) * SubStimMult
+		If ThirdActor
+			ThirdExcitement += GetCurrentStimulation(ThirdActor) * ThirdStimMult
+		EndIf
 
 		If (SubExcitement >= 100.0)
 			MostRecentOrgasmedActor = SubActor
@@ -857,6 +585,12 @@ Event OnUpdate()
 			If (GetCurrentAnimationClass() == ClassSex)
 				DomExcitement += 5
 			EndIf
+		EndIf
+
+		If (ThirdExcitement >= 100.0)
+			MostRecentOrgasmedActor = ThirdActor
+			ThirdTimesOrgasm += 1
+			Orgasm(ThirdActor)
 		EndIf
 
 		If (DomExcitement >= 100.0)
@@ -896,14 +630,7 @@ Event OnUpdate()
 		Game.ForceFirstPerson()
 	EndIf
 
-	Utility.Wait(0.5)
-
-	Redress()
-
-	SetBarVisible(DomBar, False)
-	SetBarPercent(DomBar, 0.0)
-	SetBarVisible(SubBar, False)
-	SetBarPercent(SubBar, 0.0)
+	;Utility.Wait(0.5) ;delete?
 
 	If (UsingBed)
 		If (GetInBedAfterBedScene && ((DomActor == PlayerRef) || (SubActor == PlayerRef))  && EndedProper && !IsSceneAggressiveThemed())
@@ -950,6 +677,8 @@ EndEvent
 ;
 ; 				The main API functions
 
+; Most of what you want to do in OStim is available here, i advise reading through this entire Utilities section
+
 
 Bool Function IsActorActive(Actor Act)
 	Return Act.HasMagicEffect(Actra)
@@ -960,6 +689,14 @@ ODatabaseScript Function GetODatabase()
 		Utility.Wait(0.5)
 	Endwhile
 	Return ODatabase
+EndFunction
+
+OBarsScript Function GetBarScript()
+	return obars
+EndFunction
+
+OUndressScript function GetUndressScript()
+	return Oundress
 EndFunction
 
 Int Function GetCurrentAnimationSpeed()
@@ -975,36 +712,42 @@ Int Function GetCurrentAnimationMaxSpeed()
 EndFunction
 
 Int Function GetAPIVersion()
+	;7 version 4.0, moves a lot of code around and reimplements speed control
 	;6 adds better animation flipping, reallign(), soundAPI
 	;5 adds ODatabase, getCurrentLeadingActor
 	;4 added onanimationchange event and decrease speed
 	;3 introduces events and getmostrecentorgasmedactor
-	Return 6
+	Return 7
 EndFunction
 
 Function IncreaseAnimationSpeed()
 	If (AnimSpeedAtMax)
 		Return
 	EndIf
-	SetCurrentAnimationSpeed(CurrentSpeed + 1)
+	AdjustAnimationSpeed(1)
 EndFunction
 
 Function DecreaseAnimationSpeed()
 	If (CurrentSpeed < 1)
 		Return
 	EndIf
-	SetCurrentAnimationSpeed(CurrentSpeed - 1)
+	AdjustAnimationSpeed(-1)
 EndFunction
 
-Function SetCurrentAnimationSpeed(Int InSpeed) ;untested
-	String Speed = NormalSpeedToOsexSpeed(InSpeed)
-	RunOsexCommand("$Speed,0," + Speed)
-
-	Utility.Wait(0.5)
-	If (GetCurrentAnimation() == "undefined")
-		Console("Speed increase broke game state")
-		RunOsexCommand("$Speed,0,1")
+Function AdjustAnimationSpeed(float amount)
+	If amount < 0
+		int times = math.abs((amount / 0.5)) as int
+		While times > 0
+			UI.Invokefloat("HUD Menu", "_root.WidgetContainer."+OSAOmni.Glyph+".widget.hud.NavMenu.beaconSpeed.m.dia.scena.speedAdjust", -0.5)
+			times -= 1
+		EndWhile
+	Else
+		UI.Invokefloat("HUD Menu", "_root.WidgetContainer."+OSAOmni.Glyph+".widget.hud.NavMenu.beaconSpeed.m.dia.scena.speedAdjust", amount)
 	EndIf
+EndFunction
+
+Function SetCurrentAnimationSpeed(Int InSpeed) 
+	AdjustAnimationSpeed(inspeed - CurrentSpeed)
 EndFunction
 
 String Function GetCurrentAnimation()
@@ -1077,7 +820,7 @@ Function TravelToAnimation(String Animation) ; does not always work, use above
 	RunOsexCommand("$Go," + Animation)
 EndFunction
 
-Function WarpToAnimation(String Animation) ; a list of animation ids can be found in osa's xmls. you cannot use the id from getcurrentanimation()
+Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy9|HhPo|MoShoPo
 	Console("Warping to animation: " + Animation)
 	RunOsexCommand("$Warp," + Animation)
 EndFunction
@@ -1107,83 +850,14 @@ Actor Function GetAggressiveActor()
 	Return AggressiveActor
 EndFunction
 
-Function UndressAll(Actor Act) ; seems broke
-	Int Acto = 0
-	If (Act == SubActor)
-		Acto = 1
-	EndIf
-	RunOsexCommand("$Equndressall," + Acto)
-EndFunction
-
-Function RedressAll(Actor Act) ; seems broke
-	Int Acto = 0
-	If (Act == SubActor)
-		Acto = 1
-	EndIf
-	RunOsexCommand("$Eqredressall," + acto) ; seems broke
-EndFunction
-
-Function UndressActor(Actor Char, Form Item)
-	Char.UnequipItem(Item, False, True)
-EndFunction
-
-Function AnimateUndressActor(Actor Char, String Item)
-	; cuirass, boots, weapon, helmet, gloves.
-	; some extra rare options: cape, intlow(i.e. panties), inthigh(i.e. bra), miscarms, misclow, miscmid, miscup, pants, stockings,
-	; options other than cuirass are unreliable right now
-
-	If (Item == "helmet")
-		If !Char.GetWornForm(0x00000002) as Armor
-			Return
-		EndIf
-	ElseIf (Item == "gloves")
-		If (!Char.GetWornForm(0x00000008) as Armor)
-			Return
-		EndIf
-	ElseIf (Item == "weapon")
-		If (!Char.GetEquippedObject(1) as Form)
-			Return
-		EndIf
-	ElseIf (Item == "boots")
-		If (!Char.GetWornForm(0x00000080) as Armor)
-			Return
-		EndIf
-	ElseIf (Item == "cuirass")
-		If (!Char.GetWornForm(0x00000004) as Armor)
-			Return
-		EndIf
-	EndIf
-
-	String Target = "10"
-	If (Char == SubActor)
-		Target = "01"
-	EndIf
-
-	WarpToAnimation("EMF|Sy6!Sy9|ApU|St9Dally+" + Target + Item)
-
-	Utility.Wait(1)
-	While (GetCurrentAnimationClass() == ClassApartUndressing)
-		Utility.Wait(1)
-	Endwhile
-EndFunction
-
 Int Function GetTimesOrgasm(Actor Act) ; number of times the Actor has orgasmed
 	If (Act == DomActor)
 		Return DomTimesOrgasm
 	ElseIf (Act == SubActor)
 		Return SubTimesOrgasm
+	ElseIf (Act == ThirdActor)
+		return ThirdTimesOrgasm
 	EndIf
-EndFunction
-
-Function WaitForRemoveCuirass(Actor Char) ; remove the cuirass, and don't return until anim is done
-	If (IsNaked(Char))
-		Return
-	EndIf
-	AnimateUndressActor(Char, "cuirass")
-	While (!IsNaked(Char))
-		Utility.Wait(1)
-	Endwhile
-	Utility.wait(4)
 EndFunction
 
 Bool Function IsNaked(Actor NPC) ; todo caching
@@ -1208,27 +882,27 @@ EndFunction
 Actor Function GetThirdActor()
 	Return ThirdActor
 EndFunction
-
-Int Function GetActorArousal(Actor Char)
-	Int Ret = 50
-	If (ArousedFaction)
-		Ret = Char.GetFactionRank(ArousedFaction)
-	EndIf
-
-	If (Ret < 0) ; not yet set
-		Ret = 50
-	EndIf
-	Return Ret
-EndFunction
-
-Function SetActorArousal(Actor Char, Int Level) ; wrong way to do this, may not work
-	If (ArousedFaction)
-		If (Level < 1)
-			Level = 1
-		EndIf
-		Char.SetFactionRank(ArousedFaction, Level)
-	EndIf
-EndFunction
+;
+;Int Function GetActorArousal(Actor Char)
+;	Int Ret = 50
+;	If (ArousedFaction)
+;		Ret = Char.GetFactionRank(ArousedFaction)
+;	EndIf
+;
+;	If (Ret < 0) ; not yet set
+;		Ret = 50
+;	EndIf
+;	Return Ret
+;EndFunction
+;
+;Function SetActorArousal(Actor Char, Int Level) ; wrong way to do this, may not work
+;	If (ArousedFaction)
+;		If (Level < 1)
+;			Level = 1
+;		EndIf
+;		Char.SetFactionRank(ArousedFaction, Level)
+;	EndIf
+;EndFunction
 
 Actor Function GetMostRecentOrgasmedActor()
 	Return MostRecentOrgasmedActor
@@ -1255,14 +929,15 @@ ObjectReference Function GetBed()
 EndFunction
 
 Bool Function IsFemale(Actor Act)
-	If (Sexlab)
-		;If (SexLab.GetGender(Act) == 0)
-		;	Return False
-		;Else
-		;	Return True
-		;EndIf
-	EndIf
-	Return (Act.GetLeveledActorBase().GetSex() == 1)
+	If SoSInstalled
+		if act.IsInFaction(SoSFaction)
+			return false
+		else 
+			return true
+		endif
+	else 
+		Return (Act.GetLeveledActorBase().GetSex() == 1)
+	endif
 EndFunction
 
 Bool Function AppearsFemale(Actor Act)
@@ -1291,70 +966,59 @@ String[] Function GetScene() ; this is not the sceneID, this is an internal osex
 EndFunction
 
 Function Reallign()
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage") ; unknown if this works on bandits
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage") 
 	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AlignStage")
 	If (ThirdActor)
 		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_AlignStage")
 	EndIf
 EndFunction
 
-Function UndressIfNeeded()
-	Bool DomNaked = IsNaked(DomActor)
-	Bool SubNaked = IsNaked(SubActor)
-	Bool ThirdNaked = true
-	if ThirdActor
-		ThirdNaked = IsNaked(ThirdActor)
-	endif
-	String CClass = GetCurrentAnimationClass()
-	If (!DomNaked)
-		If (CClass == ClassSex) || (CClass == ClassMasturbate) || (CClass == ClassHeadHeldMasturbate) || (CClass == ClassPenisjob) || (CClass == ClassHeadHeldPenisjob) || (CClass == ClassHandjob) || (CClass == ClassApartHandjob) || (CClass == ClassDualHandjob) || (CClass == ClassSelfSuck)
-			UndressAllItems(domactor)
-		EndIf
-	ElseIf (!SubNaked)
-		If (CClass == ClassSex) || (CClass == ClassCunn) || (CClass == ClassClitRub) || (CClass == ClassOneFingerPen) || (CClass == ClassTwoFingerPen)
-			UndressAllItems(subactor)
-		EndIf
-	ElseIf (!ThirdNaked)
-		If (CClass == ClassSex) || (CClass == ClassCunn) || (CClass == ClassClitRub) || (CClass == ClassOneFingerPen) || (CClass == ClassTwoFingerPen)
-			UndressAllItems(ThirdActor)
-		EndIf
-	EndIf
-EndFunction
-
-Function UndressAllItems(Actor Act) ; will be moved to a different script in a later version so do not call!
-	bool DidToggle = False
-	If IsFreeCamming
-		DidToggle = True
-		ToggleFreeCam()
-	EndIf
-
-	form zArmor = Act.GetWornForm(0x00000004)
-	form zHelm = Act.GetWornForm(0x00000002)
-	form zGlove = Act.GetWornForm(0x00000080)
-	form zBoot = Act.GetWornForm(0x00000008)
-	form zWep = Act.GetEquippedObject(1)
-	
-	UndressActor(Act, zHelm)
-	UndressActor(Act, zBoot)
-	UndressActor(Act, zGlove)
-	UndressActor(Act, zArmor)
-	Act.UnequipItem(zWep, abPreventEquip = False, abSilent = True)
-
-	If DidToggle
-		ToggleFreeCam()
-	EndIf	
-	Console("Doing mid-animation strip")
-Endfunction
-
 Function ToggleFreeCam(Bool On = True)
 	ConsoleUtil.ExecuteCommand("tfc")
 	If (!IsFreeCamming)
 		ConsoleUtil.ExecuteCommand("sucsm " + FreecamSpeed)
 		ConsoleUtil.ExecuteCommand("fov " + FreecamFOV)
+		IsFreeCamming = true
 	Else
 		ConsoleUtil.ExecuteCommand("fov " + DefaultFOV)
+		IsFreeCamming = false
 	EndIf
-	IsFreeCamming = !IsFreeCamming
+EndFunction
+
+Function HideNavMenu() ;only works during SEX animations
+	UI.Invoke("HUD Menu", "_root.WidgetContainer."+OSAomni.glyph+".widget.hud.NavMenu.dim") 
+EndFunction
+
+Function ShowNavMenu() ;only works during SEX animations
+	UI.Invoke("HUD Menu", "_root.WidgetContainer."+OSAomni.glyph+".widget.hud.NavMenu.light") 
+EndFunction
+
+bool function IsInFreeCam()
+	return IsFreeCamming
+endfunction
+
+float Function GetStimMult(actor act)
+	if act == DomActor
+		return DomStimMult
+	elseif act == subactor
+		return SubStimMult
+	elseif act == ThirdActor
+		return thirdstimmult
+	else
+		Console("Unknown actor")
+	endif	
+EndFunction
+
+Function SetStimMult(actor act, float value)
+	If act == DomActor
+		DomStimMult = value
+	elseif act == subactor
+		SubStimMult = value
+	elseif act == ThirdActor
+		ThirdStimMult = value
+	else
+		Console("Unknown actor")
+	endif	
 EndFunction
 
 bool function GetGameIsVR()
@@ -1752,16 +1416,17 @@ Function OnAnimationChange()
 		If ThirdActor
 			Console("Third actor: + " + ThirdActor.GetDisplayName() + " has joined the scene")
 
-			If AlwaysUndressAtAnimStart
-				UndressAllItems(ThirdActor)
-			EndIf
+			SendModEvent("ostim_thirdactor_join")
 		Else
 			Console("Warning - Third Actor not found")
 		endif
 
+		
 	ElseIf ThirdActor && (CorrectActorCount == 2) ; third actor, but there should not be.
 		Console("Third actor has left the scene")
 		ThirdActor = none
+
+		SendModEvent("ostim_thirdactor_leave") ; careful, getthirdactor() won't work in this event
 	EndIf
 
 	Console("Current animation: " + CurrentAnimation)
@@ -1785,54 +1450,7 @@ Function OnSpank()
 	SpankCount += 1
 EndFunction
 
-Function Redress()
-	If (DomHelm)
-		DomActor.EquipItem(DomHelm, False, True)
-	EndIf
-	If (DomGlove)
-		DomActor.EquipItem(DomGlove, False, True)
-	EndIf
-	If (DomArmor)
-		DomActor.EquipItem(DomArmor, False, True)
-	EndIf
-	If (DomBoot)
-		DomActor.EquipItem(DomBoot, False, True)
-	EndIf
-	If (DomWep)
-		DomActor.EquipItem(DomWep, False, True)
-	EndIf
-	If (SubHelm)
-		SubActor.EquipItem(SubHelm, False, True)
-	EndIf
-	If (SubGlove)
-		SubActor.EquipItem(SubGlove, False, True)
-	EndIf
-	If (SubArmor)
-		SubActor.EquipItem(SubArmor, False, True)
-	EndIf
-	If (SubBoot)
-		SubActor.EquipItem(SubBoot, False, True)
-	EndIf
-	If (SubWep)
-		SubActor.EquipItem(SubWep, False, True)
-	EndIf
-	If (ThirdHelm)
-		ThirdActor.EquipItem(ThirdHelm, False, True)
-	EndIf
-	If (ThirdGlove)
-		ThirdActor.EquipItem(ThirdGlove, False, True)
-	EndIf
-	If (ThirdArmor)
-		ThirdActor.EquipItem(ThirdArmor, False, True)
-	EndIf
-	If (ThirdBoot)
-		ThirdActor.EquipItem(ThirdBoot, False, True)
-	EndIf
-	If (ThirdWep)
-		ThirdActor.EquipItem(ThirdWep, False, True)
-	EndIf
-	; This can't possibly be the best way to do this.
-EndFunction
+
 
 Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
 	If (EndAfterActorHit)
@@ -1856,6 +1474,9 @@ Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being sti
 	String CClass = GetCurrentAnimationClass()
 	;Bool Aggressive = GetCurrentAnimIsAggressive()
 	Bool Sub = (Act == SubActor)
+	If ThirdActor == Act
+		sub = AppearsFemale(ThirdActor)
+	EndIf
 	Float Excitement = GetActorExcitement(Act)
 
 	If (CClass == ClassSex)
@@ -2016,13 +1637,11 @@ Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being sti
 			NumSpeeds += 1
 		EndIf
 
-		If (ArousedFaction)
-			Float Arousal = GetActorArousal(Act)
-			Arousal -= 50.0
-			Arousal /= 250
-			; 100 arousal -> 0.2 ~ 0 arousal -> -0.2
-			Ret += Arousal
-		EndIf
+;		If (ArousedFaction)
+;			Float Arousal = GetActorArousal(Act)
+;			Arousal -= 50.0
+;			Arousal /= 250
+;		EndIf
 
 		If (!IsNaked(GetSexPartner(Act)))
 			Ret -= 0.1
@@ -2086,6 +1705,8 @@ Float Function GetActorExcitement(Actor Act) ; at 100, Actor orgasms
 		Return DomExcitement
 	ElseIf (Act == SubActor)
 		Return SubExcitement
+	ElseIf (Act == ThirdActor)
+		return ThirdExcitement
 	Else
 		Debug.Notification("Unknown Actor")
 	EndIf
@@ -2096,6 +1717,8 @@ Function SetActorExcitement(Actor Act, Float Value)
 		DomExcitement = Value
 	ElseIf Act == SubActor
 		SubExcitement = Value
+	ElseIf (Act == ThirdActor)
+		ThirdExcitement = Value
 	Else
 		Debug.Notification("Unknown Actor")
 	EndIf
@@ -2138,13 +1761,9 @@ Function Orgasm(Actor Act)
 		EndIf
 	EndIf
 
-	SetActorArousal(Act, GetActorArousal(Act) - 50)
+;	SetActorArousal(Act, GetActorArousal(Act) - 50)
 
-	If (Act == DomActor)
-		SetBarPercent(DomBar, 0)
-	ElseIf (Act == SubActor)
-		SetBarPercent(SubBar, 0)
-	EndIf
+
 
 	Act.DamageAV("stamina", 250.0)
 EndFunction
@@ -2209,7 +1828,7 @@ EndEvent
 RegisterForModEvent("ostim_osasound", "OnOSASound")
 Event OnOSASound(String EventName, String Args, Float Nothing, Form Sender)
 	String[] Argz = new String[3]
-	Argz = StringUtil.Split(Args, "")
+	Argz = StringUtil.Split(Args, ",")
 
 	Actor Char
 	If (Argz[0] == "dom")
@@ -2324,62 +1943,7 @@ FormList[] Function GetSoundFormLists()
 	Return SoundFormLists
 EndFunction
 
-;
-;			██████╗  █████╗ ██████╗ ███████╗
-;			██╔══██╗██╔══██╗██╔══██╗██╔════╝
-;			██████╔╝███████║██████╔╝███████╗
-;			██╔══██╗██╔══██║██╔══██╗╚════██║
-;			██████╔╝██║  ██║██║  ██║███████║
-;			╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
-;
-;				Code related to the on-screen bars
 
-
-
-Function InitBar(Osexbar Bar, Bool DomsBar)
-	Bar.HAnchor = "left"
-	Bar.VAnchor = "bottom"
-	Bar.X = 200
-	Bar.Alpha = 0.0
-	Bar.SetPercent(0.0)
-	Bar.FillDirection = "Right"
-
-	If (DomsBar)
-		Bar.Y = 692
-		Bar.SetColors(0xb0b0b0, 0xADD8E6, 0xffffff)
-	Else
-		Bar.Y = 647
-		Bar.SetColors(0xb0b0b0, 0xffb6c1, 0xffffff)
-	EndIf
-
-	SetBarVisible(Bar, False)
-EndFunction
-
-Function SetBarVisible(Osexbar Bar, Bool Visible)
-	If (Visible)
-		Bar.FadeTo(100.0, 1.0)
-		Bar.FadedOut = False
-	Else
-		Bar.FadeTo(0.0, 1.0)
-		Bar.FadedOut = True
-	EndIf
-EndFunction
-
-Bool Function IsBarVisible(Osexbar Bar)
-	Return (!Bar.FadedOut)
-EndFunction
-
-Function SetBarPercent(Osexbar Bar, Float Percent)
-	Bar.SetPercent(Percent / 100.0)
-	Float zPercent = Percent / 100.0
-	If (zPercent >= 1.0)
-		FlashBar(Bar)
-	EndIf
-EndFunction
-
-Function FlashBar(Osexbar Bar)
-	Bar.ForceFlash()
-EndFunction
 
 
 ;			 ██████╗ ████████╗██╗  ██╗███████╗██████╗
@@ -2636,9 +2200,10 @@ Function SetDefaultSettings()
 	EndOnDomOrgasm = True
 	EnableSubBar = True
 	EnableDomBar = True
+	EnableThirdBar = True
 	EnableActorSpeedControl = True
 	AllowUnlimitedSpanking = False
-	AutoUndressIfNeeded = True
+	AutoUndressIfNeeded = false
 
 	EndAfterActorHit = False
 
@@ -2648,9 +2213,10 @@ Function SetDefaultSettings()
 	DomLightPos = 0
 
 	CustomTimescale = 0
-	AlwaysUndressAtAnimStart = True
-	OnlyUndressChest = False ; currently only chest can be removed with animation
-	AlwaysAnimateUndress = False
+	AlwaysUndressAtAnimStart = true
+	FullyAnimateRedress = true
+	TossClothesOntoGround = true
+	UseStrongerUnequipMethod = false
 
 	LowLightLevelLightsOnly = False
 
@@ -2672,6 +2238,9 @@ Function SetDefaultSettings()
 	UseAIControl = False
 	PauseAI = False
 	AutoHideBars = False
+	MatchBarColorToGender = false
+
+	AiSwitchChance = 6
 
 	GetInBedAfterBedScene = False
 	UseAINPConNPC = True
@@ -2703,6 +2272,14 @@ Function SetDefaultSettings()
 	FreecamFOV = 45
 	DefaultFOV = 85
 	FreecamSpeed = 3
+
+	int[] slots = new int[1]
+	slots[0] = 32
+	slots = PapyrusUtil.PushInt(slots, 33)
+	slots = PapyrusUtil.PushInt(slots, 31)
+	slots = PapyrusUtil.PushInt(slots, 37)
+	strippingslots = slots
+	oundress.updatefakearmor()
 
 	UseNativeFunctions = (SKSE.GetPluginVersion("OSA") != -1)
 	If (!UseNativeFunctions)
@@ -2742,6 +2319,18 @@ Function LoadOSexControlKeys()
 	RegisterOSexControlKey(71)
 	RegisterOSexControlKey(79)
 	RegisterOSexControlKey(209)
+EndFunction
+
+
+Function AcceptReroutingActors(Actor Act1, Actor Act2) ;compatibility thing, never call this one directly
+	ReroutedDomActor = Act1
+	ReroutedSubActor = Act2
+	Console("Recieved rerouted actors")
+EndFunction
+
+Function StartReroutedScene()
+	Console("Rerouting scene")
+	StartScene(ReroutedDomActor,  ReroutedSubActor)
 EndFunction
 
 Function DisplayTextBanner(String Txt)
@@ -2788,16 +2377,205 @@ Function RemapPullOutKey(Int zKey)
 	LoadOSexControlKeys()
 EndFunction
 
-Float ProfileTime
-Function Profile(String Name = "")
-	If (Name == "")
-		ProfileTime = Game.GetRealHoursPassed() * 60 * 60
-	Else
-		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
+;Float ProfileTime
+;Function Profile(String Name = "");
+;	If (Name == "")
+;		ProfileTime = Game.GetRealHoursPassed() * 60 * 60
+;	Else
+;		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
+;	EndIf
+;EndFunction
+
+Event OnKeyDown(Int KeyPress)
+	If (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
+		Return
 	EndIf
+
+	If (AnimationRunning())
+		If (IntArrayContainsValue(OSexControlKeys, KeyPress))
+			MostRecentOSexInteractionTime = Utility.GetCurrentRealTime()
+			If (AutoHideBars)
+				If (!obars.IsBarVisible(obars.DomBar))
+					obars.SetBarVisible(obars.DomBar, True)
+				EndIf
+				If (!obars.IsBarVisible(obars.SubBar))
+					obars.SetBarVisible(obars.SubBar, True)
+				EndIf
+				If (!obars.IsBarVisible(obars.ThirdBar))
+					obars.SetBarVisible(obars.ThirdBar, True)
+				EndIf
+			EndIf
+		EndIf
+
+		If (KeyPress == SpeedUpKey)
+			IncreaseAnimationSpeed()
+			PlayTickSmall()
+		ElseIf (KeyPress == SpeedDownKey)
+			DecreaseAnimationSpeed()
+			PlayTickSmall()
+		ElseIf ((KeyPress == PullOutKey) && !AIRunning)
+			If (ODatabase.IsSexAnimation(CurrentOID))
+				If (LastHubOID != -1)
+					TravelToAnimationIfPossible(ODatabase.GetSceneID(LastHubOID))
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+
+	If (KeyPress == ControlToggleKey)
+		If (AnimationRunning())
+			If (AIRunning)
+				AIRunning = False
+				PauseAI = True
+				Debug.Notification("Switched to manual control mode")
+				Console("Switched to manual control mode")
+			Else
+				If (PauseAI)
+					PauseAI = False
+				Else
+					AI.StartAI()
+				EndIf
+				AIRunning = True
+				Debug.Notification("Switched to automatic control mode")
+				Console("Switched to automatic control mode")
+			EndIf
+		Else
+			If (UseAIControl)
+				UseAIControl = False
+				Debug.Notification("Switched to manual control mode")
+				Console("Switched to manual control mode")
+			Else
+				UseAIControl = True
+				Debug.Notification("Switched to automatic control mode")
+				Console("Switched to automatic control mode")
+			EndIf
+		EndIf
+		PlayTickBig()
+	EndIf
+
+	Actor Target = Game.GetCurrentCrosshairRef() as Actor
+	If (KeyPress == KeyMap)
+		If (Target)
+			If (Target.IsInDialogueWithPlayer())
+				Return
+			EndIf
+			If (!Target.IsDead())
+				StartScene(PlayerRef,  Target)
+			EndIf
+		EndIf
+	EndIf
+EndEvent
+
+bool SoSInstalled
+faction SoSFaction
+
+Function Startup()
+	Debug.Notification("Installing OStim. Please wait...")
+	SceneRunning = False
+	Actra = Game.GetFormFromFile(0x000D63, "OSA.ESM") as MagicEffect
+	OsaFactionStage = Game.GetFormFromFile(0x00182F, "OSA.ESM") as Faction
+	OSAOmni = (Quest.GetQuest("0SA") as _oOmni)
+;	OSAUI = (Quest.GetQuest("0SA") as _oui)
+	PlayerRef = Game.GetPlayer()
+	NutEffect = Game.GetFormFromFile(0x000805, "Ostim.esp") as ImageSpaceModifier
+
+	OSADing = Game.GetFormFromFile(0x000D6D, "Ostim.esp") as Sound
+	OSATickSmall = Game.GetFormFromFile(0x000D6E, "Ostim.esp") as Sound
+	OSATickBig = Game.GetFormFromFile(0x000D6F, "Ostim.esp") as Sound
+
+	If (Game.GetModByName("SexLab.esm") != 255)
+		SexLab = (Game.GetFormFromFile(0x00000D62, "SexLab.esm")) as Quest
+		OrgasmSound = (Game.GetFormFromFile(0x00065A34, "SexLab.esm")) as Sound
+	EndIf
+
+	If (Game.GetModByName("SexlabAroused.esm") != 255)
+		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as Faction
+	EndIf
+
+	
+	Timescale = (Game.GetFormFromFile(0x00003A, "Skyrim.esm")) as GlobalVariable
+	
+
+	AI = ((Self as Quest) as OAiScript)
+	obars = ((Self as Quest) as obarsscript)
+	oundress = ((Self as Quest) as oundressscript)
+	RegisterForModEvent("ostim_actorhit", "OnActorHit")
+	SetSystemVars()
+	SetDefaultSettings()
+	BuildSoundFormlists()
+
+	if (BlockVRInstalls && GetGameIsVR())
+		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
+		return
+	endif
+
+	if (SKSE.GetPluginVersion("JContainers64") == -1)
+		Debug.MessageBox("OStim: JContainers is not installed, please exit and install it immediately")
+		return
+	endif
+
+	ODatabase = (Self as Quest) as ODatabaseScript
+	ODatabase.InitDatabase()
+
+	If (OSAFactionStage)
+		Console("Loaded")
+	Else
+		Debug.MessageBox("OSex and OSA do not appear to be installed, please do not continue using this save file")
+		Return
+	EndIf
+
+	if (ODatabase.GetLengthOArray(ODatabase.GetDatabaseOArray()) < 1)
+		Debug.Notification("OStim install failed")
+		return
+	Else
+		ODatabase.Unload()
+	EndIf
+
+	If (ArousedFaction)
+		Console("Sexlab Aroused loaded")
+	EndIf
+
+	if (SKSE.GetPluginVersion("ConsoleUtilSSE") == -1)
+		Debug.Notification("OStim: ConsoleUtils is not installed, a few features may not work")
+	endif
+
+	if (Game.GetModByName("Schlongs of Skyrim.esp") != 255)
+		Console("Schlongs of Skyrim loaded")
+		SoSInstalled = true
+		SoSFaction = (Game.GetFormFromFile(0x0000AFF8, "Schlongs of Skyrim.esp")) as faction
+	else 
+		SoSInstalled = false
+	EndIf
+
+	If (SexLab)
+		Console("SexLab loaded, using its cum effects")
+	Else
+		Debug.Notification("OStim: Sexlab is not loaded. Some orgasm FX will be missing")
+	EndIf
+
+	If (OSA.StimInstalledProper())
+		Console("OSA is installed correctly")
+	Else
+		Debug.MessageBox("OStim is not loaded after OSA in your mod files, please allow OStim to overwrite OSA's files and restart")
+		Return
+	EndIf
+
+	if (SKSE.GetPluginVersion("ImprovedCamera") == -1)
+		Debug.Notification("OStim: Improved Camera is not installed. First person scenes will not be available")
+		Debug.Notification("OStim: However, freecam will have extra features")
+	EndIf
+
+	If (!_oGlobal.OStimGlobalLoaded())
+		Debug.MessageBox("It appears you have the OSex facial expression fix installed. Please exit and remove that mod, as it is now included in OStim, and having it installed will break some things now!")
+		return
+	EndIf
+	OSAOmni.RebootScript()
+
+	Utility.Wait(1)
+	DisplayTextBanner("OStim installed")
 EndFunction
 
-; TODO - support for ABOMB animation
+
 
 Bool Property UseBrokenCosaveWorkaround Auto
 Function OnLoadGame()
@@ -2818,5 +2596,7 @@ Function OnLoadGame()
 		; DEBUG
 
 		AI.OnGameLoad()
+		obars.OnGameLoad()
+		oundress.onGameLoad()
 	EndIf
 EndFunction
