@@ -854,13 +854,12 @@ Function ImportSettings()
 	
 	; Clothes settings import.
 	Main.AutoUndressIfNeeded = JMap.GetInt(OstimSettingsFile, "SetUndressIfNeed")
-	Main.AlwaysAnimateUndress = JMap.GetInt(OstimSettingsFile, "SetAlwaysAnimateUndress")
 	Main.TossClothesOntoGround = JMap.GetInt(OstimSettingsFile, "SetDropClothes")
 	Main.FullyAnimateRedress = JMap.GetInt(OstimSettingsFile, "SetAnimateRedress")
 	Main.UseStrongerUnequipMethod = JMap.GetInt(OstimSettingsFile, "SetStrongerUnequip")
 	Main.AlwaysUndressAtAnimStart = JMap.GetInt(OstimSettingsFile, "SetAlwaysUndressAtStart")
 	
-	; Main.AlwaysUndressAtAnimStart = JMap.GetInt(OstimSettingsFile, "SetAlwaysUndressAtStart") These have been removed in 4.0
+	; Main.AlwaysAnimateUndress = JMap.GetInt(OstimSettingsFile, "SetAlwaysAnimateUndress") These have been removed in 4.0
 	; Main.OnlyUndressChest = JMap.GetInt(OstimSettingsFile, "SetonlyUndressChest") These have been removed in 4.0
 	
 	; Bar settings import.
