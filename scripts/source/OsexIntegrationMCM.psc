@@ -829,6 +829,10 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetUseFades", Main.UseFades as Int)
 	JMap.SetInt(OstimSettingsFile, "SetUseAutoFades", Main.UseAutoFades as Int)
 	JMap.SetInt(OstimSettingsFile, "SetMute", Main.MuteOSA as Int)
+
+	int clothes = JArray.objectWithInts(main.StrippingSlots)
+
+	JMap.setObj(OstimSettingsFile,"Slots", clothes)
 	
 	; Save to file.
 	Jvalue.WriteToFile(OstimSettingsFile, JContainers.UserDirectory() + "OstimMCMSettings.json")
@@ -919,6 +923,9 @@ Function ImportSettings()
 	
 	Main.MuteOSA = JMap.GetInt(OstimSettingsFile, "SetMute")
 	
+	main.StrippingSlots = JArray.asIntArray((jmap.getObj(OstimSettingsFile, "Slots")))
+
+	main.GetUndressScript().UpdateFakeArmor()
 	; Force page reset to show updated changes.
 	ForcePageReset()
 EndFunction
