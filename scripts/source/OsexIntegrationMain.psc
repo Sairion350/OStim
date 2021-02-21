@@ -1745,13 +1745,13 @@ Function Orgasm(Actor Act)
 
 	Utility.Wait(0.75)
 
-	If (SexLab && !IsFemale(Act)) ; spray cum
-		If (IsVaginal() || (GetCurrentAnimationClass() == ClassMasturbate))
-			ApplyCum(GetSexPartner(Act), True)
-		Else
-			ApplyCum(GetSexPartner(Act), False)
-		EndIf
-	EndIf
+;	If (SexLab && !IsFemale(Act)) ; spray cum
+;		If (IsVaginal() || (GetCurrentAnimationClass() == ClassMasturbate))
+;			ApplyCum(GetSexPartner(Act), True)
+;		Else
+;			ApplyCum(GetSexPartner(Act), False)
+;		EndIf
+;	EndIf
 
 	If (Act == DomActor)
 		SetCurrentAnimationSpeed(1)
@@ -1772,26 +1772,17 @@ Function Orgasm(Actor Act)
 	Act.DamageAV("stamina", 250.0)
 EndFunction
 
-Function ApplyCum(Actor Act, Bool Vaginal)
-	Spell Vaginal1 = (Game.GetFormFromFile(0x0008D679, "SexLab.esm")) as Spell
-	Spell Oral1 = (Game.GetFormFromFile(0x0008D67D, "SexLab.esm")) as Spell
-
-	If (Vaginal)
-		Vaginal1.Cast(Act)
-	Else
-		Oral1.Cast(Act)
-	EndIf
-EndFunction
-
-;Function HideOSexMenu()
-;	Console("hide")
-;	Int Glyph = OSAOmni.Glyph
-;	UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.ctr.sceneMenuDirect")
+;Function ApplyCum(Actor Act, Bool Vaginal)
+;	Spell Vaginal1 = (Game.GetFormFromFile(0x0008D679, "SexLab.esm")) as Spell
+;	Spell Oral1 = (Game.GetFormFromFile(0x0008D67D, "SexLab.esm")) as Spell
+;
+;	If (Vaginal)
+;		Vaginal1.Cast(Act)
+;	Else
+;		Oral1.Cast(Act)
+;	EndIf
 ;EndFunction
 
-;Function ShowOSexMenu()
-;	UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", False)
-;EndFunction
 
 
 ;			███████╗ ██████╗ ██╗   ██╗███╗   ██╗██████╗
@@ -2491,10 +2482,10 @@ Function Startup()
 	OSATickSmall = Game.GetFormFromFile(0x000D6E, "Ostim.esp") as Sound
 	OSATickBig = Game.GetFormFromFile(0x000D6F, "Ostim.esp") as Sound
 
-	If (Game.GetModByName("SexLab.esm") != 255)
-		SexLab = (Game.GetFormFromFile(0x00000D62, "SexLab.esm")) as Quest
-		OrgasmSound = (Game.GetFormFromFile(0x00065A34, "SexLab.esm")) as Sound
-	EndIf
+	;If (Game.GetModByName("SexLab.esm") != 255)
+	;	SexLab = (Game.GetFormFromFile(0x00000D62, "SexLab.esm")) as Quest
+	;	OrgasmSound = (Game.GetFormFromFile(0x00065A34, "SexLab.esm")) as Sound
+	;EndIf
 
 	If (Game.GetModByName("SexlabAroused.esm") != 255)
 		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as Faction
@@ -2539,9 +2530,9 @@ Function Startup()
 		ODatabase.Unload()
 	EndIf
 
-	If (ArousedFaction)
-		Console("Sexlab Aroused loaded")
-	EndIf
+	;If (ArousedFaction)
+	;	Console("Sexlab Aroused loaded")
+	;EndIf
 
 	if (SKSE.GetPluginVersion("ConsoleUtilSSE") == -1)
 		Debug.Notification("OStim: ConsoleUtils is not installed, a few features may not work")
@@ -2555,11 +2546,11 @@ Function Startup()
 		SoSInstalled = false
 	EndIf
 
-	If (SexLab)
-		Console("SexLab loaded, using its cum effects")
-	Else
-		Console("Sexlab is not loaded.")
-	EndIf
+	;If (SexLab)
+	;	Console("SexLab loaded, using its cum effects")
+	;Else
+	;	Console("Sexlab is not loaded.")
+	;EndIf
 
 	If (OSA.StimInstalledProper())
 		Console("OSA is installed correctly")
