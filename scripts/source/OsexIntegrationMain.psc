@@ -998,7 +998,7 @@ Function ShowNavMenu() ;only works during SEX animations
 EndFunction
 
 bool function IsInFreeCam()
-	return IsFreeCamming
+	return (Game.GetCameraState() == 3)
 endfunction
 
 float Function GetStimMult(actor act)
@@ -2035,6 +2035,10 @@ Bool Function StringArrayContainsValue(String[] Arr, String Val)
 		i += 1
 	EndWhile
 	Return False
+EndFunction
+
+bool Function StringContains(string str, string contains)
+	return (StringUtil.Find(str, contains) != -1)
 EndFunction
 
 Int Function GetTimeScale()
