@@ -201,7 +201,7 @@ Event OnPageReset(String Page)
 		SetAlwaysUndressAtStart = AddToggleOption("Fully undress at start", Main.AlwaysUndressAtAnimStart)
 		SetUndressIfneed = AddToggleOption("Remove clothes mid-scene", Main.AutoUndressIfNeeded)
 		SetDropClothes = AddToggleOption("Toss clothes onto ground", Main.TossClothesOntoGround)
-		SetStrongerUnequip = AddToggleOption("Use stronger unequip method", Main.UseStrongerUnequipMethod)
+		;SetStrongerUnequip = AddToggleOption("Use stronger unequip method", Main.UseStrongerUnequipMethod) Likely redundant 
 		SetAnimateRedress= AddToggleOption("Use animated redress", Main.FullyAnimateRedress)
 		;SetAlwaysAnimateUndress = AddToggleOption("Use undress animation", Main.AlwaysAnimateUndress) Removed in 4.0, may be reimplemented but it was bugged
 		;SetonlyUndressChest = AddToggleOption("Only undress chest piece", Main.OnlyUndressChest) REMOVED in 4.0
@@ -403,7 +403,7 @@ Event OnOptionHighlight(Int Option)
 	ElseIf (Option == SetResetState)
 		SetInfoText("Click this if you keep getting a Scene Already Running type error")
 	ElseIf (Option == SetUndressingAbout)
-		SetInfoText("This panel lets you select what armor slots are stripped by OStim. See this if you don't know what that is\nhttps://www.creationkit.com/index.php?title=Biped_Object\nSlots where the name is green mean that Bethesda designated that slot to be used that way\nCyan names mean that the community has designated that slot to be used that way\nMany mods do not use the proper slots, so take the names with a grain of salt\nMouse over the names to see if you are wearing an armor piece in that slot")
+		SetInfoText("This panel lets you select what armor slots are stripped by OStim. See this if you don't know what that is\nhttps://www.creationkit.com/index.php?title=Biped_Object\nThese slots will apply to both the player AND NPCs\nSlots where the name is green mean that Bethesda designated that slot to be used that way\nCyan names mean that the community has designated that slot to be used that way\nMany mods do not use the proper slots, so take the names with a grain of salt\nMouse over the names to see if you are wearing an armor piece in that slot")
 	ElseIf (Option == SetForceAIIfAttacked)
 		SetInfoText("If using manual mode by default, this will force automatic mode to activate if the player is the victim in an aggressive scene")
 	ElseIf (Option == SetForceAIIfAttacking)
@@ -769,7 +769,7 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetAlwaysUndressAtStart", Main.AlwaysUndressAtAnimStart as Int)
 	JMap.SetInt(OstimSettingsFile, "SetDropClothes", Main.TossClothesOntoGround as Int)
 	JMap.SetInt(OstimSettingsFile, "SetAnimateRedress", Main.FullyAnimateRedress as Int)
-	JMap.SetInt(OstimSettingsFile, "SetStrongerUnequip", Main.UseStrongerUnequipMethod as Int)
+	;JMap.SetInt(OstimSettingsFile, "SetStrongerUnequip", Main.UseStrongerUnequipMethod as Int)
 
 	; JMap.SetInt(OstimSettingsFile, "SetAlwaysAnimateUndress", Main.AlwaysAnimateUndress as Int) These have been removed in 4.0
 	; JMap.SetInt(OstimSettingsFile, "SetonlyUndressChest", Main.OnlyUndressChest as Int) These have been removed in 4.0
@@ -860,7 +860,7 @@ Function ImportSettings()
 	Main.AutoUndressIfNeeded = JMap.GetInt(OstimSettingsFile, "SetUndressIfNeed")
 	Main.TossClothesOntoGround = JMap.GetInt(OstimSettingsFile, "SetDropClothes")
 	Main.FullyAnimateRedress = JMap.GetInt(OstimSettingsFile, "SetAnimateRedress")
-	Main.UseStrongerUnequipMethod = JMap.GetInt(OstimSettingsFile, "SetStrongerUnequip")
+	;Main.UseStrongerUnequipMethod = JMap.GetInt(OstimSettingsFile, "SetStrongerUnequip")
 	Main.AlwaysUndressAtAnimStart = JMap.GetInt(OstimSettingsFile, "SetAlwaysUndressAtStart")
 	
 	; Main.AlwaysAnimateUndress = JMap.GetInt(OstimSettingsFile, "SetAlwaysAnimateUndress") These have been removed in 4.0
