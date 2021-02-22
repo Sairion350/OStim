@@ -440,6 +440,8 @@ Event AnimatedRedressThread(string eventName, string strArg, float numArg, Form 
 	;items = PapyrusUtil.
 	bool female = ostim.AppearsFemale(target)
 
+	float startingHealth = target.GetAV("Health")
+
 	Utility.Wait(Utility.RandomFloat(0.45, afMax = 0.65))
 
 	int i = 0
@@ -447,6 +449,9 @@ Event AnimatedRedressThread(string eventName, string strArg, float numArg, Form 
 		
 		if items[i]
 			bool loaded = target.is3dloaded()
+			If ostim.IsActorActive(target) || target.IsDead() || (target.GetAV("Health") < startingHealth)
+				loaded = false
+			EndIf
 
 			armor armorpiece = (items[i] as armor)
 			int slotmask = armorpiece.GetSlotMask()
@@ -505,7 +510,9 @@ Event AnimatedRedressThread(string eventName, string strArg, float numArg, Form 
 			if loaded
 				Utility.Wait(dressPoint)
 			endif
-			target.EquipItem(items[i], false, true)
+			if !target.IsDead() && !ostim.IsActorActive(target)
+				target.EquipItem(items[i], false, true)
+			endif
 			if loaded
 				Utility.Wait(AnimLen - dressPoint)
 			endif
@@ -517,7 +524,9 @@ Event AnimatedRedressThread(string eventName, string strArg, float numArg, Form 
 		i += 1
 	endwhile
 
-	Debug.SendAnimationEvent(target, "IdleForceDefaultState")
+	if !ostim.IsActorActive(target)
+		Debug.SendAnimationEvent(target, "IdleForceDefaultState")
+	endif 
 
 	if numArg == 1.0
 		act1 = none 
