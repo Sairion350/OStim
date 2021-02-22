@@ -312,7 +312,7 @@ EndEvent
 ; Call this function to start a new OStim scene
 Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zUndressSub = False, Bool zAnimateUndress = False, String zStartingAnimation = "", Actor zThirdActor = None, ObjectReference Bed = None, Bool Aggressive = False, Actor AggressingActor = None)
 	If (SceneRunning)
-		Debug.Notification("Osex scene already running")
+		Debug.Notification("OSex scene already running")
 		Return False
 	EndIf
 	If IsActorActive(dom) || IsActorActive(sub)
@@ -402,6 +402,7 @@ Event OnUpdate() ;OStim main logic loop
 	SubStimMult = 1.0
 	ThirdStimMult = 1.0
 	EndedProper = False
+	StallOrgasm = False
 	SpankCount = 0
 	SubTimesOrgasm = 0
 	DomTimesOrgasm = 0
