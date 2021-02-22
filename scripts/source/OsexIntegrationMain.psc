@@ -180,6 +180,8 @@ form ThirdWep
 
 Bool IsFreeCamming
 
+bool StallOrgasm
+
 Int DomTimesOrgasm
 Int SubTimesOrgasm
 Int ThirdTimesOrgasm
@@ -391,6 +393,7 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	IsFlipped = False
+	StallOrgasm = false
 	CurrentSpeed = 0
 	DomExcitement = 0.0
 	SubExcitement = 0.0
@@ -600,7 +603,6 @@ Event OnUpdate() ;OStim main logic loop
 			If (EndOnDomOrgasm)
 				if ODatabase.HasIdleSpeed(CurrentOID)
 					SetCurrentAnimationSpeed(0)
-					utility.Wait(1)
 				endif
 				Utility.Wait(4)
 				EndAnimation()
@@ -1739,23 +1741,21 @@ Function Orgasm(Actor Act)
 			Utility.Wait(2.5)
 			SetGameSpeed("1")
 		EndIf
-		Game.ShakeCamera(None, 1.00, 2.0)
+
+		If ((DomActor == PlayerRef) || (SubActor == PlayerRef))
+			ShakeCamera(1.00, 2.0)
+		EndIf
+
 		ShakeController(0.5, 0.7)
 	EndIf
-
-	Utility.Wait(0.75)
-
-;	If (SexLab && !IsFemale(Act)) ; spray cum
-;		If (IsVaginal() || (GetCurrentAnimationClass() == ClassMasturbate))
-;			ApplyCum(GetSexPartner(Act), True)
-;		Else
-;			ApplyCum(GetSexPartner(Act), False)
-;		EndIf
-;	EndIf
 
 	If (Act == DomActor)
 		SetCurrentAnimationSpeed(1)
 	EndIf
+
+	While StallOrgasm
+		Utility.Wait(0.3)
+	EndWhile
 
 	If (OrgasmIncreasesRelationship)
 		Actor Partner = GetSexPartner(Act)
@@ -1768,20 +1768,16 @@ Function Orgasm(Actor Act)
 ;	SetActorArousal(Act, GetActorArousal(Act) - 50)
 
 
-
 	Act.DamageAV("stamina", 250.0)
 EndFunction
 
-;Function ApplyCum(Actor Act, Bool Vaginal)
-;	Spell Vaginal1 = (Game.GetFormFromFile(0x0008D679, "SexLab.esm")) as Spell
-;	Spell Oral1 = (Game.GetFormFromFile(0x0008D67D, "SexLab.esm")) as Spell
-;
-;	If (Vaginal)
-;		Vaginal1.Cast(Act)
-;	Else
-;		Oral1.Cast(Act)
-;	EndIf
-;EndFunction
+function SetOrgasmStall(bool set)
+	StallOrgasm = set
+endfunction
+
+bool function GetOrgasmStall()
+	return stallorgasm
+endfunction
 
 
 
@@ -1857,12 +1853,18 @@ Function OnSound(Actor Act, Int SoundID, Int FormNumber)
 	If (FormNumber == 60)
 		OnSpank()
 		ShakeController(0.3)
-		ShakeCamera(0.5)
+		If (UseScreenShake && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+			ShakeCamera(0.5)
+		EndIf
+		
 	EndIf
 
 	If (FormNumber == 50)
 		ShakeCamera(0.5)
-		ShakeController(0.1)
+		If (UseScreenShake && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+			ShakeController(0.1)
+		EndIf
+	
 	EndIf
 
 	String Arg = "third"
@@ -1993,9 +1995,9 @@ Int Function SpeedStringToInt(String In) ; casting does not work so...
 EndFunction
 
 Function ShakeCamera(Float Power, Float Duration = 0.1)
-	If (UseScreenShake && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+	if !IsFreeCamming
 		Game.ShakeCamera(PlayerRef, Power, Duration)
-	EndIf
+	endif
 EndFunction
 
 Function ShakeController(Float Power, Float Duration = 0.1)
@@ -2278,7 +2280,6 @@ Function SetDefaultSettings()
 	slots = PapyrusUtil.PushInt(slots, 31)
 	slots = PapyrusUtil.PushInt(slots, 37)
 	strippingslots = slots
-	oundress.updatefakearmor()
 
 	UseNativeFunctions = (SKSE.GetPluginVersion("OSA") != -1)
 	If (!UseNativeFunctions)
@@ -2568,6 +2569,10 @@ Function Startup()
 		Debug.MessageBox("It appears you have the OSex facial expression fix installed. Please exit and remove that mod, as it is now included in OStim, and having it installed will break some things now!")
 		return
 	EndIf
+
+	if Utility.GetCurrentGameTime() > 2
+		debug.MessageBox("You seem to be installing OStim mid-playthough. If this save previously had an old OStim version installed, don't forget you needed to run a save cleaner to clean out old scripts. If you have done so already, you can safely ignore this message")
+	endif
 	OSAOmni.RebootScript()
 
 	Utility.Wait(1)

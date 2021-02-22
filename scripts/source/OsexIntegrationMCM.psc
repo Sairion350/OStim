@@ -714,7 +714,6 @@ Function OnSlotSelect(int option)
 	 	SetToggleOptionValue(Option, true)
 	 endif
 
-	 main.GetUndressScript().UpdateFakeArmor()
 EndFunction
 
 Function OnSlotMouseOver(int option)
@@ -925,7 +924,6 @@ Function ImportSettings()
 	
 	main.StrippingSlots = JArray.asIntArray((jmap.getObj(OstimSettingsFile, "Slots")))
 
-	main.GetUndressScript().UpdateFakeArmor()
 	; Force page reset to show updated changes.
 	ForcePageReset()
 EndFunction
