@@ -937,13 +937,9 @@ EndFunction
 
 Bool Function IsFemale(Actor Act)
 	If SoSInstalled
-		if act.IsInFaction(SoSFaction)
-			return false
-		else 
-			return true
-		endif
+		return !act.IsInFaction(SoSFaction)
 	else 
-		Return (Act.GetLeveledActorBase().GetSex() == 1)
+		Return AppearsFemale(act)
 	endif
 EndFunction
 
@@ -2541,9 +2537,16 @@ Function Startup()
 	endif
 
 	if (Game.GetModByName("Schlongs of Skyrim.esp") != 255)
-		Console("Schlongs of Skyrim loaded")
-		SoSInstalled = true
+		
+		
 		SoSFaction = (Game.GetFormFromFile(0x0000AFF8, "Schlongs of Skyrim.esp")) as faction
+
+		if SoSFaction
+			Console("Schlongs of Skyrim loaded")
+			SoSInstalled = true
+		else 
+			SoSInstalled = false
+		endif
 	else 
 		SoSInstalled = false
 	EndIf
