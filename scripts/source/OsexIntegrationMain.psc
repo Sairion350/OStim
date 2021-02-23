@@ -770,6 +770,10 @@ Int Function GetCurrentAnimationOID()
 	Return CurrentOID
 EndFunction
 
+string function GetCurrentAnimationSceneID() ;the scene ID, i.e. BB|Sy6!KNy9|HhPo|MoShoPo
+	return ODatabase.GetSceneID( getcurrentanimationOID() )
+endfunction
+
 Function LightActor(Actor Act, Int Pos, Int Brightness) ; pos 1 - ass, pos 2 - face | brightness - 0 = dim
 	If (Pos == 0)
 		Return
