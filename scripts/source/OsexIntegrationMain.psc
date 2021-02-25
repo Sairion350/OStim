@@ -1455,6 +1455,7 @@ Function OnSpank()
 	EndIf
 
 	SpankCount += 1
+	SendModEvent("ostim_spank")
 EndFunction
 
 
