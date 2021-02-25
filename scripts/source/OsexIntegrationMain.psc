@@ -1028,9 +1028,7 @@ Function SetStimMult(actor act, float value)
 	endif	
 EndFunction
 
-bool function GetGameIsVR()
-	return (PapyrusUtil.GetScriptVersion() == 36) ;obviously this no guarantee but it's the best we've got for now
-endfunction
+
 
 
 ;
@@ -2323,6 +2321,9 @@ Function LoadOSexControlKeys()
 	RegisterOSexControlKey(209)
 EndFunction
 
+bool function GetGameIsVR()
+	return (PapyrusUtil.GetScriptVersion() == 36) ;obviously this no guarantee but it's the best we've got for now
+endfunction
 
 Function AcceptReroutingActors(Actor Act1, Actor Act2) ;compatibility thing, never call this one directly
 	ReroutedDomActor = Act1

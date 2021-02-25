@@ -368,7 +368,8 @@ Event OstimChange(string eventName, string strArg, float numArg, Form sender)
 				EndIf
 				strip(ostim.getdomactor())
 			EndIf
-		ElseIf (!SubNaked)
+		EndIf
+		If (!SubNaked)
 			If (CClass == "Sx") || (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2") || (CClass == "An")|| (CClass == "BoJ")|| (CClass == "BoF")
 				If ostim.IsInFreeCam()
 					DidToggle = True
@@ -376,7 +377,8 @@ Event OstimChange(string eventName, string strArg, float numArg, Form sender)
 				EndIf
 				strip(ostim.GetSubActor())
 			EndIf
-		ElseIf (!ThirdNaked)
+		EndIf
+		If (!ThirdNaked)
 			If (CClass == "Sx") || (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2") || (CClass == "An")|| (CClass == "BoJ")|| (CClass == "BoF")
 				If ostim.IsInFreeCam()
 					DidToggle = True
