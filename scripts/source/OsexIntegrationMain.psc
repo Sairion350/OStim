@@ -1027,6 +1027,22 @@ Function SetStimMult(actor act, float value)
 		Console("Unknown actor")
 	endif	
 EndFunction
+; spanking stuff
+int Function GetSpankCount() ; num of spankings so far this scene
+	return SpankCount
+EndFunction
+
+int Function GetMaxSpanksAllowed() ; maximum number of spankings before it deals damage
+	return spankmax
+EndFunction
+
+Function SetSpankMax(int max) ; maximum number of spankings before it deals damage
+	SpankMax = max
+EndFunction 
+
+Function SetSpankCount(int count) ; num of spankings so far this scene
+	SpankCount = count
+EndFunction 
 
 
 
@@ -1455,7 +1471,6 @@ Function OnSpank()
 	SpankCount += 1
 	SendModEvent("ostim_spank")
 EndFunction
-
 
 
 Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
