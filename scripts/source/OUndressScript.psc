@@ -367,6 +367,7 @@ Event OstimChange(string eventName, string strArg, float numArg, Form sender)
 					ostim.ToggleFreeCam()
 				EndIf
 				strip(ostim.getdomactor())
+				SendModEvent("ostim_midsceneundress_dom")
 			EndIf
 		EndIf
 		If (!SubNaked)
@@ -376,6 +377,7 @@ Event OstimChange(string eventName, string strArg, float numArg, Form sender)
 					ostim.ToggleFreeCam()
 				EndIf
 				strip(ostim.GetSubActor())
+				SendModEvent("ostim_midsceneundress_sub")
 			EndIf
 		EndIf
 		If (!ThirdNaked)
@@ -385,6 +387,7 @@ Event OstimChange(string eventName, string strArg, float numArg, Form sender)
 					ostim.ToggleFreeCam()
 				EndIf
 				strip(ostim.getthirdactor())
+				SendModEvent("ostim_midsceneundress_third")
 			EndIf
 		EndIf
 	EndIf 

@@ -939,7 +939,7 @@ ObjectReference Function GetBed()
 	Return Currentbed
 EndFunction
 
-Bool Function IsFemale(Actor Act)
+Bool Function IsFemale(Actor Act) ; genitalia based / has a vagina and not a penis
 	If SoSInstalled
 		return !act.IsInFaction(SoSFaction)
 	else 
@@ -947,7 +947,7 @@ Bool Function IsFemale(Actor Act)
 	endif
 EndFunction
 
-Bool Function AppearsFemale(Actor Act)
+Bool Function AppearsFemale(Actor Act) ; gender based / looks like a woman but can have a penis
 	Return (Act.GetLeveledActorBase().GetSex() == 1)
 EndFunction
 
