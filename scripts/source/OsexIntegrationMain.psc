@@ -293,6 +293,9 @@ Float[] MouthStimValues
 Float[] HandStimValues
 Float[] ClitStimValues
 
+string[] subMouthOpenClasses
+string[] domMouthOpenClasses
+
 Float[] AnusStimValues
 Float[] FeetStimValues
 Float[] BreastsStimValues
@@ -1372,6 +1375,28 @@ Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
 	EndIf
 EndEvent
 
+function OpenMouth(actor act)
+	Console("Opening mouth...")
+	string a = _oGlobal.GetFormID_S(act.GetActorBase())
+	
+	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 40)
+	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 100)
+	SendModEvent("0SAA" + a + "_BlendPh", strArg = "5", numArg = 100)
+EndFunction
+
+function CloseMouth(actor act)
+	Console("Closing mouth...")
+	string a = _oGlobal.GetFormID_S(act.GetActorBase())
+	
+	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 0)
+	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 0)
+	SendModEvent("0SAA" + a + "_BlendPh", strArg = "5", numArg = 0)
+EndFunction
+
+bool function MouthIsOpen(actor act)
+	return (MfgConsoleFunc.GetPhoneme(act, 0) > 75)
+EndFunction
+
 Function OnAnimationChange()
 	Console("Changing animation...")
 
@@ -1449,6 +1474,33 @@ Function OnAnimationChange()
 
 		SendModEvent("ostim_thirdactor_leave") ; careful, getthirdactor() won't work in this event
 	EndIf
+
+
+	if StringArrayContainsValue(subMouthOpenClasses, GetCurrentAnimationClass())
+		if MouthIsOpen(SubActor)
+			;Console("Mouth already open")
+		else 
+			OpenMouth(SubActor)
+		endif
+	else 
+		if MouthIsOpen(subactor)
+			CloseMouth(subactor)
+		endif
+	endif
+
+	if StringArrayContainsValue(domMouthOpenClasses, GetCurrentAnimationClass())
+		if MouthIsOpen(DomActor)
+			;Console("Mouth already open")
+		else 
+			OpenMouth(DomActor)
+		endif
+	else 
+		if MouthIsOpen(DomActor)
+			CloseMouth(DomActor)
+		endif
+	endif
+
+
 
 	Console("Current animation: " + CurrentAnimation)
 	Console("Current speed: " + CurrentSpeed)
@@ -2210,6 +2262,20 @@ Function SetSystemVars()
 	Speeds[6] = "4.5"
 	Speeds[7] = "5"
 	Speeds[8] =  "6"
+
+	subMouthOpenClasses = new String[5]
+	subMouthOpenClasses[0] = "BJ"
+	subMouthOpenClasses[1] = "ApPJ"
+	subMouthOpenClasses[2] = "VBJ"
+	subMouthOpenClasses[3] = "HhBJ"
+	subMouthOpenClasses[4] = "HhPJ"
+
+	domMouthOpenClasses = new String[5]
+	domMouthOpenClasses[0] = "VJ"
+	domMouthOpenClasses[1] = "VBJ"
+	domMouthOpenClasses[2] = "VHJ"
+	domMouthOpenClasses[3] = "BoF"
+	domMouthOpenClasses[4] = "SJ"
 EndFunction
 
 Function SetDefaultSettings()

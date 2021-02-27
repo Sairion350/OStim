@@ -208,6 +208,9 @@ EndEvent
 Event OnBlendPh(String EventName, String zType, Float zAmount, Form Sender)
 	Int zTy = zType as Int
 	_oGlobal.BlendPh(Actra, zAmount as Int, MfgConsoleFunc.GetPhoneme(Actra, zTy), zTy, ThrottleMFG)
+
+	;osexintegrationmain ostim = game.GetFormFromFile(0x000801, "Ostim.esp") as OsexIntegrationMain
+	;osexintegrationmain.console("Type: " + zType + " Amount: " + zAmount + " Anim: " + ostim.getcurrentanimation())
 EndEvent
 
 ;For Receiving Expressions
