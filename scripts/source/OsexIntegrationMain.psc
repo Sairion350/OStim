@@ -414,12 +414,6 @@ Event OnUpdate() ;OStim main logic loop
 	SpankMax = Utility.RandomInt(1, 6)
 	IsFreeCamming = False
 
-	If (!UseAIControl)
-		AIRunning = False
-	Else
-		AIRunning = True
-	EndIf
-
 	Actor[] actro
 	If (ThirdActor)
 		Actro  = New Actor[3]
@@ -480,6 +474,7 @@ Event OnUpdate() ;OStim main logic loop
     LastHubOID = -1
     OnAnimationChange()
 
+
     If (LowLightLevelLightsOnly && DomActor.GetLightLevel() < 20) || (!LowLightLevelLightsOnly)
     	If (DomLightPos > 0)
     		lightActor(DomActor, DomLightPos, DomLightBrightness)
@@ -522,7 +517,12 @@ Event OnUpdate() ;OStim main logic loop
 	Float LoopTimeTotal = 0
 	Float LoopStartTime
 	
+	AIRunning = UseAIControl
 
+	If AIRunning
+		ai.StartAI() 
+	EndIf
+	
 	If (!AIRunning)
 		If ((DomActor != PlayerRef) && (SubActor != PlayerRef) && (ThirdActor != PlayerRef) && UseAINPConNPC)
 			Console("NPC on NPC scene detected. Starting AI")

@@ -27,8 +27,7 @@ Event OnInit()
 	ODatabase = OStim.GetODatabase()
 	PlayerRef = Game.GetPlayer()
 
-	RegisterForModEvent("ostim_start", "Ostim_start")
-	RegisterForModEvent("ostim_start_ai", "AI_Thread")
+	OnGameLoad()
 
 	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "VJ")
 	ForeplayClasses = PapyrusUtil.PushString(ForeplayClasses, "ApHJ")
@@ -69,12 +68,12 @@ Event OnInit()
 	MainSexClasses = PapyrusUtil.PushString(MainSexClasses, "An")
 EndEvent
 
-Event OStim_Start(String EventName, String strArg, Float NumArg, Form Sender)
-	If (!OStim.UseAIControl)
-		Return
-	EndIf
-	StartAI()
-EndEvent
+;Event OStimStart(String EventName, String strArg, Float NumArg, Form Sender)
+;	If (!OStim.UseAIControl)
+;		Return
+;	EndIf
+;	StartAI()
+;EndEvent
 
 Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 	Console("Starting OAI")
@@ -448,6 +447,6 @@ EndFunction
 
 Function OnGameLoad()
 	Console("Fixing AI thread")
-	RegisterForModEvent("ostim_start", "Ostim_start")
+	;RegisterForModEvent("ostim_start", "Ostimstart")
 	RegisterForModEvent("ostim_start_ai", "AI_Thread")
 EndFunction

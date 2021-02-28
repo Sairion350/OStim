@@ -282,7 +282,6 @@ Function EquipForms(actor target, Form[] items)
 	while i < items.Length
 		
 		if items[i]
-			target.additem(items[i], 1, true)
 			target.EquipItem(items[i], false, true)
 		EndIf
 
