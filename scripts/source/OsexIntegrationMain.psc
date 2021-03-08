@@ -406,6 +406,9 @@ Event OnUpdate() ;OStim main logic loop
 	ThirdStimMult = 1.0
 	EndedProper = False
 	StallOrgasm = False
+	blockDomFaceCommands = false
+	blocksubFaceCommands = false
+	blockthirdFaceCommands = false
 	SpankCount = 0
 	SubTimesOrgasm = 0
 	DomTimesOrgasm = 0
@@ -425,8 +428,23 @@ Event OnUpdate() ;OStim main logic loop
 	RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_Sound", "OnSoundDom")
 	RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_Sound", "OnSoundSub")
 
+	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_BlendMo", "OnMoDom")
+	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_BlendMo", "OnMoSub")
+
+	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_BlendPh", "OnPhDom")
+	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_BlendPh", "OnPhSub")
+
+	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_BlendEx", "OnExDom")
+	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_BlendEx", "OnExSub")
+
 	If (ThirdActor)
 		RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound", "OnSoundThird")
+
+		RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo", "OnMoThird")
+
+		RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh", "OnPhThird")
+
+		RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx", "OnExThird")
 	EndIf
 
 	Actro[0] = DomActor
@@ -727,7 +745,7 @@ Int Function GetAPIVersion()
 	;5 adds ODatabase, getCurrentLeadingActor
 	;4 added onanimationchange event and decrease speed
 	;3 introduces events and getmostrecentorgasmedactor
-	Return 7
+	Return 8
 EndFunction
 
 Function IncreaseAnimationSpeed()
@@ -1462,6 +1480,12 @@ Function OnAnimationChange()
 		If ThirdActor
 			Console("Third actor: + " + ThirdActor.GetDisplayName() + " has joined the scene")
 
+
+			RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound", "OnSoundThird")
+			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo", "OnMoThird")
+			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh", "OnPhThird")
+			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx", "OnExThird")
+
 			SendModEvent("ostim_thirdactor_join")
 		Else
 			Console("Warning - Third Actor not found")
@@ -1470,6 +1494,12 @@ Function OnAnimationChange()
 		
 	ElseIf ThirdActor && (CorrectActorCount == 2) ; third actor, but there should not be.
 		Console("Third actor has left the scene")
+
+		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound")
+		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo")
+		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh")
+		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx")
+
 		ThirdActor = none
 
 		SendModEvent("ostim_thirdactor_leave") ; careful, getthirdactor() won't work in this event
@@ -1526,7 +1556,7 @@ EndFunction
 
 
 Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
-	If (EndAfterActorHit)
+	If (EndAfterActorHit) && (domactor.IsInCombat() || SubActor.IsInCombat())
 		EndAnimation(False)
 	EndIf
 EndEvent
@@ -1847,6 +1877,127 @@ bool function GetOrgasmStall()
 endfunction
 
 
+; Faces
+
+bool blockDomFaceCommands
+bool blocksubFaceCommands
+bool blockthirdFaceCommands
+
+function MuteFaceData(actor act)
+	if act == DomActor
+		blockDomFaceCommands = true
+	elseif act == subactor
+		blocksubFaceCommands = true
+	elseif act == thirdactor 
+		blockthirdFaceCommands = true
+	endif
+EndFunction
+
+function UnMuteFaceData(actor act)
+	if act == DomActor
+		blockDomFaceCommands = false
+	elseif act == subactor
+		blocksubFaceCommands = false
+	elseif act == thirdactor 
+		blockthirdFaceCommands = false
+	endif
+EndFunction
+
+bool function FaceDataIsMuted(actor act)
+	if act == DomActor
+		return blockdomfacecommands
+	elseif act == subactor
+		return blocksubFaceCommands
+	elseif act == thirdactor 
+		return blockthirdFaceCommands
+	endif
+EndFunction
+
+Event OnMoDom(String EventName, String zType, Float zAmount, Form Sender) 
+	if blockDomFaceCommands
+		return 
+	endif
+	OnMo(DomActor, ztype as int, zamount as int)
+EndEvent
+
+Event OnMoSub(String EventName, String zType, Float zAmount, Form Sender)
+	if blockSubFaceCommands
+		return 
+	endif
+	OnMo(SubActor, ztype as int, zamount as int)
+EndEvent
+
+Event OnMoThird(String EventName, String zType, Float zAmount, Form Sender)
+	if blockthirdFaceCommands
+		return 
+	endif
+	OnMo(ThirdActor, ztype as int, zamount as int)
+EndEvent
+
+
+function OnMo(actor act, int type, int amount) ;eye related face blending
+	;Console("Eye event: " + "Type: " + type + " Amount: " + amount)
+	_oGlobal.BlendMo(Act, amount, MfgConsoleFunc.GetModifier(Act, type), type, 3)
+endfunction
+
+
+Event OnPhDom(String EventName, String zType, Float zAmount, Form Sender)
+	if blockDomFaceCommands
+		return 
+	endif
+	OnPh(DomActor, ztype as int, zamount as int)
+EndEvent
+
+Event OnPhSub(String EventName, String zType, Float zAmount, Form Sender)
+	if blockSubFaceCommands
+		return 
+	endif
+	OnPh(SubActor, ztype as int, zamount as int)
+EndEvent
+
+Event OnPhThird(String EventName, String zType, Float zAmount, Form Sender)
+	if blockthirdFaceCommands
+		return 
+	endif
+	OnPh(ThirdActor, ztype as int, zamount as int)
+EndEvent
+
+
+function OnPh(actor act, int type, int amount) ;mouth related face blending
+	;Console("Mouth event: " + "Type: " + type + " Amount: " + amount)
+	_oGlobal.BlendPh(Act, amount, MfgConsoleFunc.GetModifier(Act, type), type, 3)
+endfunction
+
+
+
+Event OnExDom(String EventName, String zType, Float zAmount, Form Sender)
+	if blockDomFaceCommands
+		return 
+	endif
+	OnEx(DomActor, ztype as int, zamount as int)
+EndEvent
+
+Event OnExSub(String EventName, String zType, Float zAmount, Form Sender)
+	if blockSubFaceCommands
+		return 
+	endif
+	OnEx(SubActor, ztype as int, zamount as int)
+EndEvent
+
+Event OnExThird(String EventName, String zType, Float zAmount, Form Sender)
+	if blockthirdFaceCommands
+		return 
+	endif
+	OnEx(ThirdActor, ztype as int, zamount as int)
+EndEvent
+
+
+function OnEx(actor act, int type, int amount) ;expression related face blending
+	;Console("Expression event: " + "Type: " + type + " Amount: " + amount)
+	act.SetExpressionOverride(type, amount)
+endfunction
+
+
 
 ;			███████╗ ██████╗ ██╗   ██╗███╗   ██╗██████╗
 ;			██╔════╝██╔═══██╗██║   ██║████╗  ██║██╔══██╗
@@ -2100,6 +2251,11 @@ EndFunction
 bool Function StringContains(string str, string contains)
 	return (StringUtil.Find(str, contains) != -1)
 EndFunction
+
+bool Function IsModLoaded(string ESPFile)
+	;return (Game.GetModByName("SexlabAroused.esm") != 255)
+	return (Game.GetModByName(ESPFile) != 255)
+Endfunction
 
 Int Function GetTimeScale()
 	Return Timescale.GetValue() as Int
@@ -2647,7 +2803,7 @@ Function Startup()
 	If (OSA.StimInstalledProper())
 		Console("OSA is installed correctly")
 	Else
-		Debug.MessageBox("OStim is not loaded after OSA in your mod files, please allow OStim to overwrite OSA's files and restart")
+		Debug.MessageBox("OStim is not loaded after OSA in your mod files, please allow OStim to overwrite OSA's files and restart. Alternatively SkyUI is not loaded.")
 		Return
 	EndIf
 
