@@ -505,6 +505,9 @@ Function TestingOutputBak()
 EndFunction
 
 String[] Function SetOINI(Actor Player) Global
+    OsexIntegrationMain ostim = game.GetFormFromFile(0x000801, "Ostim.esp") as OsexIntegrationMain
+
+ 
     String[] OIN = new String[120]
     OIN[0]  = ""
     OIN[1]  = "!dg" ; Player Symbol
@@ -517,7 +520,15 @@ String[] Function SetOINI(Actor Player) Global
     OIN[8]  = "ic"  ; SubColor
     OIN[9]  = "op"  ; ThemeColor
     OIN[10] = "1"   ; SortRoleByAnimGender
-    OIN[11] = "1"   ; AllowBodyScaling
+
+    ;OIN[11] = "1"   ; AllowBodyScaling
+    if ostim.IsModLoaded("3BBB.esp")
+        osexintegrationmain.console("3bbb loaded")
+        OIN[11] = "0"   ; NoBodyScaling
+    else 
+        osexintegrationmain.console("3bbb not loaded")
+        OIN[11] = "1"   ; AllowBodyScaling
+    endif 
     OIN[12] = "0"   ; AllowMaleGenitalScaling
     OIN[13] = "0"
     OIN[14] = ""
