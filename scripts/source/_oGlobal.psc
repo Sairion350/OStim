@@ -197,9 +197,9 @@ String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni OSO) Globa
     If (Actra == OSO.PlayerRef)
         Details[4] = "1"
         ConsoleUtil.SetSelectedReference(None)
-        Consoleutil.ExecuteCommand("tcl")
+        ;Consoleutil.ExecuteCommand("tcl")
         Actra.SetScale(1.0)
-        Consoleutil.ExecuteCommand("tcl")
+        ;Consoleutil.ExecuteCommand("tcl")
     Else
         Actra.SetScale(1.0)
         Details[4] = "0"

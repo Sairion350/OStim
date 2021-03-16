@@ -124,6 +124,7 @@ Bool Property UseAlternateBedSearch Auto
 
 Int Property AiSwitchChance Auto
 
+bool SMPInstalled
 
 Int[] Property StrippingSlots auto
 
@@ -133,6 +134,8 @@ Int[] Property StrippingSlots auto
 
 Actor DomActor
 Actor SubActor
+
+string diasa 
 
 Float DomExcitement
 Float SubExcitement
@@ -483,10 +486,16 @@ Event OnUpdate() ;OStim main logic loop
 		StartingAnimation = "AUTO"
 	EndIf
 
+	;toggleActorsCollision()
+
     CurrScene = OSA.MakeStage()
     OSA.SetActorsStim(currScene, Actro)
     OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
     OSA.StimStart(CurrScene)
+
+
+
+    diasa = "_root.WidgetContainer."+OSAOmni.Glyph+".widget.hud.NavMenu.dia"
 
     CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
     LastHubOID = -1
@@ -528,10 +537,31 @@ Event OnUpdate() ;OStim main logic loop
 		EndIf
 	EndWhile
 
-	If (UseFreeCam)
+	If (UseFreeCam) && isactoractive(playerref)
 		ToggleFreeCam(True)
 	EndIf
+
+	if !IsActorActive(playerref)
+		HideAllSkyUIWidgets()
+
+    	string domID = _oGlobal.GetFormID_S(domactor.GetActorBase())
+    	Console(domID)
+    	string o = "_root.WidgetContainer."+OSAOmni.Glyph+".widget"
+
+    	UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
+
+    	string m = o + ".hud.InspectMenu.m"
+    	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DU")
+    	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DY")
+    	Utility.Wait(0.033)
+    	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DU")
+    	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DY")
+
+    	;ShowAllSkyUIWidgets()
+
+    endif 
 	
+
 	Float LoopTimeTotal = 0
 	Float LoopStartTime
 	
@@ -540,6 +570,7 @@ Event OnUpdate() ;OStim main logic loop
 	If AIRunning
 		ai.StartAI() 
 	EndIf
+
 	
 	If (!AIRunning)
 		If ((DomActor != PlayerRef) && (SubActor != PlayerRef) && (ThirdActor != PlayerRef) && UseAINPConNPC)
@@ -561,6 +592,16 @@ Event OnUpdate() ;OStim main logic loop
 		EndIf
 	EndIf
 
+	if !IsActorActive(playerref)
+		int i = 0
+		while (i < 20) || !ODatabase.IsSexAnimation(currentoid)
+			i += 1
+			Utility.Wait(0.5)
+		EndWhile
+		HideNavMenu()
+		ShowAllSkyUIWidgets()
+	EndIf
+
 	SendModEvent("ostim_start")
 
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
@@ -579,7 +620,7 @@ Event OnUpdate() ;OStim main logic loop
     	If (MisallignmentProtection && IsActorActive(DomActor))
     		If (SubActor.GetDistance(DomActor) > 1)
     			Console("Misallignment detected")
-    			SubActor.MoveTo(DomActor)
+
 
     			Reallign()
 
@@ -587,8 +628,16 @@ Event OnUpdate() ;OStim main logic loop
     			While ((SubActor.GetDistance(DomActor) > 1) && IsActorActive(DomActor))
     				Utility.Wait(0.5)
     				Console("Still misalligned... " + SubActor.GetDistance(DomActor))
+
+    				if AppearsFemale(subactor)
+    					DomActor.MoveTo(SubActor)
+    				elseif AppearsFemale(domactor)
+    					SubActor.MoveTo(domactor)
+    				endif
+
     				Reallign()
     			EndWhile
+
     			Console("Realligned")
     		EndIf
     	EndIf
@@ -764,13 +813,13 @@ EndFunction
 
 Function AdjustAnimationSpeed(float amount)
 	If amount < 0
-		int times = math.abs((amount / 0.5)) as int
+		int times = math.abs((amount / 0.5)) as int 
 		While times > 0
-			UI.Invokefloat("HUD Menu", "_root.WidgetContainer."+OSAOmni.Glyph+".widget.hud.NavMenu.beaconSpeed.m.dia.scena.speedAdjust", -0.5)
+			UI.Invokefloat("HUD Menu", diasa + ".scena.speedAdjust", -0.5)
 			times -= 1
 		EndWhile
 	Else
-		UI.Invokefloat("HUD Menu", "_root.WidgetContainer."+OSAOmni.Glyph+".widget.hud.NavMenu.beaconSpeed.m.dia.scena.speedAdjust", amount)
+		UI.Invokefloat("HUD Menu", diasa + ".scena.speedAdjust", amount)
 	EndIf
 EndFunction
 
@@ -854,7 +903,13 @@ EndFunction
 
 Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy9|HhPo|MoShoPo
 	Console("Warping to animation: " + Animation)
-	RunOsexCommand("$Warp," + Animation)
+	;RunOsexCommand("$Warp," + Animation)
+	string nav = diasa + ".chore.autoNav"
+
+	 UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "WARP" + animation)
+	 UI.Invoke("HUD Menu", nav + ".navStep")
+
+
 EndFunction
 
 Function EndAnimation(Bool SmoothEnding = True)
@@ -1015,10 +1070,19 @@ EndFunction
 
 Function HideNavMenu() ;only works during SEX animations
 	UI.Invoke("HUD Menu", "_root.WidgetContainer."+OSAomni.glyph+".widget.hud.NavMenu.dim") 
+
 EndFunction
 
 Function ShowNavMenu() ;only works during SEX animations
 	UI.Invoke("HUD Menu", "_root.WidgetContainer."+OSAomni.glyph+".widget.hud.NavMenu.light") 
+EndFunction
+
+Function HideAllSkyUIWidgets()
+	ui.SetBool("HUD Menu", "_root.WidgetContainer._visible", false)
+EndFunction
+
+Function ShowAllSkyUIWidgets()
+	ui.SetBool("HUD Menu", "_root.WidgetContainer._visible", true)
 EndFunction
 
 bool function IsInFreeCam()
@@ -1064,6 +1128,22 @@ EndFunction
 Function SetSpankCount(int count) ; num of spankings so far this scene
 	SpankCount = count
 EndFunction 
+
+Function toggleActorsCollision()
+	if DomActor
+		ConsoleUtil.SetSelectedReference(domactor)
+		ConsoleUtil.ExecuteCommand("tcl")
+	endif 
+	if SubActor
+		ConsoleUtil.SetSelectedReference(SubActor)
+		ConsoleUtil.ExecuteCommand("tcl")
+	endif 
+	if ThirdActor
+		ConsoleUtil.SetSelectedReference(ThirdActor)
+		ConsoleUtil.ExecuteCommand("tcl")
+	endif
+	ConsoleUtil.SetSelectedReference(none) 
+EndFunction
 
 
 
@@ -1184,7 +1264,7 @@ Function AllignActorsWithCurrentBed()
 
 		BedOffsetX = Math.Cos(TrigAngleZ(CurrentBed.GetAngleZ())) * Offset
 		BedOffsetY = Math.Sin(TrigAngleZ(CurrentBed.GetAngleZ())) * Offset
-		BedOffsetZ = 42
+		BedOffsetZ = 45
 	Else
 		Console("Bedroll. Not realigning")
 	EndIf
@@ -2266,6 +2346,7 @@ Int Function SetTimeScale(Int Time)
 EndFunction
 
 Function SetSystemVars()
+
 	; vanilla OSex class library
 	ClassSex = "Sx"
 	ClassCunn = "VJ" ;Cunnilingus
@@ -2645,6 +2726,10 @@ Event OnKeyDown(Int KeyPress)
 					obars.SetBarVisible(obars.ThirdBar, True)
 				EndIf
 			EndIf
+
+			if !IsActorActive(playerref)
+				ShowNavMenu()
+			EndIf
 		EndIf
 
 		If (KeyPress == SpeedUpKey)
@@ -2753,6 +2838,10 @@ Function Startup()
 		Debug.MessageBox("OStim: JContainers is not installed, please exit and install it immediately")
 		return
 	endif
+
+	SMPInstalled = (SKSE.GetPluginVersion("hdtSSEPhysics") != -1)
+	Console("SMP installed: " + SMPInstalled)
+	
 
 	ODatabase = (Self as Quest) as ODatabaseScript
 	ODatabase.InitDatabase()
