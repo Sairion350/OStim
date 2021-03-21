@@ -627,7 +627,9 @@ Event OnUpdate() ;OStim main logic loop
     			Reallign()
 
     			Utility.Wait(0.1)
-    			While ((SubActor.GetDistance(DomActor) > 1) && IsActorActive(DomActor))
+
+    			int i = 0
+    			While ((SubActor.GetDistance(DomActor) > 1) && IsActorActive(DomActor))&& (i < 6)
     				Utility.Wait(0.5)
     				Console("Still misalligned... " + SubActor.GetDistance(DomActor))
 
@@ -638,9 +640,15 @@ Event OnUpdate() ;OStim main logic loop
     				endif
 
     				Reallign()
+
+    				i += 1
     			EndWhile
 
-    			Console("Realligned")
+    			if (SubActor.GetDistance(DomActor) < 1)
+    				Console("Realligned")
+    			else 
+    				console("Allignment failed")
+    			endif
     		EndIf
     	EndIf
 
