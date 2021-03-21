@@ -216,6 +216,7 @@ Actor AggressiveActor
 OAiScript AI
 OBarsScript obars
 OUndressScript oundress
+OStimUpdaterScript oupdater
 
 Bool IsFlipped
 
@@ -2804,8 +2805,30 @@ EndEvent
 bool SoSInstalled
 faction SoSFaction
 
+function ResetOSA() ; do not use, breaks osa
+	Quest osaQuest = Quest.GetQuest("0SA")
+	Quest uiQuest = Quest.GetQuest("0SUI")
+	Quest ctrlQuest = Quest.GetQuest("0SAControl")
+	osaQuest.Reset()
+	osaQuest.Stop()
+	uiQuest.Reset()
+	uiQuest.Stop()
+	ctrlQuest.Reset()
+	ctrlQuest.Stop()
+	Utility.Wait(2)
+	
+	ctrlQuest.Start()
+	osaQuest.Start()
+	uiQuest.Start()
+
+	Utility.Wait(1)
+Endfunction
+
 Function Startup()
 	Debug.Notification("Installing OStim. Please wait...")
+	
+	;ResetOSA()
+
 	SceneRunning = False
 	Actra = Game.GetFormFromFile(0x000D63, "OSA.ESM") as MagicEffect
 	OsaFactionStage = Game.GetFormFromFile(0x00182F, "OSA.ESM") as Faction
@@ -2814,6 +2837,7 @@ Function Startup()
 	PlayerRef = Game.GetPlayer()
 	NutEffect = Game.GetFormFromFile(0x000805, "Ostim.esp") as ImageSpaceModifier
 
+	oupdater = Game.GetFormFromFile(0x000D67, "Ostim.esp") as OStimUpdaterScript
 	OSADing = Game.GetFormFromFile(0x000D6D, "Ostim.esp") as Sound
 	OSATickSmall = Game.GetFormFromFile(0x000D6E, "Ostim.esp") as Sound
 	OSATickBig = Game.GetFormFromFile(0x000D6F, "Ostim.esp") as Sound
@@ -2834,7 +2858,7 @@ Function Startup()
 	AI = ((Self as Quest) as OAiScript)
 	obars = ((Self as Quest) as obarsscript)
 	oundress = ((Self as Quest) as oundressscript)
-	RegisterForModEvent("ostim_actorhit", "OnActorHit")
+	;RegisterForModEvent("ostim_actorhit", "OnActorHit")
 	SetSystemVars()
 	SetDefaultSettings()
 	BuildSoundFormlists()
@@ -2920,6 +2944,7 @@ Function Startup()
 		debug.MessageBox("You seem to be installing OStim mid-playthough. If this save previously had an old OStim version installed, don't forget you needed to run a save cleaner to clean out old scripts. If you have done so already, you can safely ignore this message")
 	endif
 	OSAOmni.RebootScript()
+	OnLoadGame()
 
 	Utility.Wait(1)
 	DisplayTextBanner("OStim installed")
@@ -2948,5 +2973,7 @@ Function OnLoadGame()
 		AI.OnGameLoad()
 		obars.OnGameLoad()
 		oundress.onGameLoad()
+
+		oupdater.ongameload()
 	EndIf
 EndFunction

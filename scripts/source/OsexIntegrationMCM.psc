@@ -94,6 +94,8 @@ Int SetUseCosaveWorkaround
 Int ExportSettings
 Int ImportSettings
 
+int SetUpdate
+
 OsexIntegrationMain Main
 
 
@@ -190,6 +192,7 @@ Event OnPageReset(String Page)
 		AddColoredHeader("System")
 		SetResetState = AddTextOption("Reset thread state", "")
 		SetRebuildDatabase = AddTextOption("Rebuild animation database", "")
+		;SetUpdate = AddTextOption("Update OStim", "")
 		SetMute = AddToggleOption("Mute vanilla OSA sounds", Main.MuteOSA)
 		;SetUseCosaveWorkaround = AddToggleOption("Fix keys & auto-mode", Main.useBrokenCosaveWorkaround)
 		AddEmptyOption()
@@ -279,6 +282,10 @@ Event OnOptionSelect(Int Option)
 		SetToggleOptionValue(SetEndOnOrgasm, Main.EndOnDomOrgasm)
 	ElseIf (Option == SetResetState)
 		Main.ResetState()
+	ElseIf (Option == SetUpdate)
+		Debug.MessageBox("Close all menus now")
+		OStimUpdaterScript oupdater = Game.GetFormFromFile(0x000D67, "Ostim.esp") as OStimUpdaterScript
+		oupdater.DoUpdate()
 	ElseIf (Option == SetRebuildDatabase)
 		Debug.MessageBox("Close all menus and watch the console until it is done")
 		Main.GetODatabase().InitDatabase()
@@ -464,6 +471,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Enable automatic misalignment detection\nYou may want to disable this if you want to do some custom realigning.")
 	ElseIf (Option == SetEnableBeds)
 		SetInfoText("Actors will find the nearest bed to have sex on")
+	ElseIf (Option == setupdate)
+		SetInfoText("Try to flush out old scripts.\nMay not be reliable, perform a clean install if you get weird behavior after updating")
 	ElseIf (Option == SetAIControl)
 		SetInfoText("If enabled, scenes will play out on their own without user input via procedural generation\nNote: If you have only used Manual mode briefly or not at all, and never became adept with using it, I STRONGLY recommend you give manual mode a fair chance before using this")
 	ElseIf (Option == SetAutoHideBar)
