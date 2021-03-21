@@ -33,7 +33,7 @@ Event OnInit()
 
 	DomBar = (Self as Quest) as Osexbar
 	SubBar = (Game.GetFormFromFile(0x000804, "Ostim.esp")) as Osexbar
-	ThirdBar = (Game.GetFormFromFile(0x002DBD, "Ostim.esp")) as Osexbar
+	ThirdBar = (Game.GetFormFromFile(0x000802, "Ostim.esp")) as Osexbar
 
 	blue = 0xADD8E6
 	pink = 0xffb6c1
