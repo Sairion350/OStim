@@ -2045,7 +2045,7 @@ EndEvent
 
 function OnPh(actor act, int type, int amount) ;mouth related face blending
 	;Console("Mouth event: " + "Type: " + type + " Amount: " + amount)
-	_oGlobal.BlendPh(Act, amount, MfgConsoleFunc.GetModifier(Act, type), type, 3)
+	_oGlobal.BlendPh(Act, amount, MfgConsoleFunc.GetPhoneme(Act, type), type, 3)
 endfunction
 
 
