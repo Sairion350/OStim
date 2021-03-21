@@ -889,7 +889,11 @@ EndFunction
 
 Function TravelToAnimation(String Animation) ; does not always work, use above
 	Console("Attempting travel to: " + Animation)
-	RunOsexCommand("$Go," + Animation)
+	;RunOsexCommand("$Go," + Animation)
+	string nav = diasa + ".chore.autoNav"
+
+	UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "GO" + animation)
+;	UI.Invoke("HUD Menu", nav + ".navStep")
 EndFunction
 
 Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy9|HhPo|MoShoPo
@@ -897,8 +901,8 @@ Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy
 	;RunOsexCommand("$Warp," + Animation)
 	string nav = diasa + ".chore.autoNav"
 
-	 UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "WARP" + animation)
-	 UI.Invoke("HUD Menu", nav + ".navStep")
+	UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "WARP" + animation)
+;	UI.Invoke("HUD Menu", nav + ".navStep")
 
 
 EndFunction
