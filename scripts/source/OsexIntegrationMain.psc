@@ -1051,6 +1051,10 @@ Function Reallign()
 	EndIf
 EndFunction
 
+Function AlternateReallign() ; may work better than the above function, or worse. Try testing.
+	OSA.StimStart(CurrScene)
+EndFunction
+
 Function ToggleFreeCam(Bool On = True)
 	ConsoleUtil.ExecuteCommand("tfc")
 	If (!IsFreeCamming)
