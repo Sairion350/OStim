@@ -488,8 +488,6 @@ Event OnUpdate() ;OStim main logic loop
 		StartingAnimation = "AUTO"
 	EndIf
 
-	;toggleActorsCollision()
-
     CurrScene = OSA.MakeStage()
     OSA.SetActorsStim(currScene, Actro)
     OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
@@ -534,6 +532,9 @@ Event OnUpdate() ;OStim main logic loop
 		WaitCycles += 1
 		WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1)
 
+		If (WaitCycles > 20)
+			AlternateReallign()
+		EndIf
 		If (WaitCycles > 50)
 			WaitForActorsTouch = False
 		EndIf
@@ -624,7 +625,7 @@ Event OnUpdate() ;OStim main logic loop
     			Console("Misallignment detected")
 
 
-    			Reallign()
+    			alternateReallign()
 
     			Utility.Wait(0.1)
 
@@ -639,7 +640,7 @@ Event OnUpdate() ;OStim main logic loop
     					SubActor.MoveTo(domactor)
     				endif
 
-    				Reallign()
+    				alternateReallign()
 
     				i += 1
     			EndWhile
@@ -649,6 +650,7 @@ Event OnUpdate() ;OStim main logic loop
     			else 
     				console("Allignment failed")
     			endif
+
     		EndIf
     	EndIf
 
