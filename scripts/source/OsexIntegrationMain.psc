@@ -1610,6 +1610,7 @@ Function OnAnimationChange()
 	Console("Current animation: " + CurrentAnimation)
 	Console("Current speed: " + CurrentSpeed)
 	Console("Current animation class: " + CurrAnimClass)
+	Console("Current scene ID: " + GetCurrentAnimationSceneID())
 EndFunction
 
 Function OnSpank()
