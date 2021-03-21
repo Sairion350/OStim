@@ -912,8 +912,8 @@ Function EndAnimation(Bool SmoothEnding = True)
 	EndIf
 	EndedProper = SmoothEnding
 	Console("Trying to end scene")
-	RunOsexCommand("$endscene")
-	;OSA.OGlyphO(".ctr.END")
+	;RunOsexCommand("$endscene")
+	OSA.OGlyphO(".ctr.END")
 EndFunction
 
 Bool Function GetCurrentAnimIsAggressive() ; if the current animation is tagged aggressive
