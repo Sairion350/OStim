@@ -467,14 +467,16 @@ Event OnUpdate() ;OStim main logic loop
 	Float SubY
 	Float SubZ
 
-	If (UsingBed)
-		DomX = DomActor.X
-		DomY = DomActor.Y
-		DomZ = DomActor.Z
+	DomX = DomActor.X
+	DomY = DomActor.Y
+	DomZ = DomActor.Z
 
-		SubX = SubActor.X
-		SubY = SubActor.Y
-		SubZ = SubActor.Z
+	SubX = SubActor.X
+	SubY = SubActor.Y
+	SubZ = SubActor.Z
+
+	If (UsingBed)
+		
 
 		AllignActorsWithCurrentBed()
 		If (StartingAnimation == "")
@@ -707,20 +709,9 @@ Event OnUpdate() ;OStim main logic loop
 		Game.ForceFirstPerson()
 	EndIf
 
-	;Utility.Wait(0.5) ;delete?
-
-	If (UsingBed)
-		If (GetInBedAfterBedScene && ((DomActor == PlayerRef) || (SubActor == PlayerRef))  && EndedProper && !IsSceneAggressiveThemed())
-			Actor Other = GetSexPartner(PlayerRef)
-			Other.TranslateTo(SubX, SubY, SubZ, SubActor.GetAngleX(), SubActor.GetAngleY(), SubActor.GetAngleZ(), 1000)
-			Utility.Wait(0.5)
-			SleepInBed(Currentbed, PlayerRef) ; todo
-		ElseIf (!IsBedRoll(Currentbed)) ; return back to position
-			SubActor.TranslateTo(SubX, SubY, SubZ, SubActor.GetAngleX(), SubActor.GetAngleY(), SubActor.GetAngleZ(), 10000)
-			DomActor.TranslateTo(DomX, DomY, DomZ, DomActor.GetAngleX(), DomActor.GetAngleY(), DomActor.GetAngleZ(), 10000)
-			Utility.Wait(0.1)
-		EndIf
-	EndIf
+	SubActor.TranslateTo(SubX, SubY, SubZ, SubActor.GetAngleX(), SubActor.GetAngleY(), SubActor.GetAngleZ(), 10000) ; return back to position
+	DomActor.TranslateTo(DomX, DomY, DomZ, DomActor.GetAngleX(), DomActor.GetAngleY(), DomActor.GetAngleZ(), 10000)
+	Utility.Wait(0.1)
 
 	If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		Game.FadeOutGame(False, True, 0.0, 2) ; welcome back
