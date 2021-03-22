@@ -2974,6 +2974,6 @@ Function OnLoadGame()
 		obars.OnGameLoad()
 		oundress.onGameLoad()
 
-		oupdater.ongameload()
+		;oupdater.ongameload()
 	EndIf
 EndFunction
