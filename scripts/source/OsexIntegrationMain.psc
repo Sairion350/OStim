@@ -612,8 +612,6 @@ Event OnUpdate() ;OStim main logic loop
 		Game.FadeOutGame(False, True, 0.0, 4) ;welcome back
 	EndIf
 
-	Utility.Wait(5)
-	TravelToAnimation("0MF|Sy6!Sy9|Ho|St9Adore")
 
 	While (IsActorActive(DomActor))
 		If (LoopTimeTotal > 1)
