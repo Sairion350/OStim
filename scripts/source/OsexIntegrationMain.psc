@@ -612,6 +612,9 @@ Event OnUpdate() ;OStim main logic loop
 		Game.FadeOutGame(False, True, 0.0, 4) ;welcome back
 	EndIf
 
+	Utility.Wait(5)
+	TravelToAnimation("0MF|Sy6!Sy9|Ho|St9Adore")
+
 	While (IsActorActive(DomActor))
 		If (LoopTimeTotal > 1)
 			;Console("Loop took: " + loopTimeTotal + " seconds")
@@ -900,11 +903,12 @@ EndFunction
 
 Function TravelToAnimation(String Animation) ; does not always work, use above
 	Console("Attempting travel to: " + Animation)
-	;RunOsexCommand("$Go," + Animation)
-	string nav = diasa + ".chore.autoNav"
+	RunOsexCommand("$Go," + Animation)
+	;string nav = diasa + ".chore.autoNav"
 
-	UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "GO" + animation)
-;	UI.Invoke("HUD Menu", nav + ".navStep")
+	;UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "" + animation)
+	;UI.InvokeString("HUD Menu", nav + ".nextMove", "" + animation)
+	;UI.Invoke("HUD Menu", nav + ".stepStandard")
 EndFunction
 
 Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy9|HhPo|MoShoPo
