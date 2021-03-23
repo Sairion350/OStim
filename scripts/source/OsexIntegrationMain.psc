@@ -1053,10 +1053,10 @@ Function ToggleFreeCam(Bool On = True)
 	ConsoleUtil.ExecuteCommand("tfc")
 	If (!IsFreeCamming)
 		ConsoleUtil.ExecuteCommand("sucsm " + FreecamSpeed)
-		ConsoleUtil.ExecuteCommand("fov " + FreecamFOV)
+		OSANative.SetFOV(freecamFOv)
 		IsFreeCamming = true
 	Else
-		ConsoleUtil.ExecuteCommand("fov " + DefaultFOV)
+		OSANative.SetFOV(DefaultFOV)
 		IsFreeCamming = false
 	EndIf
 EndFunction
