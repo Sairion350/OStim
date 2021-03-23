@@ -1050,12 +1050,13 @@ Function AlternateReallign() ; may work better than the above function, or worse
 EndFunction
 
 Function ToggleFreeCam(Bool On = True)
-	ConsoleUtil.ExecuteCommand("tfc")
 	If (!IsFreeCamming)
-		ConsoleUtil.ExecuteCommand("sucsm " + FreecamSpeed)
+		osanative.EnableFreeCam()
+		osanative.SetFreeCamSpeed(FreecamSpeed)
 		OSANative.SetFOV(freecamFOv)
 		IsFreeCamming = true
 	Else
+		osanative.DisableFreeCam()
 		OSANative.SetFOV(DefaultFOV)
 		IsFreeCamming = false
 	EndIf
