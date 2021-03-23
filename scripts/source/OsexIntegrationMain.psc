@@ -1051,14 +1051,16 @@ EndFunction
 
 Function ToggleFreeCam(Bool On = True)
 	If (!IsFreeCamming)
-		osanative.EnableFreeCam()
-		osanative.SetFreeCamSpeed(FreecamSpeed)
+		OSANative.EnableFreeCam()
+		OSANative.SetFreeCamSpeed(FreecamSpeed)
 		OSANative.SetFOV(freecamFOv)
 		IsFreeCamming = true
+		Console("Enabling freecam")
 	Else
-		osanative.DisableFreeCam()
+		OSANative.DisableFreeCam()
 		OSANative.SetFOV(DefaultFOV)
 		IsFreeCamming = false
+		Console("Disabling freecam")
 	EndIf
 EndFunction
 
