@@ -8,11 +8,11 @@ ScriptName OsexIntegrationMain Extends Quest
 ;	Structure of this script
 ; At the very top here, are the Properties. They are the settings you see in the MCM. You can toggle these at will on this script and it
 ; will update the MCM and everything. Below that are the OStim local variables, you can safely ignore those. Below those variables,
-; you will find OStim's main loop and the StartScene() function. OStim's core logic runs in there, I recommend giving it a read. 
-; Below that is the UTILITIES area. These functions are going to be very useful to you and will let you access data in OStim as 
+; you will find OStim's main loop and the StartScene() function. OStim's core logic runs in there, I recommend giving it a read.
+; Below that is the UTILITIES area. These functions are going to be very useful to you and will let you access data in OStim as
 ; well as manipulate the currently running scene. Below the utilities area are some more specific groups of functions.
 
-; Some parts of code, including undressing, on-screen bar, and animation data lookups, are in other scripts to make this script easier to 
+; Some parts of code, including undressing, on-screen bar, and animation data lookups, are in other scripts to make this script easier to
 ; read. You can call functions in the below utilities area to return those script objects.
 
 ; Want a list of all Events you can register with? CTRL + F this script for "SendModEvent" and you can see them all as well as the exact point they fire
@@ -27,7 +27,7 @@ ScriptName OsexIntegrationMain Extends Quest
 ;			██║   ██║╚════██║   ██║   ██║██║╚██╔╝██║
 ;			╚██████╔╝███████║   ██║   ██║██║ ╚═╝ ██║
 ;			 ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝     ╚═╝
-                                        
+
 
 
 ; -------------------------------------------------------------------------------------------------
@@ -61,9 +61,9 @@ Bool Property SlowMoOnOrgasm Auto
 Bool Property AlwaysUndressAtAnimStart Auto
 Bool Property OnlyUndressChest Auto 		;	Removed in 4.0
 Bool Property AlwaysAnimateUndress Auto      ;	Removed in 4.0
-Bool Property TossClothesOntoGround auto  
-Bool Property UseStrongerUnequipMethod auto 
-Bool Property FullyAnimateRedress auto 
+Bool Property TossClothesOntoGround Auto
+Bool Property UseStrongerUnequipMethod Auto
+Bool Property FullyAnimateRedress Auto
 
 Bool  SpeedUpNonSexAnimation
 Float SpeedUpSpeed
@@ -126,7 +126,7 @@ Int Property AiSwitchChance Auto
 
 bool SMPInstalled
 
-Int[] Property StrippingSlots auto
+Int[] Property StrippingSlots Auto
 
 ; -------------------------------------------------------------------------------------------------
 ; SCRIPTWIDE VARIABLES ----------------------------------------------------------------------------
@@ -135,7 +135,7 @@ Int[] Property StrippingSlots auto
 Actor DomActor
 Actor SubActor
 
-string diasa 
+String diasa
 
 Float DomExcitement
 Float SubExcitement
@@ -175,15 +175,15 @@ Form SubGlove
 Form SubBoot
 Form SubWep
 
-form ThirdHelm
-form ThirdArmor
-form ThirdGlove
-form ThirdBoot
-form ThirdWep
+Form ThirdHelm
+Form ThirdArmor
+Form ThirdGlove
+Form ThirdBoot
+Form ThirdWep
 
 Bool IsFreeCamming
 
-bool StallOrgasm
+Bool StallOrgasm
 
 Int DomTimesOrgasm
 Int SubTimesOrgasm
@@ -214,15 +214,15 @@ Bool AggressiveThemedSexScene
 Actor AggressiveActor
 
 OAiScript AI
-OBarsScript obars
-OUndressScript oundress
-OStimUpdaterScript oupdater
+OBarsScript OBars
+OUndressScript OUndress
+OStimUpdaterScript OUpdater
 
 Bool IsFlipped
 
-float DomStimMult
-float SubStimMult
-float ThirdStimMult
+Float DomStimMult
+Float SubStimMult
+Float ThirdStimMult
 ; -------------------------------------------------------------------------------------------------
 ; OSA SPECIFIC  -----------------------------------------------------------------------------------
 
@@ -297,8 +297,8 @@ Float[] MouthStimValues
 Float[] HandStimValues
 Float[] ClitStimValues
 
-string[] subMouthOpenClasses
-string[] domMouthOpenClasses
+String[] SubMouthOpenClasses
+String[] DomMouthOpenClasses
 
 Float[] AnusStimValues
 Float[] FeetStimValues
@@ -410,9 +410,9 @@ Event OnUpdate() ;OStim main logic loop
 	ThirdStimMult = 1.0
 	EndedProper = False
 	StallOrgasm = False
-	blockDomFaceCommands = false
-	blocksubFaceCommands = false
-	blockthirdFaceCommands = false
+	BlockDomFaceCommands = False
+	BlocksubFaceCommands = False
+	BlockthirdFaceCommands = False
 	SpankCount = 0
 	SubTimesOrgasm = 0
 	DomTimesOrgasm = 0
@@ -421,12 +421,12 @@ Event OnUpdate() ;OStim main logic loop
 	SpankMax = Utility.RandomInt(1, 6)
 	IsFreeCamming = False
 
-	Actor[] actro
+	Actor[] Actro
 	If (ThirdActor)
-		Actro  = New Actor[3]
+		Actro = New Actor[3]
 		Actro[2] = ThirdActor
 	Else
-		Actro  = New Actor[2]
+		Actro = New Actor[2]
 	EndIf
 
 	RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_Sound", "OnSoundDom")
@@ -443,11 +443,8 @@ Event OnUpdate() ;OStim main logic loop
 
 	If (ThirdActor)
 		RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound", "OnSoundThird")
-
 		RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo", "OnMoThird")
-
 		RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh", "OnPhThird")
-
 		RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx", "OnExThird")
 	EndIf
 
@@ -477,8 +474,6 @@ Event OnUpdate() ;OStim main logic loop
 	SubZ = SubActor.Z
 
 	If (UsingBed)
-		
-
 		AllignActorsWithCurrentBed()
 		If (StartingAnimation == "")
 			StartingAnimation = "0MF|KNy6!KNy6|Ho|KnLap"
@@ -494,21 +489,18 @@ Event OnUpdate() ;OStim main logic loop
     OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
     OSA.StimStart(CurrScene)
 
-
-
-    diasa = "_root.WidgetContainer."+OSAOmni.Glyph+".widget.hud.NavMenu.dia"
+    diasa = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget.hud.NavMenu.dia"
 
     CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
     LastHubOID = -1
     OnAnimationChange()
 
-
     If (LowLightLevelLightsOnly && DomActor.GetLightLevel() < 20) || (!LowLightLevelLightsOnly)
     	If (DomLightPos > 0)
-    		lightActor(DomActor, DomLightPos, DomLightBrightness)
+    		LightActor(DomActor, DomLightPos, DomLightBrightness)
    		EndIf
     	If (SubLightPos > 0)
-    		lightActor(SubActor, SubLightPos, SubLightBrightness)
+    		LightActor(SubActor, SubLightPos, SubLightBrightness)
    		EndIf
     EndIf
 
@@ -523,7 +515,6 @@ Event OnUpdate() ;OStim main logic loop
 ;		SubExcitement = 26.0
 ;	EndIf
 
-	
 	StartTime = Utility.GetCurrentRealTime()
 
 	Bool WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1)
@@ -545,16 +536,16 @@ Event OnUpdate() ;OStim main logic loop
 		ToggleFreeCam(True)
 	EndIf
 
-	if !IsActorActive(playerref)
+	if !IsActorActive(PlayerRef)
 		HideAllSkyUIWidgets()
 
-    	string domID = _oGlobal.GetFormID_S(domactor.GetActorBase())
-    	Console(domID)
-    	string o = "_root.WidgetContainer."+OSAOmni.Glyph+".widget"
+    	String DomID = _oGlobal.GetFormID_S(domactor.GetActorBase())
+    	Console(DomID)
+    	String o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
 
     	UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
 
-    	string m = o + ".hud.InspectMenu.m"
+    	String m = o + ".hud.InspectMenu.m"
     	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DU")
     	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DY")
     	Utility.Wait(0.033)
@@ -562,20 +553,17 @@ Event OnUpdate() ;OStim main logic loop
     	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DY")
 
     	;ShowAllSkyUIWidgets()
-
-    endif 
-	
+    endif
 
 	Float LoopTimeTotal = 0
 	Float LoopStartTime
-	
+
 	AIRunning = UseAIControl
 
-	If AIRunning
-		ai.StartAI() 
+	If (AIRunning)
+		AI.StartAI()
 	EndIf
 
-	
 	If (!AIRunning)
 		If ((DomActor != PlayerRef) && (SubActor != PlayerRef) && (ThirdActor != PlayerRef) && UseAINPConNPC)
 			Console("NPC on NPC scene detected. Starting AI")
@@ -596,9 +584,9 @@ Event OnUpdate() ;OStim main logic loop
 		EndIf
 	EndIf
 
-	if !IsActorActive(playerref)
-		int i = 0
-		while (i < 20) || !ODatabase.IsSexAnimation(currentoid)
+	If (!IsActorActive(PlayerRef))
+		Int i = 0
+		While (i < 20) || !ODatabase.IsSexAnimation(currentoid)
 			i += 1
 			Utility.Wait(0.5)
 		EndWhile
@@ -609,9 +597,8 @@ Event OnUpdate() ;OStim main logic loop
 	SendModEvent("ostim_start")
 
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
-		Game.FadeOutGame(False, True, 0.0, 4) ;welcome back
+		Game.FadeOutGame(False, True, 0.0, 4) ; welcome back
 	EndIf
-
 
 	While (IsActorActive(DomActor))
 		If (LoopTimeTotal > 1)
@@ -625,34 +612,30 @@ Event OnUpdate() ;OStim main logic loop
     	If (MisallignmentProtection && IsActorActive(DomActor))
     		If (SubActor.GetDistance(DomActor) > 1)
     			Console("Misallignment detected")
-
-
-    			alternateReallign()
-
+    			AlternateReallign()
     			Utility.Wait(0.1)
 
-    			int i = 0
+    			Int i = 0
     			While ((SubActor.GetDistance(DomActor) > 1) && IsActorActive(DomActor))&& (i < 6)
     				Utility.Wait(0.5)
     				Console("Still misalligned... " + SubActor.GetDistance(DomActor))
 
-    				if AppearsFemale(subactor)
+    				If AppearsFemale(SubActor)
     					DomActor.MoveTo(SubActor)
-    				elseif AppearsFemale(domactor)
-    					SubActor.MoveTo(domactor)
-    				endif
+					ElseIf AppearsFemale(DomActor)
+    					SubActor.MoveTo(DomActor)
+    				EndIf
 
-    				alternateReallign()
+    				AlternateReallign()
 
     				i += 1
     			EndWhile
 
-    			if (SubActor.GetDistance(DomActor) < 1)
+    			If (SubActor.GetDistance(DomActor) < 1)
     				Console("Realligned")
-    			else 
-    				console("Allignment failed")
-    			endif
-
+				Else
+    				Console("Allignment failed")
+    			EndIf
     		EndIf
     	EndIf
 
@@ -686,9 +669,9 @@ Event OnUpdate() ;OStim main logic loop
 			DomTimesOrgasm += 1
 			Orgasm(DomActor)
 			If (EndOnDomOrgasm)
-				if ODatabase.HasIdleSpeed(CurrentOID)
+				If ODatabase.HasIdleSpeed(CurrentOID)
 					SetCurrentAnimationSpeed(0)
-				endif
+				EndIf
 				Utility.Wait(4)
 				EndAnimation()
 			EndIf
@@ -816,7 +799,7 @@ EndFunction
 
 Function AdjustAnimationSpeed(float amount)
 	If amount < 0
-		int times = math.abs((amount / 0.5)) as int 
+		int times = math.abs((amount / 0.5)) as int
 		While times > 0
 			UI.Invokefloat("HUD Menu", diasa + ".scena.speedAdjust", -0.5)
 			times -= 1
@@ -826,7 +809,7 @@ Function AdjustAnimationSpeed(float amount)
 	EndIf
 EndFunction
 
-Function SetCurrentAnimationSpeed(Int InSpeed) 
+Function SetCurrentAnimationSpeed(Int InSpeed)
 	AdjustAnimationSpeed(inspeed - CurrentSpeed)
 EndFunction
 
@@ -912,12 +895,10 @@ EndFunction
 Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy9|HhPo|MoShoPo
 	Console("Warping to animation: " + Animation)
 	;RunOsexCommand("$Warp," + Animation)
-	string nav = diasa + ".chore.autoNav"
+	String nav = diasa + ".chore.autoNav"
 
-	UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "WARP" + animation)
+	UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "WARP" + Animation)
 ;	UI.Invoke("HUD Menu", nav + ".navStep")
-
-
 EndFunction
 
 Function EndAnimation(Bool SmoothEnding = True)
@@ -1025,9 +1006,9 @@ EndFunction
 
 Bool Function IsFemale(Actor Act) ; genitalia based / has a vagina and not a penis
 	If SoSInstalled
-		return !act.IsInFaction(SoSFaction)
-	else 
-		Return AppearsFemale(act)
+		return !Act.IsInFaction(SoSFaction)
+	else
+		Return AppearsFemale(Act)
 	endif
 EndFunction
 
@@ -1057,7 +1038,7 @@ String[] Function GetScene() ; this is not the sceneID, this is an internal osex
 EndFunction
 
 Function Reallign()
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage") 
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage")
 	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AlignStage")
 	If (ThirdActor)
 		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_AlignStage")
@@ -1080,84 +1061,82 @@ Function ToggleFreeCam(Bool On = True)
 	EndIf
 EndFunction
 
-Function HideNavMenu() ;only works during SEX animations
-	UI.Invoke("HUD Menu", "_root.WidgetContainer."+OSAomni.glyph+".widget.hud.NavMenu.dim") 
-
+Function HideNavMenu() ; only works during SEX animations
+	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.NavMenu.dim")
 EndFunction
 
-Function ShowNavMenu() ;only works during SEX animations
-	UI.Invoke("HUD Menu", "_root.WidgetContainer."+OSAomni.glyph+".widget.hud.NavMenu.light") 
+Function ShowNavMenu() ; only works during SEX animations
+	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.NavMenu.light")
 EndFunction
 
 Function HideAllSkyUIWidgets()
-	ui.SetBool("HUD Menu", "_root.WidgetContainer._visible", false)
+	UI.SetBool("HUD Menu", "_root.WidgetContainer._visible", False)
 EndFunction
 
 Function ShowAllSkyUIWidgets()
-	ui.SetBool("HUD Menu", "_root.WidgetContainer._visible", true)
+	UI.SetBool("HUD Menu", "_root.WidgetContainer._visible", True)
 EndFunction
 
 bool function IsInFreeCam()
-	return (Game.GetCameraState() == 3)
+	Return (Game.GetCameraState() == 3)
 endfunction
 
-float Function GetStimMult(actor act)
-	if act == DomActor
-		return DomStimMult
-	elseif act == subactor
-		return SubStimMult
-	elseif act == ThirdActor
-		return thirdstimmult
-	else
+float Function GetStimMult(Actor Act)
+	If (Act == DomActor)
+		Return DomStimMult
+	Elseif (Act == SubActor)
+		Return SubStimMult
+	Elseif (Act == ThirdActor)
+		Return ThirdStimMult
+	Else
 		Console("Unknown actor")
-	endif	
+	EndIf
 EndFunction
 
-Function SetStimMult(actor act, float value)
-	If act == DomActor
-		DomStimMult = value
-	elseif act == subactor
-		SubStimMult = value
-	elseif act == ThirdActor
-		ThirdStimMult = value
-	else
+Function SetStimMult(Actor Act, Float Value)
+	If (Act == DomActor)
+		DomStimMult = Value
+	Elseif (Act == SubActor)
+		SubStimMult = Value
+	Elseif (Act == ThirdActor)
+		ThirdStimMult = Value
+	Else
 		Console("Unknown actor")
-	endif	
+	EndIf
 EndFunction
+
 ; spanking stuff
-int Function GetSpankCount() ; num of spankings so far this scene
-	return SpankCount
+Int Function GetSpankCount() ; num of spankings so far this scene
+	Return SpankCount
 EndFunction
 
-int Function GetMaxSpanksAllowed() ; maximum number of spankings before it deals damage
-	return spankmax
+Int Function GetMaxSpanksAllowed() ; maximum number of spankings before it deals damage
+	Return SpankMax
 EndFunction
 
-Function SetSpankMax(int max) ; maximum number of spankings before it deals damage
-	SpankMax = max
-EndFunction 
+Function SetSpankMax(Int Max) ; maximum number of spankings before it deals damage
+	SpankMax = Max
+EndFunction
 
-Function SetSpankCount(int count) ; num of spankings so far this scene
-	SpankCount = count
-EndFunction 
+Function SetSpankCount(Int Count) ; num of spankings so far this scene
+	SpankCount = Count
+EndFunction
 
-Function toggleActorsCollision()
-	if DomActor
+Function ToggleActorsCollision()
+	If DomActor
 		ConsoleUtil.SetSelectedReference(domactor)
 		ConsoleUtil.ExecuteCommand("tcl")
-	endif 
-	if SubActor
+	EndIf
+	If SubActor
 		ConsoleUtil.SetSelectedReference(SubActor)
 		ConsoleUtil.ExecuteCommand("tcl")
-	endif 
-	if ThirdActor
+	EndIf
+	If ThirdActor
 		ConsoleUtil.SetSelectedReference(ThirdActor)
 		ConsoleUtil.ExecuteCommand("tcl")
-	endif
-	ConsoleUtil.SetSelectedReference(none) 
+	EndIf
+	ConsoleUtil.SetSelectedReference(none)
 EndFunction
-
-
 
 
 ;
@@ -1248,9 +1227,10 @@ EndFunction
 Function AllignActorsWithCurrentBed()
 	DomActor.SetDontMove(True)
 	SubActor.SetDontMove(True)
-	if ThirdActor
-		thirdActor.SetDontMove(true)
-	endif
+
+	If ThirdActor
+		ThirdActor.SetDontMove(true)
+	EndIf
 
 	Bool BedRoll = IsBedRoll(Currentbed)
 	Bool Flip = !BedRoll
@@ -1306,7 +1286,7 @@ Function AllignActorsWithCurrentBed()
 		Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
 	EndIf
 
-	if ThirdActor
+	If ThirdActor
 		Utility.Wait(0.05)
 
 		OffsetY = Math.Sin(TrigAngleZ(DomActor.GetAngleZ())) * 30
@@ -1316,7 +1296,7 @@ Function AllignActorsWithCurrentBed()
 		ThirdActor.SetAngle(BedAngleX, BedAngleY, BedAngleZ - FlipFloat)
 
 		ThirdActor.SetDontMove(false)
-	endif
+	EndIf
 
 	DomActor.SetDontMove(False)
 	SubActor.SetDontMove(False)
@@ -1485,26 +1465,26 @@ Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
 	EndIf
 EndEvent
 
-function OpenMouth(actor act)
+Function OpenMouth(Actor Act)
 	Console("Opening mouth...")
-	string a = _oGlobal.GetFormID_S(act.GetActorBase())
-	
+	String a = _oGlobal.GetFormID_S(Act.GetActorBase())
+
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 40)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 100)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "5", numArg = 100)
 EndFunction
 
-function CloseMouth(actor act)
+Function CloseMouth(Actor Act)
 	Console("Closing mouth...")
-	string a = _oGlobal.GetFormID_S(act.GetActorBase())
-	
+	String a = _oGlobal.GetFormID_S(Act.GetActorBase())
+
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 0)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 0)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "5", numArg = 0)
 EndFunction
 
-bool function MouthIsOpen(actor act)
-	return (MfgConsoleFunc.GetPhoneme(act, 0) > 75)
+Bool function MouthIsOpen(Actor Act)
+	Return (MfgConsoleFunc.GetPhoneme(Act, 0) > 75)
 EndFunction
 
 Function OnAnimationChange()
@@ -1550,28 +1530,27 @@ Function OnAnimationChange()
 		EndIf
 	EndIf
 
-	int CorrectActorCount = ODatabase.GetNumActors(currentoid)
+	Int CorrectActorCount = ODatabase.GetNumActors(CurrentOID)
 
-	If !ThirdActor && (CorrectActorCount == 3) ; no third actor, but there should be
+	If (!ThirdActor && (CorrectActorCount == 3)) ; no third actor, but there should be
 		Console("Third actor has joined scene ")
 
-		actor[] nearbyActors = MiscUtil.ScanCellNPCs(domactor, radius = 64.0) ;epic hackjob time
-		int max = nearbyActors.Length
+		Actor[] NearbyActors = MiscUtil.ScanCellNPCs(DomActor, Radius = 64.0) ;epic hackjob time
+		int max = NearbyActors.Length
 		int i = 0
 
-		while i < max
-			actor act = nearbyActors[i]
+		While (i < max)
+			Actor Act = NearbyActors[i]
 
-			if (act != DomActor) && (act != SubActor) && (IsActorActive(act))
-				ThirdActor = act
+			If (Act != DomActor) && (Act != SubActor) && (IsActorActive(Act))
+				ThirdActor = Act
 				i = max
-			endif
+			Endif
 			i += 1
 		EndWhile
 
 		If ThirdActor
 			Console("Third actor: + " + ThirdActor.GetDisplayName() + " has joined the scene")
-
 
 			RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound", "OnSoundThird")
 			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo", "OnMoThird")
@@ -1581,10 +1560,8 @@ Function OnAnimationChange()
 			SendModEvent("ostim_thirdactor_join")
 		Else
 			Console("Warning - Third Actor not found")
-		endif
-
-		
-	ElseIf ThirdActor && (CorrectActorCount == 2) ; third actor, but there should not be.
+		EndIf
+	ElseIf (ThirdActor && (CorrectActorCount == 2)) ; third actor, but there should not be.
 		Console("Third actor has left the scene")
 
 		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound")
@@ -1598,31 +1575,29 @@ Function OnAnimationChange()
 	EndIf
 
 
-	if StringArrayContainsValue(subMouthOpenClasses, GetCurrentAnimationClass())
-		if MouthIsOpen(SubActor)
+	If StringArrayContainsValue(SubMouthOpenClasses, GetCurrentAnimationClass())
+		If MouthIsOpen(SubActor)
 			;Console("Mouth already open")
-		else 
+		Else
 			OpenMouth(SubActor)
-		endif
-	else 
-		if MouthIsOpen(subactor)
+		Endif
+	Else
+		If MouthIsOpen(subactor)
 			CloseMouth(subactor)
-		endif
-	endif
+		Endif
+	Endif
 
-	if StringArrayContainsValue(domMouthOpenClasses, GetCurrentAnimationClass())
-		if MouthIsOpen(DomActor)
+	If StringArrayContainsValue(DomMouthOpenClasses, GetCurrentAnimationClass())
+		If MouthIsOpen(DomActor)
 			;Console("Mouth already open")
-		else 
+		Else
 			OpenMouth(DomActor)
-		endif
-	else 
-		if MouthIsOpen(DomActor)
+		Endif
+	Else
+		If MouthIsOpen(DomActor)
 			CloseMouth(DomActor)
-		endif
-	endif
-
-
+		EndIf
+	EndIf
 
 	Console("Current animation: " + CurrentAnimation)
 	Console("Current speed: " + CurrentSpeed)
@@ -1649,7 +1624,7 @@ EndFunction
 
 
 Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
-	If (EndAfterActorHit) && (domactor.IsInCombat() || SubActor.IsInCombat())
+	If (EndAfterActorHit) && (DomActor.IsInCombat() || SubActor.IsInCombat())
 		EndAnimation(False)
 	EndIf
 EndEvent
@@ -1957,139 +1932,130 @@ Function Orgasm(Actor Act)
 
 ;	SetActorArousal(Act, GetActorArousal(Act) - 50)
 
-
 	Act.DamageAV("stamina", 250.0)
 EndFunction
 
-function SetOrgasmStall(bool set)
-	StallOrgasm = set
-endfunction
+Function SetOrgasmStall(Bool Set)
+	StallOrgasm = Set
+EndFunction
 
-bool function GetOrgasmStall()
-	return stallorgasm
-endfunction
-
+Bool Function GetOrgasmStall()
+	Return StallOrgasm
+EndFunction
 
 ; Faces
 
-bool blockDomFaceCommands
-bool blocksubFaceCommands
-bool blockthirdFaceCommands
+Bool BlockDomFaceCommands
+Bool BlockSubFaceCommands
+Bool BlockThirdFaceCommands
 
-function MuteFaceData(actor act)
-	if act == DomActor
-		blockDomFaceCommands = true
-	elseif act == subactor
-		blocksubFaceCommands = true
-	elseif act == thirdactor 
-		blockthirdFaceCommands = true
-	endif
+Function MuteFaceData(Actor Act)
+	If (Act == DomActor)
+		BlockDomFaceCommands = True
+	Elseif (Act == SubActor)
+		BlocksubFaceCommands = True
+	Elseif (Act == ThirdActor)
+		BlockthirdFaceCommands = True
+	EndIf
 EndFunction
 
-function UnMuteFaceData(actor act)
-	if act == DomActor
-		blockDomFaceCommands = false
-	elseif act == subactor
-		blocksubFaceCommands = false
-	elseif act == thirdactor 
-		blockthirdFaceCommands = false
-	endif
+Function UnMuteFaceData(Actor Act)
+	If (Act == DomActor)
+		BlockDomFaceCommands = False
+	Elseif (Act == SubActor)
+		BlocksubFaceCommands = False
+	Elseif (Act == ThirdActor)
+		BlockthirdFaceCommands = False
+	EndIf
 EndFunction
 
-bool function FaceDataIsMuted(actor act)
-	if act == DomActor
-		return blockdomfacecommands
-	elseif act == subactor
-		return blocksubFaceCommands
-	elseif act == thirdactor 
-		return blockthirdFaceCommands
-	endif
+Bool Function FaceDataIsMuted(Actor Act)
+	If (Act == DomActor)
+		Return BlockDomFaceCommands
+	Elseif (Act == SubActor)
+		Return BlocksubFaceCommands
+	Elseif (Act == ThirdActor)
+		Return BlockthirdFaceCommands
+	EndIf
 EndFunction
 
-Event OnMoDom(String EventName, String zType, Float zAmount, Form Sender) 
-	if blockDomFaceCommands
-		return 
-	endif
-	OnMo(DomActor, ztype as int, zamount as int)
+Event OnMoDom(String EventName, String zType, Float zAmount, Form Sender)
+	If BlockDomFaceCommands
+		Return
+	EndIf
+	OnMo(DomActor, zType as Int, zAmount as Int)
 EndEvent
 
 Event OnMoSub(String EventName, String zType, Float zAmount, Form Sender)
-	if blockSubFaceCommands
-		return 
-	endif
-	OnMo(SubActor, ztype as int, zamount as int)
+	If BlockSubFaceCommands
+		Return
+	EndIf
+	OnMo(SubActor, zType as Int, zAmount as Int)
 EndEvent
 
 Event OnMoThird(String EventName, String zType, Float zAmount, Form Sender)
-	if blockthirdFaceCommands
-		return 
-	endif
-	OnMo(ThirdActor, ztype as int, zamount as int)
+	If BlockthirdFaceCommands
+		Return
+	EndIf
+	OnMo(ThirdActor, zType as Int, zAmount as Int)
 EndEvent
 
-
-function OnMo(actor act, int type, int amount) ;eye related face blending
+Function OnMo(Actor Act, Int zType, Int zAmount) ; eye related face blending
 	;Console("Eye event: " + "Type: " + type + " Amount: " + amount)
-	_oGlobal.BlendMo(Act, amount, MfgConsoleFunc.GetModifier(Act, type), type, 3)
-endfunction
-
+	_oGlobal.BlendMo(Act, zAmount, MfgConsoleFunc.GetModifier(Act, zType), zType, 3)
+EndFunction
 
 Event OnPhDom(String EventName, String zType, Float zAmount, Form Sender)
-	if blockDomFaceCommands
-		return 
-	endif
-	OnPh(DomActor, ztype as int, zamount as int)
+	If BlockDomFaceCommands
+		Return
+	EndIf
+	OnPh(DomActor, zType as Int, zAmount as Int)
 EndEvent
 
 Event OnPhSub(String EventName, String zType, Float zAmount, Form Sender)
-	if blockSubFaceCommands
-		return 
-	endif
-	OnPh(SubActor, ztype as int, zamount as int)
+	If BlockSubFaceCommands
+		Return
+	EndIf
+	OnPh(SubActor, zType as Int, zAmount as Int)
 EndEvent
 
 Event OnPhThird(String EventName, String zType, Float zAmount, Form Sender)
-	if blockthirdFaceCommands
-		return 
-	endif
-	OnPh(ThirdActor, ztype as int, zamount as int)
+	If BlockThirdFaceCommands
+		Return
+	EndIf
+	OnPh(ThirdActor, zType as Int, zAmount as Int)
 EndEvent
 
-
-function OnPh(actor act, int type, int amount) ;mouth related face blending
+Function OnPh(Actor Act, Int zType, Int zAmount) ;mouth related face blending
 	;Console("Mouth event: " + "Type: " + type + " Amount: " + amount)
-	_oGlobal.BlendPh(Act, amount, MfgConsoleFunc.GetPhoneme(Act, type), type, 3)
-endfunction
-
-
+	_oGlobal.BlendPh(Act, zAmount, MfgConsoleFunc.GetPhoneme(Act, zType), zType, 3)
+EndFunction
 
 Event OnExDom(String EventName, String zType, Float zAmount, Form Sender)
 	if blockDomFaceCommands
-		return 
+		return
 	endif
-	OnEx(DomActor, ztype as int, zamount as int)
+	OnEx(DomActor, zType as Int, zAmount as Int)
 EndEvent
 
 Event OnExSub(String EventName, String zType, Float zAmount, Form Sender)
 	if blockSubFaceCommands
-		return 
+		return
 	endif
-	OnEx(SubActor, ztype as int, zamount as int)
+	OnEx(SubActor, zType as Int, zAmount as Int)
 EndEvent
 
 Event OnExThird(String EventName, String zType, Float zAmount, Form Sender)
-	if blockthirdFaceCommands
-		return 
-	endif
-	OnEx(ThirdActor, ztype as int, zamount as int)
+	If BlockthirdFaceCommands
+		Return
+	EndIf
+	OnEx(ThirdActor, zType as Int, zAmount as Int)
 EndEvent
 
-
-function OnEx(actor act, int type, int amount) ;expression related face blending
+Function OnEx(Actor Act, Int zType, Int zAmount) ;expression related face blending
 	;Console("Expression event: " + "Type: " + type + " Amount: " + amount)
-	act.SetExpressionOverride(type, amount)
-endfunction
-
+	Act.SetExpressionOverride(zType, zAmount)
+EndFunction
 
 
 ;			███████╗ ██████╗ ██╗   ██╗███╗   ██╗██████╗
@@ -2109,7 +2075,7 @@ Function PlayTickSmall()
 	OSATickSmall.Play(PlayerRef)
 EndFunction
 
-Function playTickBig()
+Function PlayTickBig()
 	OSATickBig.Play(PlayerRef)
 EndFunction
 
@@ -2167,7 +2133,6 @@ Function OnSound(Actor Act, Int SoundID, Int FormNumber)
 		If (UseScreenShake && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 			ShakeCamera(0.5)
 		EndIf
-		
 	EndIf
 
 	If (FormNumber == 50)
@@ -2175,7 +2140,6 @@ Function OnSound(Actor Act, Int SoundID, Int FormNumber)
 		If (UseScreenShake && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 			ShakeController(0.1)
 		EndIf
-	
 	EndIf
 
 	String Arg = "third"
@@ -2250,8 +2214,6 @@ EndFunction
 FormList[] Function GetSoundFormLists()
 	Return SoundFormLists
 EndFunction
-
-
 
 
 ;			 ██████╗ ████████╗██╗  ██╗███████╗██████╗
@@ -2359,7 +2321,6 @@ Int Function SetTimeScale(Int Time)
 EndFunction
 
 Function SetSystemVars()
-
 	; vanilla OSex class library
 	ClassSex = "Sx"
 	ClassCunn = "VJ" ;Cunnilingus
@@ -2513,19 +2474,19 @@ Function SetSystemVars()
 	Speeds[7] = "5"
 	Speeds[8] =  "6"
 
-	subMouthOpenClasses = new String[5]
-	subMouthOpenClasses[0] = "BJ"
-	subMouthOpenClasses[1] = "ApPJ"
-	subMouthOpenClasses[2] = "VBJ"
-	subMouthOpenClasses[3] = "HhBJ"
-	subMouthOpenClasses[4] = "HhPJ"
+	SubMouthOpenClasses = new String[5]
+	SubMouthOpenClasses[0] = "BJ"
+	SubMouthOpenClasses[1] = "ApPJ"
+	SubMouthOpenClasses[2] = "VBJ"
+	SubMouthOpenClasses[3] = "HhBJ"
+	SubMouthOpenClasses[4] = "HhPJ"
 
-	domMouthOpenClasses = new String[5]
-	domMouthOpenClasses[0] = "VJ"
-	domMouthOpenClasses[1] = "VBJ"
-	domMouthOpenClasses[2] = "VHJ"
-	domMouthOpenClasses[3] = "BoF"
-	domMouthOpenClasses[4] = "SJ"
+	DomMouthOpenClasses = new String[5]
+	DomMouthOpenClasses[0] = "VJ"
+	DomMouthOpenClasses[1] = "VBJ"
+	DomMouthOpenClasses[2] = "VHJ"
+	DomMouthOpenClasses[3] = "BoF"
+	DomMouthOpenClasses[4] = "SJ"
 EndFunction
 
 Function SetDefaultSettings()
@@ -2572,7 +2533,7 @@ Function SetDefaultSettings()
 	AutoHideBars = False
 	MatchBarColorToGender = false
 
-	AiSwitchChance = 6
+	AISwitchChance = 6
 
 	GetInBedAfterBedScene = False
 	UseAINPConNPC = True
@@ -2591,7 +2552,7 @@ Function SetDefaultSettings()
 
 	UseFades = True
 	UseAutoFades = True
-	BlockVRInstalls = true
+	BlockVRInstalls = True
 
 	KeyMap = 200
 	SpeedUpKey = 78
@@ -2605,21 +2566,21 @@ Function SetDefaultSettings()
 	DefaultFOV = 85
 	FreecamSpeed = 3
 
-	int[] slots = new int[1]
-	slots[0] = 32
-	slots = PapyrusUtil.PushInt(slots, 33)
-	slots = PapyrusUtil.PushInt(slots, 31)
-	slots = PapyrusUtil.PushInt(slots, 37)
-	strippingslots = slots
+	Int[] Slots = new Int[1]
+	Slots[0] = 32
+	Slots = PapyrusUtil.PushInt(Slots, 33)
+	Slots = PapyrusUtil.PushInt(Slots, 31)
+	Slots = PapyrusUtil.PushInt(Slots, 37)
+	StrippingSlots = Slots
 
 	UseNativeFunctions = (SKSE.GetPluginVersion("OSA") != -1)
 	If (!UseNativeFunctions)
 		Console("Native function DLL failed to load. Falling back to papyrus implementations")
 	EndIf
 	UseAlternateBedSearch = !UseNativeFunctions
-	;UseAlternateBedSearch = true
+	;UseAlternateBedSearch = True
 
-	UseBrokenCosaveWorkaround = true
+	UseBrokenCosaveWorkaround = True
 	RemapStartKey(Keymap)
 	RemapSpeedDownKey(SpeedDownKey)
 	RemapSpeedUpKey(SpeedUpKey)
@@ -2652,9 +2613,9 @@ Function LoadOSexControlKeys()
 	RegisterOSexControlKey(209)
 EndFunction
 
-bool function GetGameIsVR()
-	return (PapyrusUtil.GetScriptVersion() == 36) ;obviously this no guarantee but it's the best we've got for now
-endfunction
+Bool Function GetGameIsVR()
+	Return (PapyrusUtil.GetScriptVersion() == 36) ;obviously this no guarantee but it's the best we've got for now
+EndFunction
 
 Function AcceptReroutingActors(Actor Act1, Actor Act2) ;compatibility thing, never call this one directly
 	ReroutedDomActor = Act1
@@ -2725,22 +2686,30 @@ Event OnKeyDown(Int KeyPress)
 		Return
 	EndIf
 
+	; DEBUG
+	If (KeyPress == 26)
+		;
+	ElseIf (KeyPress == 27)
+		;
+	EndIf
+	; DEBUG
+
 	If (AnimationRunning())
 		If (IntArrayContainsValue(OSexControlKeys, KeyPress))
 			MostRecentOSexInteractionTime = Utility.GetCurrentRealTime()
 			If (AutoHideBars)
-				If (!obars.IsBarVisible(obars.DomBar))
-					obars.SetBarVisible(obars.DomBar, True)
+				If (!OBars.IsBarVisible(OBars.DomBar))
+					OBars.SetBarVisible(OBars.DomBar, True)
 				EndIf
-				If (!obars.IsBarVisible(obars.SubBar))
-					obars.SetBarVisible(obars.SubBar, True)
+				If (!OBars.IsBarVisible(OBars.SubBar))
+					OBars.SetBarVisible(OBars.SubBar, True)
 				EndIf
-				If (!obars.IsBarVisible(obars.ThirdBar))
-					obars.SetBarVisible(obars.ThirdBar, True)
+				If (!OBars.IsBarVisible(OBars.ThirdBar))
+					OBars.SetBarVisible(OBars.ThirdBar, True)
 				EndIf
 			EndIf
 
-			if !IsActorActive(playerref)
+			if !IsActorActive(PlayerRef)
 				ShowNavMenu()
 			EndIf
 		EndIf
@@ -2804,31 +2773,38 @@ Event OnKeyDown(Int KeyPress)
 	EndIf
 EndEvent
 
-bool SoSInstalled
-faction SoSFaction
+Bool SoSInstalled
+Faction SoSFaction
 
-function ResetOSA() ; do not use, breaks osa
-	Quest osaQuest = Quest.GetQuest("0SA")
-	Quest uiQuest = Quest.GetQuest("0SUI")
-	Quest ctrlQuest = Quest.GetQuest("0SAControl")
-	osaQuest.Reset()
-	osaQuest.Stop()
-	uiQuest.Reset()
-	uiQuest.Stop()
-	ctrlQuest.Reset()
-	ctrlQuest.Stop()
+Function ResetOSA() ; do not use, breaks osa
+	Quest OSAQuest = Quest.GetQuest("0SA")
+	Quest UIQuest = Quest.GetQuest("0SUI")
+	Quest CtrlQuest = Quest.GetQuest("0SAControl")
+
+	OSAQuest.Reset()
+	OSAQuest.Stop()
+	UIQuest.Reset()
+	UIQuest.Stop()
+	CtrlQuest.Reset()
+	CtrlQuest.Stop()
+
 	Utility.Wait(2)
-	
-	ctrlQuest.Start()
-	osaQuest.Start()
-	uiQuest.Start()
+
+	CtrlQuest.Start()
+	OSAQuest.Start()
+	UIQuest.Start()
 
 	Utility.Wait(1)
 Endfunction
 
 Function Startup()
+	; DEBUG
+	;RegisterForKey(26) ; [
+	;RegisterForKey(27) ; ]
+	; DEBUG
+
 	Debug.Notification("Installing OStim. Please wait...")
-	
+
 	;ResetOSA()
 
 	SceneRunning = False
@@ -2839,7 +2815,7 @@ Function Startup()
 	PlayerRef = Game.GetPlayer()
 	NutEffect = Game.GetFormFromFile(0x000805, "Ostim.esp") as ImageSpaceModifier
 
-	oupdater = Game.GetFormFromFile(0x000D67, "Ostim.esp") as OStimUpdaterScript
+	OUpdater = Game.GetFormFromFile(0x000D67, "Ostim.esp") as OStimUpdaterScript
 	OSADing = Game.GetFormFromFile(0x000D6D, "Ostim.esp") as Sound
 	OSATickSmall = Game.GetFormFromFile(0x000D6E, "Ostim.esp") as Sound
 	OSATickBig = Game.GetFormFromFile(0x000D6F, "Ostim.esp") as Sound
@@ -2853,31 +2829,28 @@ Function Startup()
 		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as Faction
 	EndIf
 
-	
 	Timescale = (Game.GetFormFromFile(0x00003A, "Skyrim.esm")) as GlobalVariable
-	
 
 	AI = ((Self as Quest) as OAiScript)
-	obars = ((Self as Quest) as obarsscript)
-	oundress = ((Self as Quest) as oundressscript)
-	;RegisterForModEvent("ostim_actorhit", "OnActorHit")
+	OBars = ((Self as Quest) as OBarsScript)
+	OUndress = ((Self as Quest) as OUndressScript)
+	RegisterForModEvent("ostim_actorhit", "OnActorHit")
 	SetSystemVars()
 	SetDefaultSettings()
 	BuildSoundFormlists()
 
-	if (BlockVRInstalls && GetGameIsVR())
+	If (BlockVRInstalls && GetGameIsVR())
 		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
-		return
-	endif
+		Return
+	EndIf
 
-	if (SKSE.GetPluginVersion("JContainers64") == -1)
+	If (SKSE.GetPluginVersion("JContainers64") == -1)
 		Debug.MessageBox("OStim: JContainers is not installed, please exit and install it immediately")
-		return
-	endif
+		Return
+	EndIf
 
 	SMPInstalled = (SKSE.GetPluginVersion("hdtSSEPhysics") != -1)
 	Console("SMP installed: " + SMPInstalled)
-	
 
 	ODatabase = (Self as Quest) as ODatabaseScript
 	ODatabase.InitDatabase()
@@ -2889,9 +2862,9 @@ Function Startup()
 		Return
 	EndIf
 
-	if (ODatabase.GetLengthOArray(ODatabase.GetDatabaseOArray()) < 1)
+	If (ODatabase.GetLengthOArray(ODatabase.GetDatabaseOArray()) < 1)
 		Debug.Notification("OStim install failed")
-		return
+		Return
 	Else
 		ODatabase.Unload()
 	EndIf
@@ -2900,22 +2873,19 @@ Function Startup()
 	;	Console("Sexlab Aroused loaded")
 	;EndIf
 
-	if (SKSE.GetPluginVersion("ConsoleUtilSSE") == -1)
-		Debug.Notification("OStim: ConsoleUtils is not installed, a few features may not work")
-	endif
+	If (SKSE.GetPluginVersion("ConsoleUtilSSE") == -1)
+		Debug.Notification("OStim: ConsoleUtil is not installed, a few features may not work")
+	EndIf
 
-	if (Game.GetModByName("Schlongs of Skyrim.esp") != 255)
-		
-		
-		SoSFaction = (Game.GetFormFromFile(0x0000AFF8, "Schlongs of Skyrim.esp")) as faction
-
-		if SoSFaction
+	If (Game.GetModByName("Schlongs of Skyrim.esp") != 255)
+		SoSFaction = (Game.GetFormFromFile(0x0000AFF8, "Schlongs of Skyrim.esp")) as Faction
+		If SoSFaction
 			Console("Schlongs of Skyrim loaded")
 			SoSInstalled = true
-		else 
+		Else
 			SoSInstalled = false
-		endif
-	else 
+		Endif
+	Else
 		SoSInstalled = false
 	EndIf
 
@@ -2932,7 +2902,7 @@ Function Startup()
 		Return
 	EndIf
 
-	if (SKSE.GetPluginVersion("ImprovedCamera") == -1)
+	If (SKSE.GetPluginVersion("ImprovedCamera") == -1)
 		Debug.Notification("OStim: Improved Camera is not installed. First person scenes will not be available")
 		Debug.Notification("OStim: However, freecam will have extra features")
 	EndIf
@@ -2942,17 +2912,16 @@ Function Startup()
 		return
 	EndIf
 
-	if Utility.GetCurrentGameTime() > 2
-		debug.MessageBox("You seem to be installing OStim mid-playthough. If this save previously had an old OStim version installed, don't forget you needed to run a save cleaner to clean out old scripts. If you have done so already, you can safely ignore this message")
-	endif
+	If (Utility.GetCurrentGameTime() > 2)
+		Debug.MessageBox("You seem to be installing OStim mid-playthough. If this save previously had an old OStim version installed, don't forget you needed to run a save cleaner to clean out old scripts. If you have done so already, you can safely ignore this message")
+	EndIf
+
 	OSAOmni.RebootScript()
 	OnLoadGame()
 
 	Utility.Wait(1)
 	DisplayTextBanner("OStim installed")
 EndFunction
-
-
 
 Bool Property UseBrokenCosaveWorkaround Auto
 Function OnLoadGame()
@@ -2967,15 +2936,8 @@ Function OnLoadGame()
 		RegisterForKey(ControlToggleKey)
 		RegisterForKey(KeyMap)
 
-		; DEBUG
-		;RegisterForKey(26) ; [
-		;RegisterForKey(27) ; ]
-		; DEBUG
-
 		AI.OnGameLoad()
-		obars.OnGameLoad()
-		oundress.onGameLoad()
-
-		;oupdater.ongameload()
+		OBars.OnGameLoad()
+		OUndress.OnGameLoad()
 	EndIf
 EndFunction
