@@ -392,6 +392,8 @@ Event OnUpdate() ;OStim main logic loop
 		Game.DisablePlayerControls(abCamswitch = True, abMenu = False, abFighting = False, abActivate = False, abMovement = False, aiDisablePOVType = 0)
 	EndIf
 
+	ODatabase.Load()
+
 	Int OldTimescale = 0
 	If (CustomTimescale >= 1)
 		OldTimescale = GetTimeScale()
@@ -593,6 +595,7 @@ Event OnUpdate() ;OStim main logic loop
 		HideNavMenu()
 		ShowAllSkyUIWidgets()
 	EndIf
+
 
 	SendModEvent("ostim_start")
 
@@ -1059,6 +1062,7 @@ Function ToggleFreeCam(Bool On = True)
 	Else
 		OSANative.DisableFreeCam()
 		OSANative.SetFOV(DefaultFOV)
+		OSANative.SetFreeCamSpeed()
 		IsFreeCamming = false
 		Console("Disabling freecam")
 	EndIf
