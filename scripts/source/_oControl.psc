@@ -66,10 +66,13 @@ EndFunction
 
 Event OnKeyDown(Int KeyPress)
 
-    if ostim.disableOSAControls
+    If (KeyPress == OKey[0])
+        UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.ctr.END")
+    ElseIf ostim.disableOSAControls
+        OsexIntegrationMain.Console("OSA controls disabled by OStim property")
         return 
-    endif 
-    
+    EndIf
+
     If (KeyPress == OKey[2])
         UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.ctr.UP")
     ElseIf (KeyPress == OKey[3])
@@ -86,8 +89,6 @@ Event OnKeyDown(Int KeyPress)
         UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.ctr.NO")
     ElseIf (KeyPress == OKey[1])
         UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.ctr.MENU")
-    ElseIf (KeyPress == OKey[0])
-        UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.ctr.END")
     ElseIf (KeyPress == OKey[9])
         InspectActra()
     ElseIf (KeyPress == OKey[13])
