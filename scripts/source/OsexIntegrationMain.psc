@@ -126,7 +126,9 @@ Bool Property UseAlternateBedSearch Auto
 
 Int Property AiSwitchChance Auto
 
-bool SMPInstalled
+Bool Property DisableStimulationCalculation Auto 
+
+Bool SMPInstalled
 
 Int[] Property StrippingSlots Auto
 
@@ -605,7 +607,7 @@ Event OnUpdate() ;OStim main logic loop
 		Game.FadeOutGame(False, True, 0.0, 4) ; welcome back
 	EndIf
 
-	While (IsActorActive(DomActor))
+	While (IsActorActive(DomActor)) ; Main OStim logic loop
 		If (LoopTimeTotal > 1)
 			;Console("Loop took: " + loopTimeTotal + " seconds")
 			LoopTimeTotal = 0
@@ -648,10 +650,12 @@ Event OnUpdate() ;OStim main logic loop
     		AutoIncreaseSpeed()
     	EndIf
 
-		DomExcitement += GetCurrentStimulation(DomActor) * DomStimMult
-		SubExcitement += GetCurrentStimulation(SubActor) * SubStimMult
-		If ThirdActor
-			ThirdExcitement += GetCurrentStimulation(ThirdActor) * ThirdStimMult
+    	If !DisableStimulationCalculation
+			DomExcitement += GetCurrentStimulation(DomActor) * DomStimMult
+			SubExcitement += GetCurrentStimulation(SubActor) * SubStimMult
+			If ThirdActor
+				ThirdExcitement += GetCurrentStimulation(ThirdActor) * ThirdStimMult
+			EndIf
 		EndIf
 
 		If (SubExcitement >= 100.0)
@@ -2532,6 +2536,8 @@ Function SetDefaultSettings()
 	Usebed = True
 	BedSearchDistance = 15
 	MisallignmentProtection = True
+
+	DisableStimulationCalculation = false
 
 	FixFlippedAnimations = False
 	OrgasmIncreasesRelationship = False
