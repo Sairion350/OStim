@@ -65,6 +65,8 @@ Bool Property TossClothesOntoGround Auto
 Bool Property UseStrongerUnequipMethod Auto
 Bool Property FullyAnimateRedress Auto
 
+bool property disableOSAControls auto
+
 Bool  SpeedUpNonSexAnimation
 Float SpeedUpSpeed
 
@@ -2549,6 +2551,8 @@ Function SetDefaultSettings()
 	UseAINonAggressive = False
 
 	Forcefirstpersonafter = True
+
+	disableOSAControls = false
 
 	UseFreeCam = !(SKSE.GetPluginVersion("ImprovedCamera") != -1)
 

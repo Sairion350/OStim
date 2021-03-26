@@ -8,6 +8,8 @@ EndProperty
 
 Import _oGlobal
 
+OsexIntegrationMain ostim
+
 Int Glyph
 Actor PlayerRef
 Bool _IsSetup = False
@@ -39,6 +41,9 @@ Function UpdateControls()
         RegisterForModEvent("0SC_EqOConsole", "OnEqOConsole")
         RegisterForModEvent("0SC_EqXConsole", "OnEqXConsole")
 
+        ostim = game.GetFormFromFile(0x000801, "Ostim.esp") as OsexIntegrationMain
+
+
         If (!_IsKeySetup)
             oPlayerControls()
         EndIf
@@ -60,6 +65,11 @@ Function OPlayerControls()
 EndFunction
 
 Event OnKeyDown(Int KeyPress)
+
+    if ostim.disableOSAControls
+        return 
+    endif 
+    
     If (KeyPress == OKey[2])
         UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.ctr.UP")
     ElseIf (KeyPress == OKey[3])
