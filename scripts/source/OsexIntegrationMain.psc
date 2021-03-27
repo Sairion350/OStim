@@ -1078,12 +1078,14 @@ Function ToggleFreeCam(Bool On = True)
 	EndIf
 EndFunction
 
-Function HideNavMenu() ; only works during SEX animations
+Function HideNavMenu()
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.NavMenu.dim")
+	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.SceneMenu.OmniDim")
 EndFunction
 
-Function ShowNavMenu() ; only works during SEX animations
+Function ShowNavMenu()
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.NavMenu.light")
+	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.SceneMenu.OmniLight")
 EndFunction
 
 Function HideAllSkyUIWidgets()
