@@ -1378,6 +1378,8 @@ Function Flip()
 
 	DomActor.SetVehicle(Stage)  ; fuse
 	SubActor.SetVehicle(Stage)
+
+	SendModEvent("ostim_flip")
 EndFunction
 
 ObjectReference Function GetOSAStage() ; the stage is an invisible object that the actors are alligned on
