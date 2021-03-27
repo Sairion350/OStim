@@ -423,17 +423,14 @@ EndFunction
 
 Function Warp(String aScene)
 	If (OStim.UseAutoFades && OStim.IsActorActive(PlayerRef))
-		Float Time = 1.00
-		Game.FadeOutGame(True, True, 0.0, Time)
-		Utility.Wait(time - 0.15)
-		Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
+		ostim.FadeToBlack(1)
 	EndIf
 
 	OStim.WarpToAnimation(aScene)
 
 	If (OStim.UseAutoFades && OStim.IsActorActive(PlayerRef))
 		Utility.Wait(0.55)
-		Game.FadeOutGame(False, True, 0.0, 1) ; welcome back
+		ostim.FadeFromBlack(1)
 	EndIf
 EndFunction
 

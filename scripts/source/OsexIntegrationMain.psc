@@ -384,10 +384,7 @@ Event OnUpdate() ;OStim main logic loop
 	Console("Starting scene asynchronously")
 
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
-		Float Time = 1.25
-		Game.FadeOutGame(True, True, 0.0, Time)
-		Utility.Wait(Time - 0.25)
-		Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
+		FadeToBlack()
 	EndIf
 
 	SendModEvent("ostim_prestart") ; fires as soon as the screen goes black. be careful, some settings you normally expect may not be set yet. Use ostim_start to run code when the OSA scene begins.
@@ -604,7 +601,7 @@ Event OnUpdate() ;OStim main logic loop
 	SendModEvent("ostim_start")
 
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
-		Game.FadeOutGame(False, True, 0.0, 4) ; welcome back
+		FadeFromBlack()
 	EndIf
 
 	While (IsActorActive(DomActor)) ; Main OStim logic loop
@@ -718,7 +715,7 @@ Event OnUpdate() ;OStim main logic loop
 	Utility.Wait(0.1)
 
 	If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
-		Game.FadeOutGame(False, True, 0.0, 2) ; welcome back
+		FadeFromBlack(2)
 	EndIf
 
 	UnRegisterForModEvent("0SAO" + Password + "_AnimateStage")
@@ -912,10 +909,7 @@ EndFunction
 
 Function EndAnimation(Bool SmoothEnding = True)
 	If (UseFades && SmoothEnding && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
-		Float Time = 1
-		Game.FadeOutGame(True, True, 0.0, Time)
-		Utility.Wait(Time - 0.15)
-		Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
+		FadeToBlack(1)
 	EndIf
 	EndedProper = SmoothEnding
 	Console("Trying to end scene")
@@ -999,6 +993,16 @@ Function RunOsexCommand(String CMD)
 
 	OSA.SetPlan(CurrScene, Plan)
 	OSA.StimStart(CurrScene)
+EndFunction
+
+function FadeFromBlack(float time = 4.0)
+	Game.FadeOutGame(False, True, 0.0, time) ; welcome back
+EndFunction
+
+function FadeToBlack(float time = 1.25)
+		Game.FadeOutGame(True, True, 0.0, Time)
+		Utility.Wait(Time * 0.70)
+		Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
 EndFunction
 
 Float Function GetTimeSinceLastPlayerInteraction()
@@ -1320,46 +1324,6 @@ Float Function TrigAngleZ(Float GameAngleZ)
 		 Return (90 - GameAngleZ)
 	EndIf
  	Return (450 - GameAngleZ)
-EndFunction
-
-Function SleepInBed(ObjectReference Bed, Actor Act) ; requires GoToBed
-	If (Act == PlayerRef)
-		ActorBase ActBase = PlayerRef.GetActorBase()
-		If (Bed.GetActorOwner() != ActBase)
-			Bed.SetActorOwner(ActBase)
-			Console("Setting bed owner to player")
-		EndIf
-
-		ConsoleUtil.SetSelectedReference(PlayerRef)
-		Debug.ToggleCollisions()
-
-		Int i = 0
-		While ((Game.GetCurrentCrosshairRef() != Bed) && (i < 20))
-			Utility.Wait(0.1)
-			ConsoleUtil.ExecuteCommand("setangle x 75")
-			i += 1
-		EndWhile
-
-		Debug.ToggleCollisions()
-		ConsoleUtil.SetSelectedReference(None)
-    	Input.TapKey(Input.GetMappedKey("Activate"))
-
-    	If (UseFades)
-			Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
-		EndIf
-
-    	Float x = Act.X
-		Utility.Wait(0.3)
-
-    	i = 0
-		While ((x != Act.X) && (i < 200))
-			i += 1
-    		x = Act.X
-
-    		Utility.Wait(0.1)
-    		Console("Waiting for player to stop moving")
-    	EndWhile
-	EndIf
 EndFunction
 
 Function Flip()
