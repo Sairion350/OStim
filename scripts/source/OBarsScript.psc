@@ -122,7 +122,7 @@ Function FlashBar(Osexbar Bar)
 EndFunction
 
 Event OstimStart(string eventName, string strArg, float numArg, Form sender)
-	
+	orgasming = false
 	if ostim.MatchBarColorToGender
 		ColorBar(dombar, ostim.AppearsFemale(ostim.GetDomActor()))
 		ColorBar(subbar, ostim.AppearsFemale(ostim.GetSubActor()))
@@ -151,6 +151,10 @@ Event OstimStart(string eventName, string strArg, float numArg, Form sender)
 
 
 	While ostim.AnimationRunning()
+		while orgasming
+			Utility.Wait(0.3)
+		endwhile 
+
 		If (ostim.AutoHideBars && (ostim.GetTimeSinceLastPlayerInteraction() > 15.0)) ; fade out if needed
     		If (IsBarVisible(DomBar))
     			SetBarVisible(DomBar, False)
@@ -177,8 +181,10 @@ Event OstimStart(string eventName, string strArg, float numArg, Form sender)
 	SetBarVisible(ThirdBar, False)
 	SetBarPercent(ThirdBar, 0.0)
 EndEvent
+bool orgasming
 
 Event OstimOrgasm(string eventName, string strArg, float numArg, Form sender)
+	orgasming = true
 	actor act = ostim.getmostrecentorgasmedactor()
 
 	If (Act == ostim.GetDomActor())
@@ -197,6 +203,7 @@ Event OstimOrgasm(string eventName, string strArg, float numArg, Form sender)
 		Utility.Wait(2)
 		SetBarPercent(ThirdBar, 0)
 	EndIf
+	orgasming = false
 endevent
 
 Event OstimThirdJoin(string eventName, string strArg, float numArg, Form sender)
@@ -216,6 +223,10 @@ Endevent
 float lastSmackTime
 int lastSpeed
 Event OnOSASound(string eventName, string args, float nothing, Form sender)
+	if orgasming
+		return 
+	endif 
+
 	string[] argz = new string[3]
 	argz = StringUtil.Split(args, ",")
 
