@@ -242,6 +242,8 @@ Event OnOSASound(string eventName, string args, float nothing, Form sender)
 
 		if (timediff > 2.5) ; it's been a long time since we got a smacking sound 
 			SetBarFullnessProper() ; set bar to the correct value
+		elseif (timediff < 0.25)
+			return ; events are coming too rapidly to safely handle here
 		Else
 			float correctnessdiffdom 
 			float correctnessdiffsub 
