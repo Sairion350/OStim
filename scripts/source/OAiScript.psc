@@ -373,7 +373,7 @@ Function ChangeToPulledOutVersion()
 
 	If (ODatabase.getLengthOArray(Animations) > 0)
 		Int Animation = ODatabase.getObjectOArray(Animations, 0)
-		OStim.TravelToAnimation(ODatabase.GetSceneID(animation))
+		OStim.WarpToAnimation(ODatabase.GetSceneID(animation))
 		OStim.SetCurrentAnimationSpeed(ODatabase.GetMaxSpeed(Animation))
 	EndIf
 EndFunction

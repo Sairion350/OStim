@@ -413,6 +413,7 @@ Event OnUpdate() ;OStim main logic loop
 	ThirdStimMult = 1.0
 	EndedProper = False
 	StallOrgasm = False
+	navMenuHidden = false
 	BlockDomFaceCommands = False
 	BlocksubFaceCommands = False
 	BlockthirdFaceCommands = False
@@ -731,6 +732,7 @@ Event OnUpdate() ;OStim main logic loop
 		SetTimeScale(OldTimescale)
 	EndIf
 
+	OSA.OGlyphO(".ctr.END") ;for safety
 	Console(Utility.GetCurrentRealTime() - StartTime + " seconds passed")
 	SceneRunning = False
 EndEvent
@@ -1078,12 +1080,16 @@ Function ToggleFreeCam(Bool On = True)
 	EndIf
 EndFunction
 
+bool navMenuHidden
+
 Function HideNavMenu()
+	navMenuHidden = true
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.NavMenu.dim")
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.SceneMenu.OmniDim")
 EndFunction
 
 Function ShowNavMenu()
+	navMenuHidden = false
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.NavMenu.light")
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.SceneMenu.OmniLight")
 EndFunction
@@ -2699,7 +2705,7 @@ Event OnKeyDown(Int KeyPress)
 				EndIf
 			EndIf
 
-			if !IsActorActive(PlayerRef)
+			if !IsActorActive(PlayerRef) && navMenuHidden
 				ShowNavMenu()
 			EndIf
 		EndIf
