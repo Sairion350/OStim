@@ -2669,6 +2669,11 @@ Event OnKeyDown(Int KeyPress)
 		Return
 	EndIf
 
+	If disableOSAControls
+            OsexIntegrationMain.Console("OStim controls disabled by OStim property")
+        return 
+    EndIf
+
 	; DEBUG
 	If (KeyPress == 26)
 		;
