@@ -788,7 +788,7 @@ Int Function GetAPIVersion()
 	;5 adds ODatabase, getCurrentLeadingActor
 	;4 added onanimationchange event and decrease speed
 	;3 introduces events and getmostrecentorgasmedactor
-	Return 8
+	Return 9
 EndFunction
 
 Function IncreaseAnimationSpeed()
@@ -963,27 +963,6 @@ EndFunction
 Actor Function GetThirdActor()
 	Return ThirdActor
 EndFunction
-;
-;Int Function GetActorArousal(Actor Char)
-;	Int Ret = 50
-;	If (ArousedFaction)
-;		Ret = Char.GetFactionRank(ArousedFaction)
-;	EndIf
-;
-;	If (Ret < 0) ; not yet set
-;		Ret = 50
-;	EndIf
-;	Return Ret
-;EndFunction
-;
-;Function SetActorArousal(Actor Char, Int Level) ; wrong way to do this, may not work
-;	If (ArousedFaction)
-;		If (Level < 1)
-;			Level = 1
-;		EndIf
-;		Char.SetFactionRank(ArousedFaction, Level)
-;	EndIf
-;EndFunction
 
 Actor Function GetMostRecentOrgasmedActor()
 	Return MostRecentOrgasmedActor
@@ -1065,14 +1044,15 @@ Function AlternateReallign() ; may work better than the above function, or worse
 EndFunction
 
 Function ToggleFreeCam(Bool On = True)
+	ConsoleUtil.ExecuteCommand("tfc")
 	If (!IsFreeCamming)
-		OSANative.EnableFreeCam()
+		;OSANative.EnableFreeCam()
 		OSANative.SetFreeCamSpeed(FreecamSpeed)
 		OSANative.SetFOV(freecamFOv)
 		IsFreeCamming = true
 		Console("Enabling freecam")
 	Else
-		OSANative.DisableFreeCam()
+		;OSANative.DisableFreeCam()
 		OSANative.SetFOV(DefaultFOV)
 		OSANative.SetFreeCamSpeed()
 		IsFreeCamming = false
@@ -1794,12 +1774,6 @@ Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being sti
 		If (!CurrAnimHasIdleSpeed)
 			NumSpeeds += 1
 		EndIf
-
-;		If (ArousedFaction)
-;			Float Arousal = GetActorArousal(Act)
-;			Arousal -= 50.0
-;			Arousal /= 250
-;		EndIf
 
 		If (!IsNaked(GetSexPartner(Act)))
 			Ret -= 0.1
@@ -2815,11 +2789,6 @@ Function Startup()
 	OSADing = Game.GetFormFromFile(0x000D6D, "Ostim.esp") as Sound
 	OSATickSmall = Game.GetFormFromFile(0x000D6E, "Ostim.esp") as Sound
 	OSATickBig = Game.GetFormFromFile(0x000D6F, "Ostim.esp") as Sound
-
-	;If (Game.GetModByName("SexLab.esm") != 255)
-	;	SexLab = (Game.GetFormFromFile(0x00000D62, "SexLab.esm")) as Quest
-	;	OrgasmSound = (Game.GetFormFromFile(0x00065A34, "SexLab.esm")) as Sound
-	;EndIf
 
 	If (Game.GetModByName("SexlabAroused.esm") != 255)
 		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as Faction
