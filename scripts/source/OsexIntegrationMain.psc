@@ -19,7 +19,7 @@ ScriptName OsexIntegrationMain Extends Quest
 ; With the exception of the sound event, OStim events do not include data with them. They only let you know when something has happened. You can access
 ; OStim and get all of the data you need through the normal API here
 
-
+; PROTIP: ctrl + F is your best friend when it comes to seeing how and where a function/variable/property/etc is used elsewhere
 
 ;			 ██████╗ ███████╗████████╗██╗███╗   ███╗
 ;			██╔═══██╗██╔════╝╚══██╔══╝██║████╗ ████║
@@ -2269,7 +2269,6 @@ bool Function StringContains(string str, string contains)
 EndFunction
 
 bool Function IsModLoaded(string ESPFile)
-	;return (Game.GetModByName("SexlabAroused.esm") != 255)
 	return (Game.GetModByName(ESPFile) != 255)
 Endfunction
 

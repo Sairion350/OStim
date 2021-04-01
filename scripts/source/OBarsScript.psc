@@ -167,9 +167,9 @@ Event OstimStart(string eventName, string strArg, float numArg, Form sender)
     		EndIf
     	EndIf
 
-    	if ((Game.GetRealHoursPassed() * 60 * 60) - lastSmackTime) > 3 ; 3 seconds with no update data... time to fall back
+    	;if ((Game.GetRealHoursPassed() * 60 * 60) - lastSmackTime) > 3 ; 3 seconds with no update data... time to fall back
     		SetBarFullnessProper()
-        endif
+        ;endif
 		Utility.wait(1)
 	EndWhile
 
@@ -222,6 +222,7 @@ Endevent
 
 float lastSmackTime
 int lastSpeed
+;/
 Event OnOSASound(string eventName, string args, float nothing, Form sender)
 	if orgasming
 		return 
@@ -277,6 +278,7 @@ Event OnOSASound(string eventName, string args, float nothing, Form sender)
 
 	
 endevent
+/;
 
 Function SetBarFullnessProper()
 	SetBarPercent(DomBar, ostim.getactorexcitement(ostim.GetDomActor()))
@@ -313,7 +315,7 @@ Function OnGameLoad()
 	RegisterForModEvent("ostim_thirdactor_join", "OstimThirdJoin")
 	RegisterForModEvent("ostim_thirdactor_leave", "OstimThirdLeave")
 
-	RegisterForModEvent("ostim_osasound", "OnOSASound")
+	;RegisterForModEvent("ostim_osasound", "OnOSASound")
 
 
 	osexintegrationmain.Console("Fixing Bars thread")
