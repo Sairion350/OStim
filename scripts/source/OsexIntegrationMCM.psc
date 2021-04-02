@@ -8,6 +8,7 @@ Int SetClipinglessFirstPerson
 Int SetEndAfterActorHit
 Int SetUseRumble
 Int SetUseScreenShake
+int SetScaling
 
 ; clothes settings
 Int SetUndressIfNeed
@@ -172,6 +173,7 @@ Event OnPageReset(String Page)
 		SetUseRumble = AddToggleOption("Use controller rumble", Main.UseRumble)
 		SetUseScreenShake = AddToggleOption("Use extra screenshake", Main.UseScreenShake)
 		SetForceFirstPerson = AddToggleOption("Force return to first person after scene", Main.ForceFirstPersonAfter)
+		SetScaling = AddToggleOption("Disable scaling", Main.DisableScaling)
 		AddEmptyOption()
 
 		AddColoredHeader("Beds")
@@ -295,6 +297,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetEnableBeds)
 		Main.UseBed = !Main.UseBed
 		SetToggleOptionValue(Option, Main.UseBed)
+	ElseIf (Option == SetScaling)
+		Main.DisableScaling = !Main.DisableScaling
+		SetToggleOptionValue(Option, Main.DisableScaling)
 	ElseIf (Option == SetUseRumble)
 		Main.UseRumble = !Main.UseRumble
 		SetToggleOptionValue(Option, Main.UseRumble)
@@ -419,6 +424,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("If using manual mode by default, this will force automatic mode to activate in consensual scenes")
 	ElseIf (Option == SetUseFades)
 		SetInfoText("Fade the screen to black when a scene starts/ends")
+	ElseIf (Option == SetScaling)
+		SetInfoText("Disable changing actor height to fit animations better when scene starts\nDisabling scaling will absolutely wreck animation alignment, turning it off is not recommended\nHowever, turning it off may help fix issues with HDT-SMP")
 	ElseIf (Option == SetUseCosaveWorkaround)
 		SetInfoText("Some users appear to have a broken SKSE co-save setup\n This manifests itself as full-auto mode not working, and keys not saving\nThis will fix the symptoms of the issue if you have it, but not the core cause")
 	ElseIf (Option == SetFreeCamFOV)
@@ -771,6 +778,7 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetEndAfterActorHit", Main.EndAfterActorHit as Int)
 	JMap.SetInt(OstimSettingsFile, "SetUseRumble", Main.UseRumble as Int)
 	JMap.SetInt(OstimSettingsFile, "SetUseScreenShake", Main.UseScreenShake as Int)
+	JMap.SetInt(OstimSettingsFile, "SetScaling", Main.DisableScaling as Int)
 	
 	; Clothes settings export.
 	JMap.SetInt(OstimSettingsFile, "SetUndressIfNeed", Main.AutoUndressIfNeeded as Int)
@@ -863,6 +871,7 @@ Function ImportSettings()
 	Main.EndAfterActorHit = JMap.GetInt(OstimSettingsFile, "SetEndAfterActorHit")
 	Main.UseRumble = JMap.GetInt(OstimSettingsFile, "SetUseRumble")
 	Main.UseScreenShake = JMap.GetInt(OstimSettingsFile, "SetUseScreenShake")
+	Main.DisableScaling = JMap.GetInt(OstimSettingsFile, "SetScaling")
 	
 	; Clothes settings import.
 	Main.AutoUndressIfNeeded = JMap.GetInt(OstimSettingsFile, "SetUndressIfNeed")

@@ -84,7 +84,7 @@ Function RegisterEvents()
 	;RegisterForModEvent("0SAA" + FormID + "_BlendEx", "OnBlendEx")
 	RegisterForModEvent("0SAA" + FormID + "_BlendSc", "OnBlendSc")
 	RegisterForModEvent("0SAA" + FormID + "_SnapSc", "OnSnapSc")
-	RegisterForModEvent("0SAA" + FormID + "_BodyScale", "OnBodyScale")
+	;RegisterForModEvent("0SAA" + FormID + "_BodyScale", "OnBodyScale")
 
 	;RegisterForModEvent("0SSO" + FormID + "_Sound", "OnSound")
 	RegisterForModEvent("0SAA" + FormID + "_OShader", "OnOShader")
@@ -191,6 +191,7 @@ Event OnAlignStage()
 
 	Actra.TranslateTo(PosObj.x, PosObj.y, PosObj.z, 0, 0, PosObj.getAngleZ(), 150.0, 0)
 	Actra.SetVehicle(PosObj)
+	sendmodevent("ostim_setvehicle")
 EndEvent
 
 Event OnTranslationComplete()

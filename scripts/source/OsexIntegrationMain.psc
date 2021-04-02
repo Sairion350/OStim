@@ -132,6 +132,12 @@ Bool SMPInstalled
 
 Int[] Property StrippingSlots Auto
 
+Float Property MaleScaleHeight auto 
+Float Property FemaleScaleHeight auto ;adjusting these then calling a rescale will let you control actors scaling heights.
+; The default OSA scale heights are set here by default
+
+bool Property DisableScaling auto
+
 ; -------------------------------------------------------------------------------------------------
 ; SCRIPTWIDE VARIABLES ----------------------------------------------------------------------------
 
@@ -311,6 +317,8 @@ Float[] ProstateStimValues
 
 String[] Speeds
 
+
+
 ; -------------------------------------------------------------------------------------------------
 ; -------------------------------------------------------------------------------------------------
 
@@ -425,6 +433,8 @@ Event OnUpdate() ;OStim main logic loop
 	SpankMax = Utility.RandomInt(1, 6)
 	IsFreeCamming = False
 
+
+
 	Actor[] Actro
 	If (ThirdActor)
 		Actro = New Actor[3]
@@ -432,6 +442,8 @@ Event OnUpdate() ;OStim main logic loop
 	Else
 		Actro = New Actor[2]
 	EndIf
+
+	RegisterForModEvent("ostim_setvehicle", "OnSetVehicle")
 
 	RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_Sound", "OnSoundDom")
 	RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_Sound", "OnSoundSub")
@@ -692,6 +704,11 @@ Event OnUpdate() ;OStim main logic loop
 	Console("Ending scene")
 
 	SendModEvent("ostim_end")
+
+	If !DisableScaling
+		RestoreScales()
+    EndIf
+
 	If (EnableImprovedCamSupport)
 		Game.EnablePlayerControls(abCamSwitch = True)
 	EndIf
@@ -1331,7 +1348,7 @@ Function Flip()
 	DomActor.SetVehicle(Stage)  ; fuse
 	SubActor.SetVehicle(Stage)
 
-	SendModEvent("ostim_flip")
+	SendModEvent("ostim_setvehicle")
 EndFunction
 
 ObjectReference Function GetOSAStage() ; the stage is an invisible object that the actors are alligned on
@@ -1524,6 +1541,10 @@ Function OnAnimationChange()
 			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh", "OnPhThird")
 			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx", "OnExThird")
 
+			if !DisableScaling 
+				ScaleToStandardHeight(ThirdActor)
+			EndIf
+
 			SendModEvent("ostim_thirdactor_join")
 		Else
 			Console("Warning - Third Actor not found")
@@ -1535,6 +1556,10 @@ Function OnAnimationChange()
 		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo")
 		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh")
 		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx")
+
+		if !DisableScaling
+			ThirdActor.SetScale(1.0)
+		EndIf
 
 		ThirdActor = none
 
@@ -1595,6 +1620,72 @@ Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
 		EndAnimation(False)
 	EndIf
 EndEvent
+
+float lastVehicleTime
+Event OnSetVehicle(String EventName, String zAnimation, Float NumArg, Form Sender)
+	if (game.GetRealHoursPassed() - lastVehicleTime) < 0.000833 ; 3 seconds
+		return 
+	endif 
+	lastVehicleTime = game.GetRealHoursPassed()
+
+	Console("Set vehicle fired")
+
+	if !DisableScaling
+		ScaleAll()
+	endif 
+EndEvent
+
+function ScaleAll()
+	if DomActor 
+		ScaleToStandardHeight(domactor)
+	endif
+	if subactor 
+		ScaleToStandardHeight(subactor)
+	endif
+	if ThirdActor 
+		ScaleToStandardHeight(ThirdActor)
+	endif
+Endfunction
+
+Function ScaleToStandardHeight(actor act)
+	float GoalBodyScale 
+	if AppearsFemale(act)
+		GoalBodyScale = FemaleScaleHeight
+	else 
+		GoalBodyScale = MaleScaleHeight
+	endif
+	
+	ScaleToHeight(act, GoalBodyScale)
+EndFunction
+
+Function ScaleToHeight(actor act, float GoalBodyScale)
+	float NativeBodyScale = act.GetScale()
+
+	float scale = ((GoalBodyScale - NativeBodyScale) / NativeBodyScale) + 1.0
+
+	if (scale < 1.01)  && (scale > 0.99) ; there is some floating point imprecision with the above.
+		return ; no need to scale and update ninode
+	EndIf
+
+	Console("Setting scale: " + scale)
+	
+	act.setScale(scale)
+	act.QueueNiNodeUpdate() ; This will cause actors to reqequip clothes if mid-scene
+	act.setScale(scale)
+
+EndFunction
+
+Function RestoreScales()
+	if DomActor 
+		DomActor.SetScale(1.0)
+	endif
+	if subactor 
+		SubActor.SetScale(1.0)
+	endif
+	if ThirdActor 
+		ThirdActor.SetScale(1.0)
+	endif
+EndFunction
 
 ;
 ;			███████╗████████╗██╗███╗   ███╗██╗   ██╗██╗      █████╗ ████████╗██╗ ██████╗ ███╗   ██╗    ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗
@@ -2479,6 +2570,11 @@ Function SetDefaultSettings()
 
 	SpeedUpNonSexAnimation = False ;game pauses if anim finished early
 	SpeedUpSpeed = 1.5
+
+	MaleScaleHeight = 1.03
+	FemaleScaleHeight = 1.00
+
+	disablescaling = false
 
 	Usebed = True
 	BedSearchDistance = 15
