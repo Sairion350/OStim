@@ -132,8 +132,9 @@ Bool SMPInstalled
 
 Int[] Property StrippingSlots Auto
 
-Float Property MaleScaleHeight auto 
-Float Property FemaleScaleHeight auto ;adjusting these then calling a rescale will let you control actors scaling heights.
+Float Property DomScaleHeight auto 
+Float Property SubScaleHeight auto ;adjusting these then calling a rescale will let you control actors scaling heights.
+Float Property ThirdScaleHeight auto
 ; The default OSA scale heights are set here by default
 
 bool Property DisableScaling auto
@@ -1628,7 +1629,7 @@ Event OnSetVehicle(String EventName, String zAnimation, Float NumArg, Form Sende
 	endif 
 	lastVehicleTime = game.GetRealHoursPassed()
 
-	Console("Set vehicle fired")
+	;Console("Set vehicle fired")
 
 	if !DisableScaling
 		ScaleAll()
@@ -1649,10 +1650,12 @@ Endfunction
 
 Function ScaleToStandardHeight(actor act)
 	float GoalBodyScale 
-	if AppearsFemale(act)
-		GoalBodyScale = FemaleScaleHeight
+	if act == domactor
+		GoalBodyScale = domscaleheight
+	elseif act == SubActor
+		GoalBodyScale = subscaleheight
 	else 
-		GoalBodyScale = MaleScaleHeight
+		GoalBodyScale = ThirdScaleHeight
 	endif
 	
 	ScaleToHeight(act, GoalBodyScale)
@@ -2571,8 +2574,9 @@ Function SetDefaultSettings()
 	SpeedUpNonSexAnimation = False ;game pauses if anim finished early
 	SpeedUpSpeed = 1.5
 
-	MaleScaleHeight = 1.03
-	FemaleScaleHeight = 1.00
+	DomScaleHeight = 1.03
+	SubScaleHeight = 1.00
+	SubScaleHeight = 1.03
 
 	disablescaling = false
 
