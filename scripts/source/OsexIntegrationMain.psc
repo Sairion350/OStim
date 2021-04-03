@@ -1624,10 +1624,10 @@ EndEvent
 
 float lastVehicleTime
 Event OnSetVehicle(String EventName, String zAnimation, Float NumArg, Form Sender)
-	if (game.GetRealHoursPassed() - lastVehicleTime) < 0.000833 ; 3 seconds
-		return 
-	endif 
-	lastVehicleTime = game.GetRealHoursPassed()
+	;if (game.GetRealHoursPassed() - lastVehicleTime) < 0.000833 ; 3 seconds
+	;	return 
+	;endif 
+	;lastVehicleTime = game.GetRealHoursPassed()
 
 	;Console("Set vehicle fired")
 
