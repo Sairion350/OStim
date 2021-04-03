@@ -125,6 +125,16 @@ Function UnequipForms(Actor Target, Form[] Items)
 	Target.UnequipItem(Target.GetEquippedObject(1))
 EndFunction
 
+Function PushEquipmentForm(Int ArrayID, Form Thing)
+	If (ArrayID == 0) ; store the item for lter
+		DomEquipmentForms = PapyrusUtil.PushForm(DomEquipmentForms, Thing)
+	ElseIf (ArrayID == 1)
+		SubEquipmentForms = PapyrusUtil.PushForm(SubEquipmentForms, Thing)
+	ElseIf (ArrayID == 2)
+		ThirdEquipmentForms = PapyrusUtil.PushForm(ThirdEquipmentForms, Thing)
+	EndIf
+EndFunction
+
 Form[] Function StoreEquipmentForms(Actor Target)
 	Int ArrayID
 	If (Target == OStim.GetDomActor()) ; I wish we had pointers of some kind
@@ -139,36 +149,18 @@ Form[] Function StoreEquipmentForms(Actor Target)
 	Int len = OStim.StrippingSlots.Length
 	While (i < len)
 		Form Thing = Target.GetEquippedArmorInSlot(OStim.StrippingSlots[i]) as Form ; SE exclusive function
-		If (ArrayID == 0) ; store the item for lter
-			DomEquipmentForms = PapyrusUtil.PushForm(DomEquipmentForms, Thing)
-		ElseIf (ArrayID == 1)
-			SubEquipmentForms = PapyrusUtil.PushForm(SubEquipmentForms, Thing)
-		ElseIf (ArrayID == 2)
-			ThirdEquipmentForms = PapyrusUtil.PushForm(ThirdEquipmentForms, Thing)
-		EndIf
+		PushEquipmentForm(ArrayID, Thing)
 		i += 1
 	EndWhile
 
 	Form Obj0 = Target.GetEquippedObject(0)
 	If (Obj0)
-		If (ArrayID == 0) ; store the item for lter
-			DomEquipmentForms = PapyrusUtil.PushForm(DomEquipmentForms, Obj0)
-		ElseIf (ArrayID == 1)
-			SubEquipmentForms = PapyrusUtil.PushForm(SubEquipmentForms, Obj0)
-		ElseIf (ArrayID == 2)
-			ThirdEquipmentForms = PapyrusUtil.PushForm(ThirdEquipmentForms, Obj0)
-		EndIf
+		PushEquipmentForm(ArrayID, Obj0)
 	EndIf
 
 	Form Obj1 = Target.GetEquippedObject(1)
 	If (Obj1)
-		If (ArrayID == 0) ; store the item for lter
-			DomEquipmentForms = PapyrusUtil.PushForm(DomEquipmentForms, Obj1)
-		ElseIf (ArrayID == 1)
-			SubEquipmentForms = PapyrusUtil.PushForm(SubEquipmentForms, Obj1)
-		ElseIf (ArrayID == 2)
-			ThirdEquipmentForms = PapyrusUtil.PushForm(ThirdEquipmentForms, Obj1)
-		EndIf
+		PushEquipmentForm(ArrayID, Obj1)
 	EndIf
 
 	If (Target == OStim.GetDomActor()) ; I wish we had pointers of some kind
@@ -446,7 +438,7 @@ Event AnimatedRedressThread(String EventName, String StrArg, float NumArg, Form 
 			Float DressPoint = 0
 
 			If ArmorPiece.IsCuirass() || ArmorPiece.IsClothingBody()
-				If Female
+				If (Female)
 					UndressAnim = "0Eq0ER_F_ST_D_cuirass_0"
 					AnimLen = 9
 					DressPoint = 4.5
@@ -456,7 +448,7 @@ Event AnimatedRedressThread(String EventName, String StrArg, float NumArg, Form 
 					DressPoint = 5
 				EndIf
 			ElseIf ArmorPiece.IsBoots() || ArmorPiece.IsClothingFeet()
-				If Female
+				If (Female)
 					UndressAnim = "0Eq0ER_F_SI_D_boots_0"
 					AnimLen = 17
 					DressPoint = 4.5
@@ -466,7 +458,7 @@ Event AnimatedRedressThread(String EventName, String StrArg, float NumArg, Form 
 					DressPoint = 5
 				EndIf
 			ElseIf ArmorPiece.IsHelmet() || ArmorPiece.IsClothingHead()
-				If Female
+				If (Female)
 					UndressAnim = "0Eq0ER_F_ST_D_helmet_0"
 					AnimLen = 12.5
 					DressPoint = 9.5
@@ -476,7 +468,7 @@ Event AnimatedRedressThread(String EventName, String StrArg, float NumArg, Form 
 					DressPoint = 3
 				EndIf
 			ElseIf ArmorPiece.IsGauntlets() || ArmorPiece.IsClothingHands()
-				If Female
+				If (Female)
 					UndressAnim = "0Eq0ER_F_ST_D_gloves_0"
 					AnimLen = 12
 					DressPoint = 3
