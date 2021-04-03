@@ -1,32 +1,32 @@
 ScriptName OStimUpdaterScript Extends Quest
 
-OsexIntegrationMain ostim
-quest oquest
+OsexIntegrationMain OStim
+Quest OQuest
 
-bool inited
+Bool Initialized
 
 Event OnInit()
-	inited = false
-	ostim = game.GetFormFromFile(0x000801, "Ostim.esp") as OsexIntegrationMain
-	oquest = ostim as quest 
+	Initialized = False
+	OStim = Game.GetFormFromFile(0x000801, "Ostim.esp") as OsexIntegrationMain
+	OQuest = OStim as Quest
 
 	OsexIntegrationMain.Console("Updater ready")
-	inited = true
+	Initialized = True
 EndEvent
 
 Function DoUpdate()
-	ostim.DisplayTextBanner("Updating OStim")
-	oquest.Reset()
-	oquest.Stop()
+	OStim.DisplayTextBanner("Updating OStim")
+
+	OQuest.Reset()
+	OQuest.Stop()
 	Utility.Wait(4)
-	oquest.Start()
+	OQuest.Start()
 
 	OsexIntegrationMain.Console("Updated")
 EndFunction
 
-function ongameload()
-	while !inited
+Function OnGameLoad()
+	While (!Initialized)
 		Utility.Wait(1)
-	Endwhile
-
+	EndWhile
 EndFunction
