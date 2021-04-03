@@ -2578,7 +2578,7 @@ Function SetDefaultSettings()
 
 	DomScaleHeight = 1.03 ; male height
 	SubScaleHeight = 1.00 ; female height
-	SubScaleHeight = 1.03
+	ThirdScaleHeight = 1.03
 
 	disablescaling = false
 
