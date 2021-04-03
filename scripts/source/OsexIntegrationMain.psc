@@ -1633,6 +1633,8 @@ Event OnSetVehicle(String EventName, String zAnimation, Float NumArg, Form Sende
 
 	if !DisableScaling
 		ScaleAll()
+	else 
+		RestoreScales()
 	endif 
 EndEvent
 
@@ -2574,8 +2576,8 @@ Function SetDefaultSettings()
 	SpeedUpNonSexAnimation = False ;game pauses if anim finished early
 	SpeedUpSpeed = 1.5
 
-	DomScaleHeight = 1.03
-	SubScaleHeight = 1.00
+	DomScaleHeight = 1.03 ; male height
+	SubScaleHeight = 1.00 ; female height
 	SubScaleHeight = 1.03
 
 	disablescaling = false
