@@ -39,9 +39,9 @@ ObjectReference PosObj
 Bool FirstScale = True
 
 Event OnEffectStart (Actor TarAct, Actor Spot)
-	alligned = false
+	Aligned = False
 
-	Actra = tarAct
+	Actra = TarAct
 	FormID = _oGlobal.GetFormID_S(Actra.GetActorBase())
 	Glyph = OSO.Glyph
 	StageID = Actra.GetFactionRank(OSO.OFaction[1])
@@ -177,16 +177,16 @@ Event OnNoFuse(String EventName, String Huh, Float NumArg, Form Sender)
 	Actra.SetVehicle(None)
 EndEvent
 
-bool property alligned auto
+Bool Property Aligned Auto
 
 Event AllowAlignStage()
-	alligned = false 
+	Aligned = False
 EndEvent
 
 Event OnAlignStage()
-	if alligned 
-		return
-	endif
+	If (Aligned)
+		Return
+	EndIf
 
 	Actra.StopTranslation()
 
@@ -204,8 +204,8 @@ Event OnAlignStage()
 
 	Actra.TranslateTo(PosObj.x, PosObj.y, PosObj.z, 0, 0, PosObj.getAngleZ(), 150.0, 0)
 	Actra.SetVehicle(PosObj)
-	sendmodevent("ostim_setvehicle")
-	alligned = true 
+	SendModEvent("ostim_setvehicle")
+	Aligned = True
 EndEvent
 
 Event OnTranslationComplete()
