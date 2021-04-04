@@ -65,7 +65,7 @@ Bool Property TossClothesOntoGround Auto
 Bool Property UseStrongerUnequipMethod Auto
 Bool Property FullyAnimateRedress Auto
 
-bool property disableOSAControls auto
+Bool Property DisableOSAControls Auto
 
 Bool  SpeedUpNonSexAnimation
 Float SpeedUpSpeed
@@ -126,18 +126,18 @@ Bool Property UseAlternateBedSearch Auto
 
 Int Property AiSwitchChance Auto
 
-Bool Property DisableStimulationCalculation Auto 
+Bool Property DisableStimulationCalculation Auto
 
 Bool SMPInstalled
 
 Int[] Property StrippingSlots Auto
 
-Float Property DomScaleHeight auto 
-Float Property SubScaleHeight auto ;adjusting these then calling a rescale will let you control actors scaling heights.
-Float Property ThirdScaleHeight auto
+Float Property DomScaleHeight Auto
+Float Property SubScaleHeight Auto ;adjusting these then calling a rescale will let you control actors scaling heights.
+Float Property ThirdScaleHeight Auto
 ; The default OSA scale heights are set here by default
 
-bool Property DisableScaling auto
+Bool Property DisableScaling Auto
 
 ; -------------------------------------------------------------------------------------------------
 ; SCRIPTWIDE VARIABLES ----------------------------------------------------------------------------
@@ -168,9 +168,9 @@ Actor PlayerRef
 
 GlobalVariable Timescale
 
-Bool property UndressDom auto
-Bool property UndressSub auto
-Bool property AnimateUndress auto
+Bool property UndressDom Auto
+Bool property UndressSub Auto
+Bool property AnimateUndress Auto
 String StartingAnimation
 Actor ThirdActor
 
@@ -1050,9 +1050,9 @@ String[] Function GetScene() ; this is not the sceneID, this is an internal osex
 	Return CurrScene
 EndFunction
 
-Function Reallign()
+Function Realign()
 	AllowVehicleReset()
-	utility.Wait(0.1)
+	Utility.Wait(0.1)
 	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage")
 	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AlignStage")
 	If (ThirdActor)
@@ -1060,9 +1060,9 @@ Function Reallign()
 	EndIf
 EndFunction
 
-Function AlternateReallign() ; may work better than the above function, or worse. Try testing.
+Function AlternateRealign() ; may work better than the above function, or worse. Try testing.
 	AllowVehicleReset()
-	utility.Wait(0.1)
+	Utility.Wait(0.1)
 	OSA.StimStart(CurrScene)
 EndFunction
 
@@ -1073,7 +1073,6 @@ Function AllowVehicleReset()
 	If (ThirdActor)
 		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_AllowAlignStage")
 	EndIf
-
 EndFunction
 
 Function ToggleFreeCam(Bool On = True)
@@ -1093,16 +1092,16 @@ Function ToggleFreeCam(Bool On = True)
 	EndIf
 EndFunction
 
-bool navMenuHidden
+bool NavMenuHidden
 
 Function HideNavMenu()
-	navMenuHidden = true
+	NavMenuHidden = true
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.NavMenu.dim")
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.SceneMenu.OmniDim")
 EndFunction
 
 Function ShowNavMenu()
-	navMenuHidden = false
+	NavMenuHidden = false
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.NavMenu.light")
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.SceneMenu.OmniLight")
 EndFunction
@@ -1557,7 +1556,7 @@ Function OnAnimationChange()
 			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh", "OnPhThird")
 			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx", "OnExThird")
 
-			if !DisableScaling 
+			if !DisableScaling
 				ScaleToStandardHeight(ThirdActor)
 			EndIf
 
@@ -1637,73 +1636,71 @@ Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
 	EndIf
 EndEvent
 
-float lastVehicleTime
+Float LastVehicleTime
 Event OnSetVehicle(String EventName, String zAnimation, Float NumArg, Form Sender)
-	if (game.GetRealHoursPassed() - lastVehicleTime) < 0.000833 ; 3 seconds
+	If (Game.GetRealHoursPassed() - LastVehicleTime) < 0.000833 ; 3 seconds
 		Utility.Wait(2)
-	endif 
-	lastVehicleTime = game.GetRealHoursPassed()
+	EndIf
+	LastVehicleTime = Game.GetRealHoursPassed()
 
 	Console("Set vehicle fired")
 
-	if !DisableScaling
+	If (!DisableScaling)
 		ScaleAll()
-	else 
+	Else
 		RestoreScales()
-	endif 
+	EndIf
 EndEvent
 
 function ScaleAll()
-	if DomActor 
-		ScaleToStandardHeight(domactor)
+	If (DomActor)
+		ScaleToStandardHeight(DomActor)
 	endif
-	if subactor 
-		ScaleToStandardHeight(subactor)
-	endif
-	if ThirdActor 
+	If (SubActor)
+		ScaleToStandardHeight(SubActor)
+	EndIf
+	If (ThirdActor)
 		ScaleToStandardHeight(ThirdActor)
-	endif
+	EndIf
 Endfunction
 
-Function ScaleToStandardHeight(actor act)
-	float GoalBodyScale 
-	if act == domactor
-		GoalBodyScale = domscaleheight
-	elseif act == SubActor
-		GoalBodyScale = subscaleheight
-	else 
+Function ScaleToStandardHeight(Actor Act)
+	Float GoalBodyScale
+	If (Act == DomActor)
+		GoalBodyScale = DomScaleHeight
+	ElseIf (Act == SubActor)
+		GoalBodyScale = SubScaleHeight
+	Else
 		GoalBodyScale = ThirdScaleHeight
-	endif
-	
-	ScaleToHeight(act, GoalBodyScale)
-EndFunction
-
-Function ScaleToHeight(actor act, float GoalBodyScale)
-	float NativeBodyScale = act.GetScale()
-
-	float scale = ((GoalBodyScale - NativeBodyScale) / NativeBodyScale) + 1.0
-
-	if (scale < 1.01)  && (scale > 0.99) ; there is some floating point imprecision with the above.
-		Console("Scale not needed")
-		return ; no need to scale and update ninode
 	EndIf
 
-	Console("Setting scale: " + scale)
-	
-	act.setScale(scale)
-	act.QueueNiNodeUpdate() ; This will cause actors to reqequip clothes if mid-scene
-	act.setScale(scale)
+	ScaleToHeight(Act, GoalBodyScale)
+EndFunction
 
+Function ScaleToHeight(Actor Act, Float GoalBodyScale)
+	Float NativeBodyScale = Act.GetScale()
+	Float Scale = ((GoalBodyScale - NativeBodyScale) / NativeBodyScale) + 1.0
+
+	If (Scale < 1.01)  && (Scale > 0.99) ; there is some floating point imprecision with the above.
+		Console("Scale not needed")
+		Return ; no need to scale and update ninode
+	EndIf
+
+	Console("Setting scale: " + Scale)
+
+	Act.SetScale(Scale)
+	Act.QueueNiNodeUpdate() ; This will cause actors to reqequip clothes if mid-scene
+	Act.SetScale(Scale)
 EndFunction
 
 Function RestoreScales()
-	if DomActor 
+	If (DomActor)
 		DomActor.SetScale(1.0)
 	endif
-	if subactor 
+	If (SubActor)
 		SubActor.SetScale(1.0)
 	endif
-	if ThirdActor 
+	If (ThirdActor)
 		ThirdActor.SetScale(1.0)
 	endif
 EndFunction
@@ -2764,14 +2761,14 @@ EndFunction
 ;EndFunction
 
 Event OnKeyDown(Int KeyPress)
+	If (DisableOSAControls)
+        Console("OStim controls disabled by property")
+        Return
+    EndIf
+
 	If (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
 		Return
 	EndIf
-
-	If disableOSAControls
-            OsexIntegrationMain.Console("OStim controls disabled by OStim property")
-        return 
-    EndIf
 
 	; DEBUG
 	If (KeyPress == 26)
