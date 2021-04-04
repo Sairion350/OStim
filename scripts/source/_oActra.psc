@@ -39,6 +39,8 @@ ObjectReference PosObj
 Bool FirstScale = True
 
 Event OnEffectStart (Actor TarAct, Actor Spot)
+	alligned = false
+
 	Actra = tarAct
 	FormID = _oGlobal.GetFormID_S(Actra.GetActorBase())
 	Glyph = OSO.Glyph
@@ -79,6 +81,7 @@ Function RegisterEvents()
 
 	RegisterForModEvent("0SAA" + FormID + "_Animate", "OnAnimate")
 	RegisterForModEvent("0SAA" + FormID + "_AlignStage", "OnAlignStage")
+	RegisterForModEvent("0SAA" + FormID + "_AllowAlignStage", "ResetAlignStage")
 	;RegisterForModEvent("0SAA" + FormID + "_BlendMo", "OnBlendMo")
 	;RegisterForModEvent("0SAA" + FormID + "_BlendPh", "OnBlendPh")
 	;RegisterForModEvent("0SAA" + FormID + "_BlendEx", "OnBlendEx")
@@ -174,7 +177,17 @@ Event OnNoFuse(String EventName, String Huh, Float NumArg, Form Sender)
 	Actra.SetVehicle(None)
 EndEvent
 
+bool property alligned auto
+
+Event AllowAlignStage()
+	alligned = false 
+EndEvent
+
 Event OnAlignStage()
+	if alligned 
+		return
+	endif
+
 	Actra.StopTranslation()
 
 	; This is the section I'd like to be able to remove and have the TranslateTo handle the rotations
@@ -192,6 +205,7 @@ Event OnAlignStage()
 	Actra.TranslateTo(PosObj.x, PosObj.y, PosObj.z, 0, 0, PosObj.getAngleZ(), 150.0, 0)
 	Actra.SetVehicle(PosObj)
 	sendmodevent("ostim_setvehicle")
+	alligned = true 
 EndEvent
 
 Event OnTranslationComplete()

@@ -357,6 +357,7 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	ThirdActor = zThirdActor
 	PauseAI = False
 
+
 	If (Aggressive)
 		If (AggressingActor)
 			If ((AggressingActor != SubActor) && (AggressingActor != DomActor))
@@ -1050,6 +1051,8 @@ String[] Function GetScene() ; this is not the sceneID, this is an internal osex
 EndFunction
 
 Function Reallign()
+	AllowVehicleReset()
+	utility.Wait(0.1)
 	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage")
 	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AlignStage")
 	If (ThirdActor)
@@ -1058,7 +1061,19 @@ Function Reallign()
 EndFunction
 
 Function AlternateReallign() ; may work better than the above function, or worse. Try testing.
+	AllowVehicleReset()
+	utility.Wait(0.1)
 	OSA.StimStart(CurrScene)
+EndFunction
+
+Function AllowVehicleReset()
+	Console("Allowing vehicle reset...")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AllowAlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AllowAlignStage")
+	If (ThirdActor)
+		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_AllowAlignStage")
+	EndIf
+
 EndFunction
 
 Function ToggleFreeCam(Bool On = True)
@@ -1624,12 +1639,12 @@ EndEvent
 
 float lastVehicleTime
 Event OnSetVehicle(String EventName, String zAnimation, Float NumArg, Form Sender)
-	;if (game.GetRealHoursPassed() - lastVehicleTime) < 0.000833 ; 3 seconds
-	;	return 
-	;endif 
-	;lastVehicleTime = game.GetRealHoursPassed()
+	if (game.GetRealHoursPassed() - lastVehicleTime) < 0.000833 ; 3 seconds
+		Utility.Wait(2)
+	endif 
+	lastVehicleTime = game.GetRealHoursPassed()
 
-	;Console("Set vehicle fired")
+	Console("Set vehicle fired")
 
 	if !DisableScaling
 		ScaleAll()
@@ -1669,6 +1684,7 @@ Function ScaleToHeight(actor act, float GoalBodyScale)
 	float scale = ((GoalBodyScale - NativeBodyScale) / NativeBodyScale) + 1.0
 
 	if (scale < 1.01)  && (scale > 0.99) ; there is some floating point imprecision with the above.
+		Console("Scale not needed")
 		return ; no need to scale and update ninode
 	EndIf
 
