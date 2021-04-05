@@ -11,50 +11,47 @@ ScriptName OBarsScript Extends Quest
 ;				Code related to the on-screen bars
 
 
-
-
-
-OsexIntegrationMain OStim
+OSexIntegrationMain OStim
 
 ;--------- bars
-Osexbar property DomBar auto
-Osexbar property SubBar auto
-Osexbar property ThirdBar auto 
+OSexBar Property DomBar Auto
+OSexBar Property SubBar Auto
+OSexBar Property ThirdBar Auto
 ;---------
 
-int blue
-int pink
-int gray
-int yellow
-int white
+Int Blue
+Int Pink
+Int Gray
+Int Yellow
+Int White
 
 Event OnInit()
-	OStim = (Self as Quest) as OsexIntegrationMain
+	OStim = (Self as Quest) as OSexIntegrationMain
 
-	DomBar = (Self as Quest) as Osexbar
-	SubBar = (Game.GetFormFromFile(0x000804, "Ostim.esp")) as Osexbar
-	ThirdBar = (Game.GetFormFromFile(0x000802, "Ostim.esp")) as Osexbar
+	DomBar = (Self as Quest) as OSexBar
+	SubBar = (Game.GetFormFromFile(0x000804, "OStim.esp")) as OSexBar
+	ThirdBar = (Game.GetFormFromFile(0x000802, "OStim.esp")) as OSexBar
 
-	blue = 0xADD8E6
-	pink = 0xffb6c1
-	yellow = 0xe6e0ad
-	gray = 0xb0b0b0
-	white = 0xffffff
+	Blue = 0xADD8E6
+	Pink = 0xFFB6C1
+	Yellow = 0xE6E0AD
+	Gray = 0xB0B0B0
+	White = 0xFFFFFF
 
 	InititializeAllBars()
 
 	OnGameLoad()
 
-	lastsmacktime = 0
+	LastSmackTime = 0
 EndEvent
 
 Function InititializeAllBars()
-	InitBar(dombar,0)
-	InitBar(subbar, 1)
-	InitBar(thirdbar, 2)
+	InitBar(DomBar, 0)
+	InitBar(SubBar, 1)
+	InitBar(ThirdBar, 2)
 EndFunction
 
-Function InitBar(Osexbar Bar, int id)
+Function InitBar(OSexBar Bar, Int ID)
 	Bar.HAnchor = "left"
 	Bar.VAnchor = "bottom"
 	Bar.X = 200
@@ -62,13 +59,13 @@ Function InitBar(Osexbar Bar, int id)
 	Bar.SetPercent(0.0)
 	Bar.FillDirection = "Right"
 
-	If (id == 0)
+	If (ID == 0)
 		Bar.Y = 692
 		Bar.SetColors(gray, blue, white)
-	Elseif (id == 1)
+	Elseif (ID == 1)
 		Bar.Y = 647
 		Bar.SetColors(gray, pink, white)
-	ElseIf (id == 2)
+	ElseIf (ID == 2)
 		Bar.Y = 602
 		Bar.SetColors(gray, yellow, white)
 	EndIf
@@ -76,7 +73,7 @@ Function InitBar(Osexbar Bar, int id)
 	SetBarVisible(Bar, False)
 EndFunction
 
-Function SetBarVisible(Osexbar Bar, Bool Visible)
+Function SetBarVisible(OSexBar Bar, Bool Visible)
 	If (Visible)
 		Bar.FadeTo(100.0, 1.0)
 		Bar.FadedOut = False
@@ -86,26 +83,26 @@ Function SetBarVisible(Osexbar Bar, Bool Visible)
 	EndIf
 EndFunction
 
-Function ColorBar(OSexbar bar, bool female = true, int colorz = -1)
-	int color
-	if !female 
-		color = blue
-	else 
-		color = pink 
+Function ColorBar(OSexBar Bar, Bool Female = True, Int ColorZ = -1)
+	Int Color
+	If (!Female)
+		Color = Blue
+	Else
+		Color = Pink
+	EndIf
+
+	If (ColorZ > 0)
+		Color = ColorZ
 	endif
 
-	if colorz > 0
-		color = colorz
-	endif
-
-	Bar.SetColors(gray, color, white)
+	Bar.SetColors(Gray, Color, White)
 Endfunction
 
-Bool Function IsBarVisible(Osexbar Bar)
+Bool Function IsBarVisible(OSexBar Bar)
 	Return (!Bar.FadedOut)
 EndFunction
 
-Function SetBarPercent(Osexbar Bar, Float Percent)
+Function SetBarPercent(OSexBar Bar, Float Percent)
 	Bar.SetPercent(Percent / 100.0)
 	Float zPercent = Percent / 100.0
 	If (zPercent >= 1.0)
@@ -113,63 +110,61 @@ Function SetBarPercent(Osexbar Bar, Float Percent)
 	EndIf
 EndFunction
 
-float Function GetBarPercent(Osexbar Bar)
-	return bar.Percent * 100.0
+float Function GetBarPercent(OSexBar Bar)
+	return Bar.Percent * 100.0
 EndFunction
 
-Function FlashBar(Osexbar Bar)
+Function FlashBar(OSexBar Bar)
 	Bar.ForceFlash()
 EndFunction
 
-Event OstimStart(string eventName, string strArg, float numArg, Form sender)
-	orgasming = false
-	if ostim.MatchBarColorToGender
-		ColorBar(dombar, ostim.AppearsFemale(ostim.GetDomActor()))
-		ColorBar(subbar, ostim.AppearsFemale(ostim.GetSubActor()))
-		ColorBar(ThirdBar, ostim.AppearsFemale(ostim.GetThirdActor()))
-
+Event OstimStart(String eventName, String strArg, Float numArg, Form sender)
+	Orgasming = false
+	if OStim.MatchBarColorToGender
+		ColorBar(DomBar, OStim.AppearsFemale(OStim.GetDomActor()))
+		ColorBar(SubBar, OStim.AppearsFemale(OStim.GetSubActor()))
+		ColorBar(ThirdBar, OStim.AppearsFemale(OStim.GetThirdActor()))
 	else
-		ColorBar(dombar, colorz = blue)
-		ColorBar(subbar, colorz = pink)
-		ColorBar(thirdbar, colorz = yellow)
-	endif 
+		ColorBar(DomBar, ColorZ = Blue)
+		ColorBar(SubBar, ColorZ = Pink)
+		ColorBar(ThirdBar, ColorZ = Yellow)
+	endif
 
-	If (ostim.EnableDomBar)
+	If (OStim.EnableDomBar)
     	SetBarPercent(DomBar, 0.0)
     	SetBarVisible(DomBar, True)
 	EndIf
 
-	If (ostim.EnableSubBar)
+	If (OStim.EnableSubBar)
 		SetBarPercent(SubBar, 0.0)
     	SetBarVisible(SubBar, True)
 	EndIf
 
-	If (ostim.EnableThirdBar) && (ostim.GetThirdActor() != none) 
+	If (OStim.EnableThirdBar) && (OStim.GetThirdActor() != none)
 		SetBarPercent(ThirdBar, 0.0)
     	SetBarVisible(ThirdBar, True)
 	EndIf
 
-
-	While ostim.AnimationRunning()
-		while orgasming
+	While OStim.AnimationRunning()
+		While Orgasming
 			Utility.Wait(0.3)
-		endwhile 
+		EndWhile
 
-		If (ostim.AutoHideBars && (ostim.GetTimeSinceLastPlayerInteraction() > 15.0)) ; fade out if needed
+		If (OStim.AutoHideBars && (OStim.GetTimeSinceLastPlayerInteraction() > 15.0)) ; fade out if needed
     		If (IsBarVisible(DomBar))
     			SetBarVisible(DomBar, False)
     		EndIf
     		If (IsBarVisible(SubBar))
     			SetBarVisible(SubBar, False)
     		EndIf
-    		If (IsBarVisible(thirdbar))
-    			SetBarVisible(thirdbar, False)
+    		If (IsBarVisible(ThirdBar))
+    			SetBarVisible(ThirdBar, False)
     		EndIf
     	EndIf
 
-    	;if ((Game.GetRealHoursPassed() * 60 * 60) - lastSmackTime) > 3 ; 3 seconds with no update data... time to fall back
+    	;If ((Game.GetRealHoursPassed() * 60 * 60) - lastSmackTime) > 3 ; 3 seconds with no update data... time to fall back
     		SetBarFullnessProper()
-        ;endif
+        ;EndIf
 		Utility.wait(1)
 	EndWhile
 
@@ -183,50 +178,51 @@ Event OstimStart(string eventName, string strArg, float numArg, Form sender)
 EndEvent
 bool orgasming
 
-Event OstimOrgasm(string eventName, string strArg, float numArg, Form sender)
-	orgasming = true
-	actor act = ostim.getmostrecentorgasmedactor()
+Event OStimOrgasm(String eventName, String strArg, Float numArg, Form sender)
+	Orgasming = True
+	Actor Act = OStim.GetMostRecentOrgasmedActor()
 
-	If (Act == ostim.GetDomActor())
+	If (Act == OStim.GetDomActor())
 		SetBarPercent(DomBar, 100)
-		FlashBar(dombar)
+		FlashBar(DomBar)
 		Utility.Wait(2)
 		SetBarPercent(DomBar, 0)
-	ElseIf (Act == ostim.GetSubActor())
-		SetBarPercent(subbar, 100)
-		FlashBar(subbar)
+	ElseIf (Act == OStim.GetSubActor())
+		SetBarPercent(SubBar, 100)
+		FlashBar(SubBar)
 		Utility.Wait(2)
 		SetBarPercent(SubBar, 0)
-	ElseIf (Act == ostim.GetThirdActor())
-		SetBarPercent(thirdbar, 100)
+	ElseIf (Act == OStim.GetThirdActor())
+		SetBarPercent(ThirdBar, 100)
 		FlashBar(ThirdBar)
 		Utility.Wait(2)
 		SetBarPercent(ThirdBar, 0)
 	EndIf
-	orgasming = false
+	Orgasming = False
 endevent
 
-Event OstimThirdJoin(string eventName, string strArg, float numArg, Form sender)
-	If (ostim.EnableThirdBar)
-		OsexIntegrationMain.Console("Launching third actor bar")
+Event OstimThirdJoin(String eventName, String strArg, Float numArg, Form sender)
+	If (OStim.EnableThirdBar)
+		OSexIntegrationMain.Console("Launching third actor bar")
 		SetBarPercent(ThirdBar, 0.0)
     	SetBarVisible(ThirdBar, True)
 	EndIf
-Endevent	
+Endevent
 
-Event OstimThirdLeave(string eventName, string strArg, float numArg, Form sender)
+Event OstimThirdLeave(String eventName, String strArg, Float numArg, Form sender)
 	OsexIntegrationMain.Console("Closing third actor bar")
 	SetBarVisible(ThirdBar, False)
 	SetBarPercent(ThirdBar, 0.0)
 Endevent
 
-float lastSmackTime
-int lastSpeed
+Float LastSmackTime
+Int LastSpeed
+
 ;/
 Event OnOSASound(string eventName, string args, float nothing, Form sender)
 	if orgasming
-		return 
-	endif 
+		return
+	endif
 
 	string[] argz = new string[3]
 	argz = StringUtil.Split(args, ",")
@@ -241,27 +237,27 @@ Event OnOSASound(string eventName, string args, float nothing, Form sender)
 		float currTime = Game.GetRealHoursPassed() * 60 * 60
 		float timediff = currTime - lastSmackTime ; time since last smack sound
 
-		if (timediff > 2.5) ; it's been a long time since we got a smacking sound 
+		if (timediff > 2.5) ; it's been a long time since we got a smacking sound
 			SetBarFullnessProper() ; set bar to the correct value
 		elseif (timediff < 0.25)
 			return ; events are coming too rapidly to safely handle here
 		Else
-			float correctnessdiffdom 
-			float correctnessdiffsub 
+			float correctnessdiffdom
+			float correctnessdiffsub
 			float correctnessdiffthird
-			
+
 			correctnessdiffdom = GetBarCorrectnessDifference(0) ;get how far off the current dom bar is
 			correctnessdiffsub = GetBarCorrectnessDifference(1)
 			if ostim.getthirdActor()
-				correctnessdiffthird = GetBarCorrectnessDifference(2) 
+				correctnessdiffthird = GetBarCorrectnessDifference(2)
 			EndIf
 			;osexintegrationmain.console("Bar difference: " + correctnessdiffdom)
 
-			if timediff < 1 
+			if timediff < 1
 				 ; events are coming in at a rate of more than 1/second. Change the error correction to be smaller
-				correctnessdiffdom = correctnessdiffdom * timediff	
-				correctnessdiffsub = correctnessdiffsub * timediff	
-				correctnessdiffthird = correctnessdiffthird * timediff	
+				correctnessdiffdom = correctnessdiffdom * timediff
+				correctnessdiffsub = correctnessdiffsub * timediff
+				correctnessdiffthird = correctnessdiffthird * timediff
 			endif
 
 
@@ -276,47 +272,46 @@ Event OnOSASound(string eventName, string args, float nothing, Form sender)
 		lastSmackTime = currtime
 	EndIf
 
-	
+
 endevent
 /;
 
 Function SetBarFullnessProper()
-	SetBarPercent(DomBar, ostim.getactorexcitement(ostim.GetDomActor()))
-	SetBarPercent(SubBar, ostim.getactorexcitement(ostim.GetSubActor()))
-	if ostim.GetThirdActor()
-		SetBarPercent(ThirdBar, ostim.getactorexcitement(ostim.GetThirdActor()))
+	SetBarPercent(DomBar, OStim.GetActorExcitement(OStim.GetDomActor()))
+	SetBarPercent(SubBar, OStim.GetActorExcitement(OStim.GetSubActor()))
+	If OStim.GetThirdActor()
+		SetBarPercent(ThirdBar, OStim.GetActorExcitement(OStim.GetThirdActor()))
 	EndIf
 EndFunction
 
-Function AddBarFullness(int bar, float amount)
-	if bar == 0
-		SetBarPercent(DomBar, GetBarPercent(dombar) + amount)
-	elseif bar == 1
-		SetBarPercent(SubBar, GetBarPercent(subbar) + amount)
-    elseif bar == 2
-		SetBarPercent(ThirdBar, GetBarPercent(thirdbar) + amount)
+Function AddBarFullness(Int Bar, Float Amount)
+	If (Bar == 0)
+		SetBarPercent(DomBar, GetBarPercent(DomBar) + Amount)
+	ElseIf (Bar == 1)
+		SetBarPercent(SubBar, GetBarPercent(SubBar) + Amount)
+    ElseIf (Bar == 2)
+		SetBarPercent(ThirdBar, GetBarPercent(ThirdBar) + Amount)
 	EndIf
 EndFunction
 
-float Function GetBarCorrectnessDifference(int barID)
-	if barID == 0
-		return ostim.getactorexcitement(ostim.GetDomActor()) - GetBarPercent(dombar)
-	elseif barID == 1
-		return ostim.getactorexcitement(ostim.GetSubActor()) - GetBarPercent(subbar)
-	elseif barID == 2
-		return ostim.getactorexcitement(ostim.GetThirdActor()) - GetBarPercent(thirdbar)
-	endif
+Float Function GetBarCorrectnessDifference(Int BarID)
+	If (BarID == 0)
+		Return OStim.GetActorExcitement(OStim.GetDomActor()) - GetBarPercent(DomBar)
+	ElseIf (BarID == 1)
+		Return OStim.GetActorExcitement(OStim.GetSubActor()) - GetBarPercent(SubBar)
+	ElseIf (BarID == 2)
+		Return OStim.GetActorExcitement(OStim.GetThirdActor()) - GetBarPercent(ThirdBar)
+	EndIf
 EndFunction
 
 Function OnGameLoad()
-	RegisterForModEvent("ostim_start", "OstimStart")
-	RegisterForModEvent("ostim_orgasm", "OstimOrgasm")
+	RegisterForModEvent("ostim_start", "OStimStart")
+	RegisterForModEvent("ostim_orgasm", "OStimOrgasm")
 
-	RegisterForModEvent("ostim_thirdactor_join", "OstimThirdJoin")
-	RegisterForModEvent("ostim_thirdactor_leave", "OstimThirdLeave")
+	RegisterForModEvent("ostim_thirdactor_join", "OStimThirdJoin")
+	RegisterForModEvent("ostim_thirdactor_leave", "OStimThirdLeave")
 
 	;RegisterForModEvent("ostim_osasound", "OnOSASound")
 
-
-	osexintegrationmain.Console("Fixing Bars thread")
+	OSexintegrationMain.Console("Fixing Bars thread")
 EndFunction

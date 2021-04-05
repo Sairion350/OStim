@@ -1,4 +1,4 @@
-ScriptName OsexIntegrationMain Extends Quest
+ScriptName OSexIntegrationMain Extends Quest
 
 
 ;		What is this? Am I in the right place? How do I use this???
@@ -38,7 +38,7 @@ Bool Property EndOnDomOrgasm Auto
 
 Bool Property EnableDomBar Auto
 Bool Property EnableSubBar Auto
-Bool property EnableThirdBar Auto
+Bool Property EnableThirdBar Auto
 Bool Property AutoHideBars Auto
 Bool Property MatchBarColorToGender auto
 Bool Property EnableImprovedCamSupport Auto
@@ -60,7 +60,7 @@ Bool Property SlowMoOnOrgasm Auto
 
 Bool Property AlwaysUndressAtAnimStart Auto
 Bool Property OnlyUndressChest Auto 		;	Removed in 4.0
-Bool Property AlwaysAnimateUndress Auto      ;	Removed in 4.0
+Bool Property AlwaysAnimateUndress Auto     ;	Removed in 4.0
 Bool Property TossClothesOntoGround Auto
 Bool Property UseStrongerUnequipMethod Auto
 Bool Property FullyAnimateRedress Auto
@@ -224,7 +224,7 @@ Bool AIRunning
 Bool AggressiveThemedSexScene
 Actor AggressiveActor
 
-OAiScript AI
+OAIScript AI
 OBarsScript OBars
 OUndressScript OUndress
 OStimUpdaterScript OUpdater
