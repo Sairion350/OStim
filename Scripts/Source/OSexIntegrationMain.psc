@@ -1,4 +1,4 @@
-ScriptName OsexIntegrationMain Extends Quest
+ScriptName OSexIntegrationMain Extends Quest
 
 
 ;		What is this? Am I in the right place? How do I use this???
@@ -38,7 +38,7 @@ Bool Property EndOnDomOrgasm Auto
 
 Bool Property EnableDomBar Auto
 Bool Property EnableSubBar Auto
-Bool property EnableThirdBar Auto
+Bool Property EnableThirdBar Auto
 Bool Property AutoHideBars Auto
 Bool Property MatchBarColorToGender auto
 Bool Property EnableImprovedCamSupport Auto
@@ -60,7 +60,7 @@ Bool Property SlowMoOnOrgasm Auto
 
 Bool Property AlwaysUndressAtAnimStart Auto
 Bool Property OnlyUndressChest Auto 		;	Removed in 4.0
-Bool Property AlwaysAnimateUndress Auto      ;	Removed in 4.0
+Bool Property AlwaysAnimateUndress Auto     ;	Removed in 4.0
 Bool Property TossClothesOntoGround Auto
 Bool Property UseStrongerUnequipMethod Auto
 Bool Property FullyAnimateRedress Auto
@@ -168,9 +168,9 @@ Actor PlayerRef
 
 GlobalVariable Timescale
 
-Bool property UndressDom Auto
-Bool property UndressSub Auto
-Bool property AnimateUndress Auto
+Bool Property UndressDom Auto
+Bool Property UndressSub Auto
+Bool Property AnimateUndress Auto
 String StartingAnimation
 Actor ThirdActor
 
@@ -224,7 +224,7 @@ Bool AIRunning
 Bool AggressiveThemedSexScene
 Actor AggressiveActor
 
-OAiScript AI
+OAIScript AI
 OBarsScript OBars
 OUndressScript OUndress
 OStimUpdaterScript OUpdater
@@ -423,7 +423,7 @@ Event OnUpdate() ;OStim main logic loop
 	ThirdStimMult = 1.0
 	EndedProper = False
 	StallOrgasm = False
-	navMenuHidden = false
+	NavMenuHidden = false
 	BlockDomFaceCommands = False
 	BlocksubFaceCommands = False
 	BlockthirdFaceCommands = False
@@ -434,8 +434,6 @@ Event OnUpdate() ;OStim main logic loop
 	MostRecentOrgasmedActor = None
 	SpankMax = Utility.RandomInt(1, 6)
 	IsFreeCamming = False
-
-
 
 	Actor[] Actro
 	If (ThirdActor)
@@ -543,7 +541,7 @@ Event OnUpdate() ;OStim main logic loop
 		WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1)
 
 		If (WaitCycles > 20)
-			AlternateReallign()
+			AlternateRealign()
 		EndIf
 		If (WaitCycles > 50)
 			WaitForActorsTouch = False
@@ -631,7 +629,7 @@ Event OnUpdate() ;OStim main logic loop
     	If (MisallignmentProtection && IsActorActive(DomActor))
     		If (SubActor.GetDistance(DomActor) > 1)
     			Console("Misallignment detected")
-    			AlternateReallign()
+    			AlternateRealign()
     			Utility.Wait(0.1)
 
     			Int i = 0
@@ -645,7 +643,7 @@ Event OnUpdate() ;OStim main logic loop
     					SubActor.MoveTo(DomActor)
     				EndIf
 
-    				AlternateReallign()
+    				AlternateRealign()
 
     				i += 1
     			EndWhile
@@ -2775,6 +2773,8 @@ Event OnKeyDown(Int KeyPress)
 		;
 	ElseIf (KeyPress == 27)
 		;
+	ElseIf (KeyPress == 43)
+		;
 	EndIf
 	; DEBUG
 
@@ -2882,12 +2882,13 @@ Function ResetOSA() ; do not use, breaks osa
 Endfunction
 
 Function Startup()
+	Debug.Notification("Installing OStim. Please wait...")
+
 	; DEBUG
 	;RegisterForKey(26) ; [
 	;RegisterForKey(27) ; ]
+	;RegisterForKey(43) ; \
 	; DEBUG
-
-	Debug.Notification("Installing OStim. Please wait...")
 
 	;ResetOSA()
 
@@ -2919,12 +2920,12 @@ Function Startup()
 	BuildSoundFormlists()
 
 	If (BlockVRInstalls && GetGameIsVR())
-		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities")
+		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities.")
 		Return
 	EndIf
 
 	If (SKSE.GetPluginVersion("JContainers64") == -1)
-		Debug.MessageBox("OStim: JContainers is not installed, please exit and install it immediately")
+		Debug.MessageBox("OStim: JContainers is not installed, please exit and install it immediately.")
 		Return
 	EndIf
 
@@ -2937,12 +2938,12 @@ Function Startup()
 	If (OSAFactionStage)
 		Console("Loaded")
 	Else
-		Debug.MessageBox("OSex and OSA do not appear to be installed, please do not continue using this save file")
+		Debug.MessageBox("OSex and OSA do not appear to be installed, please do not continue using this save file.")
 		Return
 	EndIf
 
 	If (ODatabase.GetLengthOArray(ODatabase.GetDatabaseOArray()) < 1)
-		Debug.Notification("OStim install failed")
+		Debug.Notification("OStim install failed.")
 		Return
 	Else
 		ODatabase.Unload()
@@ -2958,7 +2959,7 @@ Function Startup()
 
 	If (Game.GetModByName("Schlongs of Skyrim.esp") != 255)
 		SoSFaction = (Game.GetFormFromFile(0x0000AFF8, "Schlongs of Skyrim.esp")) as Faction
-		If SoSFaction
+		If (SoSFaction)
 			Console("Schlongs of Skyrim loaded")
 			SoSInstalled = true
 		Else
@@ -2982,8 +2983,8 @@ Function Startup()
 	EndIf
 
 	If (SKSE.GetPluginVersion("ImprovedCamera") == -1)
-		Debug.Notification("OStim: Improved Camera is not installed. First person scenes will not be available")
-		Debug.Notification("OStim: However, freecam will have extra features")
+		Debug.Notification("OStim: Improved Camera is not installed. First person scenes unavailable.")
+		Debug.Notification("OStim: However, freecam will have extra features.")
 	EndIf
 
 	If (!_oGlobal.OStimGlobalLoaded())
@@ -2998,8 +2999,7 @@ Function Startup()
 	OSAOmni.RebootScript()
 	OnLoadGame()
 
-	Utility.Wait(1)
-	DisplayTextBanner("OStim installed")
+	DisplayTextBanner("OStim installed.")
 EndFunction
 
 Bool Property UseBrokenCosaveWorkaround Auto
