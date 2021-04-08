@@ -1074,17 +1074,16 @@ Function AllowVehicleReset()
 EndFunction
 
 Function ToggleFreeCam(Bool On = True)
-	ConsoleUtil.ExecuteCommand("tfc")
 	If (!IsFreeCamming)
-		;OSANative.EnableFreeCam()
+		OSANative.EnableFreeCam()
 		OSANative.SetFreeCamSpeed(FreecamSpeed)
-		OSANative.SetFOV(freecamFOv)
+		OSANative.SetFOV(FreecamFOV)
 		IsFreeCamming = true
 		Console("Enabling freecam")
 	Else
-		;OSANative.DisableFreeCam()
-		OSANative.SetFOV(DefaultFOV)
+		OSANative.DisableFreeCam()
 		OSANative.SetFreeCamSpeed()
+		OSANative.SetFOV(DefaultFOV)
 		IsFreeCamming = false
 		Console("Disabling freecam")
 	EndIf
