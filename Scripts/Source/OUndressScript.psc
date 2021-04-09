@@ -332,7 +332,7 @@ Event OstimChange(String eventName, String strArg, Float numArg, Form sender)
 		String CClass = OStim.GetCurrentAnimationClass()
 		If (!DomNaked)
 			If (CClass == "Sx") || (CClass == "Po") || (CClass == "HhPo") || (CClass == "ApPJ") || (CClass == "HhPJ") || (CClass == "HJ") || (CClass == "ApHJ") || (CClass == "DHJ") || (CClass == "SJ")|| (CClass == "An")|| (CClass == "BoJ")|| (CClass == "FJ")
-				If OSANative.IsFreeCam()
+				If OStim.IsInFreeCam()
 					DidToggle = True
 					OStim.ToggleFreeCam()
 				EndIf
@@ -342,7 +342,7 @@ Event OstimChange(String eventName, String strArg, Float numArg, Form sender)
 		EndIf
 		If (!SubNaked)
 			If (CClass == "Sx") || (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2") || (CClass == "An")|| (CClass == "BoJ")|| (CClass == "BoF")
-				If OSANative.IsFreeCam()
+				If OStim.IsInFreeCam()
 					DidToggle = True
 					OStim.ToggleFreeCam()
 				EndIf
@@ -352,7 +352,7 @@ Event OstimChange(String eventName, String strArg, Float numArg, Form sender)
 		EndIf
 		If (!ThirdNaked)
 			If (CClass == "Sx") || (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2") || (CClass == "An")|| (CClass == "BoJ")|| (CClass == "BoF")
-				If OSANative.IsFreeCam()
+				If OStim.IsInFreeCam()
 					DidToggle = True
 					OStim.ToggleFreeCam()
 				EndIf
@@ -372,7 +372,7 @@ Event OstimThirdJoin(String EventName, String StrArg, Float NumArg, Form Sender)
 		Console("Stripping third actor")
 
 		Bool DidToggle = False
-		If (OSANative.IsFreeCam())
+		If (OStim.IsInFreeCam())
 			DidToggle = True
 			OStim.ToggleFreeCam()
 		EndIf
