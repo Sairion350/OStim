@@ -1112,7 +1112,7 @@ Function ShowAllSkyUIWidgets()
 EndFunction
 
 bool function IsInFreeCam()
-	Return (Game.GetCameraState() == 3)
+	Return OSANative.IsFreeCam()
 endfunction
 
 float Function GetStimMult(Actor Act)
