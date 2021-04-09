@@ -1,11 +1,11 @@
 ScriptName OSexIntegrationMain Extends Quest
 
 
-;		What is this? Am I in the right place? How do I use this???
+; What is this? Am I in the right place? How do I use this???
 
 ; This script is the core of OStim. If you want to start OStim scenes and/or manipulate them, you are in the right place
 
-;	Structure of this script
+; Structure of this script
 ; At the very top here, are the Properties. They are the settings you see in the MCM. You can toggle these at will on this script and it
 ; will update the MCM and everything. Below that are the OStim local variables, you can safely ignore those. Below those variables,
 ; you will find OStim's main loop and the StartScene() function. OStim's core logic runs in there, I recommend giving it a read.
@@ -21,13 +21,12 @@ ScriptName OSexIntegrationMain Extends Quest
 
 ; PROTIP: ctrl + F is your best friend when it comes to seeing how and where a function/variable/property/etc is used elsewhere
 
-;			 ██████╗ ███████╗████████╗██╗███╗   ███╗
-;			██╔═══██╗██╔════╝╚══██╔══╝██║████╗ ████║
-;			██║   ██║███████╗   ██║   ██║██╔████╔██║
-;			██║   ██║╚════██║   ██║   ██║██║╚██╔╝██║
-;			╚██████╔╝███████║   ██║   ██║██║ ╚═╝ ██║
-;			 ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝     ╚═╝
-
+;   ██████╗ ███████╗████████╗██╗███╗   ███╗
+;  ██╔═══██╗██╔════╝╚══██╔══╝██║████╗ ████║
+;  ██║   ██║███████╗   ██║   ██║██╔████╔██║
+;  ██║   ██║╚════██║   ██║   ██║██║╚██╔╝██║
+;  ╚██████╔╝███████║   ██║   ██║██║ ╚═╝ ██║
+;   ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝     ╚═╝
 
 
 ; -------------------------------------------------------------------------------------------------
@@ -59,8 +58,8 @@ Bool Property LowLightLevelLightsOnly Auto
 Bool Property SlowMoOnOrgasm Auto
 
 Bool Property AlwaysUndressAtAnimStart Auto
-Bool Property OnlyUndressChest Auto 		;	Removed in 4.0
-Bool Property AlwaysAnimateUndress Auto     ;	Removed in 4.0
+Bool Property OnlyUndressChest Auto		; Removed in 4.0
+Bool Property AlwaysAnimateUndress Auto	; Removed in 4.0
 Bool Property TossClothesOntoGround Auto
 Bool Property UseStrongerUnequipMethod Auto
 Bool Property FullyAnimateRedress Auto
@@ -132,8 +131,9 @@ Bool SMPInstalled
 
 Int[] Property StrippingSlots Auto
 
+; Adjusting these then calling a rescale will let you control actors scaling heights.
 Float Property DomScaleHeight Auto
-Float Property SubScaleHeight Auto ;adjusting these then calling a rescale will let you control actors scaling heights.
+Float Property SubScaleHeight Auto
 Float Property ThirdScaleHeight Auto
 ; The default OSA scale heights are set here by default
 
@@ -290,13 +290,14 @@ String ClassBoobjob
 String ClassBreastFeeding
 String ClassFootjob
 
-;Body parts
+; Body parts
 Int Penis
 Int Vagina
 Int Mouth
 Int Hand
 Int Clit
-;extra parts
+
+; Extra parts
 Int Anus
 Int Feet
 Int Breasts
@@ -319,7 +320,6 @@ Float[] ProstateStimValues
 String[] Speeds
 
 
-
 ; -------------------------------------------------------------------------------------------------
 ; -------------------------------------------------------------------------------------------------
 
@@ -327,7 +327,6 @@ String[] Speeds
 Event OnInit()
 	Startup() ; OStim install script
 EndEvent
-
 
 ; Call this function to start a new OStim scene
 Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zUndressSub = False, Bool zAnimateUndress = False, String zStartingAnimation = "", Actor zThirdActor = None, ObjectReference Bed = None, Bool Aggressive = False, Actor AggressingActor = None)
@@ -356,7 +355,6 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	StartingAnimation = zStartingAnimation
 	ThirdActor = zThirdActor
 	PauseAI = False
-
 
 	If (Aggressive)
 		If (AggressingActor)
@@ -755,17 +753,15 @@ Event OnUpdate() ;OStim main logic loop
 EndEvent
 
 
+;  ██╗   ██╗████████╗██╗██╗     ██╗████████╗██╗███████╗███████╗
+;  ██║   ██║╚══██╔══╝██║██║     ██║╚══██╔══╝██║██╔════╝██╔════╝
+;  ██║   ██║   ██║   ██║██║     ██║   ██║   ██║█████╗  ███████╗
+;  ██║   ██║   ██║   ██║██║     ██║   ██║   ██║██╔══╝  ╚════██║
+;  ╚██████╔╝   ██║   ██║███████╗██║   ██║   ██║███████╗███████║
+;  ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝   ╚═╝╚══════╝╚══════╝
 ;
-;			██╗   ██╗████████╗██╗██╗     ██╗████████╗██╗███████╗███████╗
-;			██║   ██║╚══██╔══╝██║██║     ██║╚══██╔══╝██║██╔════╝██╔════╝
-;			██║   ██║   ██║   ██║██║     ██║   ██║   ██║█████╗  ███████╗
-;			██║   ██║   ██║   ██║██║     ██║   ██║   ██║██╔══╝  ╚════██║
-;			╚██████╔╝   ██║   ██║███████╗██║   ██║   ██║███████╗███████║
-;			 ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝   ╚═╝╚══════╝╚══════╝
-;
-; 				The main API functions
-
-; Most of what you want to do in OStim is available here, i advise reading through this entire Utilities section
+;  The main API functions
+;  Most of what you want to do in OStim is available here. I advise reading through this entire Utilities section
 
 
 Bool Function IsActorActive(Actor Act)
@@ -822,20 +818,20 @@ Function DecreaseAnimationSpeed()
 	AdjustAnimationSpeed(-1)
 EndFunction
 
-Function AdjustAnimationSpeed(float amount)
-	If amount < 0
-		int times = math.abs((amount / 0.5)) as int
-		While times > 0
+Function AdjustAnimationSpeed(Float Amount)
+	If (Amount < 0)
+		Int Times = Math.abs((Amount / 0.5)) as Int
+		While (Times > 0)
 			UI.Invokefloat("HUD Menu", diasa + ".scena.speedAdjust", -0.5)
-			times -= 1
+			Times -= 1
 		EndWhile
 	Else
-		UI.Invokefloat("HUD Menu", diasa + ".scena.speedAdjust", amount)
+		UI.Invokefloat("HUD Menu", diasa + ".scena.speedAdjust", Amount)
 	EndIf
 EndFunction
 
 Function SetCurrentAnimationSpeed(Int InSpeed)
-	AdjustAnimationSpeed(inspeed - CurrentSpeed)
+	AdjustAnimationSpeed(InSpeed - CurrentSpeed)
 EndFunction
 
 String Function GetCurrentAnimation()
@@ -851,9 +847,9 @@ Int Function GetCurrentAnimationOID()
 	Return CurrentOID
 EndFunction
 
-string function GetCurrentAnimationSceneID() ;the scene ID, i.e. BB|Sy6!KNy9|HhPo|MoShoPo
-	return ODatabase.GetSceneID( getcurrentanimationOID() )
-endfunction
+String Function GetCurrentAnimationSceneID() ;the scene ID, i.e. BB|Sy6!KNy9|HhPo|MoShoPo
+	Return ODatabase.GetSceneID(GetCurrentAnimationOID())
+EndFunction
 
 Function LightActor(Actor Act, Int Pos, Int Brightness) ; pos 1 - ass, pos 2 - face | brightness - 0 = dim
 	If (Pos == 0)
@@ -861,13 +857,13 @@ Function LightActor(Actor Act, Int Pos, Int Brightness) ; pos 1 - ass, pos 2 - f
 	EndIf
 
 	String Which
-	If (Pos == 1) ; ass
+	If (Pos == 1)
 		If (Brightness == 0)
 			Which = "AssDim"
 		Else
 			Which = "AssBright"
 		EndIf
-	ElseIf (Pos == 2) ;face
+	ElseIf (Pos == 2)
 		If (Brightness == 0)
 			Which = "FaceDim"
 		Else
@@ -886,24 +882,23 @@ Function TravelToAnimationIfPossible(String Animation) ; travel to animation is 
 		WarpToAnimation(Animation)
 	Else
 		TravelToAnimation(Animation)
-		If (True) ; Catch
-			String Lastanimation
-			String Lastlastanimation
-			String Current = CurrentAnimation
-			While (ODatabase.GetSceneIDByAnimID(CurrentAnimation) != Animation)
-				Utility.Wait(1)
-				If (Current != CurrentAnimation)
-					LastLastAnimation = Lastanimation
-					LastAnimation = Current
-					Current = CurrentAnimation
 
-					If (Current == LastLastAnimation)
-						Console("Infinite loop during travel detected. Warping")
-						WarpToAnimation(Animation)
-					EndIf
+		String LastAnimation
+		String LastLastAnimation
+		String Current = CurrentAnimation
+		While (ODatabase.GetSceneIDByAnimID(CurrentAnimation) != Animation)
+			Utility.Wait(1)
+			If (Current != CurrentAnimation)
+				LastLastAnimation = LastAnimation
+				LastAnimation = Current
+				Current = CurrentAnimation
+
+				If (Current == LastLastAnimation)
+					Console("Infinite loop during travel detected. Warping")
+					WarpToAnimation(Animation)
 				EndIf
-			EndWhile
-		EndIf
+			EndIf
+		EndWhile
 	EndIf
 EndFunction
 
@@ -920,9 +915,9 @@ EndFunction
 Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy9|HhPo|MoShoPo
 	Console("Warping to animation: " + Animation)
 	;RunOsexCommand("$Warp," + Animation)
-	String nav = diasa + ".chore.autoNav"
+	String Nav = diasa + ".chore.autoNav"
 
-	UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "WARP" + Animation)
+	UI.InvokeString("HUD Menu", Nav + ".inputCommandAgenda", "WARP" + Animation)
 ;	UI.Invoke("HUD Menu", nav + ".navStep")
 EndFunction
 
@@ -998,9 +993,9 @@ function FadeFromBlack(float time = 4.0)
 EndFunction
 
 function FadeToBlack(float time = 1.25)
-		Game.FadeOutGame(True, True, 0.0, Time)
-		Utility.Wait(Time * 0.70)
-		Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
+	Game.FadeOutGame(True, True, 0.0, Time)
+	Utility.Wait(Time * 0.70)
+	Game.FadeOutGame(False, True, 25.0, 25.0) ; total blackout
 EndFunction
 
 Float Function GetTimeSinceLastPlayerInteraction()
@@ -1008,11 +1003,11 @@ Float Function GetTimeSinceLastPlayerInteraction()
 EndFunction
 
 Bool Function UsingBed()
-	Return Usingbed
+	Return UsingBed
 EndFunction
 
 ObjectReference Function GetBed()
-	Return Currentbed
+	Return CurrentBed
 EndFunction
 
 Bool Function IsFemale(Actor Act) ; genitalia based / has a vagina and not a penis
@@ -1074,32 +1069,30 @@ Function AllowVehicleReset()
 EndFunction
 
 Function ToggleFreeCam(Bool On = True)
-	ConsoleUtil.ExecuteCommand("tfc")
 	If (!IsFreeCamming)
-		;OSANative.EnableFreeCam()
+		OSANative.EnableFreeCam()
 		OSANative.SetFreeCamSpeed(FreecamSpeed)
-		OSANative.SetFOV(freecamFOv)
+		OSANative.SetFOV(FreecamFOV)
 		IsFreeCamming = true
 		Console("Enabling freecam")
 	Else
-		;OSANative.DisableFreeCam()
-		OSANative.SetFOV(DefaultFOV)
+		OSANative.DisableFreeCam()
 		OSANative.SetFreeCamSpeed()
+		OSANative.SetFOV(DefaultFOV)
 		IsFreeCamming = false
 		Console("Disabling freecam")
 	EndIf
 EndFunction
 
-bool NavMenuHidden
-
+Bool NavMenuHidden
 Function HideNavMenu()
-	NavMenuHidden = true
+	NavMenuHidden = True
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.NavMenu.dim")
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.SceneMenu.OmniDim")
 EndFunction
 
 Function ShowNavMenu()
-	NavMenuHidden = false
+	NavMenuHidden = False
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.NavMenu.light")
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.SceneMenu.OmniLight")
 EndFunction
@@ -1112,11 +1105,7 @@ Function ShowAllSkyUIWidgets()
 	UI.SetBool("HUD Menu", "_root.WidgetContainer._visible", True)
 EndFunction
 
-bool function IsInFreeCam()
-	Return (Game.GetCameraState() == 3)
-endfunction
-
-float Function GetStimMult(Actor Act)
+Float Function GetStimMult(Actor Act)
 	If (Act == DomActor)
 		Return DomStimMult
 	Elseif (Act == SubActor)
@@ -1140,7 +1129,7 @@ Function SetStimMult(Actor Act, Float Value)
 	EndIf
 EndFunction
 
-; spanking stuff
+; Spanking stuff
 Int Function GetSpankCount() ; num of spankings so far this scene
 	Return SpankCount
 EndFunction
@@ -1174,15 +1163,14 @@ Function ToggleActorsCollision()
 EndFunction
 
 
+;  ██████╗ ███████╗██████╗ ███████╗
+;  ██╔══██╗██╔════╝██╔══██╗██╔════╝
+;  ██████╔╝█████╗  ██║  ██║███████╗
+;  ██╔══██╗██╔══╝  ██║  ██║╚════██║
+;  ██████╔╝███████╗██████╔╝███████║
+;  ╚═════╝ ╚══════╝╚═════╝ ╚══════╝
 ;
-;			██████╗ ███████╗██████╗ ███████╗
-;			██╔══██╗██╔════╝██╔══██╗██╔════╝
-;			██████╔╝█████╗  ██║  ██║███████╗
-;			██╔══██╗██╔══╝  ██║  ██║╚════██║
-;			██████╔╝███████╗██████╔╝███████║
-;			╚═════╝ ╚══════╝╚═════╝ ╚══════╝
-;
-;				Code related to beds
+;  Code related to beds
 
 
 ObjectReference Function FindBed(ObjectReference CenterRef, Float Radius = 0.0)
@@ -1380,15 +1368,14 @@ Function PrintBedInfo(ObjectReference Bed)
 EndFunction
 
 
+;  ███████╗██████╗ ███████╗███████╗██████╗     ██╗   ██╗████████╗██╗██╗     ██╗████████╗██╗███████╗███████╗
+;  ██╔════╝██╔══██╗██╔════╝██╔════╝██╔══██╗    ██║   ██║╚══██╔══╝██║██║     ██║╚══██╔══╝██║██╔════╝██╔════╝
+;  ███████╗██████╔╝█████╗  █████╗  ██║  ██║    ██║   ██║   ██║   ██║██║     ██║   ██║   ██║█████╗  ███████╗
+;  ╚════██║██╔═══╝ ██╔══╝  ██╔══╝  ██║  ██║    ██║   ██║   ██║   ██║██║     ██║   ██║   ██║██╔══╝  ╚════██║
+;  ███████║██║     ███████╗███████╗██████╔╝    ╚██████╔╝   ██║   ██║███████╗██║   ██║   ██║███████╗███████║
+;  ╚══════╝╚═╝     ╚══════╝╚══════╝╚═════╝      ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝   ╚═╝╚══════╝╚══════╝
 ;
-;			███████╗██████╗ ███████╗███████╗██████╗     ██╗   ██╗████████╗██╗██╗     ██╗████████╗██╗███████╗███████╗
-;			██╔════╝██╔══██╗██╔════╝██╔════╝██╔══██╗    ██║   ██║╚══██╔══╝██║██║     ██║╚══██╔══╝██║██╔════╝██╔════╝
-;			███████╗██████╔╝█████╗  █████╗  ██║  ██║    ██║   ██║   ██║   ██║██║     ██║   ██║   ██║█████╗  ███████╗
-;			╚════██║██╔═══╝ ██╔══╝  ██╔══╝  ██║  ██║    ██║   ██║   ██║   ██║██║     ██║   ██║   ██║██╔══╝  ╚════██║
-;			███████║██║     ███████╗███████╗██████╔╝    ╚██████╔╝   ██║   ██║███████╗██║   ██║   ██║███████╗███████║
-;			╚══════╝╚═╝     ╚══════╝╚══════╝╚═════╝      ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝   ╚═╝╚══════╝╚══════╝
-;
-;				Some code related to the speed system
+;  Some code related to the speed system
 
 
 Bool CurrAnimHasIdleSpeed
@@ -1443,15 +1430,14 @@ String Function NormalSpeedToOsexSpeed(Int Speed)
 EndFunction
 
 
+;   ██████╗ ███████╗███████╗██╗  ██╗     ██████╗ ███████╗██╗      █████╗ ████████╗███████╗██████╗     ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗
+;  ██╔═══██╗██╔════╝██╔════╝╚██╗██╔╝     ██╔══██╗██╔════╝██║     ██╔══██╗╚══██╔══╝██╔════╝██╔══██╗    ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
+;  ██║   ██║███████╗█████╗   ╚███╔╝█████╗██████╔╝█████╗  ██║     ███████║   ██║   █████╗  ██║  ██║    █████╗  ██║   ██║█████╗  ██╔██╗ ██║   ██║   ███████╗
+;  ██║   ██║╚════██║██╔══╝   ██╔██╗╚════╝██╔══██╗██╔══╝  ██║     ██╔══██║   ██║   ██╔══╝  ██║  ██║    ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║   ╚════██║
+;  ╚██████╔╝███████║███████╗██╔╝ ██╗     ██║  ██║███████╗███████╗██║  ██║   ██║   ███████╗██████╔╝    ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
+;   ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═════╝     ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
 ;
-;			 ██████╗ ███████╗███████╗██╗  ██╗     ██████╗ ███████╗██╗      █████╗ ████████╗███████╗██████╗     ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗
-;			██╔═══██╗██╔════╝██╔════╝╚██╗██╔╝     ██╔══██╗██╔════╝██║     ██╔══██╗╚══██╔══╝██╔════╝██╔══██╗    ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
-;			██║   ██║███████╗█████╗   ╚███╔╝█████╗██████╔╝█████╗  ██║     ███████║   ██║   █████╗  ██║  ██║    █████╗  ██║   ██║█████╗  ██╔██╗ ██║   ██║   ███████╗
-;			██║   ██║╚════██║██╔══╝   ██╔██╗╚════╝██╔══██╗██╔══╝  ██║     ██╔══██║   ██║   ██╔══╝  ██║  ██║    ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║   ╚════██║
-;			╚██████╔╝███████║███████╗██╔╝ ██╗     ██║  ██║███████╗███████╗██║  ██║   ██║   ███████╗██████╔╝    ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
-;			 ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═════╝     ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
-;
-;				Event hooks that receive data from OSA
+;  Event hooks that receive data from OSA
 
 
 Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
@@ -1703,15 +1689,15 @@ Function RestoreScales()
 	endif
 EndFunction
 
+
+;  ███████╗████████╗██╗███╗   ███╗██╗   ██╗██╗      █████╗ ████████╗██╗ ██████╗ ███╗   ██╗    ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗
+;  ██╔════╝╚══██╔══╝██║████╗ ████║██║   ██║██║     ██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║    ██╔════╝╚██╗ ██╔╝██╔════╝╚══██╔══╝██╔════╝████╗ ████║
+;  ███████╗   ██║   ██║██╔████╔██║██║   ██║██║     ███████║   ██║   ██║██║   ██║██╔██╗ ██║    ███████╗ ╚████╔╝ ███████╗   ██║   █████╗  ██╔████╔██║
+;  ╚════██║   ██║   ██║██║╚██╔╝██║██║   ██║██║     ██╔══██║   ██║   ██║██║   ██║██║╚██╗██║    ╚════██║  ╚██╔╝  ╚════██║   ██║   ██╔══╝  ██║╚██╔╝██║
+;  ███████║   ██║   ██║██║ ╚═╝ ██║╚██████╔╝███████╗██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║    ███████║   ██║   ███████║   ██║   ███████╗██║ ╚═╝ ██║
+;  ╚══════╝   ╚═╝   ╚═╝╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝    ╚══════╝   ╚═╝   ╚══════╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
 ;
-;			███████╗████████╗██╗███╗   ███╗██╗   ██╗██╗      █████╗ ████████╗██╗ ██████╗ ███╗   ██╗    ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗
-;			██╔════╝╚══██╔══╝██║████╗ ████║██║   ██║██║     ██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║    ██╔════╝╚██╗ ██╔╝██╔════╝╚══██╔══╝██╔════╝████╗ ████║
-;			███████╗   ██║   ██║██╔████╔██║██║   ██║██║     ███████║   ██║   ██║██║   ██║██╔██╗ ██║    ███████╗ ╚████╔╝ ███████╗   ██║   █████╗  ██╔████╔██║
-;			╚════██║   ██║   ██║██║╚██╔╝██║██║   ██║██║     ██╔══██║   ██║   ██║██║   ██║██║╚██╗██║    ╚════██║  ╚██╔╝  ╚════██║   ██║   ██╔══╝  ██║╚██╔╝██║
-;			███████║   ██║   ██║██║ ╚═╝ ██║╚██████╔╝███████╗██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║    ███████║   ██║   ███████║   ██║   ███████╗██║ ╚═╝ ██║
-;			╚══════╝   ╚═╝   ╚═╝╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝    ╚══════╝   ╚═╝   ╚══════╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
-;
-;				All code related to the stimulation simulation
+;  All code related to the stimulation simulation
 
 
 Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being stimulated in the current animation
@@ -2126,14 +2112,15 @@ Function OnEx(Actor Act, Int zType, Int zAmount) ;expression related face blendi
 EndFunction
 
 
-;			███████╗ ██████╗ ██╗   ██╗███╗   ██╗██████╗
-;			██╔════╝██╔═══██╗██║   ██║████╗  ██║██╔══██╗
-;			███████╗██║   ██║██║   ██║██╔██╗ ██║██║  ██║
-;			╚════██║██║   ██║██║   ██║██║╚██╗██║██║  ██║
-;			███████║╚██████╔╝╚██████╔╝██║ ╚████║██████╔╝
-;			╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═════╝
+;  ███████╗ ██████╗ ██╗   ██╗███╗   ██╗██████╗
+;  ██╔════╝██╔═══██╗██║   ██║████╗  ██║██╔══██╗
+;  ███████╗██║   ██║██║   ██║██╔██╗ ██║██║  ██║
+;  ╚════██║██║   ██║██║   ██║██║╚██╗██║██║  ██║
+;  ███████║╚██████╔╝╚██████╔╝██║ ╚████║██████╔╝
+;  ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═════╝
 ;
-;				Code related to Sound
+;  Code related to Sound
+
 
 Function PlayDing()
 	OSADing.Play(PlayerRef)
@@ -2284,15 +2271,15 @@ FormList[] Function GetSoundFormLists()
 EndFunction
 
 
-;			 ██████╗ ████████╗██╗  ██╗███████╗██████╗
-;			██╔═══██╗╚══██╔══╝██║  ██║██╔════╝██╔══██╗
-;			██║   ██║   ██║   ███████║█████╗  ██████╔╝
-;			██║   ██║   ██║   ██╔══██║██╔══╝  ██╔══██╗
-;			╚██████╔╝   ██║   ██║  ██║███████╗██║  ██║
-;			 ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+;   ██████╗ ████████╗██╗  ██╗███████╗██████╗
+;  ██╔═══██╗╚══██╔══╝██║  ██║██╔════╝██╔══██╗
+;  ██║   ██║   ██║   ███████║█████╗  ██████╔╝
+;  ██║   ██║   ██║   ██╔══██║██╔══╝  ██╔══██╗
+;  ╚██████╔╝   ██║   ██║  ██║███████╗██║  ██║
+;   ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 ;
-;				Misc stuff
-;				https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=ANSI%20Shadow&text=Other
+;  Misc stuff
+;  https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=ANSI%20Shadow&text=Other
 
 
 Function Console(String In) Global
@@ -2371,12 +2358,12 @@ Bool Function StringArrayContainsValue(String[] Arr, String Val)
 	Return False
 EndFunction
 
-bool Function StringContains(string str, string contains)
-	return (StringUtil.Find(str, contains) != -1)
+Bool Function StringContains(String str, String Contains)
+	Return (StringUtil.Find(str, Contains) != -1)
 EndFunction
 
-bool Function IsModLoaded(string ESPFile)
-	return (Game.GetModByName(ESPFile) != 255)
+Bool Function IsModLoaded(String ESPFile)
+	Return (Game.GetModByName(ESPFile) != 255)
 Endfunction
 
 Int Function GetTimeScale()
@@ -2591,13 +2578,13 @@ Function SetDefaultSettings()
 	SubScaleHeight = 1.00 ; female height
 	ThirdScaleHeight = 1.03
 
-	disablescaling = false
+	DisableScaling = False
 
 	Usebed = True
 	BedSearchDistance = 15
 	MisallignmentProtection = True
 
-	DisableStimulationCalculation = false
+	DisableStimulationCalculation = False
 
 	FixFlippedAnimations = False
 	OrgasmIncreasesRelationship = False
@@ -2606,7 +2593,7 @@ Function SetDefaultSettings()
 	UseAIControl = False
 	PauseAI = False
 	AutoHideBars = False
-	MatchBarColorToGender = false
+	MatchBarColorToGender = False
 
 	AISwitchChance = 6
 
@@ -2618,7 +2605,7 @@ Function SetDefaultSettings()
 
 	Forcefirstpersonafter = True
 
-	disableOSAControls = false
+	DisableOSAControls = False
 
 	UseFreeCam = !(SKSE.GetPluginVersion("ImprovedCamera") != -1)
 
@@ -2949,10 +2936,6 @@ Function Startup()
 		ODatabase.Unload()
 	EndIf
 
-	;If (ArousedFaction)
-	;	Console("Sexlab Aroused loaded")
-	;EndIf
-
 	If (SKSE.GetPluginVersion("ConsoleUtilSSE") == -1)
 		Debug.Notification("OStim: ConsoleUtil is not installed, a few features may not work")
 	EndIf
@@ -2968,12 +2951,6 @@ Function Startup()
 	Else
 		SoSInstalled = false
 	EndIf
-
-	;If (SexLab)
-	;	Console("SexLab loaded, using its cum effects")
-	;Else
-	;	Console("Sexlab is not loaded.")
-	;EndIf
 
 	If (OSA.StimInstalledProper())
 		Console("OSA is installed correctly")
