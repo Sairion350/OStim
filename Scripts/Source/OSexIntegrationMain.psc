@@ -724,13 +724,13 @@ Event OnUpdate() ;OStim main logic loop
 		ToggleFreeCam(False)
 	EndIf
 
-	If (ForceFirstPersonAfter && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
-		Game.ForceFirstPerson()
-	EndIf
-
 	SubActor.TranslateTo(SubX, SubY, SubZ, SubActor.GetAngleX(), SubActor.GetAngleY(), SubActor.GetAngleZ(), 10000) ; return back to position
 	DomActor.TranslateTo(DomX, DomY, DomZ, DomActor.GetAngleX(), DomActor.GetAngleY(), DomActor.GetAngleZ(), 10000)
 	Utility.Wait(0.1)
+
+	If (ForceFirstPersonAfter && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		Game.ForceFirstPerson()
+	EndIf
 
 	If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		FadeFromBlack(2)
