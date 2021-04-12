@@ -300,7 +300,7 @@ Event OStimPreStart(String EventName, String StrArg, Float NumArg, Form Sender)
 
 	bool didToggle = false
 	If (OStim.UndressDom) ; animate undress, and chest-only strip not yet supported
-		If OStim.IsInFreeCam() && (ostim.GetDomActor() == playerref)
+		If OStim.IsInFreeCam() && (OStim.GetDomActor() == playerref)
 			DidToggle = True
 			OStim.ToggleFreeCam()
 		EndIf
@@ -308,7 +308,7 @@ Event OStimPreStart(String EventName, String StrArg, Float NumArg, Form Sender)
 	EndIf
 
 	If (OStim.UndressSub)
-		If OStim.IsInFreeCam() && (ostim.GetSubActor() == playerref)
+		If OStim.IsInFreeCam() && (OStim.GetSubActor() == playerref)
 			DidToggle = True
 			OStim.ToggleFreeCam()
 		EndIf
@@ -318,7 +318,7 @@ Event OStimPreStart(String EventName, String StrArg, Float NumArg, Form Sender)
 	; Assume if sub is to be undressed, third actor should also be provided ThirdActor exists.
 	Actor ThirdActor = OStim.GetThirdActor()
 	If (OStim.UndressSub && ThirdActor)
-		If OStim.IsInFreeCam() && (ostim.GetThirdActor() == playerref)
+		If OStim.IsInFreeCam() && (OStim.GetThirdActor() == playerref)
 			DidToggle = True
 			OStim.ToggleFreeCam()
 		EndIf
@@ -349,7 +349,7 @@ Event OstimChange(String eventName, String strArg, Float numArg, Form sender)
 		String CClass = OStim.GetCurrentAnimationClass()
 		If (!DomNaked)
 			If (CClass == "Sx") || (CClass == "Po") || (CClass == "HhPo") || (CClass == "ApPJ") || (CClass == "HhPJ") || (CClass == "HJ") || (CClass == "ApHJ") || (CClass == "DHJ") || (CClass == "SJ")|| (CClass == "An")|| (CClass == "BoJ")|| (CClass == "FJ")
-				If OStim.IsInFreeCam()
+				If OStim.IsInFreeCam() && (OStim.GetDomActor() == playerref)
 					DidToggle = True
 					OStim.ToggleFreeCam()
 				EndIf
@@ -359,7 +359,7 @@ Event OstimChange(String eventName, String strArg, Float numArg, Form sender)
 		EndIf
 		If (!SubNaked)
 			If (CClass == "Sx") || (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2") || (CClass == "An")|| (CClass == "BoJ")|| (CClass == "BoF")
-				If OStim.IsInFreeCam()
+				If OStim.IsInFreeCam() && (OStim.GetSubActor() == playerref)
 					DidToggle = True
 					OStim.ToggleFreeCam()
 				EndIf
@@ -369,7 +369,7 @@ Event OstimChange(String eventName, String strArg, Float numArg, Form sender)
 		EndIf
 		If (!ThirdNaked)
 			If (CClass == "Sx") || (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2") || (CClass == "An")|| (CClass == "BoJ")|| (CClass == "BoF")
-				If OStim.IsInFreeCam()
+				If OStim.IsInFreeCam() && (OStim.GetThirdActor() == playerref)
 					DidToggle = True
 					OStim.ToggleFreeCam()
 				EndIf
