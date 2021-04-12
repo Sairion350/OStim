@@ -298,19 +298,36 @@ Event OStimPreStart(String EventName, String StrArg, Float NumArg, Form Sender)
 		OStim.AnimateUndress = True
 	EndIf
 
+	bool didToggle = false
 	If (OStim.UndressDom) ; animate undress, and chest-only strip not yet supported
+		If OStim.IsInFreeCam() && (ostim.GetDomActor() == playerref)
+			DidToggle = True
+			OStim.ToggleFreeCam()
+		EndIf
 		Strip(OStim.GetDomActor())
 	EndIf
 
 	If (OStim.UndressSub)
+		If OStim.IsInFreeCam() && (ostim.GetSubActor() == playerref)
+			DidToggle = True
+			OStim.ToggleFreeCam()
+		EndIf
 		Strip(OStim.GetSubActor())
 	EndIf
 
 	; Assume if sub is to be undressed, third actor should also be provided ThirdActor exists.
 	Actor ThirdActor = OStim.GetThirdActor()
 	If (OStim.UndressSub && ThirdActor)
+		If OStim.IsInFreeCam() && (ostim.GetThirdActor() == playerref)
+			DidToggle = True
+			OStim.ToggleFreeCam()
+		EndIf
 		Strip(ThirdActor)
 		ThirdActorAfterLeaving = ThirdActor
+	EndIf
+
+	If (DidToggle)
+		OStim.ToggleFreeCam()
 	EndIf
 
 	Console("Stripped.")
