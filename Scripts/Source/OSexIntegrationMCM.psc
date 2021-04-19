@@ -860,9 +860,12 @@ EndFunction
 Function ImportSettings()
 	; Import from file.
 	int OstimSettingsFile = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
-	
-	Debug.MessageBox("Importing from file, wait a second or two before clicking OK.")
-	
+	if (OstimSettingsFile == False)
+		Debug.MessageBox("Tried to import from file, but no file existed.")
+		return
+	Else
+		Debug.MessageBox("Importing from file, wait a second or two before clicking OK.")
+	EndIf
 	; Sex settings import.
 	Main.EndOnDomOrgasm = Jmap.GetInt(OstimSettingsFile, "SetEndOnOrgasm")
 	Main.EnableActorSpeedControl = JMap.GetInt(OstimSettingsFile, "SetActorSpeedControl")
