@@ -1965,6 +1965,21 @@ EndFunction
 Function Orgasm(Actor Act)
 	SetActorExcitement(Act, -3.0)
 	SendModEvent("ostim_orgasm")
+
+	; added by subhuman
+	if Game.IsPluginInstalled("Fertility Mode.esm")
+		int handle = ModEvent.Create("FertilityModeAddSperm")
+		if handle
+			ModEvent.PushForm(handle, GetSexPartner(Act) as form)
+			ModEvent.PushString(handle, Act.GetDisplayName())
+			if Game.IsPluginInstalled("Fertility Mode 3 Fixes and Updates.esp")
+				ModEvent.PushForm(handle, Act as form)
+			endIf
+			ModEvent.Send(handle)
+		endIf
+	endIf
+	; end added by subhuman
+
 	OrgasmSound.Play(Act)
 	If (Act == PlayerRef)
 		NutEffect.Apply()
