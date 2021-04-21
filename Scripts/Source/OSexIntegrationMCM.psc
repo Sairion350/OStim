@@ -860,9 +860,14 @@ EndFunction
 Function ImportSettings()
 	; Import from file.
 	int OstimSettingsFile = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
-	if (OstimSettingsFile == False)
+	; Tries to import from Data folder as well, this is to allow Modlist creators to package configuration files as mods for mo2 or vortex.
+	int OstimSettingsFileAlt = JValue.readFromFile(".\\Data\\OstimMCMSettings.json")
+	if (OstimSettingsFile == False && OstimSettingsFileAlt == False)
 		Debug.MessageBox("Tried to import from file, but no file existed.")
 		return
+	ElseIf (OstimSettingsFile == False && OstimSettingsFileAlt == True)
+		OstimSettingsFile = OstimSettingsFileAlt
+		Debug.MessageBox("Importing modlist settings from file, wait a second or two before clicking OK.")
 	Else
 		Debug.MessageBox("Importing from file, wait a second or two before clicking OK.")
 	EndIf
