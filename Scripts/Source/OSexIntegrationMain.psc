@@ -728,6 +728,12 @@ Event OnUpdate() ;OStim main logic loop
 	DomActor.TranslateTo(DomX, DomY, DomZ, DomActor.GetAngleX(), DomActor.GetAngleY(), DomActor.GetAngleZ(), 10000)
 	Utility.Wait(0.1)
 
+	If IsInFreeCam()
+		While IsInFreeCam()
+			Utility.Wait(0.1)
+		EndWhile
+	EndIf 
+
 	If (ForceFirstPersonAfter && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		Game.ForceFirstPerson()
 	EndIf
@@ -2615,11 +2621,12 @@ Function SetDefaultSettings()
 	UseAIPlayerAggressed = True
 	UseAINonAggressive = False
 
-	Forcefirstpersonafter = True
 
 	disableOSAControls = false
 
 	UseFreeCam = !(SKSE.GetPluginVersion("ImprovedCamera") != -1)
+
+	Forcefirstpersonafter = !UseFreeCam
 
 	BedReallignment = 0
 
