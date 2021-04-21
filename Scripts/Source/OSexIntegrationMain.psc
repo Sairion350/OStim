@@ -805,7 +805,7 @@ Int Function GetAPIVersion()
 	;5 adds ODatabase, getCurrentLeadingActor
 	;4 added onanimationchange event and decrease speed
 	;3 introduces events and getmostrecentorgasmedactor
-	Return 10
+	Return 11
 EndFunction
 
 Function IncreaseAnimationSpeed()

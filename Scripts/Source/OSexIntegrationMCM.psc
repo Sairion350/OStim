@@ -107,6 +107,16 @@ actor playerref
 
 int SetUndressingAbout
 
+;ORomance 
+int SetORDifficulty
+int SetORSexuality
+int SetORKey
+
+string ORomance = "ORomance.esp"
+int GVORDifficulty = 0x0063A4
+int GVORSexuality = 0x0063A5
+int GVORKey = 0x006E6A
+
 Event OnInit()
 	Init()
 EndEvent
@@ -250,6 +260,23 @@ Event OnPageReset(String Page)
 	ElseIf (Page == "")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayDing()
+	ElseIf (Page == "Add-ons")
+		SetInfoText(" ")
+		Main.playTickBig()
+		SetCursorFillMode(TOP_TO_BOTTOM)
+		UnloadCustomContent()
+		SetThanks = AddTextOption("", "")
+		SetCursorPosition(1)
+		AddTextOption("<font color='" + "#939292" +"'>" + "Add-on Settings", "")
+		SetCursorPosition(2)
+
+		if main.IsModLoaded(ORomance)
+			AddColoredHeader("ORomance")
+			SetORSexuality = AddToggleOption("Enable NPC Sexualities", GetExternalBool(ORomance, GVORSexuality))
+			SetORDifficulty = AddSliderOption("Difficulty modifier", GetExternalInt(ORomance, GVORDifficulty), "{0}")
+			SetORKey = AddKeyMapOption("Start dialogue", GetExternalInt(oromance, gvorkey))
+		endif 
+
 	ElseIf (Page == "Undressing")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayTickBig()
@@ -273,10 +300,41 @@ Event OnPageReset(String Page)
 	EndIf
 EndEvent
 
+bool Function GetExternalBool(string modesp, int id)
+	;osexintegrationmain.console((game.GetFormFromFile(id, modesp) as GlobalVariable).GetValueInt())
+
+	return (game.GetFormFromFile(id, modesp) as GlobalVariable).GetValueInt() == 1
+
+endfunction
+
+Function SetExternalBool(string modesp, int id, bool val)
+	int set = 0
+	if val
+		set = 1
+	endif 
+
+	(game.GetFormFromFile(id, modesp) as GlobalVariable).SetValueInt(set)
+endfunction
+
+Function SetExternalInt(string modesp, int id, int val)
+	(game.GetFormFromFile(id, modesp) as GlobalVariable).SetValueInt(val)
+endfunction
+int Function GetExternalInt(string modesp, int id)
+	return (game.GetFormFromFile(id, modesp) as GlobalVariable).GetValueInt() 
+endfunction
+
 Event OnOptionSelect(Int Option)
 	Main.PlayTickBig()
 	if currPage == "Undressing"
 		OnSlotSelect(option)
+	elseif currPage == "Add-ons"
+		if option == SetORSexuality
+			SetExternalBool(oromance, GVORSexuality, !GetExternalBool(oromance, GVORSexuality))
+			SetToggleOptionValue(SetORSexuality, GetExternalBool(oromance, GVORSexuality))
+
+		endif 
+
+		return
 	EndIf
 
 	If (Option == SetEndOnOrgasm)
@@ -409,6 +467,16 @@ Event OnOptionHighlight(Int Option)
 	;Main.playTickSmall()
 	if currPage == "Undressing"
 		OnSlotMouseOver(option)
+	elseif currPage == "Add-ons"
+		If (Option == SetORKey)
+			SetInfoText("Press this while looking at an NPC to start interacting\nYou must save and reload for this setting to take affect")
+		elseif (option == SetORDifficulty)
+			SetInfoText("Increasing this value makes actions easier. Lowering makes them harder. Lowering is not advised usually")
+		elseif (option == SetORSexuality)
+			SetInfoText("Leaving this off makes all NPCs bisexual. \nTurning it on allows them to be gay/bisexual/hetero")
+		endif 
+
+		return
 	EndIf
 	If (Option == SetEndOnOrgasm)
 		SetInfoText("End the Osex scene automatically when the dominant actor (usually the male) orgasms")
@@ -607,6 +675,11 @@ Event OnOptionSliderOpen(Int Option)
 		SetSliderDialogDefaultValue(6.0)
 		SetSliderDialogRange(0, 100)
 		SetSliderDialogInterval(1)
+	elseif (option == SetORDifficulty)
+		SetSliderDialogStartValue(GetExternalInt(oromance, GVORDifficulty))
+		SetSliderDialogDefaultValue(0.0)
+		SetSliderDialogRange(-100, 150)
+		SetSliderDialogInterval(1)
 	EndIf
 EndEvent
 
@@ -615,6 +688,9 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 	If (Option == SetSexExcitementMult)
 		Main.SexExcitementMult = Value
 		SetSliderOptionValue(SetsexExcitementMult, Value, "{2} x")
+	Elseif (option == SetORDifficulty)
+		SetExternalInt(oromance, GVORDifficulty, value as int)
+		SetSliderOptionValue(SetORDifficulty, Value as int, "{0}")
 	ElseIf (Option == SetBedSearchDistance)
 		Main.BedSearchDistance = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0} meters")
@@ -655,6 +731,9 @@ Event OnOptionKeyMapChange(Int Option, Int KeyCode, String ConflictControl, Stri
 		SetKeyMapOptionValue(Option, KeyCode)
 	ElseIf (Option == SetControlToggle)
 		Main.RemapControlToggleKey(KeyCode)
+		SetKeyMapOptionValue(Option, KeyCode)
+	Elseif (Option == SetORKey)
+		SetExternalInt(oromance, gvorkey, KeyCode)
 		SetKeyMapOptionValue(Option, KeyCode)
 	EndIf
 EndEvent
