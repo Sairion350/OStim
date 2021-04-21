@@ -1110,11 +1110,11 @@ Function ShowNavMenu()
 EndFunction
 
 Function HideAllSkyUIWidgets()
-	UI.SetBool("HUD Menu", "_root.WidgetContainer._visible", False)
+	UI.SetNumber("HUD Menu", "_root.WidgetContainer._alpha", 0.0)
 EndFunction
 
 Function ShowAllSkyUIWidgets()
-	UI.SetBool("HUD Menu", "_root.WidgetContainer._visible", True)
+	UI.SetNumber("HUD Menu", "_root.WidgetContainer._alpha", 100.0)
 EndFunction
 
 bool function IsInFreeCam()
