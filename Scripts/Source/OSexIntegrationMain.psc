@@ -1967,7 +1967,7 @@ Function Orgasm(Actor Act)
 	SendModEvent("ostim_orgasm")
 
 	; added by subhuman
-	if Game.IsPluginInstalled("Fertility Mode.esm")
+	if Game.IsPluginInstalled("Fertility Mode.esm") && IsVaginal()
 		int handle = ModEvent.Create("FertilityModeAddSperm")
 		if handle
 			ModEvent.PushForm(handle, GetSexPartner(Act) as form)
