@@ -357,6 +357,13 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	ThirdActor = zThirdActor
 	PauseAI = False
 
+	If zThirdActor
+		If AppearsFemale(ThirdActor) && !AppearsFemale(SubActor)
+			SubActor = zThirdActor
+			ThirdActor = sub
+		EndIf
+	EndIf
+
 
 	If (Aggressive)
 		If (AggressingActor)
