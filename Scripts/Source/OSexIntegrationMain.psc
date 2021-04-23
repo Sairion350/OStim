@@ -2186,6 +2186,10 @@ Event OnOSASound(String EventName, String Args, Float Nothing, Form Sender)
 EndEvent
 /;
 
+int[] property SoundFormNumberWhitelist auto 
+; Sounds that match a Formnumber found in the above whitelist will always be played if osa is muted
+; this is useful if you only want to mute voices, for example
+
 Function OnSound(Actor Act, Int SoundID, Int FormNumber)
 	Int FormID = FormNumber
 	If (AppearsFemale(Act))
@@ -2196,7 +2200,7 @@ Function OnSound(Actor Act, Int SoundID, Int FormNumber)
 		EndIf
 	EndIf
 
-	If (!MuteOSA)
+	If (!MuteOSA) || IntArrayContainsValue(SoundFormNumberWhitelist, FormNumber)
 		PlayOSASound(Act, Formid, Soundid)
 	EndIf
 
@@ -2586,6 +2590,9 @@ Function SetDefaultSettings()
 	LowLightLevelLightsOnly = False
 
 	SexExcitementMult = 1.0
+
+	SoundFormNumberWhitelist = new int[1]
+	SoundFormNumberWhitelist[0] = 9999 ;initializing to avoid array-related bugs
 
 	EnableImprovedCamSupport = (SKSE.GetPluginVersion("ImprovedCamera") != -1)
 
