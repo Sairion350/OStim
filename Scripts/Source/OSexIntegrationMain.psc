@@ -489,6 +489,10 @@ Event OnUpdate() ;OStim main logic loop
 	SubY = SubActor.Y
 	SubZ = SubActor.Z
 
+	If ThirdActor && (StartingAnimation == "")
+		startinganimation = "0M2F|Sy6!Sy9!Sy9|Ho|DoubleTrouble+22Enter"
+	endif 
+
 	If (UsingBed)
 		AllignActorsWithCurrentBed()
 		If (StartingAnimation == "")
@@ -507,7 +511,11 @@ Event OnUpdate() ;OStim main logic loop
 
     diasa = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget.hud.NavMenu.dia"
 
-    CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
+    if !ThirdActor
+    	CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
+    else 
+    	CurrentAnimation = "0Sx0M2F_Ho-DoubleTrouble"
+    endif 
     LastHubOID = -1
     OnAnimationChange()
 
