@@ -1986,7 +1986,6 @@ EndFunction
 Function Orgasm(Actor Act)
 	SetActorExcitement(Act, -3.0)
 	SendModEvent("ostim_orgasm")
-	OrgasmSound.Play(Act)
 	If (Act == PlayerRef)
 		NutEffect.Apply()
 		If (SlowMoOnOrgasm)
