@@ -2214,7 +2214,7 @@ Function OnSound(Actor Act, Int SoundID, Int FormNumber)
 		EndIf
 	EndIf
 
-	If (!MuteOSA) || IntArrayContainsValue(SoundFormNumberWhitelist, FormNumber)
+	If (!MuteOSA) || IntArrayContainsValue(SoundFormNumberWhitelist, FormID)
 		PlayOSASound(Act, Formid, Soundid)
 	EndIf
 
