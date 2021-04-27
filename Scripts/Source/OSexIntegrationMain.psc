@@ -35,6 +35,8 @@ ScriptName OSexIntegrationMain Extends Quest
 
 
 Bool Property EndOnDomOrgasm Auto
+Bool Property EndOnSubOrgasm Auto
+Bool Property RequireBothOrgasmsToFinish Auto
 
 Bool Property EnableDomBar Auto
 Bool Property EnableSubBar Auto
@@ -690,6 +692,15 @@ Event OnUpdate() ;OStim main logic loop
 			If (GetCurrentAnimationClass() == ClassSex)
 				DomExcitement += 5
 			EndIf
+			If (EndOnSubOrgasm)
+				If (!RequireBothOrgasmsToFinish) || ((DomTimesOrgasm > 0) && (SubTimesOrgasm > 1))
+					If ODatabase.HasIdleSpeed(CurrentOID)
+						SetCurrentAnimationSpeed(0)
+					EndIf
+					Utility.Wait(4)
+					EndAnimation()
+				EndIf
+			EndIf
 		EndIf
 
 		If (ThirdExcitement >= 100.0)
@@ -703,11 +714,13 @@ Event OnUpdate() ;OStim main logic loop
 			DomTimesOrgasm += 1
 			Orgasm(DomActor)
 			If (EndOnDomOrgasm)
-				If ODatabase.HasIdleSpeed(CurrentOID)
-					SetCurrentAnimationSpeed(0)
+				If (!RequireBothOrgasmsToFinish) || ((DomTimesOrgasm > 0) && (SubTimesOrgasm > 1))
+					If ODatabase.HasIdleSpeed(CurrentOID)
+						SetCurrentAnimationSpeed(0)
+					EndIf
+					Utility.Wait(4)
+					EndAnimation()
 				EndIf
-				Utility.Wait(4)
-				EndAnimation()
 			EndIf
 		EndIf
 
@@ -2593,6 +2606,8 @@ EndFunction
 
 Function SetDefaultSettings()
 	EndOnDomOrgasm = True
+	EndOnSubOrgasm = False 
+	RequireBothOrgasmsToFinish = False
 	EnableSubBar = True
 	EnableDomBar = True
 	EnableThirdBar = True
