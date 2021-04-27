@@ -2,6 +2,8 @@ ScriptName OsexIntegrationMCM Extends SKI_ConfigBase
 
 ; sex settings
 Int SetEndOnOrgasm
+Int SetEndOnSubOrgasm
+Int SetEndOnBothOrgasm
 Int SetActorSpeedControl
 Int SetsexExcitementMult
 Int SetClipinglessFirstPerson
@@ -181,7 +183,9 @@ Event OnPageReset(String Page)
 		;=============================================================================================
 
 		AddColoredHeader("Sex scenes")
-		SetEndOnOrgasm = AddToggleOption("End sex after main actor orgasm", Main.EndOnDomOrgasm)
+		SetEndOnOrgasm = AddToggleOption("End sex after Dom actor orgasm", Main.EndOnDomOrgasm)
+		SetEndOnSubOrgasm = AddToggleOption("End sex after Sub actor orgasm", Main.EndOnSubOrgasm)
+		SetEndOnBothOrgasm = AddToggleOption("End sex after both actors orgasm", Main.RequireBothOrgasmsToFinish)
 		SetActorSpeedControl = AddToggleOption("Actors control speed", Main.EnableActorSpeedControl)
 		SetsexExcitementMult = AddSliderOption("Excitement multiplier", Main.SexExcitementMult, "{2} x")
 		SetClipinglessFirstPerson = AddToggleOption("Clipping-less first person", Main.EnableImprovedCamSupport)
@@ -363,6 +367,12 @@ Event OnOptionSelect(Int Option)
 	If (Option == SetEndOnOrgasm)
 		Main.EndOnDomOrgasm = !Main.EndOnDomOrgasm
 		SetToggleOptionValue(SetEndOnOrgasm, Main.EndOnDomOrgasm)
+	ElseIf (Option == SetEndOnSubOrgasm)
+		Main.EndOnSubOrgasm = !Main.EndOnSubOrgasm
+		SetToggleOptionValue(SetEndOnSubOrgasm, Main.EndOnSubOrgasm)
+	ElseIf (Option == SetEndOnBothOrgasm)
+		Main.RequireBothOrgasmsToFinish = !Main.RequireBothOrgasmsToFinish
+		SetToggleOptionValue(SetEndOnBothOrgasm, Main.RequireBothOrgasmsToFinish)
 	ElseIf (Option == SetResetState)
 		Main.ResetState()
 	ElseIf (Option == SetUpdate)
@@ -511,6 +521,10 @@ Event OnOptionHighlight(Int Option)
 	EndIf
 	If (Option == SetEndOnOrgasm)
 		SetInfoText("End the Osex scene automatically when the dominant actor (usually the male) orgasms")
+	ElseIf (Option == SetEndOnSubOrgasm)
+		SetInfoText("End the Osex scene automatically when the submissive actor (usually the female) orgasms")
+	ElseIf (Option == SetEndOnBothOrgasm)
+		SetInfoText("End the Osex scene automatically when both of the actors have orgasmed")
 	ElseIf (Option == SetResetState)
 		SetInfoText("Click this if you keep getting a Scene Already Running type error")
 	ElseIf (Option == SetUndressingAbout)
@@ -888,6 +902,8 @@ Function ExportSettings()
 	
 	; Sex settings export.
 	JMap.SetInt(OstimSettingsFile, "SetEndOnOrgasm", Main.EndOnDomOrgasm as Int)
+	JMap.SetInt(OstimSettingsFile, "SetEndOnSubOrgasm", Main.EndOnSubOrgasm as Int)
+	JMap.SetInt(OstimSettingsFile, "SetEndOnBothOrgasm", Main.RequireBothOrgasmsToFinish as Int)
 	JMap.SetInt(OstimSettingsFile, "SetActorSpeedControl", Main.EnableActorSpeedControl as Int)
 	JMap.SetFlt(OstimSettingsFile, "SetsexExcitementMult", Main.SexExcitementMult as Float)
 	JMap.SetInt(OstimSettingsFile, "SetClipinglessFirstPerson", Main.EnableImprovedCamSupport as Int)
@@ -989,6 +1005,8 @@ Function ImportSettings()
 	EndIf
 	; Sex settings import.
 	Main.EndOnDomOrgasm = Jmap.GetInt(OstimSettingsFile, "SetEndOnOrgasm")
+	Main.EndOnSubOrgasm = JMap.GetInt(OstimSettingsFile, "SetEndOnSubOrgasm")
+	Main.RequireBothOrgasmsToFinish = JMap.GetInt(OstimSettingsFile, "SetEndOnBothOrgasm")
 	Main.EnableActorSpeedControl = JMap.GetInt(OstimSettingsFile, "SetActorSpeedControl")
 	Main.SexExcitementMult = JMap.GetFlt(OstimSettingsFile, "SetsexExcitementMult")
 	Main.EnableImprovedCamSupport = JMap.GetInt(OstimSettingsFile, "SetClipinglessFirstPerson")
