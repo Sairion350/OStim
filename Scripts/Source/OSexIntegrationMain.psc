@@ -1036,6 +1036,27 @@ Actor Function GetThirdActor()
 	Return ThirdActor
 EndFunction
 
+Actor[] Function GetActors()
+	Actor[] ret
+	If ThirdActor
+		ret = new Actor[3]
+	ElseIf SubActor
+		ret = new Actor[2]
+	Else 
+		ret = new Actor[1]
+	EndIf
+
+	ret[0] = DomActor
+	If SubActor
+		ret[1] = SubActor
+		If ThirdActor
+			ret[2] = ThirdActor
+		EndIf 
+	EndIf
+
+	return ret
+EndFunction
+
 Actor Function GetMostRecentOrgasmedActor()
 	Return MostRecentOrgasmedActor
 EndFunction
