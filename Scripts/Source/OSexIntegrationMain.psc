@@ -693,7 +693,7 @@ Event OnUpdate() ;OStim main logic loop
 				DomExcitement += 5
 			EndIf
 			If (EndOnSubOrgasm)
-				If (!RequireBothOrgasmsToFinish) || ((DomTimesOrgasm > 0) && (SubTimesOrgasm > 1))
+				If (!RequireBothOrgasmsToFinish) || ((DomTimesOrgasm > 0) && (SubTimesOrgasm > 0))
 					If ODatabase.HasIdleSpeed(CurrentOID)
 						SetCurrentAnimationSpeed(0)
 					EndIf
@@ -714,7 +714,7 @@ Event OnUpdate() ;OStim main logic loop
 			DomTimesOrgasm += 1
 			Orgasm(DomActor)
 			If (EndOnDomOrgasm)
-				If (!RequireBothOrgasmsToFinish) || ((DomTimesOrgasm > 0) && (SubTimesOrgasm > 1))
+				If (!RequireBothOrgasmsToFinish) || ((DomTimesOrgasm > 0) && (SubTimesOrgasm > 0))
 					If ODatabase.HasIdleSpeed(CurrentOID)
 						SetCurrentAnimationSpeed(0)
 					EndIf
