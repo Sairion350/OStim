@@ -2202,7 +2202,7 @@ EndEvent
 
 int[] property SoundFormNumberWhitelist auto 
 ; Sounds that match a Formnumber found in the above whitelist will always be played if osa is muted
-; this is useful if you only want to mute voices, for example
+; this is useful if you only want to mute voices, for example 
 
 Function OnSound(Actor Act, Int SoundID, Int FormNumber)
 	Int FormID = FormNumber
@@ -2304,6 +2304,18 @@ EndFunction
 
 FormList[] Function GetSoundFormLists()
 	Return SoundFormLists
+EndFunction
+
+bool Function IsChild(actor act)
+	; Normally, we can just use act.ischild() to see if an actor is a child.
+	; However, some mods unset this flag.
+	; Note: OSA will automatically fail start scenes with child actors, so you don't have to use this to filter actors beforehand
+	if act.IsChild()
+		return true 
+	endif
+	Race ActorRace  = act.GetLeveledActorBase().GetRace()
+	string RaceName = act.GetName()+MiscUtil.GetRaceEditorID(ActorRace)
+	return StringContains(RaceName, "Child")
 EndFunction
 
 

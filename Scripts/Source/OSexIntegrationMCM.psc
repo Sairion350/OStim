@@ -111,11 +111,19 @@ int SetUndressingAbout
 int SetORDifficulty
 int SetORSexuality
 int SetORKey
+int SetORColorblind
+int SetORStationary
+int SetORLeft
+int SetORRight
 
 string ORomance = "ORomance.esp"
 int GVORDifficulty = 0x0063A4
 int GVORSexuality = 0x0063A5
 int GVORKey = 0x006E6A
+int GVORLeft = 0x73D2
+int GVORRight = 0x73D3
+int GVORColorblind = 0x73D0
+int GVORStationaryMode = 0x73D1
 
 Event OnInit()
 	Init()
@@ -272,9 +280,13 @@ Event OnPageReset(String Page)
 
 		if main.IsModLoaded(ORomance)
 			AddColoredHeader("ORomance")
-			SetORSexuality = AddToggleOption("Enable NPC Sexualities", GetExternalBool(ORomance, GVORSexuality))
+			SetORSexuality = AddToggleOption("Enable NPC sexualities", GetExternalBool(ORomance, GVORSexuality))
 			SetORDifficulty = AddSliderOption("Difficulty modifier", GetExternalInt(ORomance, GVORDifficulty), "{0}")
 			SetORKey = AddKeyMapOption("Start dialogue", GetExternalInt(oromance, gvorkey))
+			SetORColorblind = AddToggleOption("Enable colorless success indicator", GetExternalBool(ORomance, GVORColorblind))
+			;SetORStationary = AddToggleOption("Enable gamepad control ", GetExternalBool(ORomance, GVORStationaryMode))
+			SetORLeft = AddKeyMapOption("Left Key", GetExternalInt(oromance, GVORLeft))
+			SetORRight = AddKeyMapOption("Right Key", GetExternalInt(oromance, GVORRight))
 		endif 
 
 	ElseIf (Page == "Undressing")
@@ -331,8 +343,13 @@ Event OnOptionSelect(Int Option)
 		if option == SetORSexuality
 			SetExternalBool(oromance, GVORSexuality, !GetExternalBool(oromance, GVORSexuality))
 			SetToggleOptionValue(SetORSexuality, GetExternalBool(oromance, GVORSexuality))
-
-		endif 
+		elseif option == SetORColorblind
+			SetExternalBool(oromance, GVORColorblind, !GetExternalBool(oromance, GVORColorblind))
+			SetToggleOptionValue(SetORColorblind, GetExternalBool(oromance, GVORColorblind))
+		elseif option == SetORStationary
+			SetExternalBool(oromance, GVORStationaryMode, !GetExternalBool(oromance, GVORStationaryMode))
+			SetToggleOptionValue(SetORStationary, GetExternalBool(oromance, GVORStationaryMode))
+		endif
 
 		return
 	EndIf
@@ -474,6 +491,12 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("Increasing this value makes actions easier. Lowering makes them harder. Lowering is not advised usually")
 		elseif (option == SetORSexuality)
 			SetInfoText("Leaving this off makes all NPCs bisexual. \nTurning it on allows them to be gay/bisexual/hetero")
+		elseif (option == SetORColorblind)
+			SetInfoText("Makes the success indicator use text instead of color")
+		elseif (option == SetORLeft)
+			SetInfoText("Left selection key\nSave and reload to take effect")
+		elseif (option == SetORRight)
+			SetInfoText("Right selection key\nSave and reload to take effect")
 		endif 
 
 		return
@@ -734,6 +757,12 @@ Event OnOptionKeyMapChange(Int Option, Int KeyCode, String ConflictControl, Stri
 		SetKeyMapOptionValue(Option, KeyCode)
 	Elseif (Option == SetORKey)
 		SetExternalInt(oromance, gvorkey, KeyCode)
+		SetKeyMapOptionValue(Option, KeyCode)
+	Elseif (Option == SetORLeft)
+		SetExternalInt(oromance, GVORLeft, KeyCode)
+		SetKeyMapOptionValue(Option, KeyCode)
+	Elseif (Option == SetORRight)
+		SetExternalInt(oromance, GVORRight, KeyCode)
 		SetKeyMapOptionValue(Option, KeyCode)
 	EndIf
 EndEvent
