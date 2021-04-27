@@ -368,10 +368,10 @@ Event OnOptionSelect(Int Option)
 		Main.EndOnDomOrgasm = !Main.EndOnDomOrgasm
 		SetToggleOptionValue(SetEndOnOrgasm, Main.EndOnDomOrgasm)
 	ElseIf (Option == SetEndOnSubOrgasm)
-		Main.SetEndOnSubOrgasm = !Main.SetEndOnSubOrgasm
-		SetToggleOptionValue(SetEndOnSubOrgasm, Main.SetEndOnSubOrgasm)
+		Main.EndOnSubOrgasm = !Main.EndOnSubOrgasm
+		SetToggleOptionValue(SetEndOnSubOrgasm, Main.EndOnSubOrgasm)
 	ElseIf (Option == SetEndOnBothOrgasm)
-		Main.SetEndOnBothOrgasm = !Main.SetEndOnBothOrgasm
+		Main.RequireBothOrgasmsToFinish = !Main.RequireBothOrgasmsToFinish
 		SetToggleOptionValue(SetEndOnBothOrgasm, Main.RequireBothOrgasmsToFinish)
 	ElseIf (Option == SetResetState)
 		Main.ResetState()
