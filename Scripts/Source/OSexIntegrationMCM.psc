@@ -115,6 +115,7 @@ int SetORColorblind
 int SetORStationary
 int SetORLeft
 int SetORRight
+int SetORNakadashi
 
 string ORomance = "ORomance.esp"
 int GVORDifficulty = 0x0063A4
@@ -124,6 +125,7 @@ int GVORLeft = 0x73D2
 int GVORRight = 0x73D3
 int GVORColorblind = 0x73D0
 int GVORStationaryMode = 0x73D1
+int GVORNakadashi = 0x73D4
 
 Event OnInit()
 	Init()
@@ -287,6 +289,7 @@ Event OnPageReset(String Page)
 			;SetORStationary = AddToggleOption("Enable gamepad control ", GetExternalBool(ORomance, GVORStationaryMode))
 			SetORLeft = AddKeyMapOption("Left Key", GetExternalInt(oromance, GVORLeft))
 			SetORRight = AddKeyMapOption("Right Key", GetExternalInt(oromance, GVORRight))
+			SetORNakadashi = AddToggleOption("NPCs are not cautious about vaginal ejaculation", GetExternalBool(ORomance, GVORNakadashi))
 		endif 
 
 	ElseIf (Page == "Undressing")
@@ -346,6 +349,9 @@ Event OnOptionSelect(Int Option)
 		elseif option == SetORColorblind
 			SetExternalBool(oromance, GVORColorblind, !GetExternalBool(oromance, GVORColorblind))
 			SetToggleOptionValue(SetORColorblind, GetExternalBool(oromance, GVORColorblind))
+		elseif option == SetORNakadashi
+			SetExternalBool(oromance, GVORNakadashi, !GetExternalBool(oromance, GVORNakadashi))
+			SetToggleOptionValue(GVORNakadashi, GetExternalBool(oromance, GVORNakadashi))
 		elseif option == SetORStationary
 			SetExternalBool(oromance, GVORStationaryMode, !GetExternalBool(oromance, GVORStationaryMode))
 			SetToggleOptionValue(SetORStationary, GetExternalBool(oromance, GVORStationaryMode))
@@ -497,6 +503,8 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("Left selection key\nSave and reload to take effect")
 		elseif (option == SetORRight)
 			SetInfoText("Right selection key\nSave and reload to take effect")
+		elseif (option == SetORNakadashi)
+			SetInfoText("Female NPCs are not cautious about you ejaculating inside them before a relationship and sometimes marriage\nMostly for users with no pregnancy mod")
 		endif 
 
 		return
