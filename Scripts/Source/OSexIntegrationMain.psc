@@ -552,15 +552,15 @@ Event OnUpdate() ;OStim main logic loop
 
 	Bool WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1)
 	Int WaitCycles = 0
-	While (WaitForActorsTouch)
+	While (WaitForActorsTouch) && (SceneRunning)
 		Utility.Wait(0.1)
 		WaitCycles += 1
-		WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1)
+		WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 10)
 
-		If (WaitCycles > 20)
+		If (WaitCycles > 5)
 			AlternateRealign()
 		EndIf
-		If (WaitCycles > 50)
+		If (WaitCycles > 10)
 			WaitForActorsTouch = False
 		EndIf
 	EndWhile
@@ -653,6 +653,7 @@ Event OnUpdate() ;OStim main logic loop
     			While ((SubActor.GetDistance(DomActor) > 1) && IsActorActive(DomActor))&& (i < 6)
     				Utility.Wait(0.5)
     				Console("Still misalligned... " + SubActor.GetDistance(DomActor))
+    				Console("Disable misalignment protection if this is a frequent issue")
 
     				If AppearsFemale(SubActor)
     					DomActor.MoveTo(SubActor)
@@ -693,7 +694,7 @@ Event OnUpdate() ;OStim main logic loop
 				DomExcitement += 5
 			EndIf
 			If (EndOnSubOrgasm)
-				If (!RequireBothOrgasmsToFinish) || ((DomTimesOrgasm > 0) && (SubTimesOrgasm > 0))
+				If (!RequireBothOrgasmsToFinish) || (((DomTimesOrgasm > 0) && (SubTimesOrgasm > 0)))
 					If ODatabase.HasIdleSpeed(CurrentOID)
 						SetCurrentAnimationSpeed(0)
 					EndIf
@@ -714,7 +715,7 @@ Event OnUpdate() ;OStim main logic loop
 			DomTimesOrgasm += 1
 			Orgasm(DomActor)
 			If (EndOnDomOrgasm)
-				If (!RequireBothOrgasmsToFinish) || ((DomTimesOrgasm > 0) && (SubTimesOrgasm > 0))
+				If (!RequireBothOrgasmsToFinish) || (((DomTimesOrgasm > 0) && (SubTimesOrgasm > 0)))
 					If ODatabase.HasIdleSpeed(CurrentOID)
 						SetCurrentAnimationSpeed(0)
 					EndIf
