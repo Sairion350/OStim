@@ -321,7 +321,9 @@ Float[] ProstateStimValues
 String[] Speeds
 
 
-
+ReferenceAlias Alias1
+ReferenceAlias Alias2
+ReferenceAlias Alias3
 ; -------------------------------------------------------------------------------------------------
 ; -------------------------------------------------------------------------------------------------
 
@@ -359,7 +361,10 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	ThirdActor = zThirdActor
 	PauseAI = False
 
+	AddAIPackage(domactor)
+	AddAIPackage(subactor)
 	If zThirdActor
+		AddAIPackage(thirdactor)
 		If AppearsFemale(ThirdActor) && !AppearsFemale(SubActor)
 			SubActor = zThirdActor
 			ThirdActor = sub
@@ -756,6 +761,8 @@ Event OnUpdate() ;OStim main logic loop
 	SubActor.TranslateTo(SubX, SubY, SubZ, SubActor.GetAngleX(), SubActor.GetAngleY(), SubActor.GetAngleZ(), 10000) ; return back to position
 	DomActor.TranslateTo(DomX, DomY, DomZ, DomActor.GetAngleX(), DomActor.GetAngleY(), DomActor.GetAngleZ(), 10000)
 	Utility.Wait(0.1)
+
+	ClearAllPackages()
 
 	If IsInFreeCam()
 		While IsInFreeCam()
@@ -2360,6 +2367,27 @@ Bool Function ChanceRoll(Int Chance) ; input 60: 60% of returning true
 	Return False
 EndFunction
 
+Function AddAIPackage(actor act)
+	if Alias1.GetRef() == none 
+		Alias1.ForceRefTo(act)
+	elseif Alias2.GetRef() == none 
+		Alias2.ForceRefTo(act)
+	elseif Alias3.GetRef() == none 
+		Alias3.GetRef()
+	EndIf
+
+	act.evaluatepackage()
+EndFunction
+
+Function ClearAllPackages()
+	Alias1.Clear()
+	Alias2.Clear()
+	Alias3.Clear() 
+
+	DomActor.EvaluatePackage()
+	SubActor.EvaluatePackage()
+	ThirdActor.EvaluatePackage()
+EndFunction
 Int Function SpeedStringToInt(String In) ; casting does not work so...
 	If (In == "s0")
 		Return 0
@@ -2973,6 +3001,10 @@ Function Startup()
 	SetSystemVars()
 	SetDefaultSettings()
 	BuildSoundFormlists()
+
+	Alias1 = (self as quest).GetAliasById(1) as ReferenceAlias
+	Alias2 = (self as quest).GetAliasById(2) as ReferenceAlias
+	Alias3 = (self as quest).GetAliasById(3) as ReferenceAlias
 
 	If (BlockVRInstalls && GetGameIsVR())
 		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities.")
