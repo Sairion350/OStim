@@ -392,6 +392,8 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 		UsingBed = False
 	EndIf
 
+	
+
 	Console("Requesting scene start")
 	RegisterForSingleUpdate(0.01) ; start main loop
 	SceneRunning = True
@@ -405,6 +407,14 @@ Event OnUpdate() ;OStim main logic loop
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		FadeToBlack()
 	EndIf
+
+	DomActor.EnableAI(false)
+	if SubActor
+		SubActor.EnableAI(false)
+		if ThirdActor 
+			ThirdActor.EnableAI(false)
+		endif 
+	endif 
 
 	SendModEvent("ostim_prestart") ; fires as soon as the screen goes black. be careful, some settings you normally expect may not be set yet. Use ostim_start to run code when the OSA scene begins.
 
@@ -443,6 +453,8 @@ Event OnUpdate() ;OStim main logic loop
 	MostRecentOrgasmedActor = None
 	SpankMax = Utility.RandomInt(1, 6)
 	IsFreeCamming = False
+
+	
 
 	Actor[] Actro
 	If (ThirdActor)
@@ -633,6 +645,14 @@ Event OnUpdate() ;OStim main logic loop
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		FadeFromBlack()
 	EndIf
+
+	DomActor.EnableAI(true)
+	if SubActor
+		SubActor.EnableAI(true)
+		if ThirdActor 
+			ThirdActor.EnableAI(true)
+		endif 
+	endif 
 
 	While (IsActorActive(DomActor)) ; Main OStim logic loop
 		If (LoopTimeTotal > 1)
