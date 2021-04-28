@@ -410,13 +410,7 @@ Event OnUpdate() ;OStim main logic loop
 		FadeToBlack()
 	EndIf
 
-	DomActor.EnableAI(false)
-	if SubActor
-		SubActor.EnableAI(false)
-		if ThirdActor 
-			ThirdActor.EnableAI(false)
-		endif 
-	endif 
+	ToggleActorAI(false)
 
 	SendModEvent("ostim_prestart") ; fires as soon as the screen goes black. be careful, some settings you normally expect may not be set yet. Use ostim_start to run code when the OSA scene begins.
 
@@ -521,6 +515,13 @@ Event OnUpdate() ;OStim main logic loop
 		If (StartingAnimation == "")
 			StartingAnimation = "0MF|KNy6!KNy6|Ho|KnLap"
 		EndIf
+	Else
+		If (SubActor != PlayerRef)
+			SubActor.MoveTo(DomActor)
+		ElseIf (SubActor == PlayerRef)
+			DomActor.MoveTo(SubActor)
+		EndIf
+			
 	EndIf
 
 	If (StartingAnimation == "")
@@ -564,14 +565,14 @@ Event OnUpdate() ;OStim main logic loop
 
 	StartTime = Utility.GetCurrentRealTime()
 
-	Bool WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1)
+	Bool WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1) && (MisallignmentProtection)
 	Int WaitCycles = 0
 	While (WaitForActorsTouch) && (SceneRunning)
 		Utility.Wait(0.1)
 		WaitCycles += 1
 		WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 10)
 
-		If (WaitCycles > 5)
+		If (WaitCycles > 8)
 			AlternateRealign()
 		EndIf
 		If (WaitCycles > 10)
@@ -650,13 +651,7 @@ Event OnUpdate() ;OStim main logic loop
 		FadeFromBlack()
 	EndIf
 
-	DomActor.EnableAI(true)
-	if SubActor
-		SubActor.EnableAI(true)
-		if ThirdActor 
-			ThirdActor.EnableAI(true)
-		endif 
-	endif 
+	ToggleActorAI(True)
 
 	While (IsActorActive(DomActor)) ; Main OStim logic loop
 		If (LoopTimeTotal > 1)
@@ -668,17 +663,17 @@ Event OnUpdate() ;OStim main logic loop
 		LoopStartTime = Utility.GetCurrentRealTime()
 
     	If (MisallignmentProtection && IsActorActive(DomActor)) && (!ReallignedDuringThisAnim)
-    		If (SubActor.GetDistance(DomActor) > 1)
+    		If (SubActor.GetDistance(DomActor) > 10)
     			Console("Misallignment detected")
     			ReallignedDuringThisAnim = true
     			AlternateRealign()
     			Utility.Wait(0.1)
 
     			Int i = 0
-    			While ((SubActor.GetDistance(DomActor) > 1) && IsActorActive(DomActor))&& (i < 6)
-    				Utility.Wait(0.5)
+    			While ((SubActor.GetDistance(DomActor) > 5) && IsActorActive(DomActor))&& (i < 3)
+    				Utility.Wait(0.25)
     				Console("Still misalligned... " + SubActor.GetDistance(DomActor))
-    				Console("Disable misalignment protection if this is a frequent issue")
+    				Console("Disable Misallignment Protection if this is a frequent issue")
 
     				If AppearsFemale(SubActor)
     					DomActor.MoveTo(SubActor)
@@ -984,6 +979,16 @@ Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy
 
 	UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "WARP" + Animation)
 ;	UI.Invoke("HUD Menu", nav + ".navStep")
+EndFunction
+
+Function ToggleActorAI(bool enable)
+	DomActor.EnableAI(enable)
+	if SubActor
+		SubActor.EnableAI(enable)
+		if ThirdActor 
+			ThirdActor.EnableAI(enable)
+		endif 
+	endif 
 EndFunction
 
 Function EndAnimation(Bool SmoothEnding = True)
@@ -1608,7 +1613,7 @@ Function OnAnimationChange()
 	EndIf
 
 	ReallignedDuringThisAnim = False 
-	
+
 	Int CorrectActorCount = ODatabase.GetNumActors(CurrentOID)
 
 	If (!ThirdActor && (CorrectActorCount == 3)) ; no third actor, but there should be
@@ -2697,7 +2702,7 @@ Function SetDefaultSettings()
 
 	Usebed = True
 	BedSearchDistance = 15
-	MisallignmentProtection = True
+	MisallignmentProtection = false
 
 	DisableStimulationCalculation = false
 
