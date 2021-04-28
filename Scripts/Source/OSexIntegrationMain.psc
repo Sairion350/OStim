@@ -320,6 +320,8 @@ Float[] ProstateStimValues
 
 String[] Speeds
 
+bool ReallignedDuringThisAnim
+
 
 
 ; -------------------------------------------------------------------------------------------------
@@ -577,6 +579,8 @@ Event OnUpdate() ;OStim main logic loop
 		EndIf
 	EndWhile
 
+	ReallignedDuringThisAnim = false
+
 	If (UseFreeCam) && isactoractive(playerref)
 		ToggleFreeCam(True)
 	EndIf
@@ -663,9 +667,10 @@ Event OnUpdate() ;OStim main logic loop
 		Utility.Wait(1.0 - LoopTimeTotal)
 		LoopStartTime = Utility.GetCurrentRealTime()
 
-    	If (MisallignmentProtection && IsActorActive(DomActor))
+    	If (MisallignmentProtection && IsActorActive(DomActor)) && (!ReallignedDuringThisAnim)
     		If (SubActor.GetDistance(DomActor) > 1)
     			Console("Misallignment detected")
+    			ReallignedDuringThisAnim = true
     			AlternateRealign()
     			Utility.Wait(0.1)
 
@@ -1602,6 +1607,8 @@ Function OnAnimationChange()
 		EndIf
 	EndIf
 
+	ReallignedDuringThisAnim = False 
+	
 	Int CorrectActorCount = ODatabase.GetNumActors(CurrentOID)
 
 	If (!ThirdActor && (CorrectActorCount == 3)) ; no third actor, but there should be
