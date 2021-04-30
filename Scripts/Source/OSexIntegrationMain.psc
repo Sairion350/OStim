@@ -646,12 +646,14 @@ Event OnUpdate() ;OStim main logic loop
 
 
 	SendModEvent("ostim_start")
+	ToggleActorAI(True)
 
+	Utility.Wait(0.5)
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		FadeFromBlack()
 	EndIf
 
-	ToggleActorAI(True)
+	
 
 	While (IsActorActive(DomActor)) ; Main OStim logic loop
 		If (LoopTimeTotal > 1)
