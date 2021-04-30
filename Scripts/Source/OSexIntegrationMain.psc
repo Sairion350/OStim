@@ -589,9 +589,6 @@ Event OnUpdate() ;OStim main logic loop
 
 	ReallignedDuringThisAnim = false
 
-	If (UseFreeCam) && isactoractive(playerref)
-		ToggleFreeCam(True)
-	EndIf
 
 	if !IsActorActive(PlayerRef)
 		HideAllSkyUIWidgets()
@@ -656,6 +653,11 @@ Event OnUpdate() ;OStim main logic loop
 	ToggleActorAI(True)
 
 	Utility.Wait(0.5)
+
+	If (UseFreeCam) && isactoractive(playerref)
+		ToggleFreeCam(True)
+	EndIf
+	
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		FadeFromBlack()
 	EndIf
