@@ -262,6 +262,9 @@ Actor ReroutedSubActor
 ;--------- database
 ODatabaseScript ODatabase
 ;---------
+
+bool FirstAnimate
+
 ;--------- ID shortcuts
 ;Animation classifications
 String ClassSex
@@ -418,7 +421,7 @@ Event OnUpdate() ;OStim main logic loop
 		Game.DisablePlayerControls(abCamswitch = True, abMenu = False, abFighting = False, abActivate = False, abMovement = False, aiDisablePOVType = 0)
 	EndIf
 
-	ODatabase.Load()
+	;ODatabase.Load()
 
 	Int OldTimescale = 0
 	If (CustomTimescale >= 1)
@@ -449,6 +452,7 @@ Event OnUpdate() ;OStim main logic loop
 	MostRecentOrgasmedActor = None
 	SpankMax = Utility.RandomInt(1, 6)
 	IsFreeCamming = False
+	FirstAnimate = true
 
 	
 
@@ -541,7 +545,9 @@ Event OnUpdate() ;OStim main logic loop
     	CurrentAnimation = "0Sx0M2F_Ho-DoubleTrouble"
     endif 
     LastHubOID = -1
-    OnAnimationChange()
+    ;OnAnimationChange()
+    
+
 
     If (LowLightLevelLightsOnly && DomActor.GetLightLevel() < 20) || (!LowLightLevelLightsOnly)
     	If (DomLightPos > 0)
@@ -553,15 +559,16 @@ Event OnUpdate() ;OStim main logic loop
     EndIf
 
 	Int Password = DomActor.GetFactionRank(OsaFactionStage)
-	RegisterForModEvent("0SAO" + Password + "_AnimateStage", "OnAnimate")
+	string EventName = "0SAO" + Password + "_AnimateStage"
+	RegisterForModEvent(eventName, "OnAnimate")
 
-;	If (GetActorArousal(DomActor) > 90)
-;		DomExcitement = 26.0
-;	EndIf
+	int AEvent = ModEvent.Create(EventName)
+	Modevent.PushString(AEvent, EventName)
+	ModEvent.PushString(AEvent, CurrentAnimation)
+	ModEvent.PushFloat(AEvent, 0.0)
+	ModEvent.PushForm(AEvent, self)
+	ModEvent.Send(AEvent)
 
-;	If (GetActorArousal(SubActor) > 90)
-;		SubExcitement = 26.0
-;	EndIf
 
 	StartTime = Utility.GetCurrentRealTime()
 
@@ -1542,7 +1549,9 @@ EndFunction
 
 
 Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
-	If (CurrentAnimation != zAnimation)
+	;Console("Event received")
+	If (CurrentAnimation != zAnimation) || FirstAnimate
+		FirstAnimate = false
 		CurrentAnimation = zAnimation
 		OnAnimationChange()
 		SendModEvent("ostim_animationchanged")
