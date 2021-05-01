@@ -233,7 +233,7 @@ Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntPa
 	Int i = 0
 	Int L = GetLengthOArray(Base)
 
-	Int Animation
+	Int Animation ;optimization 
 	Bool Parameter
 	Int iOutput
 	String sOutput
