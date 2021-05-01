@@ -415,6 +415,12 @@ Event OnUpdate() ;OStim main logic loop
 		FadeToBlack()
 	EndIf
 
+	If SubActor
+		If (SubActor.GetParentCell() != DomActor.GetParentCell())
+			SubActor.MoveTo(DomActor)
+		EndIf
+	EndIf
+
 	ToggleActorAI(false)
 
 	SendModEvent("ostim_prestart") ; fires as soon as the screen goes black. be careful, some settings you normally expect may not be set yet. Use ostim_start to run code when the OSA scene begins.
