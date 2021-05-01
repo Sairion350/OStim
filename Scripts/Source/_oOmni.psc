@@ -94,9 +94,9 @@ Function Maintenance()
     MiscUtil.WriteToFile(File, "OSA BootUp Maitenance\n---------------------" + "   Running iVersion:" + iVersion + "\n   Script iVersion:" + _oV.GetIVersion() + "\n", False, True)
 
     ;;TESTING
-    Armor MyArmor = Game.GetFormEx(0x1802376B) as Armor
-    ConsoleUtil.SetSelectedReference(Game.GetPlayer())
-    ConsoleUtil.ExecuteCommand("equipitem 1802376B 1")
+    ;;Armor MyArmor = Game.GetFormEx(0x1802376B) as Armor
+    ;;ConsoleUtil.SetSelectedReference(Game.GetPlayer())
+    ;;ConsoleUtil.ExecuteCommand("equipitem 1802376B 1")
     ;;EndTESTING
 
     _oPatch.OSAPatch(Self as _oOmni)
