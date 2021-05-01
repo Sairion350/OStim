@@ -313,5 +313,5 @@ Function OnGameLoad()
 
 	;RegisterForModEvent("ostim_osasound", "OnOSASound")
 
-	OSexintegrationMain.Console("Fixing Bars thread")
+	;OSexintegrationMain.Console("Fixing Bars thread")
 EndFunction

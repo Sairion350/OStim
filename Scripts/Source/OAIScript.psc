@@ -443,7 +443,7 @@ Bool Function ChanceRoll(Int Chance)
 EndFunction
 
 Function OnGameLoad()
-	Console("Fixing AI thread")
+	;Console("Fixing AI thread")
 	;RegisterForModEvent("ostim_start", "Ostimstart")
 	RegisterForModEvent("ostim_start_ai", "AI_Thread")
 EndFunction
