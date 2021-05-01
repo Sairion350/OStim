@@ -47,6 +47,8 @@ Bool Property EnableImprovedCamSupport Auto
 
 Bool Property EnableActorSpeedControl Auto
 
+Bool Property ResetPosAfterSceneEnd Auto
+
 Bool Property AllowUnlimitedSpanking Auto
 
 Bool Property AutoUndressIfNeeded Auto
@@ -502,13 +504,15 @@ Event OnUpdate() ;OStim main logic loop
 	Float SubY
 	Float SubZ
 
-	DomX = DomActor.X
-	DomY = DomActor.Y
-	DomZ = DomActor.Z
+	If ResetPosAfterSceneEnd
+		DomX = DomActor.X
+		DomY = DomActor.Y
+		DomZ = DomActor.Z
 
-	SubX = SubActor.X
-	SubY = SubActor.Y
-	SubZ = SubActor.Z
+		SubX = SubActor.X
+		SubY = SubActor.Y
+		SubZ = SubActor.Z
+	EndIf
 
 	If ThirdActor && (StartingAnimation == "")
 		startinganimation = "0M2F|Sy6!Sy9!Sy9|Ho|DoubleTrouble+22Enter"
@@ -786,10 +790,10 @@ Event OnUpdate() ;OStim main logic loop
 		ToggleFreeCam(False)
 	EndIf
 
-
-	SubActor.SetPosition(SubX, SubY, SubZ) ;return
-	DomActor.SetPosition(DomX, DomY, DomZ)
-	Utility.Wait(0.1)
+	If ResetPosAfterSceneEnd
+		SubActor.SetPosition(SubX, SubY, SubZ) ;return
+		DomActor.SetPosition(DomX, DomY, DomZ)
+	EndIf
 
 	If IsInFreeCam()
 		While IsInFreeCam()
@@ -2692,6 +2696,7 @@ Function SetDefaultSettings()
 	EnableActorSpeedControl = True
 	AllowUnlimitedSpanking = False
 	AutoUndressIfNeeded = false
+	ResetPosAfterSceneEnd = true ; MCM needed please!
 
 	EndAfterActorHit = False
 
