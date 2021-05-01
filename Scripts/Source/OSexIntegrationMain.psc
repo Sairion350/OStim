@@ -709,6 +709,7 @@ Event OnUpdate() ;OStim main logic loop
     		AutoIncreaseSpeed()
     	EndIf
 
+    	;Profile()
     	If !DisableStimulationCalculation
 			DomExcitement += GetCurrentStimulation(DomActor) * DomStimMult
 			SubExcitement += GetCurrentStimulation(SubActor) * SubStimMult
@@ -716,6 +717,7 @@ Event OnUpdate() ;OStim main logic loop
 				ThirdExcitement += GetCurrentStimulation(ThirdActor) * ThirdStimMult
 			EndIf
 		EndIf
+		;Profile("Stim calculation")
 
 		If (SubExcitement >= 100.0)
 			MostRecentOrgasmedActor = SubActor
@@ -1583,9 +1585,12 @@ Bool function MouthIsOpen(Actor Act)
 EndFunction
 
 Function OnAnimationChange()
+	Profile()
+
 	Console("Changing animation...")
 
 	CurrentOID = ODatabase.GetObjectOArray(ODatabase.GetAnimationWithAnimID(ODatabase.GetDatabaseOArray(), CurrentAnimation), 0)
+	Profile("DB Lookup")
 	If (ODatabase.IsHubAnimation(CurrentOID))
 		LastHubOID = CurrentOID
 		Console("On new hub animation")
@@ -1708,6 +1713,8 @@ Function OnAnimationChange()
 	Console("Current speed: " + CurrentSpeed)
 	Console("Current animation class: " + CurrAnimClass)
 	Console("Current scene ID: " + GetCurrentAnimationSceneID())
+
+	;Profile("Animation change time")
 EndFunction
 
 Function OnSpank()
@@ -2475,15 +2482,17 @@ Bool Function IntArrayContainsValue(Int[] Arr, Int Val)
 EndFunction
 
 Bool Function StringArrayContainsValue(String[] Arr, String Val)
-	Int i = 0
-	Int L = Arr.Length
-	While (i < L)
-		If (Arr[i] == Val)
-			Return True
-		EndIf
-		i += 1
-	EndWhile
-	Return False
+	;Int i = 0
+	;Int L = Arr.Length
+	;While (i < L)
+	;	If (Arr[i] == Val)
+	;		Return True
+	;	EndIf
+	;	i += 1
+	;EndWhile
+	;Return False
+
+	return ( PapyrusUtil.CountString(Arr, Val) > 0)
 EndFunction
 
 bool Function StringContains(string str, string contains)
@@ -2870,14 +2879,14 @@ Function RemapPullOutKey(Int zKey)
 	LoadOSexControlKeys()
 EndFunction
 
-;Float ProfileTime
-;Function Profile(String Name = "");
-;	If (Name == "")
-;		ProfileTime = Game.GetRealHoursPassed() * 60 * 60
-;	Else
-;		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
-;	EndIf
-;EndFunction
+Float ProfileTime ; for performance profiling
+Function Profile(String Name = "");
+	If (Name == "")
+		ProfileTime = Game.GetRealHoursPassed() * 60 * 60
+	Else
+		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
+	EndIf
+EndFunction
 
 Event OnKeyDown(Int KeyPress)
 	If (DisableOSAControls)

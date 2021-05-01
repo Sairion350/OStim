@@ -162,9 +162,10 @@ Event OstimStart(String eventName, String strArg, Float numArg, Form sender)
     		EndIf
     	EndIf
 
-    	;If ((Game.GetRealHoursPassed() * 60 * 60) - lastSmackTime) > 3 ; 3 seconds with no update data... time to fall back
-    		SetBarFullnessProper()
-        ;EndIf
+    	
+    	SetBarFullnessProper()
+        
+
 		Utility.wait(1)
 	EndWhile
 
