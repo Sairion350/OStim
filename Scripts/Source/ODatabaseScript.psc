@@ -271,20 +271,25 @@ Int Function getAnimationWithAnimID(Int zDatabase, String AnimID) ;returns OArra
 
 	Int i = 0
 	Int L = GetLengthOArray(Base)
-	while (i < L)
+	while (i < L) ;iterate through scene objects
 		Int Animation = GetObjectOArray(Base, i)
 		Int OAAnimIDs = GetAnimationIDOArray(Animation)
 
-		Int i2 = 0
-		Int L2 = GetLengthOArray(OAanimIDs)
-		While (i2 < L2)
-			If (AnimID == GetStringOArray(OAAnimIDs, i2))
-				AppendObjectOArray(Ret, Animation)
-				Return Ret ; short circuit out
-			EndIf
+		;Int i2 = 0
+		;Int L2 = GetLengthOArray(OAanimIDs)
+		;While (i2 < L2)
+		;	If (AnimID == GetStringOArray(OAAnimIDs, i2))
+		;		AppendObjectOArray(Ret, Animation)
+		;		Return Ret ; short circuit out
+		;	EndIf
 
-			i2 += 1
-		EndWhile
+		;	i2 += 1
+		;EndWhile
+
+		If JArray.findStr(OAAnimids, AnimID) != -1
+			AppendObjectOArray(Ret, Animation)
+			Return Ret 
+		EndIf
 
 		i += 1
 	endwhile
