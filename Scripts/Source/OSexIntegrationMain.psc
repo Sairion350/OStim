@@ -417,7 +417,11 @@ Event OnUpdate() ;OStim main logic loop
 
 	If SubActor
 		If (SubActor.GetParentCell() != DomActor.GetParentCell())
-			SubActor.MoveTo(DomActor)
+			If (SubActor == playerref)
+				Domactor.moveto(SubActor)
+			Else
+				SubActor.MoveTo(DomActor)
+			EndIf
 		EndIf
 	EndIf
 
