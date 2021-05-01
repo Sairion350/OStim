@@ -1585,12 +1585,13 @@ Bool function MouthIsOpen(Actor Act)
 EndFunction
 
 Function OnAnimationChange()
-	;Profile()
-
+	
 	Console("Changing animation...")
 
+	;Profile()
 	CurrentOID = ODatabase.GetObjectOArray(ODatabase.GetAnimationWithAnimID(ODatabase.GetDatabaseOArray(), CurrentAnimation), 0)
 	;Profile("DB Lookup")
+
 	If (ODatabase.IsHubAnimation(CurrentOID))
 		LastHubOID = CurrentOID
 		Console("On new hub animation")

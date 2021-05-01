@@ -225,26 +225,33 @@ EndFunction
 ;-----------------------------------------------
 
 Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntParam = -100, String StringParam = "", Int BoolParam = -1, Bool AllowPartialStringResult = False, Bool NegativePartial = False)
+	OStim.Profile()
+
 	Int Base = zDatabase
 	Int Ret = NewOArray()
 
 	Int i = 0
 	Int L = GetLengthOArray(Base)
+
+	Int Animation
+	Bool Parameter
+	Int iOutput
+	String sOutput
 	While (i < L)
-		Int Animation = getObjectOArray(base, i)
+		Animation = getObjectOArray(base, i)
 		If (IntParam > -100)
-			Int Output = GetIntOMap(Animation, zKey)
-			If (Output == IntParam) && (Output != 10001)
+			iOutput = GetIntOMap(Animation, zKey)
+			If (iOutput == IntParam) && (iOutput != 10001)
 				AppendObjectOArray(Ret, Animation)
 			EndIf
 		ElseIf (StringParam != "")
-			String Output = GetStringOMap(Animation, zKey)
+			sOutput = GetStringOMap(Animation, zKey)
 			If (!AllowPartialStringResult)
-				If (Output == StringParam) && (Output != "")
+				If (sOutput == StringParam) && (sOutput != "")
 					AppendObjectOArray(Ret, Animation)
 				EndIf
 			Else
-				If (StringUtil.Find(Output, StringParam) != -1)
+				If (StringUtil.Find(sOutput, StringParam) != -1)
 					If (!NegativePartial)
 						appendObjectOArray(ret, Animation)
 					EndIf
@@ -255,13 +262,15 @@ Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntPa
 				EndIf
 			EndIf
 		ElseIf (BoolParam > -1)
-			Bool Parameter = (BoolParam == 1)
+			Parameter = (BoolParam == 1)
 			If (GetBoolOMap(Animation, zKey) == Parameter)
 				AppendObjectOArray(Ret, Animation)
 			EndIf
 		EndIf
 		i += 1
 	EndWhile
+
+	OStim.Profile("Lookup")
 	Return Ret
 EndFunction
 
@@ -271,9 +280,12 @@ Int Function getAnimationWithAnimID(Int zDatabase, String AnimID) ;returns OArra
 
 	Int i = 0
 	Int L = GetLengthOArray(Base)
+
+	Int Animation ;optimization 
+	Int OAAnimIDs
 	while (i < L) ;iterate through scene objects
-		Int Animation = GetObjectOArray(Base, i)
-		Int OAAnimIDs = GetAnimationIDOArray(Animation)
+		Animation = GetObjectOArray(Base, i)
+		OAAnimIDs = GetAnimationIDOArray(Animation)
 
 		;Int i2 = 0
 		;Int L2 = GetLengthOArray(OAanimIDs)
