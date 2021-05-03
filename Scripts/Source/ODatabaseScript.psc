@@ -796,6 +796,25 @@ Int Function MergeOArrays(Int[] Arrays) ;may only work if arrays are full of oma
 	Return Ret
 EndFunction
 
+; Fisher–Yates shuffle Algorithm
+Int Function ShuffleOArray(Int OArray)
+	int L = GetLengthOArray(OArray)
+
+	int i = L - 1
+
+	int j ; an index
+	While (i > 0)
+
+		j = Utility.RandomInt(0, i)
+
+		JArray.swapItems(OArray, i, j)
+
+		i -= 1
+	EndWhile
+
+	return OArray
+EndFunction
+
 ;----------------------
 ;  OMap Manipulation
 ;----------------------
