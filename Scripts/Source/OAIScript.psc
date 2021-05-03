@@ -263,45 +263,31 @@ String Function GetRandomForeplayAnimation(Bool MaleCentric = False, Bool Female
 		Console("No foreplay Animations with these parameters")
 	EndIf
 
-	Int i = 0
-	Int max = 50
-	While (i < max)
-		Int Animation = ODatabase.GetObjectOArray(Animations, Utility.RandomInt(0, NumAnimations))
-		String AnimationClass = ODatabase.GetAnimationClass(Animation)
-		Console("Trying animation: " + ODatabase.GetFullName(Animation))
 
-		If (OStim.StringArrayContainsValue(ForeplayClasses, AnimationClass))
-			If (MaleCentric)
-				If (OStim.StringArrayContainsValue(MaleCentricClasses, AnimationClass))
-					Return ODatabase.GetSceneID(Animation)
-				EndIf
-			Elseif (FemaleCentric)
-				If (OStim.StringArrayContainsValue(FemaleCentricClasses, AnimationClass))
-					Return ODatabase.GetSceneID(Animation)
-				EndIf
-			Else
-				Return ODatabase.GetSceneID(Animation)
-			EndIf
-		EndIf
+	string[] secondSet
 
-		i += 1
-	EndWhile
+	If (MaleCentric)
+		secondSet = MaleCentricClasses
+	Elseif (FemaleCentric)
+		secondSet = FemaleCentricClasses
+	Else
+		secondSet = none
+	EndIf
+
+	string sceneID = GetAnimationThatMatchesClassArray(Animations, ForeplayClasses, secondSet)
+
+	if sceneID != "none"
+		return sceneID
+	endif
 
 	Console("No sex Animations with these parameters")
 	Animations = GetAllSexualAnimations()
 
-	i = 0
-	While (i < max)
-		Int Animation = ODatabase.GetObjectOArray(Animations, Utility.RandomInt(0, NumAnimations))
-		String AnimationClass = ODatabase.GetAnimationClass(Animation)
-		Console("Trying animation: " + ODatabase.GetFullName(Animation))
+	sceneID = GetAnimationThatMatchesClassArray(Animations, MainSexClasses)
 
-		If (OStim.StringArrayContainsValue(MainSexClasses, AnimationClass))
-			Return ODatabase.GetSceneID(Animation)
-		EndIf
-
-		i += 1
-	EndWhile
+	if sceneID != "none"
+		return sceneID
+	endif
 
 	Return ""
 EndFunction
@@ -333,33 +319,20 @@ String Function GetRandomSexAnimation(Bool MaleCentric = False, Bool FemaleCentr
 		Animations = GetAllSexualAnimations()
 	EndIf
 
-	Int i = 0
-	Int max = 50
-	While (i < max)
-		Int Animation = ODatabase.GetObjectOArray(Animations, Utility.RandomInt(0, NumAnimations))
-		Console("Trying animation: " + ODatabase.GetFullName(Animation))
+	string sceneID = GetAnimationThatMatchesClassArray(Animations, MainSexClasses)
 
-		If (OStim.StringArrayContainsValue(MainSexClasses, ODatabase.GetAnimationClass(Animation)))
-			Return ODatabase.GetSceneID(Animation)
-		EndIf
-
-		i += 1
-	EndWhile
+	if sceneID != "none"
+		return sceneID
+	endif
 
 	Console("No sex Animations with these parameters")
 	Animations = GetAllSexualAnimations()
 
-	i = 0
-	While (i < max)
-		Int Animation = ODatabase.GetObjectOArray(Animations, Utility.RandomInt(0, NumAnimations))
-		Console("Trying animation: " + ODatabase.GetFullName(Animation))
+	sceneID = GetAnimationThatMatchesClassArray(Animations, MainSexClasses)
 
-		If (OStim.StringArrayContainsValue(MainSexClasses, ODatabase.GetAnimationClass(Animation)))
-			Return ODatabase.GetSceneID(Animation)
-		EndIf
-
-		i += 1
-	EndWhile
+	if sceneID != "none"
+		return sceneID
+	endif
 
 	Return ""
 EndFunction
@@ -419,6 +392,30 @@ Int Function RemoveStandingAnimations(Int Animations)
 	EndWhile
 
 	Return Ret
+EndFunction
+
+String Function GetAnimationThatMatchesClassArray(int Animations, string[] classes, string[] secondClassSet = none)
+	Animations = ODatabase.ShuffleOArray(Animations)
+
+	int i = 0 
+	int max = ODatabase.GetLengthOArray(Animations)
+
+	While i < max 
+		Int Animation = ODatabase.GetObjectOArray(Animations, Utility.RandomInt(0, max))
+		String AnimationClass = ODatabase.GetAnimationClass(Animation)
+
+		If (OStim.StringArrayContainsValue(classes, AnimationClass))
+			If secondClassSet != none 
+				If (OStim.StringArrayContainsValue(secondClassSet, AnimationClass))
+					return ODatabase.GetSceneID(Animation)
+				EndIf
+			else 
+				return ODatabase.GetSceneID(Animation)
+		    EndIf
+		EndIf
+	EndWhile
+
+	return "none"
 EndFunction
 
 Function Warp(String aScene)
