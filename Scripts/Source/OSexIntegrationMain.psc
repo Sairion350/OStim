@@ -1103,8 +1103,7 @@ Function RunOsexCommand(String CMD)
 	String[] Plan = new String[2]
 	Plan[1] = CMD
 
-	OSA.SetPlan(CurrScene, Plan)
-	OSA.StimStart(CurrScene)
+	RunLegacyAPI(Plan)
 EndFunction
 
 ;https://web.archive.org/web/20161107220749/http://ceo-os.tumblr.com/osex/book/api
