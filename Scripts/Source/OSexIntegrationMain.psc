@@ -1107,6 +1107,33 @@ Function RunOsexCommand(String CMD)
 	OSA.StimStart(CurrScene)
 EndFunction
 
+;https://web.archive.org/web/20161107220749/http://ceo-os.tumblr.com/osex/book/api
+Function RunLegacyAPI(String[] CMDlist)
+	OSA.SetPlan(CurrScene, CMDlist)
+	OSA.StimStart(CurrScene)
+EndFunction
+
+; Warps to all of the scene IDs in the array.
+; Does not do any waiting . Thus You can add in $Wait commands into the list, or any other
+; Legacy command, and they will be fed into osa directly.
+; i.e. [sceneID, sceneID, "$Wait,4", sceneID]
+Function PlayAnimationSequence(String[] list)
+	String[] CMDs = new String[1]
+	CMDs[1] = "$Wait,0"
+
+	int i = 0
+	int max = list.Length
+	While (i < max)
+		If !StringContains(list[i], "|")
+			PapyrusUtil.PushString(CMDs, "$Wait," (list[i] as int))
+		Else 
+			PapyrusUtil.PushString(CMDs, "$Warp," + list[i])
+		EndIf
+
+		i += 1
+	EndWhile
+EndFunction
+
 function FadeFromBlack(float time = 4.0)
 	Game.FadeOutGame(False, True, 0.0, time) ; welcome back
 EndFunction
