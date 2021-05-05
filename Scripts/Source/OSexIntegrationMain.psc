@@ -327,6 +327,9 @@ String[] Speeds
 
 bool ReallignedDuringThisAnim
 
+String o
+Int Password
+
 
 
 ; -------------------------------------------------------------------------------------------------
@@ -434,13 +437,7 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	;ODatabase.Load()
-
-	Int OldTimescale = 0
-	If (CustomTimescale >= 1)
-		OldTimescale = GetTimeScale()
-		SetTimeScale(CustomTimescale)
-		Console("Using custom Timescale: " + CustomTimescale)
-	EndIf
+ 
 
 	IsFlipped = False
 	StallOrgasm = false
@@ -551,7 +548,15 @@ Event OnUpdate() ;OStim main logic loop
     OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
     OSA.StimStart(CurrScene)
 
-    diasa = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget.hud.NavMenu.dia"
+    o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
+
+    if !IsActorActive(PlayerRef)
+		MountNPCSceneAsMain()
+	Else
+		diasa = o + ".viewStage"
+    endif
+
+    
 
     if !ThirdActor
     	CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
@@ -561,7 +566,12 @@ Event OnUpdate() ;OStim main logic loop
     LastHubOID = -1
     ;OnAnimationChange()
     
-
+    Int OldTimescale = 0
+	If (CustomTimescale >= 1) && IsActorActive(playerref)
+		OldTimescale = GetTimeScale()
+		SetTimeScale(CustomTimescale)
+		Console("Using custom Timescale: " + CustomTimescale)
+	EndIf
 
     If (LowLightLevelLightsOnly && DomActor.GetLightLevel() < 20) || (!LowLightLevelLightsOnly)
     	If (DomLightPos > 0)
@@ -572,7 +582,7 @@ Event OnUpdate() ;OStim main logic loop
    		EndIf
     EndIf
 
-	Int Password = DomActor.GetFactionRank(OsaFactionStage)
+	Password = DomActor.GetFactionRank(OsaFactionStage)
 	string EventName = "0SAO" + Password + "_AnimateStage"
 	RegisterForModEvent(eventName, "OnAnimate")
 
@@ -603,25 +613,9 @@ Event OnUpdate() ;OStim main logic loop
 
 	ReallignedDuringThisAnim = false
 
+	ToggleActorAI(True)
 
-	if !IsActorActive(PlayerRef)
-		HideAllSkyUIWidgets()
-
-    	String DomID = _oGlobal.GetFormID_S(domactor.GetActorBase())
-    	Console(DomID)
-    	String o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
-
-    	UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
-
-    	String m = o + ".hud.InspectMenu.m"
-    	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DU")
-    	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DY")
-    	Utility.Wait(0.033)
-    	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DU")
-    	UI.Invoke("HUD Menu", o + ".hud.InspectMenu.DY")
-
-    	;ShowAllSkyUIWidgets()
-    endif
+	
 
 	Float LoopTimeTotal = 0
 	Float LoopStartTime
@@ -652,19 +646,7 @@ Event OnUpdate() ;OStim main logic loop
 		EndIf
 	EndIf
 
-	If (!IsActorActive(PlayerRef))
-		Int i = 0
-		While (i < 20) || !ODatabase.IsSexAnimation(currentoid)
-			i += 1
-			Utility.Wait(0.5)
-		EndWhile
-		HideNavMenu()
-		ShowAllSkyUIWidgets()
-	EndIf
-
-
 	SendModEvent("ostim_start")
-	ToggleActorAI(True)
 
 	Utility.Wait(0.5)
 
@@ -677,7 +659,6 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	
-
 	While (IsActorActive(DomActor)) ; Main OStim logic loop
 		If (LoopTimeTotal > 1)
 			;Console("Loop took: " + loopTimeTotal + " seconds")
@@ -834,6 +815,8 @@ Event OnUpdate() ;OStim main logic loop
 
 	OSA.OGlyphO(".ctr.END") ;for safety
 	Console(Utility.GetCurrentRealTime() - StartTime + " seconds passed")
+	DisableOSAControls = false 
+
 	SceneRunning = False
 EndEvent
 
@@ -1026,7 +1009,8 @@ Function EndAnimation(Bool SmoothEnding = True)
 	EndedProper = SmoothEnding
 	Console("Trying to end scene")
 	;RunOsexCommand("$endscene")
-	OSA.OGlyphO(".ctr.END")
+	;OSA.OGlyphO(".ctr.END")
+	UI.InvokeInt("HUD Menu", o + ".com.endCommand", password)
 EndFunction
 
 Bool Function GetCurrentAnimIsAggressive() ; if the current animation is tagged aggressive
@@ -1256,6 +1240,7 @@ EndFunction
 bool function IsInFreeCam()
 	Return OSANative.IsFreeCam()
 endfunction
+
 
 float Function GetStimMult(Actor Act)
 	If (Act == DomActor)
@@ -2932,6 +2917,30 @@ Function Profile(String Name = "");
 		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
 	EndIf
 EndFunction
+
+
+Function MountNPCSceneAsMain()
+	
+	disableOSAControls = true
+	
+
+    String DomID = _oGlobal.GetFormID_S(domactor.GetActorBase())
+    String InspectMenu = o + ".hud.InspectMenu"
+
+    UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
+
+    string actraD = InspectMenu + ".actra"
+
+
+    diasa = actraD + ".stageStatus"
+
+
+
+    UI.Invoke("HUD Menu", InspectMenu + ".OmniDim")
+
+   
+EndFunction
+
 
 Event OnKeyDown(Int KeyPress)
 	If (DisableOSAControls)
