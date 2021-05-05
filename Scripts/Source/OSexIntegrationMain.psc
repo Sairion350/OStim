@@ -550,6 +550,9 @@ Event OnUpdate() ;OStim main logic loop
 
     o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
 
+    ; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
+    ; (I didn't pick the nonsense name, it's called that in OSA)
+    ; Unfortunately, the method used for mounting an NPC on NPC scene is a bit involved.
     if !IsActorActive(PlayerRef)
 		MountNPCSceneAsMain()
 	Else
@@ -986,10 +989,13 @@ EndFunction
 Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy9|HhPo|MoShoPo
 	Console("Warping to animation: " + Animation)
 	;RunOsexCommand("$Warp," + Animation)
+	
 	String nav = diasa + ".chore.autoNav"
 
+	
 	UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "WARP" + Animation)
-;	UI.Invoke("HUD Menu", nav + ".navStep")
+	UI.InvokeBool("HUD Menu", diasa + ".navOn", true)
+
 EndFunction
 
 Function ToggleActorAI(bool enable)
@@ -2920,7 +2926,11 @@ EndFunction
 
 
 Function MountNPCSceneAsMain()
-	
+	; The player thread is easily accessible through OSA. However, NPC scenes are not.
+	; Normally, we would go through OSA's thread manager and fetch it.
+	; However, SKSE's flash interface doesn't handle flash arrays, so this is not possible.
+	; Instead, running an OSA inspect on an npc mounts their data, and within that data is a link to the scene thread they are in
+	; Closing the inspect menu would break the link, so we need to leave it open.
 	disableOSAControls = true
 	
 
