@@ -990,11 +990,10 @@ Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy
 	Console("Warping to animation: " + Animation)
 	;RunOsexCommand("$Warp," + Animation)
 	
-	String nav = diasa + ".chore.autoNav"
+	;String nav = diasa + ".chore.autoNav"
+	;UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "WARP" + Animation)
 
-	
-	UI.InvokeString("HUD Menu", nav + ".inputCommandAgenda", "WARP" + Animation)
-	UI.InvokeBool("HUD Menu", diasa + ".navOn", true)
+	UI.InvokeString("HUD Menu", diasa + ".menuSelection", Animation)
 
 EndFunction
 
@@ -2349,9 +2348,9 @@ Function OnSound(Actor Act, Int SoundID, Int FormNumber)
 	EndIf
 
 	If (FormNumber == 50)
-		ShakeCamera(0.5)
+		ShakeController(0.1)
 		If (UseScreenShake && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
-			ShakeController(0.1)
+			ShakeCamera(0.5)
 		EndIf
 	EndIf
 
