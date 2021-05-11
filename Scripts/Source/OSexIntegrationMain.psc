@@ -94,6 +94,9 @@ Bool Property MisallignmentProtection Auto
 Bool Property UseAIControl Auto
 Bool Property PauseAI Auto
 
+Bool Property PlayerAlwaysDom Auto
+Bool Property FemaleAlwaysDom Auto 
+
 Bool Property UseAINPConNPC Auto
 Bool Property UseAIPlayerAggressor Auto
 Bool Property UseAIPlayerAggressed Auto
@@ -360,6 +363,20 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	Else
 		DomActor = Dom
 		SubActor = Sub
+	EndIf
+
+	;special reordering settings
+	If (PlayerAlwaysDom) && ((Dom == PlayerRef) || (Sub == PlayerRef))
+		If Dom != PlayerRef 
+			DomActor = Sub 
+			SubActor = Dom
+		EndIf
+	ElseIf (FemaleAlwaysDom)
+		If AppearsFemale(Subactor) && !AppearsFemale(DomActor)
+			actor temp  = DomActor
+			DomActor = SubActor
+			SubActor = temp
+		EndIf
 	EndIf
 
 	UndressDom = zUndressDom
@@ -2737,6 +2754,9 @@ Function SetDefaultSettings()
 	ResetPosAfterSceneEnd = true ; MCM needed please!
 
 	EndAfterActorHit = False
+
+	PlayerAlwaysDom = False 
+	FemaleAlwaysDom = False
 
 	DomLightBrightness = 0
 	SubLightBrightness = 1
