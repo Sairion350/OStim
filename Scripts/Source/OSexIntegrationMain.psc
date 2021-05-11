@@ -1084,6 +1084,16 @@ Actor[] Function GetActors()
 	return ret
 EndFunction
 
+Function SwapActorOrder() ; Swaps dom position in animation for sub. Only effects the animation scene. 2p scenes only
+    if ThirdActor == none 
+        UI.Invoke("HUD Menu", diasa + ".arrangeActra")
+
+        actor temp = domactor 
+        DomActor = subactor 
+        SubActor = temp
+    endif
+EndFunction
+
 Actor Function GetMostRecentOrgasmedActor()
 	Return MostRecentOrgasmedActor
 EndFunction
