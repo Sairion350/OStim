@@ -355,6 +355,7 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 		Return False
 	EndIf
 
+	; Default OSex gender order
 	DomActor = Dom
 	SubActor = Sub
 	If (AppearsFemale(Dom) && !AppearsFemale(Sub)) ; if the dom is female and the sub is male
@@ -1105,7 +1106,7 @@ Function SwapActorOrder() ; Swaps dom position in animation for sub. Only effect
     if ThirdActor == none 
         UI.Invoke("HUD Menu", diasa + ".arrangeActra")
 
-        actor temp = domactor 
+        actor temp = domactor ; experimental, please check for the side effects of this before using the function
         DomActor = subactor 
         SubActor = temp
     endif
