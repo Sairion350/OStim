@@ -800,7 +800,7 @@ EndFunction
 Int Function ShuffleOArray(Int OArray)
 	int L = GetLengthOArray(OArray)
 
-	int i = L - 1
+	int i = L
 
 	int j ; an index
 	While (i > 0)
