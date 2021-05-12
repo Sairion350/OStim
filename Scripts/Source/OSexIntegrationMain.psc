@@ -1109,9 +1109,9 @@ Function SwapActorOrder() ; Swaps dom position in animation for sub. Only effect
     if ThirdActor == none 
         UI.Invoke("HUD Menu", diasa + ".arrangeActra")
 
-        actor temp = domactor ; experimental, please check for the side effects of this before using the function
-        DomActor = subactor 
-        SubActor = temp
+       ; actor temp = domactor ; experimental, please check for the side effects of this before using the function
+       ; DomActor = subactor 
+       ; SubActor = temp
     endif
 EndFunction
 
