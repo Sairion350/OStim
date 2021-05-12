@@ -95,6 +95,7 @@ Bool Property UseAIControl Auto
 Bool Property PauseAI Auto
 
 Bool Property PlayerAlwaysDom Auto
+Bool Property PlayerAlwaysSub Auto
 Bool Property FemaleAlwaysDom Auto 
 
 Bool Property UseAINPConNPC Auto
@@ -372,6 +373,11 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	;special reordering settings
 	If (PlayerAlwaysDom) && ((Dom == PlayerRef) || (Sub == PlayerRef))
 		If Dom != PlayerRef 
+			DomActor = Sub 
+			SubActor = Dom
+		EndIf
+	Elseif (PlayerAlwaysSub) && ((Dom == PlayerRef) || (Sub == PlayerRef))
+		If Sub != PlayerRef 
 			DomActor = Sub 
 			SubActor = Dom
 		EndIf
@@ -1105,6 +1111,7 @@ Actor[] Function GetActors()
 	return ret
 EndFunction
 
+;/
 Function SwapActorOrder() ; Swaps dom position in animation for sub. Only effects the animation scene. 2p scenes only
     if ThirdActor == none 
         UI.Invoke("HUD Menu", diasa + ".arrangeActra")
@@ -1114,6 +1121,7 @@ Function SwapActorOrder() ; Swaps dom position in animation for sub. Only effect
        ; SubActor = temp
     endif
 EndFunction
+/;
 
 Actor Function GetMostRecentOrgasmedActor()
 	Return MostRecentOrgasmedActor
@@ -2760,6 +2768,7 @@ Function SetDefaultSettings()
 	EndAfterActorHit = False
 
 	PlayerAlwaysDom = False 
+	PlayerAlwaysSub = False
 	FemaleAlwaysDom = False
 
 	DomLightBrightness = 0
