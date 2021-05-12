@@ -804,12 +804,12 @@ Int Function ShuffleOArray(Int OArray)
 
 	int j ; an index
 	While (i > 0)
+		i -= 1
 
 		j = Utility.RandomInt(0, i)
 
 		JArray.swapItems(OArray, i, j)
 
-		i -= 1
 	EndWhile
 
 	return OArray

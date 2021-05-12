@@ -354,6 +354,9 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 		Debug.Notification("One of the actors is already in a OSA scene")
 		Return False
 	EndIf
+	If !dom.Is3DLoaded()
+		console("Dom actor is not loaded")
+	EndIf
 
 	; Default OSex gender order
 	DomActor = Dom
