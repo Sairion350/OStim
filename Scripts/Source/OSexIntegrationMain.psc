@@ -848,6 +848,8 @@ Event OnUpdate() ;OStim main logic loop
 	DisableOSAControls = false 
 
 	SceneRunning = False
+
+	ResetRandom()
 EndEvent
 
 
@@ -3122,9 +3124,9 @@ int rnd_s2
 int rnd_s3
 
 int Function RandomInt(int min = 0, int max = 100)
-; Returns a random number. Inclusive (same as vanilla's).
+	; Returns a random number. Inclusive (same as vanilla's).
+	; roughly 2x as fast as Utility.getrandomint() Randomness is pretty close to vanilla too.
 	
-	;return Utility.RandomInt(min, max) ;todo high speed version
 
 	rnd_s1 = (171 * rnd_s1) % 30269
 	rnd_s2 = (172 * rnd_s2) % 30307
@@ -3134,7 +3136,7 @@ int Function RandomInt(int min = 0, int max = 100)
 	Return  (r * ((max + 1) - min) + min) as int
 EndFunction 
 
-; Set initial seed values for the RNG. Can also be called from MCM if generation gets stuck on always the same values.
+; Set initial seed values for the RNG. 
 Function ResetRandom()
 	Int realTimeMod = (Utility.GetCurrentRealTime() as Int) + (utility.randomint(1, 150)) % 1000
 	rnd_s1 = 13254 + realTimeMod
