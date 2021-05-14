@@ -3117,10 +3117,30 @@ Function ResetOSA() ; do not use, breaks osa
 	Utility.Wait(1)
 Endfunction
 
+int rnd_s1
+int rnd_s2
+int rnd_s3
+
 int Function RandomInt(int min = 0, int max = 100)
 ; Returns a random number. Inclusive (same as vanilla's).
-	return Utility.RandomInt(min, max) ;todo high speed version
+	
+	;return Utility.RandomInt(min, max) ;todo high speed version
+
+	rnd_s1 = (171 * rnd_s1) % 30269
+	rnd_s2 = (172 * rnd_s2) % 30307
+	rnd_s3 = (170 * rnd_s3) % 30323
+	Float r = rnd_s1 / 30269.0 + rnd_s2 / 30367.0 + rnd_s3 / 30323.0
+	r -= (r as Int)
+	Return  (r * ((max + 1) - min) + min) as int
 EndFunction 
+
+; Set initial seed values for the RNG. Can also be called from MCM if generation gets stuck on always the same values.
+Function ResetRandom()
+	Int realTimeMod = (Utility.GetCurrentRealTime() as Int) + (utility.randomint(1, 150)) % 1000
+	rnd_s1 = 13254 + realTimeMod
+	rnd_s2 = 4931 + realTimeMod
+	rnd_s3 = 24178 + realTimeMod
+EndFunction
 
 Function Startup()
 	Debug.Notification("Installing OStim. Please wait...")
@@ -3209,6 +3229,8 @@ Function Startup()
 	Else
 		SoSInstalled = false
 	EndIf
+
+	ResetRandom()
 
 	;If (SexLab)
 	;	Console("SexLab loaded, using its cum effects")
