@@ -486,7 +486,7 @@ Event OnUpdate() ;OStim main logic loop
 	DomTimesOrgasm = 0
 	ThirdTimesOrgasm = 0
 	MostRecentOrgasmedActor = None
-	SpankMax = Utility.RandomInt(1, 6)
+	SpankMax = RandomInt(1, 6)
 	IsFreeCamming = False
 	FirstAnimate = true
 
@@ -2499,7 +2499,7 @@ Function SetGameSpeed(String In)
 EndFunction
 
 Bool Function ChanceRoll(Int Chance) ; input 60: 60% of returning true
-	Int Roll = Utility.RandomInt(1, 100)
+	Int Roll = RandomInt(1, 100)
 	If (Roll <= Chance)
 		Return True
 	EndIf

@@ -401,7 +401,7 @@ String Function GetAnimationThatMatchesClassArray(int Animations, string[] class
 	int max = ODatabase.GetLengthOArray(Animations)
 
 	While i < max 
-		Int Animation = ODatabase.GetObjectOArray(Animations, Utility.RandomInt(0, max))
+		Int Animation = ODatabase.GetObjectOArray(Animations, ostim.RandomInt(0, max))
 		String AnimationClass = ODatabase.GetAnimationClass(Animation)
 
 		If (OStim.StringArrayContainsValue(classes, AnimationClass))

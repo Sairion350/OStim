@@ -806,7 +806,7 @@ Int Function ShuffleOArray(Int OArray)
 	While (i > 0)
 		i -= 1
 
-		j = Utility.RandomInt(0, i)
+		j = OStim.RandomInt(0, i)
 
 		JArray.swapItems(OArray, i, j)
 
