@@ -3117,6 +3117,11 @@ Function ResetOSA() ; do not use, breaks osa
 	Utility.Wait(1)
 Endfunction
 
+int Function RandomInt(int min = 0, int max = 100)
+; Returns a random number. Inclusive (same as vanilla's).
+	return Utility.RandomInt(min, max) ;todo high speed version
+EndFunction 
+
 Function Startup()
 	Debug.Notification("Installing OStim. Please wait...")
 
