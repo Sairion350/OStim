@@ -1868,6 +1868,15 @@ Function ScaleToHeight(Actor Act, Float GoalBodyScale)
 
 	Console("Setting scale: " + Scale)
 
+	If Scale < 0.01
+		Console("Error: an unknown mod is conflicting with OStim's scaling. OStim will now dump scaling data")
+		Console("Name: " + act.GetDisplayName())
+		Console("Target scale: " + GoalBodyScale)
+		Console("Current scale: " + Act.GetScale())
+		Console("Disabling scaling in the MCM will stop this message")
+		return 
+	EndIf
+
 	Act.SetScale(Scale)
 	Act.QueueNiNodeUpdate() ; This will cause actors to reqequip clothes if mid-scene
 	Act.SetScale(Scale)
