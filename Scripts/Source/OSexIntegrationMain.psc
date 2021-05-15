@@ -2767,7 +2767,7 @@ Function SetDefaultSettings()
 	AutoUndressIfNeeded = false
 	ResetPosAfterSceneEnd = true ; MCM needed please!
 
-	EndAfterActorHit = False
+	EndAfterActorHit = True
 
 	PlayerAlwaysDom = False 
 	PlayerAlwaysSub = False

@@ -51,7 +51,7 @@ Function Redress(Actor Target)
 			Things = ThirdEquipmentDrops
 		EndIf
 
-		If (OStim.FullyAnimateRedress && (Target != PlayerRef) && !OStim.IsSceneAggressiveThemed())
+		If (OStim.FullyAnimateRedress && (Target != PlayerRef) && !OStim.IsSceneAggressiveThemed()) && !(Target.IsInCombat())
 			Form[] Stuff = AddDroppedThingsToInv(Target, Things)
 			FullyAnimateRedress(Target, Stuff)
 		Else
@@ -67,7 +67,7 @@ Function Redress(Actor Target)
 			Things = ThirdEquipmentForms
 		EndIf
 
-		If (OStim.FullyAnimateRedress && (Target != PlayerRef) && !OStim.IsSceneAggressiveThemed())
+		If (OStim.FullyAnimateRedress && (Target != PlayerRef) && !OStim.IsSceneAggressiveThemed()) && !(Target.IsInCombat())
 			FullyAnimateRedress(Target, Things)
 		Else
 			EquipForms(Target, Things)
