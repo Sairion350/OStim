@@ -49,7 +49,7 @@ Bool Property EnableImprovedCamSupport Auto
 
 Bool Property EnableActorSpeedControl Auto
 
-Bool Property ResetPosAfterSceneEnd Auto
+Bool Property ResetPosAfterSceneEnd Auto ; mcm todo
 
 Bool Property AllowUnlimitedSpanking Auto
 

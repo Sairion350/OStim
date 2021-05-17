@@ -27,9 +27,9 @@ Int SetDomBar
 Int SetThirdBar
 Int SetAutoHideBar
 Int SetMatchColorToGender
+int SetHideNPCOnNPCBars
 
 ; orgasm settings
-; are these still used??
 Int SetSlowMoOrgasms
 Int SetOrgasmBoostsRel
 
@@ -220,6 +220,7 @@ Event OnPageReset(String Page)
 		SetThirdBar = AddToggleOption("Third actor HUD bar", Main.EnableThirdBar)
 		SetAutoHideBar = AddToggleOption("Autohide bars", Main.AutoHideBars)
 		SetMatchColorToGender = AddToggleOption("Match color to gender", Main.MatchBarColorToGender)
+		SetHideNPCOnNPCBars = AddToggleOption("Hide bars in NPC-only scenes", Main.HideBarsInNPCScenes)
 		AddEmptyOption()
 
 		AddColoredHeader("System")
@@ -445,6 +446,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetMatchColorToGender)
 		Main.MatchBarColorToGender = !Main.MatchBarColorToGender
 		SetToggleOptionValue(Option, Main.MatchBarColorToGender)
+	ElseIf (Option == SetHideNPCOnNPCBars)
+		Main.HideBarsInNPCScenes = !Main.HideBarsInNPCScenes
+		SetToggleOptionValue(Option, Main.HideBarsInNPCScenes)
 	ElseIf (Option == SetMute)
 		Main.MuteOSA = !Main.MuteOSA
 		SetToggleOptionValue(Option, Main.MuteOSA)
@@ -575,6 +579,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Rumble a controller on thrust, if a controller is being used")
 	ElseIf (Option == SetMatchColorToGender)
 		SetInfoText("Change the color of the bars to match the gender of the character")
+	ElseIf (Option == SetHideNPCOnNPCBars)
+		SetInfoText("Do not show exitement bars if the player is not in a scene")
 	ElseIf (Option == SetStrongerUnequip)
 		SetInfoText("Use an alternate unequip method that may catch more armor pieces, especially armor with auto-reequip scripts\nHowever, some armor it unequips may not be reequiped in redress\nHas no effect if drop clothes on to ground is enabled")
 	ElseIf (Option == SetEndAfterActorHit)
@@ -965,6 +971,7 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetThirdBar", Main.EnableThirdBar as Int)
 	JMap.SetInt(OstimSettingsFile, "SetAutoHideBar", Main.AutoHideBars as Int)
 	JMap.SetInt(OstimSettingsFile, "SetMatchColorToGender", Main.MatchBarColorToGender as Int)
+	JMap.SetInt(OstimSettingsFile, "SetHideNPCOnNPCBars", Main.HideBarsInNPCScenes as Int)
 
 	; Orgasm settings export.
 	; These might have been removed from the mcm.
@@ -1068,6 +1075,7 @@ Function ImportSettings()
 	Main.EnableThirdBar = JMap.GetInt(OstimSettingsFile, "SetThirdBar")
 	Main.AutoHideBars = JMap.GetInt(OstimSettingsFile, "SetAutoHideBar")
 	Main.MatchBarColorToGender = JMap.GetInt(OstimSettingsFile, "SetMatchColorToGender")
+	Main.HideBarsInNPCScenes = JMap.GetInt(OstimSettingsFile, "SetHideNPCOnNPCBars")
 
 	; Light settings export.
 	Main.DomLightPos = Jmap.GetInt(OstimSettingsFile, "SetDomLightMode")
