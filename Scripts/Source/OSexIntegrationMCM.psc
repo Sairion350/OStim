@@ -757,7 +757,7 @@ Event OnOptionSliderOpen(Int Option)
 	elseif (option == SetONFreqMult)
 		SetSliderDialogStartValue(GetExternalFloat(ONights, GVONFreqMult))
 		SetSliderDialogDefaultValue(1.0)
-		SetSliderDialogRange(0.1, 3.0)
+		SetSliderDialogRange(0.1, 5.0)
 		SetSliderDialogInterval(0.1)
 	EndIf
 EndEvent

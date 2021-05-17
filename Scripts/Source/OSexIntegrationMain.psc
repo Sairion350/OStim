@@ -43,6 +43,8 @@ Bool Property EnableSubBar Auto
 Bool Property EnableThirdBar Auto
 Bool Property AutoHideBars Auto
 Bool Property MatchBarColorToGender auto
+Bool Property HideBarsInNPCScenes auto ; MCM todo
+
 Bool Property EnableImprovedCamSupport Auto
 
 Bool Property EnableActorSpeedControl Auto
@@ -94,7 +96,7 @@ Bool Property MisallignmentProtection Auto
 Bool Property UseAIControl Auto
 Bool Property PauseAI Auto
 
-Bool Property PlayerAlwaysDom Auto
+Bool Property PlayerAlwaysDom Auto ;MCM options maybe?
 Bool Property PlayerAlwaysSub Auto
 Bool Property FemaleAlwaysDom Auto 
 
@@ -2780,6 +2782,7 @@ Function SetDefaultSettings()
 	EnableSubBar = True
 	EnableDomBar = True
 	EnableThirdBar = True
+	HideBarsInNPCScenes = True
 	EnableActorSpeedControl = True
 	AllowUnlimitedSpanking = False
 	AutoUndressIfNeeded = false

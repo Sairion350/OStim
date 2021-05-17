@@ -25,12 +25,16 @@ Int Gray
 Int Yellow
 Int White
 
+actor PlayerRef
+
 Event OnInit()
 	OStim = (Self as Quest) as OSexIntegrationMain
 
 	DomBar = (Self as Quest) as OSexBar
 	SubBar = (Game.GetFormFromFile(0x000804, "OStim.esp")) as OSexBar
 	ThirdBar = (Game.GetFormFromFile(0x000802, "OStim.esp")) as OSexBar
+
+	PlayerRef = Game.getplayer()
 
 	Blue = 0xADD8E6
 	Pink = 0xFFB6C1
@@ -120,6 +124,11 @@ EndFunction
 
 Event OstimStart(String eventName, String strArg, Float numArg, Form sender)
 	Orgasming = false
+
+	If !OStim.IsActorActive(playerref) && OStim.HideBarsInNPCScenes
+		return 
+	EndIf 
+
 	if OStim.MatchBarColorToGender
 		ColorBar(DomBar, OStim.AppearsFemale(OStim.GetDomActor()))
 		ColorBar(SubBar, OStim.AppearsFemale(OStim.GetSubActor()))
@@ -203,6 +212,10 @@ Event OStimOrgasm(String eventName, String strArg, Float numArg, Form sender)
 endevent
 
 Event OstimThirdJoin(String eventName, String strArg, Float numArg, Form sender)
+	If !OStim.IsActorActive(playerref) && OStim.HideBarsInNPCScenes
+		return 
+	EndIf 
+	
 	If (OStim.EnableThirdBar)
 		OSexIntegrationMain.Console("Launching third actor bar")
 		SetBarPercent(ThirdBar, 0.0)
