@@ -129,6 +129,13 @@ int GVORColorblind = 0x73D0
 int GVORStationaryMode = 0x73D1
 int GVORNakadashi = 0x73D4
 
+string ONights = "ONights.esp"
+int GVONFreqMult = 0x000D65
+int GVONStopWhenFound = 0x000D64
+
+int SetONStopWhenFound
+int SetONFreqMult
+
 Event OnInit()
 	Init()
 EndEvent
@@ -296,6 +303,13 @@ Event OnPageReset(String Page)
 			SetORNakadashi = AddToggleOption("NPCs are not cautious about vaginal ejaculation", GetExternalBool(ORomance, GVORNakadashi))
 		endif 
 
+		if main.IsModLoaded(ONights)
+			AddColoredHeader("ONights")
+			SetONStopWhenFound = AddToggleOption("NPCs stop sex when spotted", GetExternalBool(ONights, GVONStopWhenFound))
+			SetONFreqMult = AddSliderOption("Sex frequency Mult", GetExternalFloat(ONights, GVONFreqMult), "{2} x")
+			
+		endif 
+
 	ElseIf (Page == "Undressing")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayTickBig()
@@ -342,6 +356,13 @@ int Function GetExternalInt(string modesp, int id)
 	return (game.GetFormFromFile(id, modesp) as GlobalVariable).GetValueInt() 
 endfunction
 
+Function SetExternalfloat(string modesp, int id, float val)
+	(game.GetFormFromFile(id, modesp) as GlobalVariable).SetValue(val)
+endfunction
+float Function GetExternalfloat(string modesp, int id)
+	return (game.GetFormFromFile(id, modesp) as GlobalVariable).GetValue() 
+endfunction
+
 Event OnOptionSelect(Int Option)
 	Main.PlayTickBig()
 	if currPage == "Undressing"
@@ -359,6 +380,9 @@ Event OnOptionSelect(Int Option)
 		elseif option == SetORStationary
 			SetExternalBool(oromance, GVORStationaryMode, !GetExternalBool(oromance, GVORStationaryMode))
 			SetToggleOptionValue(SetORStationary, GetExternalBool(oromance, GVORStationaryMode))
+		elseif option == SetONStopWhenFound
+			SetExternalBool(ONights, GVONStopWhenFound, !GetExternalBool(ONights, GVONStopWhenFound))
+			SetToggleOptionValue(SetONStopWhenFound, GetExternalBool(ONights, GVONStopWhenFound))
 		endif
 
 		return
@@ -515,6 +539,10 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("Right selection key\nSave and reload to take effect")
 		elseif (option == SetORNakadashi)
 			SetInfoText("Female NPCs are not cautious about you ejaculating inside them before a relationship and sometimes marriage\nMostly for users with no pregnancy mod")
+		ElseIf (Option == SetONFreqMult)
+			SetInfoText("The frequency at which NPCs will try to have sex with each other")
+		Elseif (Option == SetONStopWhenFound)
+			SetInfoText("If checked, NPCs will stop having sex if they know the player can see them")
 		endif 
 
 		return
@@ -643,6 +671,7 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Click this button to export the Ostim MCM settings.")
 	ElseIf (Option == ImportSettings)
 		SetInfoText("Click this button to import the Ostim MCM settings.")
+
 	EndIf
 EndEvent
 
@@ -725,6 +754,11 @@ Event OnOptionSliderOpen(Int Option)
 		SetSliderDialogDefaultValue(0.0)
 		SetSliderDialogRange(-100, 150)
 		SetSliderDialogInterval(1)
+	elseif (option == SetONFreqMult)
+		SetSliderDialogStartValue(GetExternalFloat(ONights, GVONFreqMult))
+		SetSliderDialogDefaultValue(1.0)
+		SetSliderDialogRange(0.1, 3.0)
+		SetSliderDialogInterval(0.1)
 	EndIf
 EndEvent
 
@@ -736,6 +770,9 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 	Elseif (option == SetORDifficulty)
 		SetExternalInt(oromance, GVORDifficulty, value as int)
 		SetSliderOptionValue(SetORDifficulty, Value as int, "{0}")
+	Elseif (option == SetONFreqMult)
+		SetExternalFloat(ONights, GVONFreqMult, value)
+		SetSliderOptionValue(SetONFreqMult, Value, "{2} x")
 	ElseIf (Option == SetBedSearchDistance)
 		Main.BedSearchDistance = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0} meters")
