@@ -144,7 +144,9 @@ EndEvent
 Bool LoadEnd = False
 Function CompleteEnd()
 	If (Actra != None) ; Shield is in place so I'm not sure how a none Actor can get by.
-		If (Actra.Is3DLoaded()) ; NEW SHIELD START IF 3D, ISN"T LOADED DO NOTHING
+	;	If (Actra.Is3DLoaded()) ; NEW SHIELD START IF 3D, ISN"T LOADED DO NOTHING
+	; Sairion: going to ignore the above.... skipping the below code makes actors get stuck so...
+	; hopefully whatever reason was had for skipping this wasn't important!
 			_oGlobal.ActorLight(Actra, "Remove", OSO.OLightSP, OSO.OLightME)
 			_oGlobal.FactionClean(Actra, OSO.OFaction)
 			MfgConsoleFunc.ResetPhonemeModifier(Actra)
@@ -160,7 +162,7 @@ Function CompleteEnd()
 				LastPoint.Delete()
 				LastPoint = None
 			EndIf
-		EndIf ; NEW SHIELD END
+	;	EndIf ; NEW SHIELD END
 	EndIf ; Conclude Shield
 EndFunction
 

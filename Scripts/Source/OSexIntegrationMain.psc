@@ -462,8 +462,6 @@ Event OnUpdate() ;OStim main logic loop
 	If (EnableImprovedCamSupport)
 		Game.DisablePlayerControls(abCamswitch = True, abMenu = False, abFighting = False, abActivate = False, abMovement = False, aiDisablePOVType = 0)
 	EndIf
-
-	;ODatabase.Load()
  
 
 	IsFlipped = False
@@ -490,7 +488,6 @@ Event OnUpdate() ;OStim main logic loop
 	IsFreeCamming = False
 	FirstAnimate = true
 
-	
 
 	Actor[] Actro
 	If (ThirdActor)
@@ -531,6 +528,7 @@ Event OnUpdate() ;OStim main logic loop
 		EndIf
 	EndIf
 
+
 	Float DomX
 	Float DomY
 	Float DomZ
@@ -547,6 +545,7 @@ Event OnUpdate() ;OStim main logic loop
 		SubY = SubActor.Y
 		SubZ = SubActor.Z
 	EndIf
+
 
 	If ThirdActor && (StartingAnimation == "")
 		startinganimation = "0M2F|Sy6!Sy9!Sy9|Ho|DoubleTrouble+22Enter"
@@ -570,10 +569,12 @@ Event OnUpdate() ;OStim main logic loop
 		StartingAnimation = "AUTO"
 	EndIf
 
+
     CurrScene = OSA.MakeStage()
     OSA.SetActorsStim(currScene, Actro)
     OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
     OSA.StimStart(CurrScene)
+
 
     o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
 
@@ -582,12 +583,12 @@ Event OnUpdate() ;OStim main logic loop
     ; Unfortunately, the method used for mounting an NPC on NPC scene is a bit involved.
     if !IsActorActive(PlayerRef)
 		MountNPCSceneAsMain()
+		Console("Scene is a NPC on NPC scene")
 	Else
 		diasa = o + ".viewStage"
     endif
 
     
-
     if !ThirdActor
     	CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
     else 
@@ -843,7 +844,7 @@ Event OnUpdate() ;OStim main logic loop
 		SetTimeScale(OldTimescale)
 	EndIf
 
-	OSA.OGlyphO(".ctr.END") ;for safety
+	SendModEvent("0SA_GameLoaded") ;for safety
 	Console(Utility.GetCurrentRealTime() - StartTime + " seconds passed")
 	DisableOSAControls = false 
 
@@ -1041,10 +1042,18 @@ Function EndAnimation(Bool SmoothEnding = True)
 		FadeToBlack(1)
 	EndIf
 	EndedProper = SmoothEnding
-	Console("Trying to end scene")
-	;RunOsexCommand("$endscene")
-	;OSA.OGlyphO(".ctr.END")
-	UI.InvokeInt("HUD Menu", o + ".com.endCommand", password)
+	Console("Trying to end scene")	
+
+	If (!IsActorActive(Playerref) && (DomActor.GetParentCell() != playerref.GetParentCell()))
+		; Attempting to end the scene when the actors are not loaded will fail
+		;console("game loaded")
+		SendModEvent("0SA_GameLoaded")
+	else 
+		UI.Invoke("HUD Menu", diasa + ".endCommand")
+		;UI.InvokeInt("HUD Menu", o + ".com.endCommand", password)
+		;RunOsexCommand("$endscene")
+	endif 
+	;todo: 0SA_Gameloaded can be used exclusively instead of diasa end command??
 EndFunction
 
 Bool Function GetCurrentAnimIsAggressive() ; if the current animation is tagged aggressive
