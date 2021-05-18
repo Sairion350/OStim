@@ -443,7 +443,7 @@ Event AnimatedRedressThread(String EventName, String StrArg, float NumArg, Form 
 	While (i < Items.Length)
 		If (Items[i])
 			Bool Loaded = Target.Is3DLoaded()
-			If OStim.IsActorActive(Target) || Target.IsDead() || (Target.GetAV("Health") < StartingHealth) || (Target.getparentcell() != playerref.getparentcell())
+			If OStim.IsActorActive(Target) || Target.IsDead() || (Target.GetAV("Health") < StartingHealth) || (Target.getparentcell() != playerref.getparentcell()) || target.IsInCombat()
 				Loaded = False
 			EndIf
 
