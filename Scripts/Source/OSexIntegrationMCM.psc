@@ -377,7 +377,7 @@ Event OnOptionSelect(Int Option)
 			SetToggleOptionValue(SetORColorblind, GetExternalBool(oromance, GVORColorblind))
 		elseif option == SetORNakadashi
 			SetExternalBool(oromance, GVORNakadashi, !GetExternalBool(oromance, GVORNakadashi))
-			SetToggleOptionValue(GVORNakadashi, GetExternalBool(oromance, GVORNakadashi))
+			SetToggleOptionValue(SetORNakadashi, GetExternalBool(oromance, GVORNakadashi))
 		elseif option == SetORStationary
 			SetExternalBool(oromance, GVORStationaryMode, !GetExternalBool(oromance, GVORStationaryMode))
 			SetToggleOptionValue(SetORStationary, GetExternalBool(oromance, GVORStationaryMode))
