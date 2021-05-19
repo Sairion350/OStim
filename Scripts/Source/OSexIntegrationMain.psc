@@ -461,7 +461,7 @@ Event OnUpdate() ;OStim main logic loop
 
 	SendModEvent("ostim_prestart") ; fires as soon as the screen goes black. be careful, some settings you normally expect may not be set yet. Use ostim_start to run code when the OSA scene begins.
 
-	If (EnableImprovedCamSupport)
+	If (EnableImprovedCamSupport) && ((DomActor == playerref) || (SubActor == playerref))
 		Game.DisablePlayerControls(abCamswitch = True, abMenu = False, abFighting = False, abActivate = False, abMovement = False, aiDisablePOVType = 0)
 	EndIf
  
@@ -799,7 +799,7 @@ Event OnUpdate() ;OStim main logic loop
 		RestoreScales()
     EndIf
 
-	If (EnableImprovedCamSupport)
+	If (EnableImprovedCamSupport) && ((DomActor == playerref) || (SubActor == playerref))
 		Game.EnablePlayerControls(abCamSwitch = True)
 	EndIf
 
