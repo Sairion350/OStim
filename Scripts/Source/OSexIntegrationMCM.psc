@@ -210,6 +210,7 @@ Event OnPageReset(String Page)
 		SetEndOnBothOrgasm = AddToggleOption("Require both actors to orgasm to end", Main.RequireBothOrgasmsToFinish)
 		SetSlowMoOrgasms = AddToggleOption("Slow motion on orgasm", Main.SlowMoOnOrgasm)
 		SetOrgasmBoostsRel = AddToggleOption("Orgasm boosts relationship rank", Main.OrgasmIncreasesRelationship)
+		AddEmptyOption()
 
 		AddColoredHeader("Beds")
 		SetEnableBeds = AddToggleOption("Use beds", Main.UseBed)
