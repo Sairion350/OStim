@@ -190,9 +190,6 @@ Event OnPageReset(String Page)
 		;=============================================================================================
 
 		AddColoredHeader("Sex scenes")
-		SetEndOnOrgasm = AddToggleOption("End sex after Dom actor orgasm", Main.EndOnDomOrgasm)
-		SetEndOnSubOrgasm = AddToggleOption("End sex after Sub actor orgasm", Main.EndOnSubOrgasm)
-		SetEndOnBothOrgasm = AddToggleOption("Require both actors to orgasm to end", Main.RequireBothOrgasmsToFinish)
 		SetActorSpeedControl = AddToggleOption("Actors control speed", Main.EnableActorSpeedControl)
 		SetsexExcitementMult = AddSliderOption("Excitement multiplier", Main.SexExcitementMult, "{2} x")
 		SetClipinglessFirstPerson = AddToggleOption("Clipping-less first person", Main.EnableImprovedCamSupport)
@@ -204,8 +201,15 @@ Event OnPageReset(String Page)
 		SetUseRumble = AddToggleOption("Use controller rumble", Main.UseRumble)
 		SetUseScreenShake = AddToggleOption("Use extra screenshake", Main.UseScreenShake)
 		SetForceFirstPerson = AddToggleOption("Force return to first person after scene", Main.ForceFirstPersonAfter)
-		SetScaling = AddToggleOption("Disable scaling", Main.DisableScaling)
+		SetScaling = AddToggleOption("Disable scaling", Main.DisableScaling)		
 		AddEmptyOption()
+
+		AddColoredHeader("Orgasms")
+		SetEndOnOrgasm = AddToggleOption("End sex after Dom actor orgasm", Main.EndOnDomOrgasm)
+		SetEndOnSubOrgasm = AddToggleOption("End sex after Sub actor orgasm", Main.EndOnSubOrgasm)
+		SetEndOnBothOrgasm = AddToggleOption("Require both actors to orgasm to end", Main.RequireBothOrgasmsToFinish)
+		SetSlowMoOrgasms = AddToggleOption("Slow motion on orgasm", Main.SlowMoOnOrgasm)
+		SetOrgasmBoostsRel = AddToggleOption("Orgasm boosts relationship rank", Main.OrgasmIncreasesRelationship)
 
 		AddColoredHeader("Beds")
 		SetEnableBeds = AddToggleOption("Use beds", Main.UseBed)
@@ -975,8 +979,8 @@ Function ExportSettings()
 
 	; Orgasm settings export.
 	; These might have been removed from the mcm.
-	;JMap.SetInt(OstimSettingsFile, "SetSlowMoOrgasms", Main.SlowMoOrgasms as Int)
-	;JMap.SetInt(OstimSettingsFile, "SetOrgasmBoostsRel", Main.OrgasmBoostsRel as Int)
+	JMap.SetInt(OstimSettingsFile, "SetSlowMoOrgasms", Main.SlowMoOnOrgasm as Int)
+	JMap.SetInt(OstimSettingsFile, "SetOrgasmBoostsRel", Main.OrgasmIncreasesRelationship as Int)
 
 	; Light settings export.
 	Jmap.SetInt(OstimSettingsFile, "SetDomLightMode", Main.DomLightPos as Int)
