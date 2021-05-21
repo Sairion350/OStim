@@ -567,6 +567,10 @@ Event OnUpdate() ;OStim main logic loop
 			
 	EndIf
 
+	If (UseFreeCam) && ((DomActor == playerref) || (SubActor == playerref))
+		ToggleFreeCam(True)
+	EndIf
+
 	If (StartingAnimation == "")
 		StartingAnimation = "AUTO"
 	EndIf
@@ -680,12 +684,6 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	SendModEvent("ostim_start")
-
-	Utility.Wait(0.5)
-
-	If (UseFreeCam) && isactoractive(playerref)
-		ToggleFreeCam(True)
-	EndIf
 	
 	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 		FadeFromBlack()
@@ -822,13 +820,12 @@ Event OnUpdate() ;OStim main logic loop
 	    EndIf
 	EndIf
 
-	If IsInFreeCam()
-		While IsInFreeCam()
-			Utility.Wait(0.1)
-		EndWhile
-	EndIf 
-
 	If (ForceFirstPersonAfter && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		If IsInFreeCam()
+			While IsInFreeCam()
+				Utility.Wait(0.1)
+			EndWhile
+		EndIf 
 		Game.ForceFirstPerson()
 	EndIf
 
@@ -1261,6 +1258,9 @@ EndFunction
 
 Function ToggleFreeCam(Bool On = True)
 	If (!IsFreeCamming)
+		If game.GetCameraState() == 0
+			game.ForceThirdPerson()
+		endif 
 		OSANative.EnableFreeCam()
 		OSANative.SetFreeCamSpeed(FreecamSpeed)
 		OSANative.SetFOV(FreecamFOV)

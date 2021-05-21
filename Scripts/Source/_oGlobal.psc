@@ -65,7 +65,9 @@ EndFunction
 ; Performs a series of random skyrim locks on the actors so they don't repel each other during a scene.
 Function ActorLock(Actor Actra, Actor Player) Global
     If (Player == Actra)
-        Game.ForceThirdPerson()
+        If !OSANative.IsFreeCam()
+            Game.ForceThirdPerson()
+        EndIf
         Game.SetPlayerAIDriven()
         Game.DisablePlayerControls(False, False, False, False, False, False, True, False, 0)
     Else
