@@ -817,7 +817,7 @@ Event OnUpdate() ;OStim main logic loop
 	If ResetPosAfterSceneEnd
 		SubActor.SetPosition(SubX, SubY, SubZ) ;return
 		DomActor.SetPosition(DomX, DomY, DomZ)
-		If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+		If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 			Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
 	    EndIf
 	EndIf
@@ -2789,7 +2789,7 @@ Function SetDefaultSettings()
 	EnableActorSpeedControl = True
 	AllowUnlimitedSpanking = False
 	AutoUndressIfNeeded = false
-	ResetPosAfterSceneEnd = true ; MCM needed please!
+	ResetPosAfterSceneEnd = true 
 
 	EndAfterActorHit = True
 

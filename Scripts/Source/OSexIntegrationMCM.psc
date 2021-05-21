@@ -1,9 +1,6 @@
 ScriptName OsexIntegrationMCM Extends SKI_ConfigBase
 
 ; sex settings
-Int SetEndOnOrgasm
-Int SetEndOnSubOrgasm
-Int SetEndOnBothOrgasm
 Int SetActorSpeedControl
 Int SetsexExcitementMult
 Int SetClipinglessFirstPerson
@@ -11,6 +8,7 @@ Int SetEndAfterActorHit
 Int SetUseRumble
 Int SetUseScreenShake
 int SetScaling
+int SetResetPosition
 
 ; clothes settings
 Int SetUndressIfNeed
@@ -32,6 +30,9 @@ int SetHideNPCOnNPCBars
 ; orgasm settings
 Int SetSlowMoOrgasms
 Int SetOrgasmBoostsRel
+Int SetEndOnOrgasm
+Int SetEndOnSubOrgasm
+Int SetEndOnBothOrgasm
 
 ; light settings
 Int SetDomLightMode
@@ -201,7 +202,8 @@ Event OnPageReset(String Page)
 		SetUseRumble = AddToggleOption("Use controller rumble", Main.UseRumble)
 		SetUseScreenShake = AddToggleOption("Use extra screenshake", Main.UseScreenShake)
 		SetForceFirstPerson = AddToggleOption("Force return to first person after scene", Main.ForceFirstPersonAfter)
-		SetScaling = AddToggleOption("Disable scaling", Main.DisableScaling)		
+		SetScaling = AddToggleOption("Disable scaling", Main.DisableScaling)
+		SetResetPosition = AddToggleOption("Reset position after scene", Main.ResetPosAfterSceneEnd) 		
 		AddEmptyOption()
 
 		AddColoredHeader("Orgasms")
@@ -415,6 +417,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetActorSpeedControl)
 		Main.EnableActorSpeedControl = !Main.EnableActorSpeedControl
 		SetToggleOptionValue(Option, Main.EnableActorSpeedControl)
+	ElseIf (Option == SetResetPosition)
+		Main.ResetPosAfterSceneEnd = !Main.ResetPosAfterSceneEnd
+		SetToggleOptionValue(Option, Main.ResetPosAfterSceneEnd)
 	ElseIf (Option == SetEnableBeds)
 		Main.UseBed = !Main.UseBed
 		SetToggleOptionValue(Option, Main.UseBed)
@@ -600,6 +605,8 @@ Event OnOptionHighlight(Int Option)
 		 SetInfoText("REQUIRES: Improved Camera, my custom ini settings file\nExperience first person without any clipping")
 	ElseIf (Option == SetActorSpeedControl)
 		SetInfoText("Let actors increase the scene speed on their own when their Excitement gets high enough \nThis feature is experimental, disable if Osex behaves strangely on it's own")
+	ElseIf (Option == SetResetPosition)
+		SetInfoText("Reset actors to where the where when the scene started, when the scene ends")
 	ElseIf (Option == SetUndressIfNeed)
 		SetInfoText("If actors' genitals are covered by clothes, this will auto-remove the clothes as soon as they need access to their genitals")
 	ElseIf (Option == SetBedSearchDistance)
@@ -623,7 +630,7 @@ Event OnOptionHighlight(Int Option)
 	ElseIf (Option == SetDomBar)
 		SetInfoText("Enable the on-screen bar that tracks the dominant actor's Excitement\nActor's orgasm when their Excitement maxes out")
 	ElseIf (Option == SetthirdBar)
-				SetInfoText("Enable the on-screen bar that tracks the third actor's Excitement\nActor's orgasm when their Excitement maxes out")
+		SetInfoText("Enable the on-screen bar that tracks the third actor's Excitement\nActor's orgasm when their Excitement maxes out")
 	ElseIf (Option == SetSubBar)
 		SetInfoText("Enable the on-screen bar that tracks the second actor's Excitement\nActor's orgasm when their Excitement maxes out")
 	ElseIf (Option == SetMisallignmentOption)
@@ -953,6 +960,7 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetEndOnSubOrgasm", Main.EndOnSubOrgasm as Int)
 	JMap.SetInt(OstimSettingsFile, "SetEndOnBothOrgasm", Main.RequireBothOrgasmsToFinish as Int)
 	JMap.SetInt(OstimSettingsFile, "SetActorSpeedControl", Main.EnableActorSpeedControl as Int)
+	JMap.SetInt(OstimSettingsFile, "SetResetPosition", Main.ResetPosAfterSceneEnd as Int)
 	JMap.SetFlt(OstimSettingsFile, "SetsexExcitementMult", Main.SexExcitementMult as Float)
 	JMap.SetInt(OstimSettingsFile, "SetClipinglessFirstPerson", Main.EnableImprovedCamSupport as Int)
 	JMap.SetInt(OstimSettingsFile, "SetEndAfterActorHit", Main.EndAfterActorHit as Int)
@@ -1057,6 +1065,7 @@ Function ImportSettings()
 	Main.EndOnSubOrgasm = JMap.GetInt(OstimSettingsFile, "SetEndOnSubOrgasm")
 	Main.RequireBothOrgasmsToFinish = JMap.GetInt(OstimSettingsFile, "SetEndOnBothOrgasm")
 	Main.EnableActorSpeedControl = JMap.GetInt(OstimSettingsFile, "SetActorSpeedControl")
+	Main.ResetPosAfterSceneEnd = JMap.GetInt(OstimSettingsFile, "SetResetPosition")
 	Main.SexExcitementMult = JMap.GetFlt(OstimSettingsFile, "SetsexExcitementMult")
 	Main.EnableImprovedCamSupport = JMap.GetInt(OstimSettingsFile, "SetClipinglessFirstPerson")
 	Main.EndAfterActorHit = JMap.GetInt(OstimSettingsFile, "SetEndAfterActorHit")
