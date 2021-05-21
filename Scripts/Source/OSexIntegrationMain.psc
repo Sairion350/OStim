@@ -870,6 +870,7 @@ EndEvent
 
 
 Bool Function IsActorActive(Actor Act)
+	{Is the actor in an OSA scene?}
 	Return Act.HasMagicEffect(Actra)
 EndFunction
 
@@ -924,6 +925,7 @@ Function DecreaseAnimationSpeed()
 EndFunction
 
 Function AdjustAnimationSpeed(float amount)
+	{Increase or decrease the animation speed by the amount}
 	If amount < 0
 		int times = math.abs((amount / 0.5)) as int
 		While times > 0
@@ -940,6 +942,7 @@ Function SetCurrentAnimationSpeed(Int InSpeed)
 EndFunction
 
 String Function GetCurrentAnimation()
+	{Return the animation ID of the current animation}
 	Return CurrentAnimation
 EndFunction
 
@@ -948,11 +951,12 @@ String Function GetCurrentAnimationClass()
 EndFunction
 
 Int Function GetCurrentAnimationOID()
-	; the OID is the JMap ID of the current animation. You can feed this in to ODatabase
+	{Return the ODatabase ID of the current scene}
 	Return CurrentOID
 EndFunction
 
-string function GetCurrentAnimationSceneID() ;the scene ID, i.e. BB|Sy6!KNy9|HhPo|MoShoPo
+string function GetCurrentAnimationSceneID() 
+	{Return the scene ID of the current scene i.e. BB|Sy6!KNy9|HhPo|MoShoPo}
 	return ODatabase.GetSceneID( getcurrentanimationOID() )
 endfunction
 
@@ -979,7 +983,8 @@ Function LightActor(Actor Act, Int Pos, Int Brightness) ; pos 1 - ass, pos 2 - f
 	_oGlobal.ActorLight(Act, Which, OSAOmni.OLightSP, OSAOmni.OLightME)
 EndFunction
 
-Function TravelToAnimationIfPossible(String Animation) ; travel to animation is BUSTED beyond belief and even this doesn't fix it
+Function TravelToAnimationIfPossible(String Animation) 
+	{Alternative to TravelToAnimation with some safety checks}
 	Int ID = ODatabase.GetAnimationsWithSceneID(ODatabase.GetDatabaseOArray(), Animation)
 	ID = ODatabase.GetObjectOArray(ID, 0)
 	Bool Transitory = ODatabase.IsTransitoryAnimation(ID)
@@ -1008,7 +1013,8 @@ Function TravelToAnimationIfPossible(String Animation) ; travel to animation is 
 	EndIf
 EndFunction
 
-Function TravelToAnimation(String Animation) ; does not always work, use above
+Function TravelToAnimation(String Animation)
+	{Order OSA to path to the Scene ID provided. Often fails.}
 	Console("Attempting travel to: " + Animation)
 	RunOsexCommand("$Go," + Animation)
 	;string nav = diasa + ".chore.autoNav"
@@ -1018,7 +1024,8 @@ Function TravelToAnimation(String Animation) ; does not always work, use above
 	;UI.Invoke("HUD Menu", nav + ".stepStandard")
 EndFunction
 
-Function WarpToAnimation(String Animation) ;Requires a SceneID like:  BB|Sy6!KNy9|HhPo|MoShoPo
+Function WarpToAnimation(String Animation) 
+	{teleport to the provided scene. Requires a SceneID like:  BB|Sy6!KNy9|HhPo|MoShoPo}
 	Console("Warping to animation: " + Animation)
 	;RunOsexCommand("$Warp," + Animation)
 	
