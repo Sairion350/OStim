@@ -817,6 +817,9 @@ Event OnUpdate() ;OStim main logic loop
 	If ResetPosAfterSceneEnd
 		SubActor.SetPosition(SubX, SubY, SubZ) ;return
 		DomActor.SetPosition(DomX, DomY, DomZ)
+		If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+			Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
+	    EndIf
 	EndIf
 
 	If IsInFreeCam()
@@ -1041,7 +1044,7 @@ EndFunction
 
 Function EndAnimation(Bool SmoothEnding = True)
 	If (UseFades && SmoothEnding && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
-		FadeToBlack(1)
+		FadeToBlack(1.5)
 	EndIf
 	EndedProper = SmoothEnding
 	Console("Trying to end scene")	
@@ -2980,12 +2983,13 @@ Function RemapPullOutKey(Int zKey)
 	LoadOSexControlKeys()
 EndFunction
 
-Float ProfileTime ; for performance profiling
-Function Profile(String Name = "");
+Float ProfileTime 
+Function Profile(String Name = "")
+	{Call Profile() to start. Call Profile("any string") to pring out the time since profiler started in console. Most accurate at 60fps}
 	If (Name == "")
 		ProfileTime = Game.GetRealHoursPassed() * 60 * 60
 	Else
-		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime) + " seconds")
+		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime - 0.016) + " seconds")
 	EndIf
 EndFunction
 

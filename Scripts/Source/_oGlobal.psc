@@ -102,8 +102,8 @@ Function ActorSmoothUnlock(Actor Actra, Actor Player, Float Xp, Float Yp) Global
 
     Actra.StopTranslation()
     Actra.SetVehicle(None)
-    Actra.SetPosition(Xp, Yp, Actra.z)
-    Actra.SplineTranslateTo(Xp, Yp, Actra.z, Actra.GetAngleX(), Actra.GetAngleY(), Actra.GetAngleZ(), 1.0, 70, 0)
+    ;Actra.SetPosition(Xp, Yp, Actra.z)
+    ;Actra.SplineTranslateTo(Xp, Yp, Actra.z, Actra.GetAngleX(), Actra.GetAngleY(), Actra.GetAngleZ(), 1.0, 70, 0)
     Actra.SetAnimationVariableBool("bHumanoidFootIKDisable", False)
     Debug.SendAnimationEvent(Actra, "IdleForceDefaultState")
 EndFunction
