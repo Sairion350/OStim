@@ -1165,9 +1165,9 @@ Function PlayAnimationSequence(String[] list)
 	int max = list.Length
 	While (i < max)
 		If !StringContains(list[i], "|")
-			PapyrusUtil.PushString(CMDs, "$Wait," + list[i])
+			CMDs = PapyrusUtil.PushString(CMDs, "$Wait," + list[i])
 		Else 
-			PapyrusUtil.PushString(CMDs, "$Warp," + list[i])
+			CMDs = PapyrusUtil.PushString(CMDs, "$Warp," + list[i])
 		EndIf
 
 		i += 1
