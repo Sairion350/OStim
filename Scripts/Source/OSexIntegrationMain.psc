@@ -902,12 +902,7 @@ Int Function GetCurrentAnimationMaxSpeed()
 EndFunction
 
 Int Function GetAPIVersion()
-	;7 version 4.0, moves a lot of code around and reimplements speed control
-	;6 adds better animation flipping, reallign(), soundAPI
-	;5 adds ODatabase, getCurrentLeadingActor
-	;4 added onanimationchange event and decrease speed
-	;3 introduces events and getmostrecentorgasmedactor
-	Return 13
+	Return 14
 EndFunction
 
 Function IncreaseAnimationSpeed()
@@ -1015,6 +1010,7 @@ EndFunction
 
 Function TravelToAnimation(String Animation)
 	{Order OSA to path to the Scene ID provided. Often fails.}
+	
 	Console("Attempting travel to: " + Animation)
 	RunOsexCommand("$Go," + Animation)
 	;string nav = diasa + ".chore.autoNav"
@@ -1205,7 +1201,8 @@ ObjectReference Function GetBed()
 	Return Currentbed
 EndFunction
 
-Bool Function IsFemale(Actor Act) ; genitalia based / has a vagina and not a penis
+Bool Function IsFemale(Actor Act)
+	{genitalia based / has a vagina and not a penis}
 	If SoSInstalled
 		return !Act.IsInFaction(SoSFaction)
 	else
@@ -1213,12 +1210,13 @@ Bool Function IsFemale(Actor Act) ; genitalia based / has a vagina and not a pen
 	endif
 EndFunction
 
-Bool Function AppearsFemale(Actor Act) ; gender based / looks like a woman but can have a penis
+Bool Function AppearsFemale(Actor Act) 
+	{gender based / looks like a woman but can have a penis}
 	Return (Act.GetLeveledActorBase().GetSex() == 1)
 EndFunction
 
 Actor Function GetCurrentLeadingActor()
-	; in a blowjob type animation, it would be the female, while in most sex animations, it will be the male
+	{in a blowjob type animation, it would be the female, while in most sex animations, it will be the male}
 	Int ActorNum = ODatabase.GetMainActor(CurrentOID)
 	If (ActorNum == 0)
 		Return DomActor
@@ -1234,7 +1232,8 @@ Bool Function IsVaginal()
 	Return (GetCurrentAnimationClass() == ClassSex)
 EndFunction
 
-String[] Function GetScene() ; this is not the sceneID, this is an internal osex thing
+String[] Function GetScene()
+	{this is not the sceneID, this is an internal osex thing}
 	Return CurrScene
 EndFunction
 
@@ -1334,19 +1333,23 @@ Function SetStimMult(Actor Act, Float Value)
 EndFunction
 
 ; spanking stuff
-Int Function GetSpankCount() ; num of spankings so far this scene
+Int Function GetSpankCount() ; 
+	{Number of spankings so far this scene}
 	Return SpankCount
 EndFunction
 
-Int Function GetMaxSpanksAllowed() ; maximum number of spankings before it deals damage
+Int Function GetMaxSpanksAllowed()  
+	{maximum number of spankings before it deals damage}
 	Return SpankMax
 EndFunction
 
-Function SetSpankMax(Int Max) ; maximum number of spankings before it deals damage
+Function SetSpankMax(Int Max) 
+	{maximum number of spankings before it deals damage}
 	SpankMax = Max
 EndFunction
 
-Function SetSpankCount(Int Count) ; num of spankings so far this scene
+Function SetSpankCount(Int Count) 
+	{num of spankings so far this scene}
 	SpankCount = Count
 EndFunction
 
