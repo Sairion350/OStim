@@ -887,7 +887,7 @@ Bool Function IsSoloScene()
 EndFunction 
 
 Bool Function IsThreesome()
-	return (ThirdActor as bool)
+	return ThirdActor != none
 EndFunction
 
 ODatabaseScript Function GetODatabase()
