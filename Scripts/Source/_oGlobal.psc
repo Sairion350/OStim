@@ -200,19 +200,19 @@ String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni OSO) Globa
         Details[4] = "1"
         ConsoleUtil.SetSelectedReference(None)
         ;Consoleutil.ExecuteCommand("tcl")
-        Actra.SetScale(1.0)
+        ;Actra.SetScale(1.0)
         ;Consoleutil.ExecuteCommand("tcl")
     Else
-        Actra.SetScale(1.0)
+        ;Actra.SetScale(1.0)
         Details[4] = "0"
         Details[10] = Details[0] ; it is now already a String in hex
-        Details[11] = Game.GetModName(ModNameHex10(Details[10]))
-        Details[10] = StringUtil.SubString(Details[10], 2) ; last 6 of hex
-        Details[12] = StringUtil.SubString(Details[11], 0, StringUtil.Find(Details[11], ".es"))
+        Details[11] = Game.GetModName(ModNameHex10(Details[10])) ;unused except for datalibrary
+        Details[10] = StringUtil.SubString(Details[10], 2) ; last 6 of hex ;unused except for datalibrary
+        Details[12] = StringUtil.SubString(Details[11], 0, StringUtil.Find(Details[11], ".es")) ;unused except for datalibrary
         Details[13] = Details[12] + Details[10]
     EndIf
     Details[8] = ActB.GetWeight()
-    Details[7] = ActB.GetVoiceType().GetFormId()
+    Details[7] = ActB.GetVoiceType().GetFormId() ;unused except for datalibrary
 
     ;/
     If !NoMove

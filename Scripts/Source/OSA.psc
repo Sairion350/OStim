@@ -250,6 +250,7 @@ Bool Function SetActors(String[] SceneSuite, Actor[] Actra) Global
 EndFunction
 
 Bool Function SetActorsStim(String[] SceneSuite, Actor[] Actra) Global
+
     Int i = 0
     Int L = Actra.length
     While (i < L)
@@ -272,8 +273,8 @@ Bool Function SetActorsStim(String[] SceneSuite, Actor[] Actra) Global
         EndIf
     EndWhile
 
-    OsexIntegrationMain OsexCore = Game.GetFormFromFile(0x000801, "Ostim.esp") as OsexIntegrationMain
-    OsexCore.AcceptReroutingActors(Actra[0], Actra[1])
+    
+
 
     If (Approved)
         (Quest.GetQuest("0SA") as _oOmni).PrepActra(SceneSuite, Actra)
