@@ -447,7 +447,7 @@ Event OnUpdate() ;OStim main logic loop
 		FadeToBlack()
 	EndIf
 
-	If SubActor
+	If (SubActor)
 		If (SubActor.GetParentCell() != DomActor.GetParentCell())
 			If (SubActor == playerref)
 				Domactor.moveto(SubActor)
@@ -501,24 +501,27 @@ Event OnUpdate() ;OStim main logic loop
 
 	RegisterForModEvent("ostim_setvehicle", "OnSetVehicle")
 
-	RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_Sound", "OnSoundDom")
-	RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_Sound", "OnSoundSub")
-
-	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_BlendMo", "OnMoDom")
-	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_BlendMo", "OnMoSub")
-
-	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_BlendPh", "OnPhDom")
-	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_BlendPh", "OnPhSub")
-
-	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_BlendEx", "OnExDom")
-	RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_BlendEx", "OnExSub")
-
-	If (ThirdActor)
-		RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound", "OnSoundThird")
-		RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo", "OnMoThird")
-		RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh", "OnPhThird")
-		RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx", "OnExThird")
+	String DomFormID = _oGlobal.GetFormID_S(DomActor.GetActorBase())
+	RegisterForModEvent("0SSO" + DomFormID + "_Sound", "OnSoundDom")
+	RegisterForModEvent("0SAA" + DomFormID + "_BlendMo", "OnMoDom")
+	RegisterForModEvent("0SAA" + DomFormID + "_BlendPh", "OnPhDom")
+	RegisterForModEvent("0SAA" + DomFormID + "_BlendEx", "OnExDom")
+	If (SubActor)
+		String SubFormID = _oGlobal.GetFormID_S(SubActor.GetActorBase())
+		RegisterForModEvent("0SSO" + SubFormID + "_Sound", "OnSoundSub")
+		RegisterForModEvent("0SAA" + SubFormID + "_BlendMo", "OnMoSub")
+		RegisterForModEvent("0SAA" + SubFormID + "_BlendPh", "OnPhSub")
+		RegisterForModEvent("0SAA" + SubFormID + "_BlendEx", "OnExSub")
+		If (ThirdActor)
+			String ThirdFormID = _oGlobal.GetFormID_S(ThirdActor.GetActorBase())
+			RegisterForModEvent("0SSO" + ThirdFormID + "_Sound", "OnSoundThird")
+			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendMo", "OnMoThird")
+			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendPh", "OnPhThird")
+			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendEx", "OnExThird")
+		EndIf
 	EndIf
+
+	
 
 	Actro[0] = DomActor
 	Actro[1] = SubActor
