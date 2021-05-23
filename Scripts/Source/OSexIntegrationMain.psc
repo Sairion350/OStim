@@ -874,6 +874,22 @@ Bool Function IsActorActive(Actor Act)
 	Return Act.HasMagicEffect(Actra)
 EndFunction
 
+Bool Function IsPlayerInvolved()
+	return (playerref == DomActor) || (playerref == subactor) || (playerref == ThirdActor)
+EndFunction
+
+Bool Function IsNPCScene()
+	return !IsPlayerInvolved()
+EndFunction
+
+Bool Function IsSoloScene()
+	return SubActor == None
+EndFunction 
+
+Bool Function IsThreesome()
+	return (ThirdActor as bool)
+EndFunction
+
 ODatabaseScript Function GetODatabase()
 	While (!ODatabase)
 		Utility.Wait(0.5)
