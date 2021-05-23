@@ -1065,7 +1065,7 @@ Function EndAnimation(Bool SmoothEnding = True)
 	EndedProper = SmoothEnding
 	Console("Trying to end scene")	
 
-	If (!IsActorActive(Playerref) && (DomActor.GetParentCell() != playerref.GetParentCell()))
+	If (IsNPCScene() && (DomActor.GetParentCell() != playerref.GetParentCell()))
 		; Attempting to end the scene when the actors are not loaded will fail
 		;console("game loaded")
 		SendModEvent("0SA_GameLoaded")
