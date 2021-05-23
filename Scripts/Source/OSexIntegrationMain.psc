@@ -443,7 +443,7 @@ EndFunction
 Event OnUpdate() ;OStim main logic loop
 	Console("Starting scene asynchronously")
 
-	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+	If (UseFades && IsPlayerInvolved())
 		FadeToBlack()
 	EndIf
 
@@ -461,7 +461,7 @@ Event OnUpdate() ;OStim main logic loop
 
 	SendModEvent("ostim_prestart") ; fires as soon as the screen goes black. be careful, some settings you normally expect may not be set yet. Use ostim_start to run code when the OSA scene begins.
 
-	If (EnableImprovedCamSupport) && ((DomActor == playerref) || (SubActor == playerref))
+	If (EnableImprovedCamSupport) && IsPlayerInvolved()
 		Game.DisablePlayerControls(abCamswitch = True, abMenu = False, abFighting = False, abActivate = False, abMovement = False, aiDisablePOVType = 0)
 	EndIf
  
@@ -567,7 +567,7 @@ Event OnUpdate() ;OStim main logic loop
 			
 	EndIf
 
-	If (UseFreeCam) && ((DomActor == playerref) || (SubActor == playerref))
+	If (UseFreeCam) && IsPlayerInvolved()
 		ToggleFreeCam(True)
 	EndIf
 
@@ -587,7 +587,7 @@ Event OnUpdate() ;OStim main logic loop
     ; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
     ; (I didn't pick the nonsense name, it's called that in OSA)
     ; Unfortunately, the method used for mounting an NPC on NPC scene is a bit involved.
-    if !IsActorActive(PlayerRef)
+    if IsNPCScene()
 		MountNPCSceneAsMain()
 		Console("Scene is a NPC on NPC scene")
 	Else
@@ -604,7 +604,7 @@ Event OnUpdate() ;OStim main logic loop
     ;OnAnimationChange()
     
     Int OldTimescale = 0
-	If (CustomTimescale >= 1) && IsActorActive(playerref)
+	If (CustomTimescale >= 1) && IsPlayerInvolved()
 		OldTimescale = GetTimeScale()
 		SetTimeScale(CustomTimescale)
 		Console("Using custom Timescale: " + CustomTimescale)
@@ -664,7 +664,7 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	If (!AIRunning)
-		If ((DomActor != PlayerRef) && (SubActor != PlayerRef) && (ThirdActor != PlayerRef) && UseAINPConNPC)
+		If (IsNPCScene() && UseAINPConNPC)
 			Console("NPC on NPC scene detected. Starting AI")
 			AI.StartAI()
 			AIRunning = True
@@ -685,7 +685,7 @@ Event OnUpdate() ;OStim main logic loop
 
 	SendModEvent("ostim_start")
 	
-	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+	If (UseFades && IsPlayerInvolved())
 		FadeFromBlack()
 	EndIf
 
@@ -797,7 +797,7 @@ Event OnUpdate() ;OStim main logic loop
 		RestoreScales()
     EndIf
 
-	If (EnableImprovedCamSupport) && ((DomActor == playerref) || (SubActor == playerref))
+	If (EnableImprovedCamSupport) && IsPlayerInvolved()
 		Game.EnablePlayerControls(abCamSwitch = True)
 	EndIf
 
@@ -820,7 +820,7 @@ Event OnUpdate() ;OStim main logic loop
 	    EndIf
 	EndIf
 
-	If (ForceFirstPersonAfter && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+	If (ForceFirstPersonAfter && IsPlayerInvolved())
 		If IsInFreeCam()
 			While IsInFreeCam()
 				Utility.Wait(0.1)
@@ -829,7 +829,7 @@ Event OnUpdate() ;OStim main logic loop
 		Game.ForceFirstPerson()
 	EndIf
 
-	If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+	If (UseFades && EndedProper && IsPlayerInvolved())
 		FadeFromBlack(2)
 	EndIf
 
