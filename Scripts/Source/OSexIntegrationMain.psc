@@ -692,7 +692,7 @@ Event OnUpdate() ;OStim main logic loop
 		FadeFromBlack()
 	EndIf
 
-	
+	DisableActorsCollision()
 	While (IsActorActive(DomActor)) ; Main OStim logic loop
 		If (LoopTimeTotal > 1)
 			;Console("Loop took: " + loopTimeTotal + " seconds")
@@ -795,7 +795,7 @@ Event OnUpdate() ;OStim main logic loop
 	Console("Ending scene")
 
 	SendModEvent("ostim_end")
-
+	EnableActorsCollision()
 	If !DisableScaling
 		RestoreScales()
     EndIf
