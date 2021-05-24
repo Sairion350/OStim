@@ -879,7 +879,7 @@ EndFunction
 
 Bool Function IsActorInvolved(actor act)
 	{Is or was the actor in an ostim scene}
-	;Note the following discintions with IsActorActive()
+	; Note the following distinctions with IsActorActive()
 	; IsActorInvolved will return true during ostim startup and shutdown as well as during the osa scene
 	; IsActorInvolved will return true after a ostim scene has ended completely. In this sense it is basically "WasActorInvolved"  in the most recent scene
 	; Generally isactoractive is preferred, since it will return false if no ostim scene is running
@@ -1381,20 +1381,34 @@ Function SetSpankCount(Int Count)
 	SpankCount = Count
 EndFunction
 
-Function ToggleActorsCollision()
-	If DomActor
-		ConsoleUtil.SetSelectedReference(domactor)
-		ConsoleUtil.ExecuteCommand("tcl")
-	EndIf
-	If SubActor
-		ConsoleUtil.SetSelectedReference(SubActor)
-		ConsoleUtil.ExecuteCommand("tcl")
-	EndIf
-	If ThirdActor
-		ConsoleUtil.SetSelectedReference(ThirdActor)
-		ConsoleUtil.ExecuteCommand("tcl")
-	EndIf
-	ConsoleUtil.SetSelectedReference(none)
+Function DisableActorsCollision()
+	actor[] a = GetActors()
+
+	int i = 0
+	int max = a.Length
+	while i < max 
+		DisableCollision(a[i])
+		i += 1
+	endwhile
+EndFunction
+
+Function EnableActorsCollision()
+	actor[] a = GetActors()
+
+	int i = 0
+	int max = a.Length
+	while i < max 
+		EnableCollision(a[i])
+		i += 1
+	endwhile
+EndFunction
+
+Function DisableCollision(actor act)
+	act.TranslateTo(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.000000001, 0.000000001)
+EndFunction
+
+Function EnableCollision(actor act)
+	act.stoptranslation()
 EndFunction
 
 
