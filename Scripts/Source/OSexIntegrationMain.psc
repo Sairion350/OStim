@@ -350,7 +350,7 @@ EndEvent
 ; Call this function to start a new OStim scene
 Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zUndressSub = False, Bool zAnimateUndress = False, String zStartingAnimation = "", Actor zThirdActor = None, ObjectReference Bed = None, Bool Aggressive = False, Actor AggressingActor = None)
 	If (SceneRunning)
-		Debug.Notification("OSex scene already running")
+		Debug.Notification("OSA scene already running")
 		Return False
 	EndIf
 	If IsActorActive(dom) || IsActorActive(sub)
@@ -2216,7 +2216,7 @@ Function SetActorExcitement(Actor Act, Float Value)
 	ElseIf (Act == ThirdActor)
 		ThirdExcitement = Value
 	Else
-		Debug.Notification("Unknown Actor")
+		Console("Unknown Actor")
 	EndIf
 EndFunction
 
@@ -3041,10 +3041,15 @@ Function Profile(String Name = "")
 	If (Name == "")
 		ProfileTime = Game.GetRealHoursPassed() * 60 * 60
 	Else
-		Console(Name + ": " + ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime - 0.016) + " seconds")
+		float seconds = ((Game.GetRealHoursPassed() * 60 * 60) - ProfileTime - 0.016)
+		float ms = seconds * 1000
+		If seconds < 0.0
+			Console(Name + ": Too fast to measure")
+		else 
+			Console(Name + ": " + seconds + " seconds (" + ms + " milliseconds)")
+		endif 
 	EndIf
 EndFunction
-
 
 Function MountNPCSceneAsMain()
 	; The player thread is easily accessible through OSA. However, NPC scenes are not.
