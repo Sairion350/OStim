@@ -879,8 +879,8 @@ Bool Function IsActorInvolved(actor act)
 	{Is or was the actor in an ostim scene}
 	; Note the following distinctions with IsActorActive()
 	; IsActorInvolved will return true during ostim startup and shutdown as well as during the osa scene
-	; IsActorInvolved will return true after a ostim scene has ended completely. In this sense it is basically "WasActorInvolved"  in the most recent scene
-	; Generally isactoractive is preferred, since it will return false if no ostim scene is running
+	; IsActorInvolved can return true even after a ostim scene has ended completely. In this sense it is basically "WasActorInvolved"  in the most recent scene
+	; Generally isactoractive is preferred, since it will always return false if no ostim scene is running
 	return (act == DomActor) || (act == subactor) || (act == ThirdActor)
 EndFunction
 
@@ -1255,7 +1255,7 @@ Bool Function AnimationRunning()
 EndFunction
 
 Bool Function IsVaginal()
-	Return (GetCurrentAnimationClass() == ClassSex)
+	Return (GetCurrentAnimationClass() == ClassSex) && IsFemale(SubActor)
 EndFunction
 
 String[] Function GetScene()
