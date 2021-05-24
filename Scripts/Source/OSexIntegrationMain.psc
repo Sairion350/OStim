@@ -873,12 +873,21 @@ EndEvent
 
 
 Bool Function IsActorActive(Actor Act)
-	{Is the actor in an OSA scene?}
+	{Is the actor in an OSA scene at this moment?}
 	Return Act.HasMagicEffect(Actra)
 EndFunction
 
+Bool Function IsActorInvolved(actor act)
+	{Is or was the actor in an ostim scene}
+	;Note the following discintions with IsActorActive()
+	; IsActorInvolved will return true during ostim startup and shutdown as well as during the osa scene
+	; IsActorInvolved will return true after a ostim scene has ended completely. In this sense it is basically "WasActorInvolved"  in the most recent scene
+	; Generally isactoractive is preferred, since it will return false if no ostim scene is running
+	return (act == DomActor) || (act == subactor) || (act == ThirdActor)
+EndFunction
+
 Bool Function IsPlayerInvolved()
-	return (playerref == DomActor) || (playerref == subactor) || (playerref == ThirdActor)
+	return IsActorInvolved(playerref)
 EndFunction
 
 Bool Function IsNPCScene()
