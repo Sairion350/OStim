@@ -692,7 +692,6 @@ Event OnUpdate() ;OStim main logic loop
 		FadeFromBlack()
 	EndIf
 
-	DisableActorsCollision()
 	While (IsActorActive(DomActor)) ; Main OStim logic loop
 		If (LoopTimeTotal > 1)
 			;Console("Loop took: " + loopTimeTotal + " seconds")
@@ -795,7 +794,6 @@ Event OnUpdate() ;OStim main logic loop
 	Console("Ending scene")
 
 	SendModEvent("ostim_end")
-	EnableActorsCollision()
 	If !DisableScaling
 		RestoreScales()
     EndIf
@@ -1404,7 +1402,9 @@ Function EnableActorsCollision()
 EndFunction
 
 Function DisableCollision(actor act)
-	act.TranslateTo(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.000000001, 0.000000001)
+	{Make the actor unable to moved by anything. Other actors can still touch them}
+	act.TranslateTo(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.000000000, 0.000000000)
+	
 EndFunction
 
 Function EnableCollision(actor act)
