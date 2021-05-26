@@ -96,9 +96,10 @@ Bool Property MisallignmentProtection Auto
 Bool Property UseAIControl Auto
 Bool Property PauseAI Auto
 
-Bool Property PlayerAlwaysDom Auto ;MCM options maybe?
-Bool Property PlayerAlwaysSub Auto
-Bool Property FemaleAlwaysDom Auto 
+Bool Property PlayerAlwaysSubStraight auto ;mcm
+Bool Property PlayerAlwaysSubGay Auto
+Bool Property PlayerAlwaysDomStraight Auto 
+Bool Property PlayerAlwaysDomGay auto
 
 Bool Property UseAINPConNPC Auto
 Bool Property UseAIPlayerAggressor Auto
@@ -372,24 +373,6 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 		SubActor = Sub
 	EndIf
 
-	;special reordering settings
-	If (PlayerAlwaysDom) && ((Dom == PlayerRef) || (Sub == PlayerRef))
-		If Dom != PlayerRef 
-			DomActor = Sub 
-			SubActor = Dom
-		EndIf
-	Elseif (PlayerAlwaysSub) && ((Dom == PlayerRef) || (Sub == PlayerRef))
-		If Sub != PlayerRef 
-			DomActor = Sub 
-			SubActor = Dom
-		EndIf
-	ElseIf (FemaleAlwaysDom)
-		If AppearsFemale(Subactor) && !AppearsFemale(DomActor)
-			actor temp  = DomActor
-			DomActor = SubActor
-			SubActor = temp
-		EndIf
-	EndIf
 
 	UndressDom = zUndressDom
 	UndressSub = zUndressSub
@@ -404,6 +387,32 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 			ThirdActor = sub
 		EndIf
 	EndIf
+
+
+	If IsPlayerInvolved()
+		;special reordering settings
+		;todo: clean up all of the ordering code around here
+		bool gay = (IsFemale(dom) == IsFemale(sub))
+		actor playerPartner = GetSexPartner(playerref)
+
+		if gay 
+			if PlayerAlwaysDomGay
+				SubActor = playerPartner
+				DomActor = playerref
+			elseif PlayerAlwaysSubGay
+				DomActor = playerPartner
+				SubActor = playerref
+			endif
+		else 
+			if PlayerAlwaysSubStraight
+				SubActor = playerref 
+				DomActor = playerPartner
+			elseif PlayerAlwaysDomStraight
+				DomActor = playerref 
+				SubActor = playerpartner  
+			endif 
+		endif 
+	endif 
 
 
 	If (Aggressive)
@@ -2845,11 +2854,14 @@ Function SetDefaultSettings()
 	AutoUndressIfNeeded = false
 	ResetPosAfterSceneEnd = true 
 
+	PlayerAlwaysSubStraight = false
+	PlayerAlwaysSubGay = false
+	PlayerAlwaysDomStraight = false
+	PlayerAlwaysDomGay = false
+
 	EndAfterActorHit = True
 
-	PlayerAlwaysDom = False 
-	PlayerAlwaysSub = False
-	FemaleAlwaysDom = False
+
 
 	DomLightBrightness = 0
 	SubLightBrightness = 1
