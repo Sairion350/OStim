@@ -574,14 +574,16 @@ Event OnUpdate() ;OStim main logic loop
 		StartingAnimation = "AUTO"
 	EndIf
 
+	o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
+    
+    ; Fix for rapid animation swap bug after reload
+	; Will need updating if/when multi-scene stuff is added but works for now
+	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 51)
 
     CurrScene = OSA.MakeStage()
     OSA.SetActorsStim(currScene, Actro)
     OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
     OSA.StimStart(CurrScene)
-
-
-    o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
 
     ; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
     ; (I didn't pick the nonsense name, it's called that in OSA)
@@ -3366,4 +3368,7 @@ Function OnLoadGame()
 		OBars.OnGameLoad()
 		OUndress.OnGameLoad()
 	EndIf
+
+	;may annoy ihud users?
+	UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", true)
 EndFunction
