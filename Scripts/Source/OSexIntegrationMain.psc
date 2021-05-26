@@ -570,10 +570,6 @@ Event OnUpdate() ;OStim main logic loop
 			
 	EndIf
 
-	If (UseFreeCam) && IsPlayerInvolved()
-		ToggleFreeCam(True)
-	EndIf
-
 	If (StartingAnimation == "")
 		StartingAnimation = "AUTO"
 	EndIf
@@ -684,6 +680,10 @@ Event OnUpdate() ;OStim main logic loop
 			AI.StartAI()
 			AIRunning = True
 		EndIf
+	EndIf
+
+	If (UseFreeCam) && IsPlayerInvolved()
+		ToggleFreeCam(True)
 	EndIf
 
 	SendModEvent("ostim_start")
