@@ -392,7 +392,7 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	If IsPlayerInvolved()
 		;special reordering settings
 		;todo: clean up all of the ordering code around here
-		bool gay = (IsFemale(dom) == IsFemale(sub))
+		bool gay = (AppearsFemale(dom) == AppearsFemale(sub))
 		actor playerPartner = GetSexPartner(playerref)
 
 		if gay 
