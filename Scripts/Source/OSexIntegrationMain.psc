@@ -3012,6 +3012,12 @@ EndFunction
 Function ResetState()
 	Console("Resetting thread state")
 	SceneRunning = False
+	int i = 0 
+	Actor[] a = GetActors()
+	while i < a.Length
+		a[i].dispelallspells()
+		i += 1
+	endwhile
 	Debug.MessageBox("Reset state.")
 EndFunction
 
