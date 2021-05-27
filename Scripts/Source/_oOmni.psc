@@ -519,7 +519,7 @@ String[] Function SetOINI(Actor Player) Global
     OIN[7]  = "0"   ; DevMode (SET TO 0)
     OIN[8]  = "ic"  ; SubColor
     OIN[9]  = "op"  ; ThemeColor
-    OIN[10] = "1"   ; SortRoleByAnimGender
+    OIN[10] = "0"   ; SortRoleByAnimGender
 
     ;OIN[11] = "1"   ; AllowBodyScaling
     if ostim.IsModLoaded("3BBB.esp")
