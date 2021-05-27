@@ -19,6 +19,12 @@ Int SetDropClothes
 int SetAnimateRedress
 Int SetStrongerUnequip
 
+; actor role settings
+Int setPlayerAlwaysDomStraight
+Int setPlayerAlwaysSubStraight
+Int setPlayerAlwaysDomGay
+Int setPlayerAlwaysSubGay
+
 ; bar settings
 Int SetSubBar
 Int SetDomBar
@@ -206,6 +212,13 @@ Event OnPageReset(String Page)
 		SetResetPosition = AddToggleOption("Reset position after scene", Main.ResetPosAfterSceneEnd) 		
 		AddEmptyOption()
 
+		AddColoredHeader("Player Roles")
+		setPlayerAlwaysDomStraight = AddToggleOption("Player Always Dom: Straight", Main.PlayerAlwaysDomStraight)
+		setPlayerAlwaysSubStraight = AddToggleOption("Player Always Sub: Straight", Main.PlayerAlwaysSubStraight)
+		setPlayerAlwaysDomGay = AddToggleOption("Player Always Dom: Gay", Main.PlayerAlwaysDomGay)
+		setPlayerAlwaysSubGay = AddToggleOption("Player Always Sub: Gay", Main.PlayerAlwaysSubGay)
+		AddEmptyOption()
+
 		AddColoredHeader("Orgasms")
 		SetEndOnOrgasm = AddToggleOption("End sex after Dom actor orgasm", Main.EndOnDomOrgasm)
 		SetEndOnSubOrgasm = AddToggleOption("End sex after Sub actor orgasm", Main.EndOnSubOrgasm)
@@ -217,7 +230,7 @@ Event OnPageReset(String Page)
 		AddColoredHeader("Beds")
 		SetEnableBeds = AddToggleOption("Use beds", Main.UseBed)
 		SetBedSearchDistance = AddSliderOption("Bed search radius", Main.BedSearchDistance, "{0} meters")
-		SetBedReallignment = AddSliderOption("Bed reallignment", Main.BedReallignment, "{0} units")
+		SetBedReallignment = AddSliderOption("Bed realignment", Main.BedReallignment, "{0} units")
 		SetBedAlgo = AddToggleOption("Use alternate bed search method", Main.UseAlternateBedSearch)
 		AddEmptyOption()
 
@@ -286,6 +299,7 @@ Event OnPageReset(String Page)
 		AddColoredHeader("Save and load settings.")
 		ExportSettings = AddTextOption("Export Settings", "Done")
 		ImportSettings = AddTextOption("Import Settings", "Done")
+		AddEmptyOption()
 	ElseIf (Page == "")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayDing()
@@ -314,7 +328,7 @@ Event OnPageReset(String Page)
 		if main.IsModLoaded(ONights)
 			AddColoredHeader("ONights")
 			SetONStopWhenFound = AddToggleOption("NPCs stop sex when spotted", GetExternalBool(ONights, GVONStopWhenFound))
-			SetONFreqMult = AddSliderOption("Sex frequency Mult", GetExternalFloat(ONights, GVONFreqMult), "{2} x")
+			SetONFreqMult = AddSliderOption("Sex frequency Multiplier", GetExternalFloat(ONights, GVONFreqMult), "{2} x")
 			
 		endif 
 
@@ -525,12 +539,22 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetOnlyLightInDark)
 		Main.LowLightLevelLightsOnly = !Main.LowLightLevelLightsOnly
 		SetToggleOptionValue(Option, Main.LowLightLevelLightsOnly)
+	ElseIf (Option == SetPlayerAlwaysSubStraight)
+		Main.PlayerAlwaysSubStraight = !Main.PlayerAlwaysSubStraight
+		SetToggleOptionValue(Option, Main.PlayerAlwaysSubStraight)
+	ElseIf (Option == SetPlayerAlwaysSubGay)
+		Main.PlayerAlwaysSubGay = !Main.PlayerAlwaysSubGay
+		SetToggleOptionValue(Option, Main.PlayerAlwaysSubGay)
+	ElseIf (Option == SetPlayerAlwaysDomStraight)
+		Main.PlayerAlwaysDomStraight = !Main.PlayerAlwaysDomStraight
+		SetToggleOptionValue(Option, Main.PlayerAlwaysDomStraight)
+	ElseIf (Option == SetPlayerAlwaysDomGay)
+		Main.PlayerAlwaysDomGay = !Main.PlayerAlwaysDomGay
+		SetToggleOptionValue(Option, Main.PlayerAlwaysDomGay)
 	ElseIf (Option == ExportSettings)
 		ExportSettings()
-		; will probably need to do a popup or something here to cover the delay.
 	ElseIf (Option == ImportSettings)
 		ImportSettings()
-		; will probably need to do a popup or something here to cover the delay.
 	EndIf
 EndEvent
 
@@ -590,9 +614,9 @@ Event OnOptionHighlight(Int Option)
 	ElseIf (Option == SetMatchColorToGender)
 		SetInfoText("Change the color of the bars to match the gender of the character")
 	ElseIf (Option == SetHideNPCOnNPCBars)
-		SetInfoText("Do not show exitement bars if the player is not in a scene")
+		SetInfoText("Do not show excitement bars if the player is not in a scene")
 	ElseIf (Option == SetStrongerUnequip)
-		SetInfoText("Use an alternate unequip method that may catch more armor pieces, especially armor with auto-reequip scripts\nHowever, some armor it unequips may not be reequiped in redress\nHas no effect if drop clothes on to ground is enabled")
+		SetInfoText("Use an alternate unequip method that may catch more armor pieces, especially armor with auto-reequip scripts\nHowever, some armor it unequips may not be reequipped in redress\nHas no effect if drop clothes on to ground is enabled")
 	ElseIf (Option == SetEndAfterActorHit)
 		SetInfoText("End the scene after someone in the scene is hit\n Can misfire with certain other mods")
 	ElseIf (Option == SetAnimateRedress)
@@ -644,7 +668,7 @@ Event OnOptionHighlight(Int Option)
 	ElseIf (Option == SetAutoHideBar)
 		SetInfoText("Automatically hide the bars during sex when not interacting with the UI")
 	ElseIf (Option == SetSlowMoOrgasms)
-		SetInfoText("Add in a few seconds of slowmotion right when the player orgasms")
+		SetInfoText("Add in a few seconds of slow-motion right when the player orgasms")
 	ElseIf (Option == SetOrgasmBoostsRel)
 		SetInfoText("Giving orgasms to actors you have a relationship rank of 0 with will increase them to rank 1, marking them as a friend\nThis may open up unique options in some mods")
 	ElseIf (Option == SetDomLightMode)
@@ -685,6 +709,14 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Only usable in manual mode\nWhen pressed during a sexual animation, causes your character to immediately cancel and \"pull out\" of the current animation")
 	ElseIf (Option == SetThanks)
 		SetInfoText("Thank you for downloading OStim\nLeave a comment and also share it with others online if you enjoy it, to help others find it")
+	ElseIf (Option == SetPlayerAlwaysSubStraight)
+		SetInfoText("Forces the player to always take the Sub role during Straight scenes. \nIf neither are enabled default actor placement will take place, if both are enabled player will default to Dom. \nNote that individual mods can temporarily override this setting.")
+	ElseIf (Option == SetPlayerAlwaysSubGay)
+		SetInfoText("Forces the player to always take the Sub role during Gay scenes. \nIf neither are enabled default actor placement will take place, if both are enabled player will default to Dom. \nNote that individual mods can temporarily override this setting.")
+	ElseIf (Option == SetPlayerAlwaysDomStraight)
+		SetInfoText("Forces the player to always take the Dom role during Straight scenes. \nIf neither are enabled default actor placement will take place, if both are enabled player will default to Dom. \nNote that individual mods can temporarily override this setting.")
+	ElseIf (Option == SetPlayerAlwaysDomGay)
+		SetInfoText("Forces the player to always take the Dom role during Gay scenes. \nIf neither are enabled default actor placement will take place, if both are enabled player will default to Dom. \nNote that individual mods can temporarily override this setting.")
 	ElseIf (Option == ExportSettings)
 		SetInfoText("Click this button to export the Ostim MCM settings.")
 	ElseIf (Option == ImportSettings)
@@ -967,6 +999,12 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetUseRumble", Main.UseRumble as Int)
 	JMap.SetInt(OstimSettingsFile, "SetUseScreenShake", Main.UseScreenShake as Int)
 	JMap.SetInt(OstimSettingsFile, "SetScaling", Main.DisableScaling as Int)
+
+	; Player roles settings.
+	JMap.SetInt(OstimSettingsFile, "PlayerAlwaysSubStraight", main.PlayerAlwaysSubStraight as Int)
+	JMap.SetInt(OstimSettingsFile, "PlayerAlwaysSubGay", main.PlayerAlwaysSubGay as Int)
+	JMap.SetInt(OstimSettingsFile, "PlayerAlwaysDomStraight", main.PlayerAlwaysDomStraight as Int)
+	JMap.SetInt(OstimSettingsFile, "PlayerAlwaysDomGay", main.PlayerAlwaysDomGay as Int)
 	
 	; Clothes settings export.
 	JMap.SetInt(OstimSettingsFile, "SetUndressIfNeed", Main.AutoUndressIfNeeded as Int)
@@ -1048,9 +1086,15 @@ EndFunction
 
 Function ImportSettings()
 	; Import from file.
-	int OstimSettingsFile = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
-	; Tries to import from Data folder as well, this is to allow Modlist creators to package configuration files as mods for mo2 or vortex.
-	int OstimSettingsFileAlt = JValue.readFromFile(".\\Data\\OstimMCMSettings.json")
+	int OstimSettingsFile
+	int OstimSettingsFileAlt
+	if (JContainers.FileExistsAtPath(JContainers.UserDirectory() + "OstimMCMSettings.json"))
+		OstimSettingsFile = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
+	endif
+	if (JContainers.FileExistsAtPath(".\\Data\\OstimMCMSettings.json"))
+		; Tries to import from Data folder as well, this is to allow Modlist creators to package configuration files as mods for mo2 or vortex.
+		OstimSettingsFileAlt = JValue.readFromFile(".\\Data\\OstimMCMSettings.json")
+	endif
 	if (OstimSettingsFile == False && OstimSettingsFileAlt == False)
 		Debug.MessageBox("Tried to import from file, but no file existed.")
 		return
@@ -1072,6 +1116,12 @@ Function ImportSettings()
 	Main.UseRumble = JMap.GetInt(OstimSettingsFile, "SetUseRumble")
 	Main.UseScreenShake = JMap.GetInt(OstimSettingsFile, "SetUseScreenShake")
 	Main.DisableScaling = JMap.GetInt(OstimSettingsFile, "SetScaling")
+
+	;Player Roles settings
+	Main.PlayerAlwaysSubStraight = Jmap.GetInt(OstimSettingsFile, "PlayerAlwaysSubStraight")
+	Main.PlayerAlwaysSubGay = Jmap.GetInt(OstimSettingsFile, "PlayerAlwaysSubGay")
+	Main.PlayerAlwaysDomStraight = Jmap.GetInt(OstimSettingsFile, "PlayerAlwaysDomStraight")
+	Main.PlayerAlwaysDomGay = Jmap.GetInt(OstimSettingsFile, "PlayerAlwaysDomGay")
 	
 	; Clothes settings import.
 	Main.AutoUndressIfNeeded = JMap.GetInt(OstimSettingsFile, "SetUndressIfNeed")
