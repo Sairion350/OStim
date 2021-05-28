@@ -5,7 +5,6 @@
     Output="Scripts" 
     Optimize="true" 
     Anonymize="true" 
-    Package="true" 
     Zip="true">
     <Variables>
         <Variable Name="ModName" Value="OStim"/>
