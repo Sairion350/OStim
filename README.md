@@ -1,5 +1,6 @@
 ## OStim
-OSex Overhaul & API
+OSex Overhaul & API  
+https://github.com/Sairion350/OStim/actions/workflows/main.yml/badge.svg
 
 ### Requirements
 
