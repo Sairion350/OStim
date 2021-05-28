@@ -71,3 +71,8 @@ jobs:
       with:
         name: ${{ env.build_name }}
         path: ./dist/${{ env.build_name }}
+
+    - name: Upload to discord
+      run: |
+        python ./.github/workflows/discord_uploader.py ${{ secrets.discord_bot_token }} ${{ secrets.discord_bot_channel }} ${{ env.build_name }}
+      
