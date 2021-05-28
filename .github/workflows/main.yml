@@ -28,6 +28,11 @@ jobs:
       with:
         python-version: ${{ env.python-version }}
         architecture:  ${{ env.python-arch }}
+    
+    - name: Install python packages
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ./repo/python_requirements.txt
 
     - name: Pull papyrus compiler
       uses: actions/checkout@v2
@@ -73,6 +78,7 @@ jobs:
         path: ./dist/${{ env.build_name }}
 
     - name: Upload to discord
+      if: success()
       run: |
         python ./repo/discord_uploader.py ${{ secrets.discord_bot_token }} ${{ secrets.discord_bot_channel }} ${{ env.build_name }}
       
