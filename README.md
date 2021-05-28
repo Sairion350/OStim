@@ -1,7 +1,5 @@
 ## OStim
-OSex Overhaul & API  
- ![OStim Build Status](https://github.com/Sairion350/OStim/actions/workflows/main.yml/badge.svg)
-
+OSex Overhaul & API - ![OStim Build Status](https://github.com/Sairion350/OStim/actions/workflows/main.yml/badge.svg)
 ### Requirements
 
 * Skyrim: Special Edition (1.5.39+)
