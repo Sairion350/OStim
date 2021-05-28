@@ -1,6 +1,6 @@
 ## OStim
 OSex Overhaul & API  
-https://github.com/Sairion350/OStim/actions/workflows/main.yml/badge.svg
+ ![OStim Build Status](https://github.com/Sairion350/OStim/actions/workflows/main.yml/badge.svg)
 
 ### Requirements
 
