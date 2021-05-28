@@ -72,4 +72,12 @@ jobs:
         name: ${{ env.build_name }}
         path: ./dist/${{ env.build_name }}
 
+    - uses: actions/checkout@master
+    - name: Upload release
+      uses: sinshutu/upload-to-discord@master
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      with:
+        args: ./dist/${{ env.build_name }}
+
       
