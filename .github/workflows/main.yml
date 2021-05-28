@@ -74,5 +74,5 @@ jobs:
 
     - name: Upload to discord
       run: |
-        python ./discord_uploader.py ${{ secrets.discord_bot_token }} ${{ secrets.discord_bot_channel }} ${{ env.build_name }}
+        python ./repo/discord_uploader.py ${{ secrets.discord_bot_token }} ${{ secrets.discord_bot_channel }} ${{ env.build_name }}
       
