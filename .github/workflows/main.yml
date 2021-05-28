@@ -33,7 +33,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: Osmosis-Wrench/Papyrus-Compiler
-        token: ${{ secrets.PRIVATE_TOKEN }}
+        token: ${{ secrets.OSTIM_TOKEN }}
         path: ./compiler
 
     - name: Get latest Pyro release
@@ -55,7 +55,7 @@ jobs:
       env: 
         ppj_c: compiler\PapyrusCompiler.exe
         ppj_f: compiler\TESV_Papyrus_Flags.flg
-        ppj_t: ${{ secrets.PRIVATE_TOKEN }}
+        ppj_t: ${{ secrets.OSTIM_TOKEN }}
         ppj_p: ${{ matrix.project-path }}
 
     - name: Prepare upload
