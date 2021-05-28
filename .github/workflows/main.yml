@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         project-path: 
-        - '.\build\ostim_ci.ppj'
+        - 'ostim_ci.ppj'
         
     env:
       python-version: 3.x
