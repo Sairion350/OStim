@@ -1,6 +1,5 @@
 meta.ini
 *.zip
-*.ppj
 *.pex
 SkyrimSE.code-workspace
 .vscode/launch.json
