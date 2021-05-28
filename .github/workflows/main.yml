@@ -1,0 +1,73 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        project-path: 
+        - 'ostim_ci.ppj'
+        
+    env:
+      python-version: 3.x
+      python-arch: x64
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        path: ./repo
+
+    - name: Set up Python ${{ env.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ env.python-version }}
+        architecture:  ${{ env.python-arch }}
+
+    - name: Pull papyrus compiler
+      uses: actions/checkout@v2
+      with:
+        repository: Osmosis-Wrench/Papyrus-Compiler
+        token: ${{ secrets.OSTIM_TOKEN }}
+        path: ./compiler
+
+    - name: Get latest Pyro release
+      id: pyro_asset
+      uses: MrOctopus/download-asset-action@main
+      with:
+        repository: fireundubh/pyro
+        excludes: draft
+        asset: pyro
+
+    - name: Extract Pyro
+      run: 7z x ${Env:release_name} -opyro
+      env: 
+        release_name: ${{ steps.pyro_asset.outputs.name }}
+
+    - name: Build releases
+      run: |
+        .\pyro\pyro --game-path . --compiler-path ${Env:ppj_c} --flags-path ${Env:ppj_f} --access-token ${Env:ppj_t} .\repo\${Env:ppj_p}
+      env: 
+        ppj_c: compiler\PapyrusCompiler.exe
+        ppj_f: compiler\TESV_Papyrus_Flags.flg
+        ppj_t: ${{ secrets.OSTIM_TOKEN }}
+        ppj_p: ${{ matrix.project-path }}
+
+    - name: Prepare upload
+      if: success()
+      run: |
+        cd dist
+        7z x *zip -o*
+        echo "build_name=$(Get-ChildItem -Filter *. -Name)" >> ${Env:GITHUB_ENV}
+
+    - name: Upload release
+      if: success()
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.build_name }}
+        path: ./dist/${{ env.build_name }}
