@@ -686,6 +686,7 @@ Event OnUpdate() ;OStim main logic loop
 			Console("Player aggressed. Starting AI")
 			AI.StartAI()
 			AIRunning = True
+			DisableOSAControls = true
 		ElseIf (UseAINonAggressive)
 			Console("Non-aggressive scene. Starting AI")
 			AI.StartAI()
