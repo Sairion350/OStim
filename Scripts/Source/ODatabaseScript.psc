@@ -237,51 +237,39 @@ Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntPa
 	Bool Parameter
 	Int iOutput
 	String sOutput
-
-    If (IntParam > -100)
-        while (i < L)
-            Animation = JArray.GetObj(base, i)
-            iOutput = JMap.GetInt(Animation, zKey, Default = -10001)
-            If (iOutput == IntParam) && (iOutput != 10001)
+	While (i < L)
+		Animation = JArray.GetObj(base, i)
+		If (IntParam > -100)
+			iOutput = JMap.GetInt(Animation, zKey, Default = -10001)
+			If (iOutput == IntParam) && (iOutput != 10001)
 				JArray.AddObj(Ret, Animation)
 			EndIf
-            i += 1
-        endwhile
-    elseif (StringParam != "")
-        If (!AllowPartialStringResult)
-            while (i < L)
-                Animation = JArray.GetObj(base, i)
-                sOutput = JMap.GetStr(Animation, zKey, Default = "")
-                If (sOutput == StringParam) && (sOutput != "")
+		ElseIf (StringParam != "")
+			sOutput = JMap.GetStr(Animation, zKey, Default = "")
+			If (!AllowPartialStringResult)
+				If (sOutput == StringParam) && (sOutput != "")
 					JArray.AddObj(Ret, Animation)
 				EndIf
-                i += 1
-            endwhile
-        Else
-            while (i < L)
-                Animation = JArray.GetObj(base, i)
-                sOutput = JMap.GetStr(Animation, zKey, Default = "")
-                If (StringUtil.Find(sOutput, StringParam) != -1)
-                    If (!NegativePartial)
-                        JArray.AddObj(ret, Animation)
-                    EndIf
-                Else
-                    If (NegativePartial)
-                        JArray.AddObj(ret, Animation)
-                    EndIf
-                EndIf
-                i += 1
-            endwhile
-        endif
-    ElseIf (BoolParam > -1)
-        while (i < L)
-            Animation = JArray.GetObj(base, i)
-            If ((JMap.getInt(Animation, zKey, Default = 0) as Bool) == BoolParam as Bool)
-                JArray.AddObj(Ret, Animation)
-            EndIf
-            i += 1
-        endwhile
-    endif
+			Else
+				If (StringUtil.Find(sOutput, StringParam) != -1)
+					If (!NegativePartial)
+						JArray.AddObj(ret, Animation)
+					EndIf
+				Else
+					If (NegativePartial)
+						JArray.AddObj(ret, Animation)
+					EndIf
+				EndIf
+			EndIf
+		ElseIf (BoolParam > -1)
+			Parameter = (BoolParam == 1)
+			If ((JMap.getInt(Animation, zKey, Default = 0) as Bool) == Parameter)
+				JArray.AddObj(Ret, Animation)
+			EndIf
+		EndIf
+		i += 1
+	EndWhile
+
 	OStim.Profile("Lookup")
 	Return Ret
 EndFunction

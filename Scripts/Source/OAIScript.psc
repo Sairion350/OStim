@@ -413,9 +413,8 @@ String Function GetAnimationThatMatchesClassArray(int Animations, string[] class
 				return ODatabase.GetSceneID(Animation)
 		    EndIf
 		EndIf
-		i += 1
 	EndWhile
-	
+
 	return "none"
 EndFunction
 
