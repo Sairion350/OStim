@@ -273,6 +273,9 @@ EndEvent
 Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
 	Debug.SendAnimationEvent(Actra, zAnimation)
 	Debug.SendAnimationEvent(Actra, "sosfasterect")
+
+	;OsexIntegrationMain.console("Animation for " + actra.getdisplayname() + ": " + zAnimation + " (stage id " + StageID + ")")
+
 EndEvent
 
 Event OnKill(String EventName, String KillType, Float IDK, Form Killer)

@@ -686,6 +686,7 @@ Event OnUpdate() ;OStim main logic loop
 			Console("Player aggressed. Starting AI")
 			AI.StartAI()
 			AIRunning = True
+			DisableOSAControls = true
 		ElseIf (UseAINonAggressive)
 			Console("Non-aggressive scene. Starting AI")
 			AI.StartAI()
@@ -3018,6 +3019,15 @@ Function ResetState()
 		a[i].dispelallspells()
 		i += 1
 	endwhile
+	o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
+    
+	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 51)
+	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 52)
+	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 53)
+	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 54)
+	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 55)
+	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 56)
+
 	Debug.MessageBox("Reset state.")
 EndFunction
 
