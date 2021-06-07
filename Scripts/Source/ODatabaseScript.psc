@@ -247,6 +247,8 @@ Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntPa
 			EndIf
             i += 1
         endwhile
+		OStim.Profile("Lookup")
+		Return Ret
     elseif (StringParam != "")
         If (!AllowPartialStringResult)
             while (i < L)
@@ -257,6 +259,8 @@ Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntPa
 				EndIf
                 i += 1
             endwhile
+			OStim.Profile("Lookup")
+			Return Ret
         Else
             while (i < L)
                 Animation = JArray.GetObj(base, i)
@@ -272,6 +276,8 @@ Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntPa
                 EndIf
                 i += 1
             endwhile
+			OStim.Profile("Lookup")
+			Return Ret
         endif
     ElseIf (BoolParam > -1)
         while (i < L)
@@ -281,7 +287,10 @@ Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntPa
             EndIf
             i += 1
         endwhile
+		OStim.Profile("Lookup")
+		Return Ret
     endif
+
 	OStim.Profile("Lookup")
 	Return Ret
 EndFunction
