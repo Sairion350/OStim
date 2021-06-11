@@ -2668,15 +2668,7 @@ Function ShakeController(Float Power, Float Duration = 0.1)
 EndFunction
 
 Bool Function IntArrayContainsValue(Int[] Arr, Int Val)
-	Int i = 0
-	Int L = Arr.Length
-	While (i < L)
-		If (Arr[i] == Val)
-			Return True
-		EndIf
-		i += 1
-	EndWhile
-	Return False
+	return Arr.Find(Val) != -1
 EndFunction
 
 Bool Function StringArrayContainsValue(String[] Arr, String Val)
