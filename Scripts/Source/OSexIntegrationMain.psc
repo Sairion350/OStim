@@ -2583,6 +2583,42 @@ Function Console(String In) Global
 	MiscUtil.PrintConsole("OStim: " + In)
 EndFunction
 
+function StoreNPCDataFloat(actor npc, string keys, Float num) 
+	StorageUtil.SetFloatValue(npc as form, keys, num)
+	;console("Set value " + num + " for key " + keys)
+EndFunction
+
+Float function GetNPCDataFloat(actor npc, string keys)
+	return StorageUtil.GetFloatValue(npc, keys, -1)
+EndFunction
+
+function StoreNPCDataInt(actor npc, string keys, int num) 
+	StorageUtil.SetIntValue(npc as form, keys, num)
+	;console("Set value " + num + " for key " + keys)
+EndFunction
+
+Int function GetNPCDataInt(actor npc, string keys)
+	return StorageUtil.GetIntValue(npc, keys, -1)
+EndFunction
+
+function StoreNPCDataBool(actor npc, string keys, bool value)
+	int store 
+	if value 
+		store = 1
+	else 
+		store = 0
+	endif
+	StoreNPCDataInt(npc, keys, store)
+	;console("Set value " + store + " for key " + keys)
+EndFunction
+
+Bool function GetNPCDataBool(actor npc, string keys)
+	int value = GetNPCDataInt(npc, keys)
+	bool ret = (value == 1)
+	;console("got value " + value + " for key " + keys)
+	return ret
+EndFunction
+
 Function SetGameSpeed(String In)
 	ConsoleUtil.ExecuteCommand("sgtm " + In)
 EndFunction
