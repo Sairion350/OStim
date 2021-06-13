@@ -1124,7 +1124,7 @@ Function ImportSettings()
 	Main.UseRumble = JMap.GetInt(OstimSettingsFile, "SetUseRumble")
 	Main.UseScreenShake = JMap.GetInt(OstimSettingsFile, "SetUseScreenShake")
 	Main.DisableScaling = JMap.GetInt(OstimSettingsFile, "SetScaling")
-	Main.OnlyGayAnimsInGayScenes = JMap.GetInt(OstimSettingsFile, "OnlyGayAnimsInGayScenes")
+	Main.OnlyGayAnimsInGayScenes = JMap.GetInt(OstimSettingsFile, "SetOnlyGayAnimsInGayScenes")
 
 	;Player Roles settings
 	Main.PlayerAlwaysSubStraight = Jmap.GetInt(OstimSettingsFile, "PlayerAlwaysSubStraight")
