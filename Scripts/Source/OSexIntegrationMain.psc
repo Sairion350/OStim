@@ -2934,7 +2934,7 @@ Function SetDefaultSettings()
 	SlowMoOnOrgasm = True
 
 	UseAIControl = False
-	OnlyGayAnimsInGayScenes = True
+	OnlyGayAnimsInGayScenes = False
 	PauseAI = False
 	AutoHideBars = False
 	MatchBarColorToGender = false
