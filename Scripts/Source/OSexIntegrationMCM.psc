@@ -9,6 +9,7 @@ Int SetUseRumble
 Int SetUseScreenShake
 int SetScaling
 int SetResetPosition
+int SetOnlyGayAnimsInGayScenes
 
 ; clothes settings
 Int SetUndressIfNeed
@@ -213,6 +214,7 @@ Event OnPageReset(String Page)
 		AddEmptyOption()
 
 		AddColoredHeader("Player Roles")
+		SetOnlyGayAnimsInGayScenes = AddToggleOption("Only use same sex animations for same sex scenes", Main.OnlyGayAnimsInGayScenes)
 		setPlayerAlwaysDomStraight = AddToggleOption("Player Always Dom: Straight", Main.PlayerAlwaysDomStraight)
 		setPlayerAlwaysSubStraight = AddToggleOption("Player Always Sub: Straight", Main.PlayerAlwaysSubStraight)
 		setPlayerAlwaysDomGay = AddToggleOption("Player Always Dom: Gay", Main.PlayerAlwaysDomGay)
@@ -551,6 +553,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetPlayerAlwaysDomGay)
 		Main.PlayerAlwaysDomGay = !Main.PlayerAlwaysDomGay
 		SetToggleOptionValue(Option, Main.PlayerAlwaysDomGay)
+	ElseIf (Option == SetOnlyGayAnimsInGayScenes)
+		Main.OnlyGayAnimsInGayScenes = !Main.OnlyGayAnimsInGayScenes
+		SetToggleOptionValue(Option, Main.OnlyGayAnimsInGayScenes)
 	ElseIf (Option == ExportSettings)
 		ExportSettings()
 	ElseIf (Option == ImportSettings)
@@ -717,6 +722,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Forces the player to always take the Dom role during Straight scenes. \nIf neither are enabled default actor placement will take place, if both are enabled player will default to Dom. \nNote that individual mods can temporarily override this setting.")
 	ElseIf (Option == SetPlayerAlwaysDomGay)
 		SetInfoText("Forces the player to always take the Dom role during Gay scenes. \nIf neither are enabled default actor placement will take place, if both are enabled player will default to Dom. \nNote that individual mods can temporarily override this setting.")
+	ElseIf (Option == SetOnlyGayAnimsInGayScenes)
+		SetInfoText("In a same sex scene (Gay & Lesbian) only same sex animations will be used. There is no fallback in this option, so be aware that you will probably have limited animation options.")
 	ElseIf (Option == ExportSettings)
 		SetInfoText("Click this button to export the Ostim MCM settings.")
 	ElseIf (Option == ImportSettings)
@@ -999,6 +1006,7 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetUseRumble", Main.UseRumble as Int)
 	JMap.SetInt(OstimSettingsFile, "SetUseScreenShake", Main.UseScreenShake as Int)
 	JMap.SetInt(OstimSettingsFile, "SetScaling", Main.DisableScaling as Int)
+	JMap.SetInt(OstimSettingsFile, "SetOnlyGayAnimsInGayScenes", Main.OnlyGayAnimsInGayScenes as Int)
 
 	; Player roles settings.
 	JMap.SetInt(OstimSettingsFile, "PlayerAlwaysSubStraight", main.PlayerAlwaysSubStraight as Int)
@@ -1116,6 +1124,7 @@ Function ImportSettings()
 	Main.UseRumble = JMap.GetInt(OstimSettingsFile, "SetUseRumble")
 	Main.UseScreenShake = JMap.GetInt(OstimSettingsFile, "SetUseScreenShake")
 	Main.DisableScaling = JMap.GetInt(OstimSettingsFile, "SetScaling")
+	Main.OnlyGayAnimsInGayScenes = JMap.GetInt(OstimSettingsFile, "SetOnlyGayAnimsInGayScenes")
 
 	;Player Roles settings
 	Main.PlayerAlwaysSubStraight = Jmap.GetInt(OstimSettingsFile, "PlayerAlwaysSubStraight")
