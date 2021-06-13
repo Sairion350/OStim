@@ -94,6 +94,7 @@ Bool Property UseBed Auto
 Bool Property MisallignmentProtection Auto
 
 Bool Property UseAIControl Auto
+Bool Property OnlyGayAnimsInGayScenes auto
 Bool Property PauseAI Auto
 
 Bool Property PlayerAlwaysSubStraight auto ;mcm
@@ -2892,6 +2893,7 @@ Function SetDefaultSettings()
 
 
 
+
 	DomLightBrightness = 0
 	SubLightBrightness = 1
 	SubLightPos = 0
@@ -2932,6 +2934,7 @@ Function SetDefaultSettings()
 	SlowMoOnOrgasm = True
 
 	UseAIControl = False
+	OnlyGayAnimsInGayScenes = True
 	PauseAI = False
 	AutoHideBars = False
 	MatchBarColorToGender = false
