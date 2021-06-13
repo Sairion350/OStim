@@ -362,23 +362,23 @@ Int Function GetAllSexualAnimations()
 
 	If (!Gay)
 		Animations = ODatabase.GetAnimationsWithName(Animations, "Gay",  AllowPartialResult = True, Negative = True)
-	Elseif (Gay) && OStim.OnlyGayAnimsInGayScenes
-		int PossibleAnims = ODatabase.GetAnimationsWithName(Animations, "Gay",  AllowPartialResult = True, Negative = false)
+	Elseif (Gay) && (OStim.OnlyGayAnimsInGayScenes)
+		Int PossibleAnims = ODatabase.GetAnimationsWithName(Animations, "Gay",  AllowPartialResult = True, Negative = False)
 		If ODatabase.getLengthOArray(PossibleAnims) > 1
 			Animations = PossibleAnims
-		endif 
+		EndIf 
 	EndIf
 
 	If (!Lesbian)
 		Animations = ODatabase.GetAnimationsWithName(Animations, "Lesbian",  AllowPartialResult = True, Negative = True)
-	Elseif (Lesbian) && OStim.OnlyGayAnimsInGayScenes
-		int PossibleAnims = ODatabase.GetAnimationsWithName(Animations, "Lesbian",  AllowPartialResult = True, Negative = false)
+	Elseif (Lesbian) && (OStim.OnlyGayAnimsInGayScenes)
+		Int PossibleAnims = ODatabase.GetAnimationsWithName(Animations, "Lesbian",  AllowPartialResult = True, Negative = False)
 		If ODatabase.getLengthOArray(PossibleAnims) > 1
 			Animations = PossibleAnims
-		endif 
+		EndIf 
 	EndIf
 
-	Console(ODatabase.getLengthOArray(Animations))
+	
 	Return Animations
 EndFunction
 
