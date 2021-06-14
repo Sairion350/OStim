@@ -17,12 +17,12 @@
         <Import>https://github.com/eeveelo/PapyrusUtil/tree/master/Scripts/Source</Import>
         <Import>https://github.com/CE0/OSA-SE/tree/master/Data/Scripts/Source</Import>
         <Import>https://github.com/Osmosis-Wrench/random-loose-scripts/tree/main/scripts/source</Import>
-        <Import>https://github.com/MrOctopus/nl_online/tree/main/skyui/source</Import>
+        <Import>https://github.com/schlangster/skyui/tree/master/dist/Data/Scripts/Source</Import>
         <Import>https://github.com/MrOctopus/nl_online/tree/main/skse64/source</Import>
         <Import>https://github.com/MrOctopus/nl_online/tree/main/sse/source</Import>
     </Imports>
     <Folders>
-        <Folder>@MyProject\Scripts\Source</Folder>
+        <Folder>@MyProject\Scripts\Source.</Folder>
     </Folders>
     <ZipFiles Output="@Dist">
         <ZipFile Name="@ModName" RootDir="@MyProject" Compression="deflate">

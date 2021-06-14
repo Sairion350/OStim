@@ -11,16 +11,10 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-      # Set the project file paths relative to the current repo
-        project-path:
+        project-path: 
         - 'ostim_ci.ppj'
+        
     env:
-      # Set these
-      dist-path: ..\dist                                # Folder containing the output from the project files
-      compiler-repo: Osmosis-Wrench/Papyrus-Compiler    # Github repository containing the papyrus compiler
-      compiler-token: ${{ secrets.OSTIM_TOKEN }}        # Just use ${{ github.token }} if the repo is not private
-      pyro-token: ${{ secrets.OSTIM_TOKEN }}
-      # Ignore these
       python-version: 3.x
       python-arch: x64
 
@@ -38,8 +32,8 @@ jobs:
     - name: Pull papyrus compiler
       uses: actions/checkout@v2
       with:
-        repository: ${{ env.compiler-repo }}
-        token: ${{ env.compiler-token }}
+        repository: Osmosis-Wrench/Papyrus-Compiler
+        token: ${{ secrets.OSTIM_TOKEN }}
         path: ./compiler
 
     - name: Get latest Pyro release
@@ -61,16 +55,15 @@ jobs:
       env: 
         ppj_c: compiler\PapyrusCompiler.exe
         ppj_f: compiler\TESV_Papyrus_Flags.flg
-        ppj_t: ${{ env.pyro-token }}
+        ppj_t: ${{ secrets.OSTIM_TOKEN }}
         ppj_p: ${{ matrix.project-path }}
 
     - name: Prepare upload
       if: success()
       run: |
-        cd repo\${Env:dist-path}
+        cd dist
         7z x *zip -o*
-        echo "build_names=$(Get-ChildItem -Filter *. -Name)" >> ${Env:GITHUB_ENV}
-        echo "build_paths=$($(Get-ChildItem -Filter *. | % { $_.FullName }) -join ",")" >> ${Env:GITHUB_ENV}
+        echo "build_name=$(Get-ChildItem -Filter *. -Name)" >> ${Env:GITHUB_ENV}
 
     - name: Download Discord uploader
       if: success()
@@ -84,15 +77,16 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r ./repo/python_requirements.txt
-    
+
     - name: Upload release
       if: success()
-      uses: MrOctopus/upload-artifact@main
+      uses: actions/upload-artifact@v2
       with:
-        individual: true
-        path: ${{ env.build_paths }}
+        name: ${{ env.build_name }}
+        path: ./dist/${{ env.build_name }}
 
     - name: Upload to discord
       if: success()
       run: |
-        python ./repo/discord_uploader.py ${{ secrets.discord_bot_token }} ${{ secrets.discord_bot_channel }} ${{ env.build_names }}
+        python ./repo/discord_uploader.py ${{ secrets.discord_bot_token }} ${{ secrets.discord_bot_channel }} ${{ env.build_name }}
+      
