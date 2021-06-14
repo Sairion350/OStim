@@ -2584,42 +2584,6 @@ Function Console(String In) Global
 	MiscUtil.PrintConsole("OStim: " + In)
 EndFunction
 
-function StoreNPCDataFloat(actor npc, string keys, Float num) Global
-	StorageUtil.SetFloatValue(npc as form, keys, num)
-	;console("Set value " + num + " for key " + keys)
-EndFunction
-
-Float function GetNPCDataFloat(actor npc, string keys) Global
-	return StorageUtil.GetFloatValue(npc, keys, -1)
-EndFunction
-
-function StoreNPCDataInt(actor npc, string keys, int num) Global
-	StorageUtil.SetIntValue(npc as form, keys, num)
-	;console("Set value " + num + " for key " + keys)
-EndFunction
-
-Int function GetNPCDataInt(actor npc, string keys) Global
-	return StorageUtil.GetIntValue(npc, keys, -1)
-EndFunction
-
-function StoreNPCDataBool(actor npc, string keys, bool value) Global
-	int store 
-	if value 
-		store = 1
-	else 
-		store = 0
-	endif
-	StoreNPCDataInt(npc, keys, store)
-	;console("Set value " + store + " for key " + keys)
-EndFunction
-
-Bool function GetNPCDataBool(actor npc, string keys) Global
-	int value = GetNPCDataInt(npc, keys)
-	bool ret = (value == 1)
-	;console("got value " + value + " for key " + keys)
-	return ret
-EndFunction
-
 Function SetGameSpeed(String In)
 	ConsoleUtil.ExecuteCommand("sgtm " + In)
 EndFunction
@@ -2668,30 +2632,20 @@ Function ShakeController(Float Power, Float Duration = 0.1)
 	EndIf
 EndFunction
 
-Bool Function IntArrayContainsValue(Int[] Arr, Int Val)
-	return Arr.Find(Val) != -1
+Bool Function IntArrayContainsValue(Int[] Arr, Int Val) ;DEPRECIATED - moving to outils in future ver
+	return outils.IntArrayContainsValue(arr, val)
 EndFunction
 
-Bool Function StringArrayContainsValue(String[] Arr, String Val)
-	;Int i = 0
-	;Int L = Arr.Length
-	;While (i < L)
-	;	If (Arr[i] == Val)
-	;		Return True
-	;	EndIf
-	;	i += 1
-	;EndWhile
-	;Return False
-
-	return ( PapyrusUtil.CountString(Arr, Val) > 0)
+Bool Function StringArrayContainsValue(String[] Arr, String Val) ;DEPRECIATED - moving to outils in future ver
+	return outils.StringArrayContainsValue(arr, val)
 EndFunction
 
-bool Function StringContains(string str, string contains)
-	return (StringUtil.Find(str, contains) != -1)
+bool Function StringContains(string str, string contains) ;DEPRECIATED - moving to outils in future ver
+	return outils.StringContains(str, contains)
 EndFunction
 
-bool Function IsModLoaded(string ESPFile)
-	return (Game.GetModByName(ESPFile) != 255)
+bool Function IsModLoaded(string ESPFile) ;DEPRECIATED - moving to outils in future ver
+	return outils.IsModLoaded(ESPFile)
 Endfunction
 
 Int Function GetTimeScale()
