@@ -586,49 +586,49 @@ Event OnUpdate() ;OStim main logic loop
 
 	o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
     
-    ; Fix for rapid animation swap bug after reload
+    	; Fix for rapid animation swap bug after reload
 	; Will need updating if/when multi-scene stuff is added but works for now
 	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 51)
 
-    CurrScene = OSA.MakeStage()
-    OSA.SetActorsStim(currScene, Actro)
-    OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
-    OSA.StimStart(CurrScene)
+	CurrScene = OSA.MakeStage()
+	OSA.SetActorsStim(currScene, Actro)
+	OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
+	OSA.StimStart(CurrScene)
 
-    ; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
-    ; (I didn't pick the nonsense name, it's called that in OSA)
-    ; Unfortunately, the method used for mounting an NPC on NPC scene is a bit involved.
-    if IsNPCScene()
+	; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
+	; (I didn't pick the nonsense name, it's called that in OSA)
+	; Unfortunately, the method used for mounting an NPC on NPC scene is a bit involved.
+	if IsNPCScene()
 		MountNPCSceneAsMain()
 		Console("Scene is a NPC on NPC scene")
 	Else
 		diasa = o + ".viewStage"
-    endif
+	endif
 
-    
-    if !ThirdActor
-    	CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
-    else 
-    	CurrentAnimation = "0Sx0M2F_Ho-DoubleTrouble"
-    endif 
-    LastHubOID = -1
-    ;OnAnimationChange()
-    
-    Int OldTimescale = 0
+
+	if !ThirdActor
+		CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
+	else 
+		CurrentAnimation = "0Sx0M2F_Ho-DoubleTrouble"
+	endif 
+	LastHubOID = -1
+	;OnAnimationChange()
+
+	Int OldTimescale = 0
 	If (CustomTimescale >= 1) && IsPlayerInvolved()
 		OldTimescale = GetTimeScale()
 		SetTimeScale(CustomTimescale)
 		Console("Using custom Timescale: " + CustomTimescale)
 	EndIf
 
-    If (LowLightLevelLightsOnly && DomActor.GetLightLevel() < 20) || (!LowLightLevelLightsOnly)
-    	If (DomLightPos > 0)
-    		LightActor(DomActor, DomLightPos, DomLightBrightness)
-   		EndIf
-    	If (SubLightPos > 0)
-    		LightActor(SubActor, SubLightPos, SubLightBrightness)
-   		EndIf
-    EndIf
+	If (LowLightLevelLightsOnly && DomActor.GetLightLevel() < 20) || (!LowLightLevelLightsOnly)
+		If (DomLightPos > 0)
+			LightActor(DomActor, DomLightPos, DomLightBrightness)
+		EndIf
+		If (SubLightPos > 0)
+			LightActor(SubActor, SubLightPos, SubLightBrightness)
+		EndIf
+	EndIf
 
 	Password = DomActor.GetFactionRank(OsaFactionStage)
 	string EventName = "0SAO" + Password + "_AnimateStage"
@@ -714,44 +714,44 @@ Event OnUpdate() ;OStim main logic loop
 		Utility.Wait(1.0 - LoopTimeTotal)
 		LoopStartTime = Utility.GetCurrentRealTime()
 
-    	If (MisallignmentProtection && IsActorActive(DomActor)) && (!ReallignedDuringThisAnim)
-    		If (SubActor.GetDistance(DomActor) > 10)
-    			Console("Misallignment detected")
-    			ReallignedDuringThisAnim = true
-    			AlternateRealign()
-    			Utility.Wait(0.1)
+		If (MisallignmentProtection && IsActorActive(DomActor)) && (!ReallignedDuringThisAnim)
+			If (SubActor.GetDistance(DomActor) > 10)
+				Console("Misallignment detected")
+				ReallignedDuringThisAnim = true
+				AlternateRealign()
+				Utility.Wait(0.1)
 
-    			Int i = 0
-    			While ((SubActor.GetDistance(DomActor) > 5) && IsActorActive(DomActor))&& (i < 3)
-    				Utility.Wait(0.25)
-    				Console("Still misalligned... " + SubActor.GetDistance(DomActor))
-    				Console("Disable Misallignment Protection if this is a frequent issue")
+				Int i = 0
+				While ((SubActor.GetDistance(DomActor) > 5) && IsActorActive(DomActor))&& (i < 3)
+					Utility.Wait(0.25)
+					Console("Still misalligned... " + SubActor.GetDistance(DomActor))
+					Console("Disable Misallignment Protection if this is a frequent issue")
 
-    				If AppearsFemale(SubActor)
-    					DomActor.MoveTo(SubActor)
-					ElseIf AppearsFemale(DomActor)
-    					SubActor.MoveTo(DomActor)
-    				EndIf
+					If AppearsFemale(SubActor)
+						DomActor.MoveTo(SubActor)
+						ElseIf AppearsFemale(DomActor)
+						SubActor.MoveTo(DomActor)
+					EndIf
 
-    				AlternateRealign()
+					AlternateRealign()
 
-    				i += 1
-    			EndWhile
+					i += 1
+				EndWhile
 
-    			If (SubActor.GetDistance(DomActor) < 1)
-    				Console("Realligned")
-				Else
-    				Console("Allignment failed")
-    			EndIf
-    		EndIf
-    	EndIf
+				If (SubActor.GetDistance(DomActor) < 1)
+					Console("Realligned")
+					Else
+					Console("Allignment failed")
+				EndIf
+			EndIf
+		EndIf
 
-    	If (EnableActorSpeedControl && !AnimationIsAtMaxSpeed())
-    		AutoIncreaseSpeed()
-    	EndIf
+		If (EnableActorSpeedControl && !AnimationIsAtMaxSpeed())
+			AutoIncreaseSpeed()
+		EndIf
 
-    	;Profile()
-    	If !DisableStimulationCalculation
+		;Profile()
+		If !DisableStimulationCalculation
 			DomExcitement += GetCurrentStimulation(DomActor) * DomStimMult
 			SubExcitement += GetCurrentStimulation(SubActor) * SubStimMult
 			If ThirdActor
@@ -809,7 +809,7 @@ Event OnUpdate() ;OStim main logic loop
 	SendModEvent("ostim_end")
 	If !DisableScaling
 		RestoreScales()
-    EndIf
+	EndIf
 
 	If (EnableImprovedCamSupport) && IsPlayerInvolved()
 		Game.EnablePlayerControls(abCamSwitch = True)
@@ -831,7 +831,7 @@ Event OnUpdate() ;OStim main logic loop
 		DomActor.SetPosition(DomX, DomY, DomZ)
 		If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 			Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
-	    EndIf
+		EndIf
 	EndIf
 
 	If (ForceFirstPersonAfter && IsPlayerInvolved())
@@ -1649,44 +1649,44 @@ Function AutoIncreaseSpeed()
 	EndIf
 
 	String CClass = GetCurrentAnimationClass()
-    Float MainExcitement = GetActorExcitement(DomActor)
-    If (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2")
-    	MainExcitement = GetActorExcitement(SubActor)
+	Float MainExcitement = GetActorExcitement(DomActor)
+	If (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2")
+		MainExcitement = GetActorExcitement(SubActor)
 	EndIf
 
-    Int MaxSpeed = GetCurrentAnimationMaxSpeed()
+	Int MaxSpeed = GetCurrentAnimationMaxSpeed()
 	Int NumSpeeds = MaxSpeed
 
-    Int AggressionBonusChance = 0
-    If (IsSceneAggressiveThemed())
-    	AggressionBonusChance = 80
-    	MainExcitement += 20
-    EndIf
+	Int AggressionBonusChance = 0
+	If (IsSceneAggressiveThemed())
+		AggressionBonusChance = 80
+		MainExcitement += 20
+	EndIf
 
 	Int Speed = GetCurrentAnimationSpeed()
-    If (!CurrAnimHasIdleSpeed)
-    	NumSpeeds += 1
-    ElseIf (Speed == 0)
-    	Return
-    EndIf
+	If (!CurrAnimHasIdleSpeed)
+		NumSpeeds += 1
+	ElseIf (Speed == 0)
+		Return
+	EndIf
 
-    If ((MainExcitement >= 85.0) && (Speed < NumSpeeds))
-    	If (ChanceRoll(80))
-    		IncreaseAnimationSpeed()
-    	EndIf
-    ElseIf (MainExcitement >= 69.0) && (Speed <= (NumSpeeds - 1))
-    	If (ChanceRoll(50))
-    		IncreaseAnimationSpeed()
-    	EndIf
-    ElseIf (MainExcitement >= 25.0) && (Speed <= (NumSpeeds - 2))
-    	If (ChanceRoll(20 + AggressionBonusChance))
-    		IncreaseAnimationSpeed()
-    	EndIf
-    ElseIf (MainExcitement >= 05.0) && (Speed <= (NumSpeeds - 3))
-    	If (ChanceRoll(20 + AggressionBonusChance))
-    		IncreaseAnimationSpeed()
-    	EndIf
-    EndIf
+	If ((MainExcitement >= 85.0) && (Speed < NumSpeeds))
+		If (ChanceRoll(80))
+			IncreaseAnimationSpeed()
+		EndIf
+	ElseIf (MainExcitement >= 69.0) && (Speed <= (NumSpeeds - 1))
+		If (ChanceRoll(50))
+			IncreaseAnimationSpeed()
+		EndIf
+	ElseIf (MainExcitement >= 25.0) && (Speed <= (NumSpeeds - 2))
+		If (ChanceRoll(20 + AggressionBonusChance))
+			IncreaseAnimationSpeed()
+		EndIf
+	ElseIf (MainExcitement >= 05.0) && (Speed <= (NumSpeeds - 3))
+		If (ChanceRoll(20 + AggressionBonusChance))
+			IncreaseAnimationSpeed()
+		EndIf
+	EndIf
 EndFunction
 
 String Function NormalSpeedToOsexSpeed(Int Speed)
@@ -3090,19 +3090,19 @@ Function MountNPCSceneAsMain()
 	disableOSAControls = true
 	
 
-    String DomID = _oGlobal.GetFormID_S(domactor.GetActorBase())
-    String InspectMenu = o + ".hud.InspectMenu"
+	String DomID = _oGlobal.GetFormID_S(domactor.GetActorBase())
+	String InspectMenu = o + ".hud.InspectMenu"
 
-    UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
+	UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
 
-    string actraD = InspectMenu + ".actra"
-
-
-    diasa = actraD + ".stageStatus"
+	string actraD = InspectMenu + ".actra"
 
 
+	diasa = actraD + ".stageStatus"
 
-    UI.Invoke("HUD Menu", InspectMenu + ".OmniDim")
+
+
+	UI.Invoke("HUD Menu", InspectMenu + ".OmniDim")
 
    
 EndFunction
@@ -3110,9 +3110,9 @@ EndFunction
 
 Event OnKeyDown(Int KeyPress)
 	If (DisableOSAControls)
-        Console("OStim controls disabled by property")
-        Return
-    EndIf
+		Console("OStim controls disabled by property")
+		Return
+	EndIf
 
 	If (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
 		Return

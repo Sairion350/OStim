@@ -95,19 +95,19 @@ Function UpdateFakeArmor()
 EndFunction
 
 Function SetSlotInFakeArmor(Int iSlot, Bool bSlot)
-    int Mask = Armor.GetMaskForSlot(iSlot)
-    If (bSlot)
-        FakeArmor.AddSlotToMask(Mask)
-    Else
-        FakeArmor.RemoveSlotFromMask(Mask)
-    EndIf
+	int Mask = Armor.GetMaskForSlot(iSlot)
+	If (bSlot)
+		FakeArmor.AddSlotToMask(Mask)
+	Else
+		FakeArmor.RemoveSlotFromMask(Mask)
+	EndIf
 EndFunction
 
 Function EquipFakeArmor(Actor Target)
 	Target.EquipItem(FakeArmor, False, True)
-    Utility.Wait(0.15)
-    Target.RemoveItem(FakeArmor, 99, True)
-    Target.UnequipItem(Target.GetEquippedObject(0))
+	Utility.Wait(0.15)
+	Target.RemoveItem(FakeArmor, 99, True)
+	Target.UnequipItem(Target.GetEquippedObject(0))
 	Target.UnequipItem(Target.GetEquippedObject(1))
 EndFunction
 
