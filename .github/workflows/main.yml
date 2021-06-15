@@ -49,6 +49,7 @@ jobs:
         repository: fireundubh/pyro
         excludes: draft
         asset: pyro
+        tag: 1622859917
 
     - name: Extract Pyro
       run: 7z x ${Env:release_name} -opyro
