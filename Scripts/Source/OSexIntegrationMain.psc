@@ -3007,9 +3007,6 @@ Function StartReroutedScene()
 	StartScene(ReroutedDomActor,  ReroutedSubActor)
 EndFunction
 
-Function DisplayTextBanner(String Txt)
-	UI.InvokeString("HUD Menu", "_root.HUDMovieBaseInstance.QuestUpdateBaseInstance.ShowNotification", Txt)
-EndFunction
 
 Function ResetState()
 	Console("Resetting thread state")
@@ -3377,7 +3374,7 @@ Function Startup()
 	OSAOmni.RebootScript()
 	OnLoadGame()
 
-	DisplayTextBanner("OStim installed.")
+	OUtils.DisplayTextBanner("OStim installed.")
 EndFunction
 
 Bool Property UseBrokenCosaveWorkaround Auto

@@ -56,3 +56,7 @@ EndFunction
 bool Function IsModLoaded(string ESPFile) Global
 	return (Game.GetModByName(ESPFile) != 255)
 Endfunction
+
+Function DisplayTextBanner(String Txt) Global
+	UI.InvokeString("HUD Menu", "_root.HUDMovieBaseInstance.QuestUpdateBaseInstance.ShowNotification", Txt)
+EndFunction
