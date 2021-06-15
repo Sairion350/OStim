@@ -26,7 +26,7 @@
     </Folders>
     <ZipFiles Output="@Dist">
         <ZipFile Name="@ModName" RootDir="@MyProject" Compression="deflate">
-        	<Include>*/*.esp</Include>
+        	<Include NoRecurse="true">*/*.esp</Include>
             <Include>Scripts</Include>
             <Include>SKSE</Include>
             <Include>Interface</Include>
