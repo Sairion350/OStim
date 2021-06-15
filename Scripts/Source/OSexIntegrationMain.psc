@@ -1709,6 +1709,21 @@ Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
 	;Console("Event received")
 	If (CurrentAnimation != zAnimation) || FirstAnimate
 		FirstAnimate = false
+		if zAnimation == "undefined"
+			Console("---------------------- Warning ----------------------")
+			Console("A broken animation is attempting to be played. Printing last valid animation data")
+			Console(" ")
+			Console(">	Last valid animation: " + CurrentAnimation)
+			Console(">	Last valid speed: " + CurrentSpeed)
+			Console(">	Last valid animation class: " + CurrAnimClass)
+			Console(">	Last valid scene ID: " + GetCurrentAnimationSceneID())
+			Console(" ")
+			Console("Speed control will be broken until scene is changed")
+			Console("Please report this information on discord")
+			Console("-----------------------------------------------------")
+
+			return
+		endif 
 		CurrentAnimation = zAnimation
 		OnAnimationChange()
 		SendModEvent("ostim_animationchanged")
