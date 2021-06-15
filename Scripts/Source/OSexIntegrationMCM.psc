@@ -936,23 +936,23 @@ endfunction
 
 Function OnSlotSelect(int option)
 
-	 int slot = option - 486
+	int slot = option - 486
 
-	 osexintegrationmain.console(slot)
+	osexintegrationmain.console(slot)
 
-	 if (slot < 0) || slot > 100
-	 	debug.messagebox("Slot error. report to dev please")
-	 endif
+	if (slot < 0) || slot > 100
+		debug.messagebox("Slot error. report to dev please")
+	endif
 
-	 if Main.IntArrayContainsValue(main.StrippingSlots, slot)
-	 	; remove this from the array
-	 	main.StrippingSlots = PapyrusUtil.RemoveInt(main.StrippingSlots, slot)
-	 	SetToggleOptionValue(Option, false)
-	 else 
-	 	;add this to the array
-	 	main.StrippingSlots = PapyrusUtil.PushInt(main.StrippingSlots, slot)
-	 	SetToggleOptionValue(Option, true)
-	 endif
+	if Main.IntArrayContainsValue(main.StrippingSlots, slot)
+		; remove this from the array
+		main.StrippingSlots = PapyrusUtil.RemoveInt(main.StrippingSlots, slot)
+		SetToggleOptionValue(Option, false)
+	else 
+		;add this to the array
+		main.StrippingSlots = PapyrusUtil.PushInt(main.StrippingSlots, slot)
+		SetToggleOptionValue(Option, true)
+	endif
 
 EndFunction
 
