@@ -141,6 +141,17 @@ string ONights = "ONights.esp"
 int GVONFreqMult = 0x000D65
 int GVONStopWhenFound = 0x000D64
 
+string OBody = "OBody.esp"
+int GVOBorefit = 0x001802
+int GVOBNippleRand = 0x001803
+int GVOBGenitalRand = 0x001804
+int GVOBPrestKey = 0x001805
+
+int SetOBRefit
+int SetOBNippleRand
+int SetOBGenitalRand
+int SetOBPresetKey
+
 int SetONStopWhenFound
 int SetONFreqMult
 
@@ -334,6 +345,19 @@ Event OnPageReset(String Page)
 			
 		endif 
 
+		;===================================
+
+		SetCursorPosition(3)
+
+		if main.IsModLoaded(OBody)
+			AddColoredHeader("OBody")
+			SetOBRefit = AddToggleOption("Enable ORefit", GetExternalBool(OBody, GVOBorefit))
+			SetOBNippleRand = AddToggleOption("Randomize nipples", GetExternalBool(OBody, GVOBNippleRand))
+			SetOBGenitalRand = AddToggleOption("Randomize genitals", GetExternalBool(OBody, GVOBGenitalRand))
+			SetOBPresetKey = AddKeyMapOption("Edit presets", GetExternalInt(OBody, GVOBPrestKey))
+			
+		endif 
+
 	ElseIf (Page == "Undressing")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayTickBig()
@@ -407,6 +431,15 @@ Event OnOptionSelect(Int Option)
 		elseif option == SetONStopWhenFound
 			SetExternalBool(ONights, GVONStopWhenFound, !GetExternalBool(ONights, GVONStopWhenFound))
 			SetToggleOptionValue(SetONStopWhenFound, GetExternalBool(ONights, GVONStopWhenFound))
+		elseif option == SetOBRefit
+			SetExternalBool(OBody, GVOBorefit, !GetExternalBool(OBody, GVOBorefit))
+			SetToggleOptionValue(SetOBRefit, GetExternalBool(OBody, GVOBorefit))
+		elseif option == SetOBNippleRand
+			SetExternalBool(OBody, GVOBNippleRand, !GetExternalBool(OBody, GVOBNippleRand))
+			SetToggleOptionValue(SetOBNippleRand, GetExternalBool(OBody, GVOBNippleRand))
+		elseif option == SetOBGenitalRand
+			SetExternalBool(OBody, GVOBGenitalRand, !GetExternalBool(OBody, GVOBGenitalRand))
+			SetToggleOptionValue(SetOBGenitalRand, GetExternalBool(OBody, GVOBGenitalRand))
 		endif
 
 		return
@@ -572,6 +605,8 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("Press this while looking at an NPC to start interacting\nYou must save and reload for this setting to take affect")
 		elseif (option == SetORDifficulty)
 			SetInfoText("Increasing this value makes actions easier. Lowering makes them harder. Lowering is not advised usually")
+		elseif (option == SetOBPresetKey)
+			SetInfoText("(Save and reload to take effect) Press this to show a menu of all installed presets\nSelect one to apply it to you, or if an NPC is in your crosshair, will apply to them")
 		elseif (option == SetORSexuality)
 			SetInfoText("Leaving this off makes all NPCs bisexual. \nTurning it on allows them to be gay/bisexual/hetero")
 		elseif (option == SetORColorblind)
@@ -586,6 +621,12 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("The frequency at which NPCs will try to have sex with each other")
 		Elseif (Option == SetONStopWhenFound)
 			SetInfoText("If checked, NPCs will stop having sex if they know the player can see them")
+		Elseif (Option == SetOBRefit)
+			SetInfoText("(Save and reload to take effect) (CBBE-based-bodies) Edit bodies to simulate them being clothed, when clothed")
+		Elseif (Option == SetOBNippleRand)
+			SetInfoText("(Save and reload to take effect) (CBBE-based-bodies) Procedurally generate nipples")
+		Elseif (Option == SetOBGenitalRand)
+			SetInfoText("(Save and reload to take effect) (3bbb/3ba) Procedurally generate genitals")
 		endif 
 
 		return
@@ -873,6 +914,9 @@ Event OnOptionKeyMapChange(Int Option, Int KeyCode, String ConflictControl, Stri
 		SetKeyMapOptionValue(Option, KeyCode)
 	Elseif (Option == SetORKey)
 		SetExternalInt(oromance, gvorkey, KeyCode)
+		SetKeyMapOptionValue(Option, KeyCode)
+	Elseif (Option == SetOBPresetKey)
+		SetExternalInt(OBody, GVOBPrestKey, KeyCode)
 		SetKeyMapOptionValue(Option, KeyCode)
 	Elseif (Option == SetORLeft)
 		SetExternalInt(oromance, GVORLeft, KeyCode)
