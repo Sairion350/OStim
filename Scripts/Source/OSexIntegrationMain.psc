@@ -2572,17 +2572,7 @@ FormList[] Function GetSoundFormLists()
 	Return SoundFormLists
 EndFunction
 
-bool Function IsChild(actor act)
-	; Normally, we can just use act.ischild() to see if an actor is a child.
-	; However, some mods unset this flag.
-	; Note: OSA will automatically fail start scenes with child actors, so you don't have to use this to filter actors beforehand
-	if act.IsChild()
-		return true 
-	endif
-	Race ActorRace  = act.GetLeveledActorBase().GetRace()
-	string RaceName = act.GetName()+MiscUtil.GetRaceEditorID(ActorRace)
-	return StringContains(RaceName, "Child")
-EndFunction
+
 
 
 ;			 ██████╗ ████████╗██╗  ██╗███████╗██████╗
@@ -2663,6 +2653,10 @@ EndFunction
 bool Function IsModLoaded(string ESPFile) ;DEPRECIATED - moving to outils in future ver
 	return outils.IsModLoaded(ESPFile)
 Endfunction
+
+bool Function IsChild(actor act) ;DEPRECIATED - moving to outils in future ver
+	return OUtils.IsChild(Act)
+EndFunction
 
 Int Function GetTimeScale()
 	Return Timescale.GetValue() as Int
