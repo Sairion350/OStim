@@ -169,6 +169,7 @@ String CurrentAnimation
 Int CurrentSpeed
 String[] CurrScene
 String CurrAnimClass
+String CurrentSceneID
 
 Bool AnimSpeedAtMax
 Int SpankCount
@@ -991,7 +992,7 @@ EndFunction
 
 string function GetCurrentAnimationSceneID() 
 	{Return the scene ID of the current scene i.e. BB|Sy6!KNy9|HhPo|MoShoPo}
-	return ODatabase.GetSceneID( getcurrentanimationOID() )
+	return currentsceneid
 endfunction
 
 Function LightActor(Actor Act, Int Pos, Int Brightness) ; pos 1 - ass, pos 2 - face | brightness - 0 = dim
@@ -1727,7 +1728,11 @@ Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
 		endif 
 		CurrentAnimation = zAnimation
 		OnAnimationChange()
+
 		SendModEvent("ostim_animationchanged")
+
+		SendModEvent("ostim_animationchanged_" + CurrAnimClass) ;register to anims by class
+		SendModEvent("ostim_animationchanged_" + CurrentSceneID) ;register to anims by scene
 	EndIf
 EndEvent
 
@@ -1759,6 +1764,7 @@ Function OnAnimationChange()
 
 	;Profile()
 	CurrentOID = ODatabase.GetObjectOArray(ODatabase.GetAnimationWithAnimID(ODatabase.GetDatabaseOArray(), CurrentAnimation), 0)
+	CurrentSceneID = ODatabase.GetSceneID( CurrentOID )
 	;Profile("DB Lookup")
 
 	If (ODatabase.IsHubAnimation(CurrentOID))
