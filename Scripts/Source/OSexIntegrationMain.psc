@@ -1888,7 +1888,7 @@ Function OnAnimationChange()
 	Console("Current animation: " + CurrentAnimation)
 	Console("Current speed: " + CurrentSpeed)
 	Console("Current animation class: " + CurrAnimClass)
-	Console("Current scene ID: " + GetCurrentAnimationSceneID())
+	Console("Current scene ID: " + CurrentSceneID)
 
 	;Profile("Animation change time")
 EndFunction

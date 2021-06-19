@@ -50,6 +50,11 @@ Function SetFreeCamSpeed(Float Speed = 10.0) Global Native
 ; Set FOV
 Function SetFOV(Float Value, Bool FirstPerson = False) Global Native
 
+; Get camera coordinates 
+float[] Function GetCameraPos() Global Native 
+
+;Function SetCameraPos(float x, float y, float z) Global Native
+
 
 ; ███████╗ █████╗  ██████╗███████╗
 ; ██╔════╝██╔══██╗██╔════╝██╔════╝
