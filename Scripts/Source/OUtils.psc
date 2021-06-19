@@ -73,15 +73,3 @@ bool Function IsChild(actor act) Global
 	return StringContains(RaceName, "Child")
 EndFunction
 
-;
-;float[] function GetCameraOffsetToCoords(float[] targetPos) Global
-;	float[] cam = OSANative.GetCameraPos()
-;
-;	float[] ret = new float[3]
-;
-;	ret[0] = targetPos[0] - cam[0]
-;	ret[1] = targetPos[1] - cam[1]
-;	ret[2] = targetPos[2] - cam[2]
-;
-;	return ret
-;EndFunction

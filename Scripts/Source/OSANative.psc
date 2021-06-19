@@ -53,7 +53,8 @@ Function SetFOV(Float Value, Bool FirstPerson = False) Global Native
 ; Get camera coordinates 
 float[] Function GetCameraPos() Global Native 
 
-;Function SetCameraPos(float x, float y, float z) Global Native
+;Coordinates are relative to users screen right now, not recomended.
+Function SetCameraPos(float x, float y, float z) Global Native
 
 
 ; ███████╗ █████╗  ██████╗███████╗
