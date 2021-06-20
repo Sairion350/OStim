@@ -86,3 +86,20 @@ Actor Function GetActorFromBaseCached(ActorBase in) Global
 	endif 
 
 EndFunction
+
+Actor[] Function BaseArrToActorArr(ActorBase[] base)
+	int l = base.Length
+	int i = 0
+
+	Actor[] ret = PapyrusUtil.ActorArray(l, filler = none)
+	
+	while i < l
+		ret[i] = GetActorFromBaseCached(base[i])
+
+		i += 1
+	endwhile
+
+	return ret
+EndFunction
+
+
