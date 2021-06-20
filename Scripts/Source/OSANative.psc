@@ -34,6 +34,10 @@ ObjectReference[] Function FindBed(ObjectReference CenterRef, Float Radius = 100
 ; returns an array because sometimes there may be multiple i.e. multiple kids or orcs having multiple spouses
 ActorBase[] Function LookupRelationshipPartners(Actor FirstActor, AssociationType RelationshipType) Global Native
 
+; Works on all NPCs that have a placed ref in the world 
+; Returns the first one it finds
+Actor Function GetActorFromBase(ActorBase act) Global Native
+
 
 ;  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗
 ; ██╔════╝██╔══██╗████╗ ████║██╔════╝██╔══██╗██╔══██╗
