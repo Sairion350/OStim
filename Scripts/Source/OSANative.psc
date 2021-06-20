@@ -31,7 +31,8 @@ ObjectReference[] Function FindBed(ObjectReference CenterRef, Float Radius = 100
 ; For example, give this an actor and the 'Spouse' AT and it will return their spouse's actorbase
 ; Returns none if the actor does not have that AT
 ; Works with all ATs
-ActorBase Function LookupRelationshipPartner(Actor FirstActor, AssociationType RelationshipType) Global Native
+; returns an array because sometimes there may be multiple i.e. multiple kids or orcs having multiple spouses
+ActorBase[] Function LookupRelationshipPartners(Actor FirstActor, AssociationType RelationshipType) Global Native
 
 
 ;  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗
