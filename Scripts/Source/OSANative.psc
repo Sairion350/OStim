@@ -28,6 +28,11 @@ Function BuildDB() Global Native
 ; Returns an array of beds from closest to farthest
 ObjectReference[] Function FindBed(ObjectReference CenterRef, Float Radius = 1000.0, Float SameFloor = 0.0) Global Native
 
+; For example, give this an actor and the 'Spouse' AT and it will return they're spouse's actorbase
+; Returns none if the actor does not have that AT
+; Works with all ATs
+ActorBase Function LookupRelationshipPartner(Actor FirstActor, AssociationType RelationshipType) Global Native
+
 
 ;  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗
 ; ██╔════╝██╔══██╗████╗ ████║██╔════╝██╔══██╗██╔══██╗
@@ -54,7 +59,7 @@ Function SetFOV(Float Value, Bool FirstPerson = False) Global Native
 float[] Function GetCameraPos() Global Native 
 
 ;Coordinates are relative to users screen right now, not recomended.
-Function SetCameraPos(float x, float y, float z) Global Native
+;Function SetCameraPos(float x, float y, float z) Global Native
 
 
 ; ███████╗ █████╗  ██████╗███████╗
