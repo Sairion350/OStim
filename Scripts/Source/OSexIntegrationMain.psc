@@ -370,9 +370,10 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	If (AppearsFemale(Dom) && !AppearsFemale(Sub)) ; if the dom is female and the sub is male
 		DomActor = Sub
 		SubActor = Dom
-	Else
-		DomActor = Dom
-		SubActor = Sub
+	; subhuman - the next 3 lines are redundant, you already set those values just above
+;	Else
+;		DomActor = Dom
+;		SubActor = Sub
 	EndIf
 
 
@@ -511,20 +512,22 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	RegisterForModEvent("ostim_setvehicle", "OnSetVehicle")
+	; subhuman - GetActorBase() is a wrapper for "GetBaseObject() as actor"
+	; NOTE: GetLevelledActorBase() may be what you actually want here.
 
-	String DomFormID = _oGlobal.GetFormID_S(DomActor.GetActorBase())
+	String DomFormID = _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase)
 	RegisterForModEvent("0SSO" + DomFormID + "_Sound", "OnSoundDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendMo", "OnMoDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendPh", "OnPhDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendEx", "OnExDom")
 	If (SubActor)
-		String SubFormID = _oGlobal.GetFormID_S(SubActor.GetActorBase())
+		String SubFormID = _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase)
 		RegisterForModEvent("0SSO" + SubFormID + "_Sound", "OnSoundSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendMo", "OnMoSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendPh", "OnPhSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendEx", "OnExSub")
 		If (ThirdActor)
-			String ThirdFormID = _oGlobal.GetFormID_S(ThirdActor.GetActorBase())
+			String ThirdFormID = _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase)
 			RegisterForModEvent("0SSO" + ThirdFormID + "_Sound", "OnSoundThird")
 			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendMo", "OnMoThird")
 			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendPh", "OnPhThird")
@@ -616,7 +619,9 @@ Event OnUpdate() ;OStim main logic loop
 	;OnAnimationChange()
 
 	Int OldTimescale = 0
-	If (CustomTimescale >= 1) && IsPlayerInvolved()
+; subhuman - a well- optimized compiler would automagically do this with ints for you, but this is papyrus...
+;	If (CustomTimescale >= 1) && IsPlayerInvolved()
+	If (CustomTimescale > 0) && IsPlayerInvolved()
 		OldTimescale = GetTimeScale()
 		SetTimeScale(CustomTimescale)
 		Console("Using custom Timescale: " + CustomTimescale)
@@ -836,11 +841,12 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	If (ForceFirstPersonAfter && IsPlayerInvolved())
-		If IsInFreeCam()
+; subhuman - the if is redundant as long as the while is there
+;		If IsInFreeCam()
 			While IsInFreeCam()
 				Utility.Wait(0.1)
 			EndWhile
-		EndIf 
+;		EndIf 
 		Game.ForceFirstPerson()
 	EndIf
 
@@ -849,11 +855,12 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	UnRegisterForModEvent("0SAO" + Password + "_AnimateStage")
-	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_Sound")
-	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_Sound")
+	; subhuman - same as above, but maybe GetLevelledActorBase() should be here
+	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase) + "_Sound")
+	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase) + "_Sound")
 
 	If (ThirdActor)
-		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_Sound")
+		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase) + "_Sound")
 	EndIf
 
 	If (OldTimescale > 0)
@@ -915,6 +922,8 @@ Bool Function IsThreesome()
 EndFunction
 
 ODatabaseScript Function GetODatabase()
+
+; subhuman - there's no guarantee this loop will ever end
 	While (!ODatabase)
 		Utility.Wait(0.5)
 	Endwhile
@@ -962,7 +971,9 @@ EndFunction
 Function AdjustAnimationSpeed(float amount)
 	{Increase or decrease the animation speed by the amount}
 	If amount < 0
-		int times = math.abs((amount / 0.5)) as int
+	; subhuman - x86 is much faster at multiplication than division
+;		int times = math.abs((amount / 0.5)) as int
+		int times = math.abs(amount * 2.0) as int
 		While times > 0
 			UI.Invokefloat("HUD Menu", diasa + ".scena.speedAdjust", -0.5)
 			times -= 1
@@ -1280,10 +1291,10 @@ EndFunction
 Function Realign()
 	AllowVehicleReset()
 	Utility.Wait(0.1)
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase) + "_AlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase) + "_AlignStage")
 	If (ThirdActor)
-		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_AlignStage")
+		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase) + "_AlignStage")
 	EndIf
 EndFunction
 
@@ -1295,10 +1306,10 @@ EndFunction
 
 Function AllowVehicleReset()
 	Console("Allowing vehicle reset...")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AllowAlignStage")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AllowAlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase) + "_AllowAlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase) + "_AllowAlignStage")
 	If (ThirdActor)
-		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_AllowAlignStage")
+		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase) + "_AllowAlignStage")
 	EndIf
 EndFunction
 
@@ -1738,7 +1749,7 @@ EndEvent
 
 Function OpenMouth(Actor Act)
 	Console("Opening mouth...")
-	String a = _oGlobal.GetFormID_S(Act.GetActorBase())
+	String a = _oGlobal.GetFormID_S(Act.GetBaseObject() as actorbase)
 
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 40)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 100)
@@ -1747,7 +1758,7 @@ EndFunction
 
 Function CloseMouth(Actor Act)
 	Console("Closing mouth...")
-	String a = _oGlobal.GetFormID_S(Act.GetActorBase())
+	String a = _oGlobal.GetFormID_S(Act.GetBaseObject() as actorbase)
 
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 0)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 0)
@@ -1830,10 +1841,12 @@ Function OnAnimationChange()
 		If ThirdActor
 			Console("Third actor: + " + ThirdActor.GetDisplayName() + " has joined the scene")
 
-			RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound", "OnSoundThird")
-			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo", "OnMoThird")
-			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh", "OnPhThird")
-			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx", "OnExThird")
+			; subhuman - cache values
+			ActorBase thirdActorBase = thirdActor.GetBaseObject() as actorbase
+			RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActorBase) + "_Sound", "OnSoundThird")
+			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendMo", "OnMoThird")
+			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendPh", "OnPhThird")
+			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendEx", "OnExThird")
 
 			if !DisableScaling
 				ScaleToStandardHeight(ThirdActor)
@@ -1846,10 +1859,12 @@ Function OnAnimationChange()
 	ElseIf (ThirdActor && (CorrectActorCount == 2)) ; third actor, but there should not be.
 		Console("Third actor has left the scene")
 
-		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound")
-		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo")
-		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh")
-		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx")
+		; subhuman - cache values
+		ActorBase thirdActorBase = thirdActor.GetBaseObject() as actorbase
+		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActorBase) + "_Sound")
+		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendMo")
+		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendPh")
+		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendEx")
 
 		if !DisableScaling
 			ThirdActor.SetScale(1.0)
@@ -1902,7 +1917,9 @@ Function OnSpank()
 		If (SpankCount < SpankMax)
 			SubExcitement += 5
 		Else
-			SubActor.DamageAV("health", 5.0)
+			; subhuman - wrappers is bad
+;			SubActor.DamageAV("health", 5.0)
+			SubActor.DamageActorValue("health", 5.0)
 		EndIf
 	EndIf
 
@@ -1917,6 +1934,7 @@ Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
 	EndIf
 EndEvent
 
+; subhuman - why is this declaration in the middle of the script?
 Float LastVehicleTime
 Event OnSetVehicle(String EventName, String zAnimation, Float NumArg, Form Sender)
 	If (Game.GetRealHoursPassed() - LastVehicleTime) < 0.000833 ; 3 seconds
@@ -2178,7 +2196,9 @@ Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being sti
 			Ret -= 0.1
 		EndIf
 
-		Int HalfwaySpeed = (Math.Ceiling((NumSpeeds as Float) / 2.0)) as Int ; 5 -> 3 | 3 -> 2 etc
+		; subhuman - Math.Ceiling already returns an int, no need to cast an int to an int
+;		Int HalfwaySpeed = (Math.Ceiling((NumSpeeds as Float) / 2.0)) as Int ; 5 -> 3 | 3 -> 2 etc
+		Int HalfwaySpeed = Math.Ceiling((NumSpeeds as Float) / 2.0) ; 5 -> 3 | 3 -> 2 etc
 		If (Speed == (HalfwaySpeed - 2))
 			Ret -= 0.4
 		ElseIf (Speed == (HalfwaySpeed - 1))
@@ -2291,7 +2311,9 @@ Function Orgasm(Actor Act)
 
 ;	SetActorArousal(Act, GetActorArousal(Act) - 50)
 
-	Act.DamageAV("stamina", 250.0)
+	; subhuman- damn wrappers again
+;	Act.DamageAV("stamina", 250.0)
+	Act.DamageActorValue("stamina", 250.0)
 EndFunction
 
 Function SetOrgasmStall(Bool Set)
@@ -2601,15 +2623,21 @@ Function SetGameSpeed(String In)
 EndFunction
 
 Bool Function ChanceRoll(Int Chance) ; input 60: 60% of returning true
-	Int Roll = RandomInt(1, 100)
+
+	; subhuman - we can make this really simple.
+	return (Utility.RandomInt() < Chance)
+;/	Int Roll = RandomInt(1, 100)
 	If (Roll <= Chance)
 		Return True
 	EndIf
-	Return False
+	Return False/;
 EndFunction
 
 Int Function SpeedStringToInt(String In) ; casting does not work so...
-	If (In == "s0")
+
+	; subhuman - I like one-line functions, don't you?
+	return (StringUtil.AsOrd(StringUtil.GetNthChar(In, 1)) - 48)
+;/	If (In == "s0")
 		Return 0
 	ElseIf (In == "s1")
 		Return 1
@@ -2629,7 +2657,7 @@ Int Function SpeedStringToInt(String In) ; casting does not work so...
 		Return 8
 	ElseIf (In == "s9")
 		Return 9
-	EndIf
+	EndIf/;
 EndFunction
 
 Function ShakeCamera(Float Power, Float Duration = 0.1)
@@ -2668,6 +2696,7 @@ Int Function GetTimeScale()
 	Return Timescale.GetValue() as Int
 EndFunction
 
+; subhuman- why is this an int function when it doesn't return anything?
 Int Function SetTimeScale(Int Time)
 	Timescale.SetValue(Time as Float)
 EndFunction
@@ -3088,7 +3117,7 @@ Function MountNPCSceneAsMain()
 	disableOSAControls = true
 	
 
-	String DomID = _oGlobal.GetFormID_S(domactor.GetActorBase())
+	String DomID = _oGlobal.GetFormID_S(domactor.GetBaseObject() as actorbase)
 	String InspectMenu = o + ".hud.InspectMenu"
 
 	UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
@@ -3220,20 +3249,22 @@ Function ResetOSA() ; do not use, breaks osa
 	CtrlQuest.Reset()
 	CtrlQuest.Stop()
 
-	Utility.Wait(2)
+	Utility.Wait(2.0)
 
 	CtrlQuest.Start()
 	OSAQuest.Start()
 	UIQuest.Start()
 
-	Utility.Wait(1)
+	Utility.Wait(1.0)
 Endfunction
 
 int rnd_s1
 int rnd_s2
 int rnd_s3
 
-int Function RandomInt(int min = 0, int max = 100)
+; subhuman - to be like vanilla, the default range should be 0, 99
+;int Function RandomInt(int min = 0, int max = 100)
+int Function RandomInt(int min = 0, int max = 99)
 	; Returns a random number. Inclusive (same as vanilla's).
 	; roughly 2x as fast as Utility.getrandomint() Randomness is pretty close to vanilla too.
 	
@@ -3330,16 +3361,18 @@ Function Startup()
 		Debug.Notification("OStim: ConsoleUtil is not installed, a few features may not work")
 	EndIf
 
+; subhuman - minor compile size optimization
+	SoSInstalled = false
 	If (Game.GetModByName("Schlongs of Skyrim.esp") != 255)
 		SoSFaction = (Game.GetFormFromFile(0x0000AFF8, "Schlongs of Skyrim.esp")) as Faction
 		If (SoSFaction)
 			Console("Schlongs of Skyrim loaded")
 			SoSInstalled = true
-		Else
-			SoSInstalled = false
+;		Else
+;			SoSInstalled = false
 		Endif
-	Else
-		SoSInstalled = false
+;	Else
+;		SoSInstalled = false
 	EndIf
 
 	ResetRandom()
