@@ -28,7 +28,7 @@ Function BuildDB() Global Native
 ; Returns an array of beds from closest to farthest
 ObjectReference[] Function FindBed(ObjectReference CenterRef, Float Radius = 1000.0, Float SameFloor = 0.0) Global Native
 
-; For example, give this an actor and the 'Spouse' AT and it will return they're spouse's actorbase
+; For example, give this an actor and the 'Spouse' AT and it will return their spouse's actorbase
 ; Returns none if the actor does not have that AT
 ; Works with all ATs
 ActorBase Function LookupRelationshipPartner(Actor FirstActor, AssociationType RelationshipType) Global Native
