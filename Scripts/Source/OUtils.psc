@@ -73,3 +73,16 @@ bool Function IsChild(actor act) Global
 	return StringContains(RaceName, "Child")
 EndFunction
 
+; Cached version of GetActorFromBase
+; Lookups are fast (~15ms in base game), but grow as the user adds more forms. This caches the result so you only need to lookup once
+Actor Function GetActorFromBaseCached(ActorBase in) Global
+	form cached = StorageUtil.GetFormValue(in, "ostim_actorcache",  missing = none)
+	if cached 
+		return cached as actor 
+	else 
+		cached = OSANative.GetActorFromBase(in) as form 
+		StorageUtil.SetFormValue(in, "ostim_actorcache",  cached)
+		return cached as actor
+	endif 
+
+EndFunction
