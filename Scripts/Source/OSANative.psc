@@ -35,6 +35,8 @@ ObjectReference[] Function FindBed(ObjectReference CenterRef, Float Radius = 100
 ActorBase[] Function LookupRelationshipPartners(Actor FirstActor, AssociationType RelationshipType) Global Native
 
 ; Works on all NPCs that have a placed ref in the world 
+; Will not work on npcs spawned by script or 'placeatme'
+; Most likely will not work on leveledlist npcs like bandits
 ; Returns the first one it finds
 Actor Function GetActorFromBase(ActorBase act) Global Native
 
