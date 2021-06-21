@@ -3331,9 +3331,14 @@ Function Startup()
 	EndIf
 
 	If (SKSE.GetPluginVersion("JContainers64") == -1)
-		Debug.MessageBox("OStim: JContainers is not installed, please exit and install it immediately.")
+		Debug.MessageBox("OStim: JContainers is not installed, please exit the game and install it to allow Ostim to function.")
 		Return
 	EndIf
+
+	If (!JContainers.FileExistsAtPath(".\\Data\\Scripts\\OSex.pex"))
+		Debug.MessageBox("OStim: OSex is not installed, please exit the game and install it to allow Ostim to function.")
+		Return
+	endif
 
 	SMPInstalled = (SKSE.GetPluginVersion("hdtSSEPhysics") != -1)
 	Console("SMP installed: " + SMPInstalled)

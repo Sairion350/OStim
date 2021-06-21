@@ -66,15 +66,27 @@ Function InitDatabase()
 		Database = NewOArray()
 		JDB.SetObj("OStim.ODatabase", Database)
 
-		Build()
-		Console(GetLengthOArray(Database) + " OSex scenes installed")
+		If Build()
+			Console(GetLengthOArray(Database) + " OSex scenes installed")
+			Loaded = True
+
+			SaveToDisk()
+			Unload()
+			Built = True
+		Else
+			Debug.Notification("OSTIM ERROR: OSTIM BuildNative has failed to create ODatabase.")
+			Debug.Notification("OSTIM ERROR: Falling Back to old Build system, this will take longer.")
+			if BuildPapyrus()
+				Console(GetLengthOArray(Database) + " OSex scenes installed")
+				Loaded = True
+				SaveToDisk()
+				Unload()
+				Built = True
+			Else
+				Debug.MessageBox("Catastrophic Ostim Error/n ODatabase cannot be built./n This is likely because no animations have been detected./n please report this error on Nexus or Discord.")
+			endif
+		endif
 	EndIf
-
-	Loaded = True
-
-	SaveToDisk()
-	Unload()
-	Built = True
 EndFunction
 
 Int Function GetDatabaseOArray(); never cache this for more than a few seconds, it can be cleared from memory at any time
@@ -546,7 +558,14 @@ EndFunction
 
 Bool Function BuildNative()
  	OSANative.BuildDB()
- 	Load()
+	if (JContainers.FileExistsAtPath(SavePath))
+		Load()
+		Return True
+	Else
+		Console("Error: OSANAtive buildDB failed, no database found at: " + SavePath)
+		Return False
+	endif
+
 	CheckForModules()
 	Console("ODatabase built using native Function")
 	Return True
@@ -588,6 +607,11 @@ Bool Function BuildPapyrus() ; papyrus implementation of the odatabase builder -
 		Console("-------------------------------------------------------------------------")
 		i += 1
 	EndWhile
+	If (GetLengthOArray(Database) <= 0)
+		return False
+	else
+		Return True
+	endif
 EndFunction
 
 ; Extracting data from XML input
