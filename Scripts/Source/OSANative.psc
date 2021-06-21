@@ -28,6 +28,32 @@ Function BuildDB() Global Native
 ; Returns an array of beds from closest to farthest
 ObjectReference[] Function FindBed(ObjectReference CenterRef, Float Radius = 1000.0, Float SameFloor = 0.0) Global Native
 
+; For example, give this an actor and the 'Spouse' AT and it will return their spouse's actorbase
+; Returns none if the actor does not have that AT
+; Works with all ATs
+; returns an array because sometimes there may be multiple i.e. multiple kids or orcs having multiple spouses
+ActorBase[] Function LookupRelationshipPartners(Actor FirstActor, AssociationType RelationshipType) Global Native
+
+; Works on all NPCs that have a placed ref in the world 
+; Will not work on npcs spawned by script or 'placeatme'
+; Most likely will not work on leveledlist npcs like bandits
+; Returns the first one it finds
+Actor Function GetActorFromBase(ActorBase act) Global Native
+
+
+;███╗   ██╗ █████╗ ████████╗██╗██╗   ██╗███████╗███████╗
+;████╗  ██║██╔══██╗╚══██╔══╝██║██║   ██║██╔════╝██╔════╝
+;██╔██╗ ██║███████║   ██║   ██║██║   ██║█████╗  ███████╗
+;██║╚██╗██║██╔══██║   ██║   ██║╚██╗ ██╔╝██╔══╝  ╚════██║
+;██║ ╚████║██║  ██║   ██║   ██║ ╚████╔╝ ███████╗███████║
+;╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═══╝  ╚══════╝╚══════╝
+ 
+; SKSE versions of natives, to bypass the one-frame delay on all game engine natives
+                                                      
+ActorBase Function GetLeveledActorBase(Actor act) Global Native
+
+int Function GetSex(ActorBase base) Global Native
+
 
 ;  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗
 ; ██╔════╝██╔══██╗████╗ ████║██╔════╝██╔══██╗██╔══██╗
@@ -49,6 +75,12 @@ Function SetFreeCamSpeed(Float Speed = 10.0) Global Native
 
 ; Set FOV
 Function SetFOV(Float Value, Bool FirstPerson = False) Global Native
+
+; Get camera coordinates 
+float[] Function GetCameraPos() Global Native 
+
+;Coordinates are relative to users screen right now, not recomended.
+;Function SetCameraPos(float x, float y, float z) Global Native
 
 
 ; ███████╗ █████╗  ██████╗███████╗

@@ -169,6 +169,7 @@ String CurrentAnimation
 Int CurrentSpeed
 String[] CurrScene
 String CurrAnimClass
+String CurrentSceneID
 
 Bool AnimSpeedAtMax
 Int SpankCount
@@ -369,9 +370,10 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	If (AppearsFemale(Dom) && !AppearsFemale(Sub)) ; if the dom is female and the sub is male
 		DomActor = Sub
 		SubActor = Dom
-	Else
-		DomActor = Dom
-		SubActor = Sub
+	; subhuman - the next 3 lines are redundant, you already set those values just above
+;	Else
+;		DomActor = Dom
+;		SubActor = Sub
 	EndIf
 
 
@@ -510,20 +512,23 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	RegisterForModEvent("ostim_setvehicle", "OnSetVehicle")
+	; subhuman - GetActorBase() is a wrapper for "GetBaseObject() as actor"
+	; NOTE: GetLevelledActorBase() may be what you actually want here.
+	; TODO make sure OSA uses proper actor bases before changing these
 
-	String DomFormID = _oGlobal.GetFormID_S(DomActor.GetActorBase())
+	String DomFormID = _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase)
 	RegisterForModEvent("0SSO" + DomFormID + "_Sound", "OnSoundDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendMo", "OnMoDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendPh", "OnPhDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendEx", "OnExDom")
 	If (SubActor)
-		String SubFormID = _oGlobal.GetFormID_S(SubActor.GetActorBase())
+		String SubFormID = _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase)
 		RegisterForModEvent("0SSO" + SubFormID + "_Sound", "OnSoundSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendMo", "OnMoSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendPh", "OnPhSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendEx", "OnExSub")
 		If (ThirdActor)
-			String ThirdFormID = _oGlobal.GetFormID_S(ThirdActor.GetActorBase())
+			String ThirdFormID = _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase)
 			RegisterForModEvent("0SSO" + ThirdFormID + "_Sound", "OnSoundThird")
 			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendMo", "OnMoThird")
 			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendPh", "OnPhThird")
@@ -586,49 +591,51 @@ Event OnUpdate() ;OStim main logic loop
 
 	o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
     
-    ; Fix for rapid animation swap bug after reload
+    	; Fix for rapid animation swap bug after reload
 	; Will need updating if/when multi-scene stuff is added but works for now
 	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 51)
 
-    CurrScene = OSA.MakeStage()
-    OSA.SetActorsStim(currScene, Actro)
-    OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
-    OSA.StimStart(CurrScene)
+	CurrScene = OSA.MakeStage()
+	OSA.SetActorsStim(currScene, Actro)
+	OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
+	OSA.StimStart(CurrScene)
 
-    ; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
-    ; (I didn't pick the nonsense name, it's called that in OSA)
-    ; Unfortunately, the method used for mounting an NPC on NPC scene is a bit involved.
-    if IsNPCScene()
+	; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
+	; (I didn't pick the nonsense name, it's called that in OSA)
+	; Unfortunately, the method used for mounting an NPC on NPC scene is a bit involved.
+	if IsNPCScene()
 		MountNPCSceneAsMain()
 		Console("Scene is a NPC on NPC scene")
 	Else
 		diasa = o + ".viewStage"
-    endif
+	endif
 
-    
-    if !ThirdActor
-    	CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
-    else 
-    	CurrentAnimation = "0Sx0M2F_Ho-DoubleTrouble"
-    endif 
-    LastHubOID = -1
-    ;OnAnimationChange()
-    
-    Int OldTimescale = 0
-	If (CustomTimescale >= 1) && IsPlayerInvolved()
+
+	if !ThirdActor
+		CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
+	else 
+		CurrentAnimation = "0Sx0M2F_Ho-DoubleTrouble"
+	endif 
+	LastHubOID = -1
+	;OnAnimationChange()
+
+	Int OldTimescale = 0
+; subhuman - a well- optimized compiler would automagically do this with ints for you, but this is papyrus...
+;	If (CustomTimescale >= 1) && IsPlayerInvolved()
+	If (CustomTimescale > 0) && IsPlayerInvolved()
 		OldTimescale = GetTimeScale()
 		SetTimeScale(CustomTimescale)
 		Console("Using custom Timescale: " + CustomTimescale)
 	EndIf
 
-    If (LowLightLevelLightsOnly && DomActor.GetLightLevel() < 20) || (!LowLightLevelLightsOnly)
-    	If (DomLightPos > 0)
-    		LightActor(DomActor, DomLightPos, DomLightBrightness)
-   		EndIf
-    	If (SubLightPos > 0)
-    		LightActor(SubActor, SubLightPos, SubLightBrightness)
-   		EndIf
-    EndIf
+	If (LowLightLevelLightsOnly && DomActor.GetLightLevel() < 20) || (!LowLightLevelLightsOnly)
+		If (DomLightPos > 0)
+			LightActor(DomActor, DomLightPos, DomLightBrightness)
+		EndIf
+		If (SubLightPos > 0)
+			LightActor(SubActor, SubLightPos, SubLightBrightness)
+		EndIf
+	EndIf
 
 	Password = DomActor.GetFactionRank(OsaFactionStage)
 	string EventName = "0SAO" + Password + "_AnimateStage"
@@ -714,44 +721,44 @@ Event OnUpdate() ;OStim main logic loop
 		Utility.Wait(1.0 - LoopTimeTotal)
 		LoopStartTime = Utility.GetCurrentRealTime()
 
-    	If (MisallignmentProtection && IsActorActive(DomActor)) && (!ReallignedDuringThisAnim)
-    		If (SubActor.GetDistance(DomActor) > 10)
-    			Console("Misallignment detected")
-    			ReallignedDuringThisAnim = true
-    			AlternateRealign()
-    			Utility.Wait(0.1)
+		If (MisallignmentProtection && IsActorActive(DomActor)) && (!ReallignedDuringThisAnim)
+			If (SubActor.GetDistance(DomActor) > 10)
+				Console("Misallignment detected")
+				ReallignedDuringThisAnim = true
+				AlternateRealign()
+				Utility.Wait(0.1)
 
-    			Int i = 0
-    			While ((SubActor.GetDistance(DomActor) > 5) && IsActorActive(DomActor))&& (i < 3)
-    				Utility.Wait(0.25)
-    				Console("Still misalligned... " + SubActor.GetDistance(DomActor))
-    				Console("Disable Misallignment Protection if this is a frequent issue")
+				Int i = 0
+				While ((SubActor.GetDistance(DomActor) > 5) && IsActorActive(DomActor))&& (i < 3)
+					Utility.Wait(0.25)
+					Console("Still misalligned... " + SubActor.GetDistance(DomActor))
+					Console("Disable Misallignment Protection if this is a frequent issue")
 
-    				If AppearsFemale(SubActor)
-    					DomActor.MoveTo(SubActor)
-					ElseIf AppearsFemale(DomActor)
-    					SubActor.MoveTo(DomActor)
-    				EndIf
+					If AppearsFemale(SubActor)
+						DomActor.MoveTo(SubActor)
+						ElseIf AppearsFemale(DomActor)
+						SubActor.MoveTo(DomActor)
+					EndIf
 
-    				AlternateRealign()
+					AlternateRealign()
 
-    				i += 1
-    			EndWhile
+					i += 1
+				EndWhile
 
-    			If (SubActor.GetDistance(DomActor) < 1)
-    				Console("Realligned")
-				Else
-    				Console("Allignment failed")
-    			EndIf
-    		EndIf
-    	EndIf
+				If (SubActor.GetDistance(DomActor) < 1)
+					Console("Realligned")
+					Else
+					Console("Allignment failed")
+				EndIf
+			EndIf
+		EndIf
 
-    	If (EnableActorSpeedControl && !AnimationIsAtMaxSpeed())
-    		AutoIncreaseSpeed()
-    	EndIf
+		If (EnableActorSpeedControl && !AnimationIsAtMaxSpeed())
+			AutoIncreaseSpeed()
+		EndIf
 
-    	;Profile()
-    	If !DisableStimulationCalculation
+		;Profile()
+		If !DisableStimulationCalculation
 			DomExcitement += GetCurrentStimulation(DomActor) * DomStimMult
 			SubExcitement += GetCurrentStimulation(SubActor) * SubStimMult
 			If ThirdActor
@@ -809,7 +816,7 @@ Event OnUpdate() ;OStim main logic loop
 	SendModEvent("ostim_end")
 	If !DisableScaling
 		RestoreScales()
-    EndIf
+	EndIf
 
 	If (EnableImprovedCamSupport) && IsPlayerInvolved()
 		Game.EnablePlayerControls(abCamSwitch = True)
@@ -831,15 +838,16 @@ Event OnUpdate() ;OStim main logic loop
 		DomActor.SetPosition(DomX, DomY, DomZ)
 		If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 			Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
-	    EndIf
+		EndIf
 	EndIf
 
 	If (ForceFirstPersonAfter && IsPlayerInvolved())
-		If IsInFreeCam()
+; subhuman - the if is redundant as long as the while is there
+;		If IsInFreeCam()
 			While IsInFreeCam()
 				Utility.Wait(0.1)
 			EndWhile
-		EndIf 
+;		EndIf 
 		Game.ForceFirstPerson()
 	EndIf
 
@@ -848,11 +856,12 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	UnRegisterForModEvent("0SAO" + Password + "_AnimateStage")
-	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_Sound")
-	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_Sound")
+	; subhuman - same as above, but maybe GetLevelledActorBase() should be here
+	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase) + "_Sound")
+	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase) + "_Sound")
 
 	If (ThirdActor)
-		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_Sound")
+		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase) + "_Sound")
 	EndIf
 
 	If (OldTimescale > 0)
@@ -914,6 +923,8 @@ Bool Function IsThreesome()
 EndFunction
 
 ODatabaseScript Function GetODatabase()
+
+; subhuman - there's no guarantee this loop will ever end
 	While (!ODatabase)
 		Utility.Wait(0.5)
 	Endwhile
@@ -941,7 +952,7 @@ Int Function GetCurrentAnimationMaxSpeed()
 EndFunction
 
 Int Function GetAPIVersion()
-	Return 14
+	Return 15
 EndFunction
 
 Function IncreaseAnimationSpeed()
@@ -961,7 +972,9 @@ EndFunction
 Function AdjustAnimationSpeed(float amount)
 	{Increase or decrease the animation speed by the amount}
 	If amount < 0
-		int times = math.abs((amount / 0.5)) as int
+	; subhuman - x86 is much faster at multiplication than division
+;		int times = math.abs((amount / 0.5)) as int
+		int times = math.abs(amount * 2.0) as int
 		While times > 0
 			UI.Invokefloat("HUD Menu", diasa + ".scena.speedAdjust", -0.5)
 			times -= 1
@@ -991,7 +1004,7 @@ EndFunction
 
 string function GetCurrentAnimationSceneID() 
 	{Return the scene ID of the current scene i.e. BB|Sy6!KNy9|HhPo|MoShoPo}
-	return ODatabase.GetSceneID( getcurrentanimationOID() )
+	return currentsceneid
 endfunction
 
 Function LightActor(Actor Act, Int Pos, Int Brightness) ; pos 1 - ass, pos 2 - face | brightness - 0 = dim
@@ -1251,7 +1264,7 @@ EndFunction
 
 Bool Function AppearsFemale(Actor Act) 
 	{gender based / looks like a woman but can have a penis}
-	Return (Act.GetLeveledActorBase().GetSex() == 1)
+	Return OSANative.GetSex( OSANative.GetLeveledActorBase(act) ) == 1
 EndFunction
 
 Actor Function GetCurrentLeadingActor()
@@ -1279,10 +1292,10 @@ EndFunction
 Function Realign()
 	AllowVehicleReset()
 	Utility.Wait(0.1)
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AlignStage")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase) + "_AlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase) + "_AlignStage")
 	If (ThirdActor)
-		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_AlignStage")
+		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase) + "_AlignStage")
 	EndIf
 EndFunction
 
@@ -1294,10 +1307,10 @@ EndFunction
 
 Function AllowVehicleReset()
 	Console("Allowing vehicle reset...")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetActorBase()) + "_AllowAlignStage")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetActorBase()) + "_AllowAlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase) + "_AllowAlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase) + "_AllowAlignStage")
 	If (ThirdActor)
-		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetActorBase()) + "_AllowAlignStage")
+		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase) + "_AllowAlignStage")
 	EndIf
 EndFunction
 
@@ -1649,44 +1662,44 @@ Function AutoIncreaseSpeed()
 	EndIf
 
 	String CClass = GetCurrentAnimationClass()
-    Float MainExcitement = GetActorExcitement(DomActor)
-    If (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2")
-    	MainExcitement = GetActorExcitement(SubActor)
+	Float MainExcitement = GetActorExcitement(DomActor)
+	If (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2")
+		MainExcitement = GetActorExcitement(SubActor)
 	EndIf
 
-    Int MaxSpeed = GetCurrentAnimationMaxSpeed()
+	Int MaxSpeed = GetCurrentAnimationMaxSpeed()
 	Int NumSpeeds = MaxSpeed
 
-    Int AggressionBonusChance = 0
-    If (IsSceneAggressiveThemed())
-    	AggressionBonusChance = 80
-    	MainExcitement += 20
-    EndIf
+	Int AggressionBonusChance = 0
+	If (IsSceneAggressiveThemed())
+		AggressionBonusChance = 80
+		MainExcitement += 20
+	EndIf
 
 	Int Speed = GetCurrentAnimationSpeed()
-    If (!CurrAnimHasIdleSpeed)
-    	NumSpeeds += 1
-    ElseIf (Speed == 0)
-    	Return
-    EndIf
+	If (!CurrAnimHasIdleSpeed)
+		NumSpeeds += 1
+	ElseIf (Speed == 0)
+		Return
+	EndIf
 
-    If ((MainExcitement >= 85.0) && (Speed < NumSpeeds))
-    	If (ChanceRoll(80))
-    		IncreaseAnimationSpeed()
-    	EndIf
-    ElseIf (MainExcitement >= 69.0) && (Speed <= (NumSpeeds - 1))
-    	If (ChanceRoll(50))
-    		IncreaseAnimationSpeed()
-    	EndIf
-    ElseIf (MainExcitement >= 25.0) && (Speed <= (NumSpeeds - 2))
-    	If (ChanceRoll(20 + AggressionBonusChance))
-    		IncreaseAnimationSpeed()
-    	EndIf
-    ElseIf (MainExcitement >= 05.0) && (Speed <= (NumSpeeds - 3))
-    	If (ChanceRoll(20 + AggressionBonusChance))
-    		IncreaseAnimationSpeed()
-    	EndIf
-    EndIf
+	If ((MainExcitement >= 85.0) && (Speed < NumSpeeds))
+		If (ChanceRoll(80))
+			IncreaseAnimationSpeed()
+		EndIf
+	ElseIf (MainExcitement >= 69.0) && (Speed <= (NumSpeeds - 1))
+		If (ChanceRoll(50))
+			IncreaseAnimationSpeed()
+		EndIf
+	ElseIf (MainExcitement >= 25.0) && (Speed <= (NumSpeeds - 2))
+		If (ChanceRoll(20 + AggressionBonusChance))
+			IncreaseAnimationSpeed()
+		EndIf
+	ElseIf (MainExcitement >= 05.0) && (Speed <= (NumSpeeds - 3))
+		If (ChanceRoll(20 + AggressionBonusChance))
+			IncreaseAnimationSpeed()
+		EndIf
+	EndIf
 EndFunction
 
 String Function NormalSpeedToOsexSpeed(Int Speed)
@@ -1709,15 +1722,35 @@ Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
 	;Console("Event received")
 	If (CurrentAnimation != zAnimation) || FirstAnimate
 		FirstAnimate = false
+		if zAnimation == "undefined"
+			Console("---------------------- Warning ----------------------")
+			Console("A broken animation is attempting to be played. Printing last valid animation data")
+			Console(" ")
+			Console(">	Last valid animation: " + CurrentAnimation)
+			Console(">	Last valid speed: " + CurrentSpeed)
+			Console(">	Probable broken speed: " + (CurrentSpeed + 1))
+			Console(">	Last valid animation class: " + CurrAnimClass)
+			Console(">	Last valid scene ID: " + GetCurrentAnimationSceneID())
+			Console(" ")
+			Console("Speed control will be broken until scene is changed")
+			Console("Please report this information on discord")
+			Console("-----------------------------------------------------")
+
+			return
+		endif 
 		CurrentAnimation = zAnimation
 		OnAnimationChange()
+
 		SendModEvent("ostim_animationchanged")
+
+		SendModEvent("ostim_animationchanged_" + CurrAnimClass) ;register to anims by class
+		SendModEvent("ostim_animationchanged_" + CurrentSceneID) ;register to anims by scene
 	EndIf
 EndEvent
 
 Function OpenMouth(Actor Act)
 	Console("Opening mouth...")
-	String a = _oGlobal.GetFormID_S(Act.GetActorBase())
+	String a = _oGlobal.GetFormID_S(Act.GetBaseObject() as actorbase)
 
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 40)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 100)
@@ -1726,7 +1759,7 @@ EndFunction
 
 Function CloseMouth(Actor Act)
 	Console("Closing mouth...")
-	String a = _oGlobal.GetFormID_S(Act.GetActorBase())
+	String a = _oGlobal.GetFormID_S(Act.GetBaseObject() as actorbase)
 
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 0)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 0)
@@ -1743,6 +1776,7 @@ Function OnAnimationChange()
 
 	;Profile()
 	CurrentOID = ODatabase.GetObjectOArray(ODatabase.GetAnimationWithAnimID(ODatabase.GetDatabaseOArray(), CurrentAnimation), 0)
+	CurrentSceneID = ODatabase.GetSceneID( CurrentOID )
 	;Profile("DB Lookup")
 
 	If (ODatabase.IsHubAnimation(CurrentOID))
@@ -1808,10 +1842,12 @@ Function OnAnimationChange()
 		If ThirdActor
 			Console("Third actor: + " + ThirdActor.GetDisplayName() + " has joined the scene")
 
-			RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound", "OnSoundThird")
-			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo", "OnMoThird")
-			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh", "OnPhThird")
-			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx", "OnExThird")
+			; subhuman - cache values
+			ActorBase thirdActorBase = thirdActor.GetBaseObject() as actorbase
+			RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActorBase) + "_Sound", "OnSoundThird")
+			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendMo", "OnMoThird")
+			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendPh", "OnPhThird")
+			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendEx", "OnExThird")
 
 			if !DisableScaling
 				ScaleToStandardHeight(ThirdActor)
@@ -1824,10 +1860,12 @@ Function OnAnimationChange()
 	ElseIf (ThirdActor && (CorrectActorCount == 2)) ; third actor, but there should not be.
 		Console("Third actor has left the scene")
 
-		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_Sound")
-		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendMo")
-		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendPh")
-		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActor.GetActorBase()) + "_BlendEx")
+		; subhuman - cache values
+		ActorBase thirdActorBase = thirdActor.GetBaseObject() as actorbase
+		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActorBase) + "_Sound")
+		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendMo")
+		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendPh")
+		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendEx")
 
 		if !DisableScaling
 			ThirdActor.SetScale(1.0)
@@ -1866,7 +1904,7 @@ Function OnAnimationChange()
 	Console("Current animation: " + CurrentAnimation)
 	Console("Current speed: " + CurrentSpeed)
 	Console("Current animation class: " + CurrAnimClass)
-	Console("Current scene ID: " + GetCurrentAnimationSceneID())
+	Console("Current scene ID: " + CurrentSceneID)
 
 	;Profile("Animation change time")
 EndFunction
@@ -1880,7 +1918,9 @@ Function OnSpank()
 		If (SpankCount < SpankMax)
 			SubExcitement += 5
 		Else
-			SubActor.DamageAV("health", 5.0)
+			; subhuman - wrappers is bad
+;			SubActor.DamageAV("health", 5.0)
+			SubActor.DamageActorValue("health", 5.0)
 		EndIf
 	EndIf
 
@@ -1895,6 +1935,7 @@ Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
 	EndIf
 EndEvent
 
+; subhuman - why is this declaration in the middle of the script?
 Float LastVehicleTime
 Event OnSetVehicle(String EventName, String zAnimation, Float NumArg, Form Sender)
 	If (Game.GetRealHoursPassed() - LastVehicleTime) < 0.000833 ; 3 seconds
@@ -2156,7 +2197,9 @@ Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being sti
 			Ret -= 0.1
 		EndIf
 
-		Int HalfwaySpeed = (Math.Ceiling((NumSpeeds as Float) / 2.0)) as Int ; 5 -> 3 | 3 -> 2 etc
+		; subhuman - Math.Ceiling already returns an int, no need to cast an int to an int
+;		Int HalfwaySpeed = (Math.Ceiling((NumSpeeds as Float) / 2.0)) as Int ; 5 -> 3 | 3 -> 2 etc
+		Int HalfwaySpeed = Math.Ceiling((NumSpeeds as Float) / 2.0) ; 5 -> 3 | 3 -> 2 etc
 		If (Speed == (HalfwaySpeed - 2))
 			Ret -= 0.4
 		ElseIf (Speed == (HalfwaySpeed - 1))
@@ -2269,7 +2312,9 @@ Function Orgasm(Actor Act)
 
 ;	SetActorArousal(Act, GetActorArousal(Act) - 50)
 
-	Act.DamageAV("stamina", 250.0)
+	; subhuman- damn wrappers again
+;	Act.DamageAV("stamina", 250.0)
+	Act.DamageActorValue("stamina", 250.0)
 EndFunction
 
 Function SetOrgasmStall(Bool Set)
@@ -2556,17 +2601,7 @@ FormList[] Function GetSoundFormLists()
 	Return SoundFormLists
 EndFunction
 
-bool Function IsChild(actor act)
-	; Normally, we can just use act.ischild() to see if an actor is a child.
-	; However, some mods unset this flag.
-	; Note: OSA will automatically fail start scenes with child actors, so you don't have to use this to filter actors beforehand
-	if act.IsChild()
-		return true 
-	endif
-	Race ActorRace  = act.GetLeveledActorBase().GetRace()
-	string RaceName = act.GetName()+MiscUtil.GetRaceEditorID(ActorRace)
-	return StringContains(RaceName, "Child")
-EndFunction
+
 
 
 ;			 ██████╗ ████████╗██╗  ██╗███████╗██████╗
@@ -2584,56 +2619,26 @@ Function Console(String In) Global
 	MiscUtil.PrintConsole("OStim: " + In)
 EndFunction
 
-function StoreNPCDataFloat(actor npc, string keys, Float num) Global
-	StorageUtil.SetFloatValue(npc as form, keys, num)
-	;console("Set value " + num + " for key " + keys)
-EndFunction
-
-Float function GetNPCDataFloat(actor npc, string keys) Global
-	return StorageUtil.GetFloatValue(npc, keys, -1)
-EndFunction
-
-function StoreNPCDataInt(actor npc, string keys, int num) Global
-	StorageUtil.SetIntValue(npc as form, keys, num)
-	;console("Set value " + num + " for key " + keys)
-EndFunction
-
-Int function GetNPCDataInt(actor npc, string keys) Global
-	return StorageUtil.GetIntValue(npc, keys, -1)
-EndFunction
-
-function StoreNPCDataBool(actor npc, string keys, bool value) Global
-	int store 
-	if value 
-		store = 1
-	else 
-		store = 0
-	endif
-	StoreNPCDataInt(npc, keys, store)
-	;console("Set value " + store + " for key " + keys)
-EndFunction
-
-Bool function GetNPCDataBool(actor npc, string keys) Global
-	int value = GetNPCDataInt(npc, keys)
-	bool ret = (value == 1)
-	;console("got value " + value + " for key " + keys)
-	return ret
-EndFunction
-
 Function SetGameSpeed(String In)
 	ConsoleUtil.ExecuteCommand("sgtm " + In)
 EndFunction
 
 Bool Function ChanceRoll(Int Chance) ; input 60: 60% of returning true
-	Int Roll = RandomInt(1, 100)
+
+	; subhuman - we can make this really simple.
+	return (Utility.RandomInt() < Chance)
+;/	Int Roll = RandomInt(1, 100)
 	If (Roll <= Chance)
 		Return True
 	EndIf
-	Return False
+	Return False/;
 EndFunction
 
 Int Function SpeedStringToInt(String In) ; casting does not work so...
-	If (In == "s0")
+
+	; subhuman - I like one-line functions, don't you?
+	return (StringUtil.AsOrd(StringUtil.GetNthChar(In, 1)) - 48)
+;/	If (In == "s0")
 		Return 0
 	ElseIf (In == "s1")
 		Return 1
@@ -2653,7 +2658,7 @@ Int Function SpeedStringToInt(String In) ; casting does not work so...
 		Return 8
 	ElseIf (In == "s9")
 		Return 9
-	EndIf
+	EndIf/;
 EndFunction
 
 Function ShakeCamera(Float Power, Float Duration = 0.1)
@@ -2668,36 +2673,31 @@ Function ShakeController(Float Power, Float Duration = 0.1)
 	EndIf
 EndFunction
 
-Bool Function IntArrayContainsValue(Int[] Arr, Int Val)
-	return Arr.Find(Val) != -1
+Bool Function IntArrayContainsValue(Int[] Arr, Int Val) ;DEPRECIATED - moving to outils in future ver
+	return outils.IntArrayContainsValue(arr, val)
 EndFunction
 
-Bool Function StringArrayContainsValue(String[] Arr, String Val)
-	;Int i = 0
-	;Int L = Arr.Length
-	;While (i < L)
-	;	If (Arr[i] == Val)
-	;		Return True
-	;	EndIf
-	;	i += 1
-	;EndWhile
-	;Return False
-
-	return ( PapyrusUtil.CountString(Arr, Val) > 0)
+Bool Function StringArrayContainsValue(String[] Arr, String Val) ;DEPRECIATED - moving to outils in future ver
+	return outils.StringArrayContainsValue(arr, val)
 EndFunction
 
-bool Function StringContains(string str, string contains)
-	return (StringUtil.Find(str, contains) != -1)
+bool Function StringContains(string str, string contains) ;DEPRECIATED - moving to outils in future ver
+	return outils.StringContains(str, contains)
 EndFunction
 
-bool Function IsModLoaded(string ESPFile)
-	return (Game.GetModByName(ESPFile) != 255)
+bool Function IsModLoaded(string ESPFile) ;DEPRECIATED - moving to outils in future ver
+	return outils.IsModLoaded(ESPFile)
 Endfunction
+
+bool Function IsChild(actor act) ;DEPRECIATED - moving to outils in future ver
+	return OUtils.IsChild(Act)
+EndFunction
 
 Int Function GetTimeScale()
 	Return Timescale.GetValue() as Int
 EndFunction
 
+; subhuman- why is this an int function when it doesn't return anything?
 Int Function SetTimeScale(Int Time)
 	Timescale.SetValue(Time as Float)
 EndFunction
@@ -3037,9 +3037,6 @@ Function StartReroutedScene()
 	StartScene(ReroutedDomActor,  ReroutedSubActor)
 EndFunction
 
-Function DisplayTextBanner(String Txt)
-	UI.InvokeString("HUD Menu", "_root.HUDMovieBaseInstance.QuestUpdateBaseInstance.ShowNotification", Txt)
-EndFunction
 
 Function ResetState()
 	Console("Resetting thread state")
@@ -3121,19 +3118,19 @@ Function MountNPCSceneAsMain()
 	disableOSAControls = true
 	
 
-    String DomID = _oGlobal.GetFormID_S(domactor.GetActorBase())
-    String InspectMenu = o + ".hud.InspectMenu"
+	String DomID = _oGlobal.GetFormID_S(domactor.GetBaseObject() as actorbase)
+	String InspectMenu = o + ".hud.InspectMenu"
 
-    UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
+	UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
 
-    string actraD = InspectMenu + ".actra"
-
-
-    diasa = actraD + ".stageStatus"
+	string actraD = InspectMenu + ".actra"
 
 
+	diasa = actraD + ".stageStatus"
 
-    UI.Invoke("HUD Menu", InspectMenu + ".OmniDim")
+
+
+	UI.Invoke("HUD Menu", InspectMenu + ".OmniDim")
 
    
 EndFunction
@@ -3141,9 +3138,9 @@ EndFunction
 
 Event OnKeyDown(Int KeyPress)
 	If (DisableOSAControls)
-        Console("OStim controls disabled by property")
-        Return
-    EndIf
+		Console("OStim controls disabled by property")
+		Return
+	EndIf
 
 	If (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
 		Return
@@ -3253,20 +3250,22 @@ Function ResetOSA() ; do not use, breaks osa
 	CtrlQuest.Reset()
 	CtrlQuest.Stop()
 
-	Utility.Wait(2)
+	Utility.Wait(2.0)
 
 	CtrlQuest.Start()
 	OSAQuest.Start()
 	UIQuest.Start()
 
-	Utility.Wait(1)
+	Utility.Wait(1.0)
 Endfunction
 
 int rnd_s1
 int rnd_s2
 int rnd_s3
 
-int Function RandomInt(int min = 0, int max = 100)
+; subhuman - to be like vanilla, the default range should be 0, 99
+;int Function RandomInt(int min = 0, int max = 100)
+int Function RandomInt(int min = 0, int max = 99)
 	; Returns a random number. Inclusive (same as vanilla's).
 	; roughly 2x as fast as Utility.getrandomint() Randomness is pretty close to vanilla too.
 	
@@ -3368,16 +3367,18 @@ Function Startup()
 		Debug.Notification("OStim: ConsoleUtil is not installed, a few features may not work")
 	EndIf
 
+; subhuman - minor compile size optimization
+	SoSInstalled = false
 	If (Game.GetModByName("Schlongs of Skyrim.esp") != 255)
 		SoSFaction = (Game.GetFormFromFile(0x0000AFF8, "Schlongs of Skyrim.esp")) as Faction
 		If (SoSFaction)
 			Console("Schlongs of Skyrim loaded")
 			SoSInstalled = true
-		Else
-			SoSInstalled = false
+;		Else
+;			SoSInstalled = false
 		Endif
-	Else
-		SoSInstalled = false
+;	Else
+;		SoSInstalled = false
 	EndIf
 
 	ResetRandom()
@@ -3412,7 +3413,7 @@ Function Startup()
 	OSAOmni.RebootScript()
 	OnLoadGame()
 
-	DisplayTextBanner("OStim installed.")
+	OUtils.DisplayTextBanner("OStim installed.")
 EndFunction
 
 Bool Property UseBrokenCosaveWorkaround Auto

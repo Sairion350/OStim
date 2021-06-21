@@ -15,7 +15,7 @@ Event OnInit()
 EndEvent
 
 Function DoUpdate()
-	OStim.DisplayTextBanner("Updating OStim")
+	OUtils.DisplayTextBanner("Updating OStim")
 
 	OQuest.Reset()
 	OQuest.Stop()
