@@ -514,6 +514,7 @@ Event OnUpdate() ;OStim main logic loop
 	RegisterForModEvent("ostim_setvehicle", "OnSetVehicle")
 	; subhuman - GetActorBase() is a wrapper for "GetBaseObject() as actor"
 	; NOTE: GetLevelledActorBase() may be what you actually want here.
+	; TODO make sure OSA uses proper actor bases before changing these
 
 	String DomFormID = _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase)
 	RegisterForModEvent("0SSO" + DomFormID + "_Sound", "OnSoundDom")
@@ -1263,7 +1264,7 @@ EndFunction
 
 Bool Function AppearsFemale(Actor Act) 
 	{gender based / looks like a woman but can have a penis}
-	Return (Act.GetLeveledActorBase().GetSex() == 1)
+	Return OSANative.GetSex( OSANative.GetLeveledActorBase(act) ) == 1
 EndFunction
 
 Actor Function GetCurrentLeadingActor()
