@@ -41,20 +41,6 @@ ActorBase[] Function LookupRelationshipPartners(Actor FirstActor, AssociationTyp
 Actor Function GetActorFromBase(ActorBase act) Global Native
 
 
-;███╗   ██╗ █████╗ ████████╗██╗██╗   ██╗███████╗███████╗
-;████╗  ██║██╔══██╗╚══██╔══╝██║██║   ██║██╔════╝██╔════╝
-;██╔██╗ ██║███████║   ██║   ██║██║   ██║█████╗  ███████╗
-;██║╚██╗██║██╔══██║   ██║   ██║╚██╗ ██╔╝██╔══╝  ╚════██║
-;██║ ╚████║██║  ██║   ██║   ██║ ╚████╔╝ ███████╗███████║
-;╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═══╝  ╚══════╝╚══════╝
- 
-; SKSE versions of natives, to bypass the one-frame delay on all game engine natives
-                                                      
-ActorBase Function GetLeveledActorBase(Actor act) Global Native
-
-int Function GetSex(ActorBase base) Global Native
-
-
 ;  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗
 ; ██╔════╝██╔══██╗████╗ ████║██╔════╝██╔══██╗██╔══██╗
 ; ██║     ███████║██╔████╔██║█████╗  ██████╔╝███████║
