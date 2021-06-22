@@ -348,7 +348,7 @@ Function ActraReadyByKey(Actor[] Actra, String StageID, Int Index, Bool Solo = F
 
     Int i = 0
     While (i < L)
-        DataPush[2 + i] = _oGlobal.GetFormID_S(Actra[i].GetActorBase())
+        DataPush[2 + i] = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(Actra[i]))
         ProcessActraAll(Actra[i], DataPush[2 + i])
         Actra[i].SetFactionRank(OFaction[0], 1)
         Actra[i].SetFactionRank(OFaction[1], StageIDint)

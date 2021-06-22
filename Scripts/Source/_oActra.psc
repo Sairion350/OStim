@@ -42,7 +42,7 @@ Event OnEffectStart (Actor TarAct, Actor Spot)
 	Aligned = False
 
 	Actra = TarAct
-	FormID = _oGlobal.GetFormID_S(Actra.GetActorBase())
+	FormID = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(Actra))
 	Glyph = OSO.Glyph
 	StageID = Actra.GetFactionRank(OSO.OFaction[1])
 	RegisterEvents()

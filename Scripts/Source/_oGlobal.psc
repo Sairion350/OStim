@@ -13,8 +13,8 @@ Scriptname _oGlobal
 
 
 String Function GetFormID_S(Form zForm) Global
-    String ModID = IntToHex(Math.RightShift(zForm.GetFormID(), 24))
-    String SubID = IntToHex(Math.LogicalAnd(0x00FFFFFF, zForm.GetFormID()))
+    String ModID = IntToHex(Math.RightShift(OUtils.GetFormIDCached(zForm), 24))
+    String SubID = IntToHex(Math.LogicalAnd(0x00FFFFFF, OUtils.GetFormIDCached(zForm)))
 
     If (ModID == "")
         ModID = "00"
@@ -187,14 +187,14 @@ String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni OSO) Globa
     EndIf
     /;
 
-    ActorBase ActB = Actra.GetLeveledActorBase()
+    ActorBase ActB = OUtils.GetLeveledActorBaseCached(Actra)
     String[] Details = new String[20]
     Details[0] = FormID
-    Details[1] = Actra.GetFormId()
+    Details[1] = OUtils.GetFormIDCached(Actra)
     ; CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
     ;details[2] = CPConvert.CPConv(oso.codepage, "UTF-8", ActB.GetName())
     Details[2] = Actra.GetDisplayName()
-    Details[3] = ActB.GetSex()
+    Details[3] = OUtils.GetSexCached(Actb)
 
     If (Actra == OSO.PlayerRef)
         Details[4] = "1"

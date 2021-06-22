@@ -76,12 +76,12 @@ EndFunction
 ; Cached version of GetActorFromBase
 ; Lookups are fast (~15ms in base game), but grow as the user adds more forms. This caches the result so you only need to lookup once
 Actor Function GetActorFromBaseCached(ActorBase in) Global
-	form cached = StorageUtil.GetFormValue(in, "ostim_actorcache",  missing = none)
+	form cached = StorageUtil.GetFormValue(in, "ostim_cache_actor",  missing = none)
 	if cached 
 		return cached as actor 
 	else 
 		cached = OSANative.GetActorFromBase(in) as form 
-		StorageUtil.SetFormValue(in, "ostim_actorcache",  cached)
+		StorageUtil.SetFormValue(in, "ostim_cache_actor",  cached)
 		return cached as actor
 	endif 
 
@@ -100,6 +100,42 @@ Actor[] Function BaseArrToActorArr(ActorBase[] base)
 	endwhile
 
 	return ret
+EndFunction
+
+
+;Cached natives
+
+ActorBase Function GetLeveledActorBaseCached(actor in) Global
+	form cached = StorageUtil.GetFormValue(in, "ostim_cache_actorbase",  missing = none)
+	if cached 
+		return cached as ActorBase 
+	else 
+		cached = (in.GetLeveledActorBase()) as form 
+		StorageUtil.SetFormValue(in, "ostim_cache_actorbase",  cached)
+		return cached as actorbase
+	endif 
+EndFunction
+
+int Function GetSexCached(actorbase in) Global
+	int cached = StorageUtil.GetIntValue(in, "ostim_cache_sex",  missing = -2)
+	if cached != -2
+		return cached
+	else 
+		cached = (in.GetSex())
+		StorageUtil.SetIntValue(in, "ostim_cache_sex",  cached)
+		return cached
+	endif 
+EndFunction
+
+int Function GetFormIDCached(form in) Global
+	int cached = StorageUtil.GetIntValue(in, "ostim_cache_formid",  missing = -2)
+	if cached != -2
+		return cached
+	else 
+		cached = (in.GetFormID())
+		StorageUtil.SetIntValue(in, "ostim_cache_formid",  cached)
+		return cached
+	endif 
 EndFunction
 
 

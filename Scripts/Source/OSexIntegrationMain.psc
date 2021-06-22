@@ -512,22 +512,21 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	RegisterForModEvent("ostim_setvehicle", "OnSetVehicle")
-	; subhuman - GetActorBase() is a wrapper for "GetBaseObject() as actor"
-	; NOTE: GetLevelledActorBase() may be what you actually want here.
+	
 
-	String DomFormID = _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase)
+	String DomFormID = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(DomActor))
 	RegisterForModEvent("0SSO" + DomFormID + "_Sound", "OnSoundDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendMo", "OnMoDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendPh", "OnPhDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendEx", "OnExDom")
 	If (SubActor)
-		String SubFormID = _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase)
+		String SubFormID = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(SubActor))
 		RegisterForModEvent("0SSO" + SubFormID + "_Sound", "OnSoundSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendMo", "OnMoSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendPh", "OnPhSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendEx", "OnExSub")
 		If (ThirdActor)
-			String ThirdFormID = _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase)
+			String ThirdFormID = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(ThirdActor))
 			RegisterForModEvent("0SSO" + ThirdFormID + "_Sound", "OnSoundThird")
 			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendMo", "OnMoThird")
 			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendPh", "OnPhThird")
@@ -856,11 +855,11 @@ Event OnUpdate() ;OStim main logic loop
 
 	UnRegisterForModEvent("0SAO" + Password + "_AnimateStage")
 	; subhuman - same as above, but maybe GetLevelledActorBase() should be here
-	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase) + "_Sound")
-	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase) + "_Sound")
+	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(DomActor)) + "_Sound")
+	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(SubActor)) + "_Sound")
 
 	If (ThirdActor)
-		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase) + "_Sound")
+		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(ThirdActor)) + "_Sound")
 	EndIf
 
 	If (OldTimescale > 0)
@@ -1263,7 +1262,8 @@ EndFunction
 
 Bool Function AppearsFemale(Actor Act) 
 	{gender based / looks like a woman but can have a penis}
-	Return (Act.GetLeveledActorBase().GetSex() == 1)
+	;Return (Act.GetLeveledActorBase().GetSex() == 1)
+	Return OUtils.GetSexCached(OUtils.GetLeveledActorBaseCached(act))
 EndFunction
 
 Actor Function GetCurrentLeadingActor()
@@ -1291,10 +1291,10 @@ EndFunction
 Function Realign()
 	AllowVehicleReset()
 	Utility.Wait(0.1)
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase) + "_AlignStage")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase) + "_AlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(DomActor)) + "_AlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(SubActor)) + "_AlignStage")
 	If (ThirdActor)
-		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase) + "_AlignStage")
+		SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(ThirdActor)) + "_AlignStage")
 	EndIf
 EndFunction
 
@@ -1306,10 +1306,10 @@ EndFunction
 
 Function AllowVehicleReset()
 	Console("Allowing vehicle reset...")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(DomActor.GetBaseObject() as actorbase) + "_AllowAlignStage")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(SubActor.GetBaseObject() as actorbase) + "_AllowAlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(DomActor)) + "_AllowAlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(SubActor)) + "_AllowAlignStage")
 	If (ThirdActor)
-		SendModEvent("0SAA" + _oGlobal.GetFormID_S(ThirdActor.GetBaseObject() as actorbase) + "_AllowAlignStage")
+		SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(ThirdActor)) + "_AllowAlignStage")
 	EndIf
 EndFunction
 
@@ -1749,7 +1749,7 @@ EndEvent
 
 Function OpenMouth(Actor Act)
 	Console("Opening mouth...")
-	String a = _oGlobal.GetFormID_S(Act.GetBaseObject() as actorbase)
+	String a = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(Act))
 
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 40)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 100)
@@ -1758,7 +1758,7 @@ EndFunction
 
 Function CloseMouth(Actor Act)
 	Console("Closing mouth...")
-	String a = _oGlobal.GetFormID_S(Act.GetBaseObject() as actorbase)
+	String a = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(Act))
 
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 0)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 0)
@@ -1842,7 +1842,7 @@ Function OnAnimationChange()
 			Console("Third actor: + " + ThirdActor.GetDisplayName() + " has joined the scene")
 
 			; subhuman - cache values
-			ActorBase thirdActorBase = thirdActor.GetBaseObject() as actorbase
+			ActorBase thirdActorBase = OUtils.GetLeveledActorBaseCached(ThirdActor)
 			RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActorBase) + "_Sound", "OnSoundThird")
 			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendMo", "OnMoThird")
 			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendPh", "OnPhThird")
@@ -1859,8 +1859,7 @@ Function OnAnimationChange()
 	ElseIf (ThirdActor && (CorrectActorCount == 2)) ; third actor, but there should not be.
 		Console("Third actor has left the scene")
 
-		; subhuman - cache values
-		ActorBase thirdActorBase = thirdActor.GetBaseObject() as actorbase
+		ActorBase thirdActorBase = OUtils.GetLeveledActorBaseCached(ThirdActor)
 		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActorBase) + "_Sound")
 		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendMo")
 		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendPh")
@@ -3117,7 +3116,7 @@ Function MountNPCSceneAsMain()
 	disableOSAControls = true
 	
 
-	String DomID = _oGlobal.GetFormID_S(domactor.GetBaseObject() as actorbase)
+	String DomID = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(DomActor))
 	String InspectMenu = o + ".hud.InspectMenu"
 
 	UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
