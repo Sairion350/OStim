@@ -1755,8 +1755,6 @@ Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
 
 		SendModEvent("ostim_animationchanged")
 
-		SendModEvent("ostim_animationchanged_" + CurrAnimClass) ;register to anims by class
-		SendModEvent("ostim_animationchanged_" + CurrentSceneID) ;register to anims by scene
 	EndIf
 EndEvent
 
@@ -1788,7 +1786,14 @@ Function OnAnimationChange()
 
 	;Profile()
 	CurrentOID = ODatabase.GetObjectOArray(ODatabase.GetAnimationWithAnimID(ODatabase.GetDatabaseOArray(), CurrentAnimation), 0)
-	CurrentSceneID = ODatabase.GetSceneID( CurrentOID )
+	
+	bool sceneChange = false 
+
+	string newScene = ODatabase.GetSceneID( CurrentOID )
+	if newScene != CurrentSceneID
+		sceneChange = true 
+	endif 
+	CurrentSceneID = newScene
 	;Profile("DB Lookup")
 
 	If (ODatabase.IsHubAnimation(CurrentOID))
@@ -1911,6 +1916,13 @@ Function OnAnimationChange()
 			CloseMouth(DomActor)
 		EndIf
 	EndIf
+
+	if sceneChange
+		SendModEvent("ostim_scenechanged")
+
+		SendModEvent("ostim_scenechanged_" + CurrAnimClass) ;register to scenes by class
+		SendModEvent("ostim_scenechanged_" + CurrentSceneID) ;register to scenes by scene
+	endif 
 
 	Console("Current animation: " + CurrentAnimation)
 	Console("Current speed: " + CurrentSpeed)
@@ -3432,8 +3444,9 @@ Form[] LoadRegistrations
 
 Function RegisterForGameLoadEvent(form f)
 	{Make a "Event OnGameLoad()" in the scripts attatched to the form you send and the event is called on game load}
+	; Note the database is reset when ostim is updated so you should only use this if you also use OUpdater in your mod so you reregister
 	while !installed
-		Utility.Wait(0.1)
+		Utility.Wait(1)
 		Console("Load registrations not ready")
 	endWhile
 
@@ -3444,7 +3457,7 @@ Function SendLoadGameEvent()
 	int l = LoadRegistrations.Length
 
 	if l > 1
-		int i = 0
+		int i = 1 ; skip none
 
 		while i < l 
 			LoadRegistrations[i].RegisterForModEvent("ostim_gameload", "OnGameLoad")
@@ -3452,10 +3465,10 @@ Function SendLoadGameEvent()
 			i += 1
 		endWhile
 
-		int me = ModEvent.Create("ostim_gameload")
-		ModEvent.Send(me)
+		
+		ModEvent.Send(ModEvent.Create("ostim_gameload"))
 
-		i = 0
+		i = 1
 		while i < l 
 			LoadRegistrations[i].UnregisterForModEvent("ostim_gameload")
 
