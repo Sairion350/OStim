@@ -9,10 +9,14 @@ Function Console(String In) Global
 	MiscUtil.PrintConsole("OStim: " + In)
 EndFunction
 
-
-Function RegisterForOUpdate(quest q) Global
-	(game.GetFormFromFile(0x000D67, "Ostim.esp") as OStimUpdaterScript).AddQuestToDatabase(q)
+Function RegisterForOUpdate(form f) Global
+	(game.GetFormFromFile(0x000D67, "Ostim.esp") as OStimUpdaterScript).AddFormToDatabase(f)
 EndFunction
+
+Function ForceOUpdate() Global
+	(game.GetFormFromFile(0x000D67, "OStim.esp") as OStimUpdaterScript).DoUpdate()
+EndFunction
+
 
 function StoreNPCDataFloat(actor npc, string keys, Float num) Global
 	StorageUtil.SetFloatValue(npc as form, keys, num)

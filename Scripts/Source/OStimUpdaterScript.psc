@@ -3,10 +3,13 @@ ScriptName OStimUpdaterScript Extends Quest
 
 Bool Initialized
 
-Form[] property QuestsToUpdate auto 
+Bool Updating
+
+Form[] property FormsToUpdate auto 
 
 Event OnInit()
 	Initialized = False
+	Updating = false
 	
 	ResetQuestDB()
 
@@ -15,34 +18,38 @@ Event OnInit()
 EndEvent
 
 Function ResetQuestDB()
-	QuestsToUpdate = new form[4]
+	FormsToUpdate = new form[4]
 
-	QuestsToUpdate[2] = Quest.GetQuest("0SA") ; 0SA
-	QuestsToUpdate[1] = Game.GetFormFromFile(0x0070A4, "OSA.esm") as Quest ; 0SUI
-	QuestsToUpdate[0] = Quest.GetQuest("0SAControl") as Quest ; 0SAControl
-	QuestsToUpdate[3] = Game.GetFormFromFile(0x000801, "Ostim.esp") as Quest ; ostim
+	FormsToUpdate[2] = Quest.GetQuest("0SA") ; 0SA
+	FormsToUpdate[1] = Game.GetFormFromFile(0x0070A4, "OSA.esm") as Quest ; 0SUI
+	FormsToUpdate[0] = Quest.GetQuest("0SAControl") as Quest ; 0SAControl
+	FormsToUpdate[3] = Game.GetFormFromFile(0x000801, "Ostim.esp") as Quest ; ostim
 EndFunction
 
 Function DoUpdate()
+	Updating = true 
+
 	OUtils.DisplayTextBanner("Updating OStim")
 
 
-	Form[] quests = QuestsToUpdate
+	Form[] Forms = FormsToUpdate
 
 	int i = 0 
-	int l = quests.Length 
+	int l = forms.Length 
 	while i < l
-		quest q = quests[i] as quest
+		form f = forms[i]
+		quest q = forms[i] as quest
 		
-		
-		q.reset()
-		q.stop()
+		if q
+			q.reset()
+			q.stop()
+		endif
 
-		q.UnregisterForAllMenus()
-		q.UnregisterForUpdateGameTime()
-		q.UnregisterForUpdate()
-		q.UnregisterForAllModEvents()
-		q.UnregisterForAllKeys()
+		f.UnregisterForAllMenus()
+		f.UnregisterForUpdateGameTime()
+		f.UnregisterForUpdate()
+		f.UnregisterForAllModEvents()
+		f.UnregisterForAllKeys()
 
 
 
@@ -54,10 +61,14 @@ Function DoUpdate()
 	
 	i = 0 
 	while i < l 
-		quest q = quests[i] as quest
+		form f = forms[i]
+		quest q = forms[i] as quest
 		
-		q.start()
-		OSANative.ForceFireOnInitEvent(q)
+		if q 
+			q.start()
+		endif 
+
+		OSANative.ForceFireOnInitEvent(f)
 		
 
 		Utility.Wait(0.1)
@@ -69,10 +80,17 @@ Function DoUpdate()
 
 
 	OUtils.Console("Updated")
+
+	Updating = false
 EndFunction
 
 
 
-Function AddQuestToDatabase(quest q)
-	QuestsToUpdate = PapyrusUtil.PushForm(QuestsToUpdate, q as form)
+Function AddFormToDatabase(form f)
+	while Updating
+		Utility.Wait(1)
+	EndWhile
+
+	 
+	FormsToUpdate = PapyrusUtil.PushForm(FormsToUpdate, f)
 EndFunction

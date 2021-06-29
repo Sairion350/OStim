@@ -69,7 +69,7 @@ float[] Function GetCameraPos() Global Native
 ;Function SetCameraPos(float x, float y, float z) Global Native
 
 ; Quests with "Run once" can never fire oninit again after install. until now.
-Function ForceFireOnInitEvent(Quest q) Global Native
+Function ForceFireOnInitEvent(Form f) Global Native
 
 
 ; ███████╗ █████╗  ██████╗███████╗

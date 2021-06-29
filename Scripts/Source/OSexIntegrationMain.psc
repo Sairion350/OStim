@@ -151,6 +151,8 @@ Float Property ThirdScaleHeight Auto
 
 Bool Property DisableScaling Auto
 
+int Property InstalledVersion Auto
+
 ; -------------------------------------------------------------------------------------------------
 ; SCRIPTWIDE VARIABLES ----------------------------------------------------------------------------
 
@@ -3296,13 +3298,9 @@ EndFunction
 Function Startup()
 	Debug.Notification("Installing OStim. Please wait...")
 
-	; DEBUG
-	;RegisterForKey(26) ; [
-	;RegisterForKey(27) ; ]
-	;RegisterForKey(43) ; \
-	; DEBUG
+	
 
-	;ResetOSA()
+	InstalledVersion = GetAPIVersion()
 
 	SceneRunning = False
 	Actra = Game.GetFormFromFile(0x000D63, "OSA.ESM") as MagicEffect
@@ -3443,4 +3441,9 @@ Function OnLoadGame()
 
 	;may annoy ihud users?
 	UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", true)
+
+	if GetAPIVersion() != InstalledVersion
+		OUtils.ForceOUpdate()
+	endif 
+	
 EndFunction
