@@ -142,6 +142,8 @@ Bool Property DisableStimulationCalculation Auto
 
 Bool SMPInstalled
 
+Bool Property Installed auto
+
 Int[] Property StrippingSlots Auto
 
 Float Property DomScaleHeight Auto
@@ -3296,9 +3298,11 @@ Function ResetRandom()
 EndFunction
 
 Function Startup()
+	installed = false
 	Debug.Notification("Installing OStim. Please wait...")
 
-	
+	LoadRegistrations = new Form[1]
+	LoadRegistrations[0] = none
 
 	InstalledVersion = GetAPIVersion()
 
@@ -3415,13 +3419,52 @@ Function Startup()
 		Debug.MessageBox("You seem to be installing OStim mid-playthough. If this save previously had an old OStim version installed, don't forget you needed to run a save cleaner to clean out old scripts. If you have done so already, you can safely ignore this message")
 	EndIf
 
-	OSAOmni.RebootScript()
+	installed = true 
+
 	OnLoadGame()
 
 	OUtils.DisplayTextBanner("OStim installed.")
 EndFunction
 
 Bool Property UseBrokenCosaveWorkaround Auto
+
+Form[] LoadRegistrations 
+
+Function RegisterForGameLoadEvent(form f)
+	{Make a "Event OnGameLoad()" in the scripts attatched to the form you send and the event is called on game load}
+	while !installed
+		Utility.Wait(0.1)
+		Console("Load registrations not ready")
+	endWhile
+
+	LoadRegistrations = PapyrusUtil.PushForm(LoadRegistrations, f)
+EndFunction 
+
+Function SendLoadGameEvent()
+	int l = LoadRegistrations.Length
+
+	if l > 1
+		int i = 0
+
+		while i < l 
+			LoadRegistrations[i].RegisterForModEvent("ostim_gameload", "OnGameLoad")
+
+			i += 1
+		endWhile
+
+		int me = ModEvent.Create("ostim_gameload")
+		ModEvent.Send(me)
+
+		i = 0
+		while i < l 
+			LoadRegistrations[i].UnregisterForModEvent("ostim_gameload")
+
+			i += 1
+		endWhile
+	endif
+
+EndFunction
+
 Function OnLoadGame()
 	If (UseBrokenCosaveWorkaround)
 		Console("Using cosave fix")
@@ -3437,6 +3480,9 @@ Function OnLoadGame()
 		AI.OnGameLoad()
 		OBars.OnGameLoad()
 		OUndress.OnGameLoad()
+
+		SendLoadGameEvent()
+
 	EndIf
 
 	;may annoy ihud users?
@@ -3445,5 +3491,5 @@ Function OnLoadGame()
 	if GetAPIVersion() != InstalledVersion
 		OUtils.ForceOUpdate()
 	endif 
-	
+
 EndFunction

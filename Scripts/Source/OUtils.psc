@@ -9,6 +9,7 @@ Function Console(String In) Global
 	MiscUtil.PrintConsole("OStim: " + In)
 EndFunction
 
+
 Function RegisterForOUpdate(form f) Global
 	(game.GetFormFromFile(0x000D67, "Ostim.esp") as OStimUpdaterScript).AddFormToDatabase(f)
 EndFunction
