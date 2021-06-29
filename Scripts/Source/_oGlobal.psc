@@ -111,7 +111,8 @@ Function ActorSmoothUnlock(Actor Actra, Actor Player, Float Xp, Float Yp) Global
 EndFunction
 
 ; Overwrites the Actor's package with a DoNothing package.
-Function PackageSquelch(Actor Actra, Package[] OPackage) Global
+Function PackageSquelch(Actor Actra, Package[] OPackage) Global 
+    ;OStim: package overrides are broken in SE I think?
     ActorUtil.AddPackageOverride(Actra, OPackage[0], 100, 1)
     Actra.EvaluatePackage()
 EndFunction
@@ -193,7 +194,7 @@ String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni OSO) Globa
     Details[1] = OUtils.GetFormIDCached(Actra)
     ; CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
     ;details[2] = CPConvert.CPConv(oso.codepage, "UTF-8", ActB.GetName())
-    Details[2] = Actra.GetDisplayName()
+    Details[2] = OUtils.GetDisplayNameCached(Actra)
     Details[3] = OUtils.GetSexCached(Actb)
 
     If (Actra == OSO.PlayerRef)
@@ -206,35 +207,30 @@ String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni OSO) Globa
         ;Actra.SetScale(1.0)
         Details[4] = "0"
         Details[10] = Details[0] ; it is now already a String in hex
-        Details[11] = Game.GetModName(ModNameHex10(Details[10])) ;unused except for datalibrary
-        Details[10] = StringUtil.SubString(Details[10], 2) ; last 6 of hex ;unused except for datalibrary
-        Details[12] = StringUtil.SubString(Details[11], 0, StringUtil.Find(Details[11], ".es")) ;unused except for datalibrary
+        ;Details[11] = Game.GetModName(ModNameHex10(Details[10])) ;unused except for datalibrary
+        Details[11] = "Skyrim"
+        Details[10] = StringUtil.SubString(Details[10], 2) ; last 6 of hex 
+        Details[12] = StringUtil.SubString(Details[11], 0, StringUtil.Find(Details[11], ".es")) 
         Details[13] = Details[12] + Details[10]
     EndIf
-    Details[8] = ActB.GetWeight()
-    Details[7] = ActB.GetVoiceType().GetFormId() ;unused except for datalibrary
+    Details[8] = OUtils.GetWeightCached(ActB)
+    Details[7] = OUtils.GetFormIDCached( OUtils.GetVoiceTypeCached(ActB) )
 
-    ;/
-    If !NoMove
-        If Actra != PlayerRef
-            If Actra.GetSitState() > 2 || Actra.GetSleepState() > 2
-                Debug.SendAnimationEvent(Actra, "Reset")
-                Debug.SendAnimationEvent(Actra, "ReturnToDefault")
-                Debug.SendAnimationEvent(Actra, "ForceFurnExit")
-                Actra.MoveTo(PlayerRef, (40 * Math.Sin(PlayerRef.GetAngleZ())), (40 * Math.Cos(PlayerRef.GetAngleZ())), 0.0, abMatchRotation = False)
-            Endif
-        Endif
-    EndIf
-    /;
 
-    ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
-    ;details[6] = CPConvert.CPConv(oso.codepage, "UTF-8", ActB.GetRace().GetName())
-    Details[6] = ActB.GetRace().GetName()
-    Details[5] = Actra.GetScale()
+    
+    Details[6] = OUtils.GetNameCached( OUtils.GetRaceCached(Actb) )
+    ;Details[5] = Actra.GetScale() ;unneeded with new scaling sys?
+    Details[5] = 1.0
     Return Details
 EndFunction
 
 String[] Function SendActraScale(Actor Actra, String FormID) Global
+    
+    String[] ret = PapyrusUtil.StringArray(20, "1.0")
+    ret[0] = FormID
+    return ret
+
+    ; OStim: don't think the below stuff is needed? It's a ton of wasted frames so...
     String[] Scale = new String[20]
     Scale[0] = FormID
     Scale[1] = NetImmerse.GetNodeScale(Actra, "NPC Root [Root]", False)

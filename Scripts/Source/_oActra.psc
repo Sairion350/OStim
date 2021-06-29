@@ -238,6 +238,7 @@ EndEvent
 ;For Blending NodeScale softly to a new scale
 Event OnBlendSc(String EventName, String zType, Float zAmount, Form Sender)
 	If (zAmount)
+		outils.console("Node: " + zType + " Amount: " + zAmount)
 		If (NetImmerse.HasNode(Actra, zType, False))
 			_oGlobal.BlendSc(Actra, zAmount, NetImmerse.GetNodeScale(Actra, zType, False), zType, ThrottleScale)
 		EndIf
@@ -247,6 +248,7 @@ EndEvent
 ;For instantly setting scale back in place at times when
 ;dramatic effect aren't needed
 Event OnSnapSc(String EventName, String zType, Float zAmount, Form Sender)
+	outils.console("Node: " + zType + " Amount: " + zAmount)
 	NetImmerse.SetNodeScale(Actra, zType, zAmount, False)
 EndEvent
 

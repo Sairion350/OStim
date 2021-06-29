@@ -352,6 +352,8 @@ EndEvent
 
 ; Call this function to start a new OStim scene
 Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zUndressSub = False, Bool zAnimateUndress = False, String zStartingAnimation = "", Actor zThirdActor = None, ObjectReference Bed = None, Bool Aggressive = False, Actor AggressingActor = None)
+	
+
 	If (SceneRunning)
 		Debug.Notification("OSA scene already running")
 		Return False
@@ -458,6 +460,7 @@ Event OnUpdate() ;OStim main logic loop
 	If (UseFades && IsPlayerInvolved())
 		FadeToBlack()
 	EndIf
+
 
 	If (SubActor)
 		If (SubActor.GetParentCell() != DomActor.GetParentCell())
@@ -593,10 +596,14 @@ Event OnUpdate() ;OStim main logic loop
 	; Will need updating if/when multi-scene stuff is added but works for now
 	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 51)
 
+	profile()
+
 	CurrScene = OSA.MakeStage()
 	OSA.SetActorsStim(currScene, Actro)
 	OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
 	OSA.StimStart(CurrScene)
+
+	Profile("Startup time")
 
 	; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
 	; (I didn't pick the nonsense name, it's called that in OSA)
@@ -705,6 +712,7 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	SendModEvent("ostim_start")
+
 	
 	If (UseFades && IsPlayerInvolved())
 		FadeFromBlack()

@@ -297,11 +297,11 @@ EndFunction
 ; This does not include the OSABusyFaction check due to form dependancy
 Bool Function IsAllowed(Actor Actra, Bool Creature = False) Global
     If (!Creature)
-        If (!Actra.IsChild())
+        If (!OUtils.ischildcached(actra))
             If (Actra.HasKeywordString("ActorTypeNPC"))
-                If (!Actra.HasKeywordString("ActorTypeCreature"))
+                ;If (!Actra.HasKeywordString("ActorTypeCreature"))
                     Return True
-                EndIf
+                ;EndIf
             EndIf
         EndIf
     EndIf
@@ -430,7 +430,7 @@ EndFunction
 ; The actors events while they are in a scene can be registered for and listened to using this.
 ; Epic solution made by SF, thank you!
 String Function ID(Actor Actra) Global
-    Return _oGlobal.GetFormID_S(Actra.GetActorBase())
+    Return _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(actra))
 EndFunction
 
 
@@ -489,6 +489,7 @@ Int Function OGlyphValidate(Int Glyph) Global
 EndFunction
 
 Int Function OGlyph() Global
+    ;OUtils.Console("Call to getquest")
     Return (Quest.GetQuest("0SUI") as _oUI).WidgetID
 EndFunction
 
