@@ -101,8 +101,12 @@ Function Maintenance()
 
     _oPatch.OSAPatch(Self as _oOmni)
 
-    If (iVersion < _oV.GetIVersion())
-        If (iVersion)
+   ; If (iVersion < _oV.GetIVersion())
+   if true
+        ;If (iVersion)
+        if true
+            ;OUtils.console("Omni cleaning")
+
             CleanScript()
             RebootScript()
             MiscUtil.WriteToFile(File, "Cleaning and Rebooting Script/n", True, True)
@@ -186,6 +190,8 @@ Event OnPreferences(String EventName, String DataString, Float LoadSave, Form Se
 EndEvent
 
 Event OnUIBoot(String EventName, String SoundType, Float NumArg, Form Sender)
+    outils.console("UI booting...")
+
     Glyph = OI.WidgetID
     _oGlobal.ScanFolders(Glyph)
     OControlSetUp()
@@ -244,6 +250,7 @@ Event OnBindModule(String EventName, String ModuleData, Float BindKey, Form Send
 EndEvent
 
 Function OControlSetUp()
+    OControl.ResetControls()
     OControl.UpdateControls()
 EndFunction
 

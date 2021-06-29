@@ -68,6 +68,9 @@ float[] Function GetCameraPos() Global Native
 ;Coordinates are relative to users screen right now, not recomended.
 ;Function SetCameraPos(float x, float y, float z) Global Native
 
+; Quests with "Run once" can never fire oninit again after install. until now.
+Function ForceFireOnInitEvent(Quest q) Global Native
+
 
 ; ███████╗ █████╗  ██████╗███████╗
 ; ██╔════╝██╔══██╗██╔════╝██╔════╝

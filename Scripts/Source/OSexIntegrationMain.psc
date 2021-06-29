@@ -346,6 +346,7 @@ Int Password
 
 
 Event OnInit()
+	Console("OStim initializing")
 	Startup() ; OStim install script
 EndEvent
 

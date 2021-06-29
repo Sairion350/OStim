@@ -9,6 +9,11 @@ Function Console(String In) Global
 	MiscUtil.PrintConsole("OStim: " + In)
 EndFunction
 
+
+Function RegisterForOUpdate(quest q) Global
+	(game.GetFormFromFile(0x000D67, "Ostim.esp") as OStimUpdaterScript).AddQuestToDatabase(q)
+EndFunction
+
 function StoreNPCDataFloat(actor npc, string keys, Float num) Global
 	StorageUtil.SetFloatValue(npc as form, keys, num)
 	;console("Set value " + num + " for key " + keys)
@@ -82,7 +87,7 @@ EndFunction
 
 
 
-Actor[] Function BaseArrToActorArr(ActorBase[] base)
+Actor[] Function BaseArrToActorArr(ActorBase[] base) Global
 	int l = base.Length
 	int i = 0
 
@@ -96,6 +101,7 @@ Actor[] Function BaseArrToActorArr(ActorBase[] base)
 
 	return ret
 EndFunction
+
 
 
 ; Cached natives
