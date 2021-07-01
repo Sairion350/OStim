@@ -236,7 +236,7 @@ Int LastHubOID
 Bool CurrentAnimIsAggressive
 ;--
 
-Bool AIRunning
+Bool property AIRunning auto
 
 Bool AggressiveThemedSexScene
 Actor AggressiveActor
