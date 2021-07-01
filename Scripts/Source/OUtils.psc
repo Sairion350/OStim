@@ -231,4 +231,10 @@ VoiceType Function GetVoiceTypeCached(actorbase in) Global
 	endif 
 EndFunction
 
+Float Function TrigAngleZ(Float GameAngleZ) Global
+	If (GameAngleZ < 90)
+		 Return (90 - GameAngleZ)
+	EndIf
+ 	Return (450 - GameAngleZ)
+EndFunction
 

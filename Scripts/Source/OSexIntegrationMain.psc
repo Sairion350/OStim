@@ -1565,8 +1565,8 @@ Function AllignActorsWithCurrentBed()
 			Offset += 36
 		EndIf
 
-		BedOffsetX = Math.Cos(TrigAngleZ(CurrentBed.GetAngleZ())) * Offset
-		BedOffsetY = Math.Sin(TrigAngleZ(CurrentBed.GetAngleZ())) * Offset
+		BedOffsetX = Math.Cos(OUtils.TrigAngleZ(CurrentBed.GetAngleZ())) * Offset
+		BedOffsetY = Math.Sin(OUtils.TrigAngleZ(CurrentBed.GetAngleZ())) * Offset
 		BedOffsetZ = 45
 	Else
 		Console("Bedroll. Not realigning")
@@ -1587,8 +1587,8 @@ Function AllignActorsWithCurrentBed()
 
 	Utility.Wait(0.05)
 
-	Float OffsetY = Math.Sin(TrigAngleZ(DomActor.GetAngleZ())) * 30
-	Float OffsetX = Math.Cos(TrigAngleZ(DomActor.GetAngleZ())) * 30
+	Float OffsetY = Math.Sin(OUtils.TrigAngleZ(DomActor.GetAngleZ())) * 30
+	Float OffsetX = Math.Cos(OUtils.TrigAngleZ(DomActor.GetAngleZ())) * 30
 
 	SubActor.MoveTo(DomActor, OffsetX, OffsetY, 0)
 	SubActor.SetAngle(BedAngleX, BedAngleY, BedAngleZ - FlipFloat)
@@ -1600,8 +1600,8 @@ Function AllignActorsWithCurrentBed()
 	If ThirdActor
 		Utility.Wait(0.05)
 
-		OffsetY = Math.Sin(TrigAngleZ(DomActor.GetAngleZ())) * 30
-		OffsetX = Math.Cos(TrigAngleZ(DomActor.GetAngleZ())) * 30
+		OffsetY = Math.Sin(OUtils.TrigAngleZ(DomActor.GetAngleZ())) * 30
+		OffsetX = Math.Cos(OUtils.TrigAngleZ(DomActor.GetAngleZ())) * 30
 
 		ThirdActor.MoveTo(DomActor, OffsetX, OffsetY, 0)
 		ThirdActor.SetAngle(BedAngleX, BedAngleY, BedAngleZ - FlipFloat)
@@ -1613,12 +1613,7 @@ Function AllignActorsWithCurrentBed()
 	SubActor.SetDontMove(False)
 EndFunction
 
-Float Function TrigAngleZ(Float GameAngleZ)
-	If (GameAngleZ < 90)
-		 Return (90 - GameAngleZ)
-	EndIf
- 	Return (450 - GameAngleZ)
-EndFunction
+
 
 Function Flip()
 	Console("Flipping")
