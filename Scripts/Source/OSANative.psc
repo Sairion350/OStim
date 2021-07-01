@@ -34,6 +34,8 @@ ObjectReference[] Function FindBed(ObjectReference CenterRef, Float Radius = 100
 ; returns an array because sometimes there may be multiple i.e. multiple kids or orcs having multiple spouses
 ActorBase[] Function LookupRelationshipPartners(Actor FirstActor, AssociationType RelationshipType) Global Native
 
+float[] Function GetCoords(ObjectReference obj) Global Native
+
 ; Works on all NPCs that have a placed ref in the world 
 ; Will not work on npcs spawned by script or 'placeatme'
 ; Most likely will not work on leveledlist npcs like bandits

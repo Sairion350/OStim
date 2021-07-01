@@ -237,4 +237,3 @@ Float Function TrigAngleZ(Float GameAngleZ) Global
 	EndIf
  	Return (450 - GameAngleZ)
 EndFunction
-
