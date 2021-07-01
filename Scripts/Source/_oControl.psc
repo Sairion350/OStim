@@ -23,6 +23,14 @@ Function ResetControls()
     _IsSetup = False
 EndFunction
 
+int[] Function GetOKEY()
+    if OKEY.Length < 1 
+        OKEY = SetOKey()
+    endif 
+
+    return OKEY
+EndFunction
+
 Function UpdateControls()
     Glyph = OSO.Glyph
     If (!_IsSetup)
@@ -41,7 +49,7 @@ Function UpdateControls()
         RegisterForModEvent("0SC_EqOConsole", "OnEqOConsole")
         RegisterForModEvent("0SC_EqXConsole", "OnEqXConsole")
 
-        ostim = game.GetFormFromFile(0x000801, "Ostim.esp") as OsexIntegrationMain
+        ostim = OUtils.GetOStim()
 
 
         If (!_IsKeySetup)
