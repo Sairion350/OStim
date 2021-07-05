@@ -43,7 +43,7 @@ float[] Function GetCoords(ObjectReference obj) Global Native
 Actor Function GetActorFromBase(ActorBase act) Global Native
 
 Function SetPositionEx(actor act, float x, float y, float z) Global Native
-
+{For player only; set position without hitbox updating}
 
 ;  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗
 ; ██╔════╝██╔══██╗████╗ ████║██╔════╝██╔══██╗██╔══██╗

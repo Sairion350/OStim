@@ -34,7 +34,9 @@ Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable fre
 		Form[] Things = StoreEquipmentForms(Target)
 		UnequipForms(Target, Things)
 	Endif
-	Debug.SendAnimationEvent(Target, "sosfasterect")
+	if ostim.AnimationRunning()
+		Debug.SendAnimationEvent(Target, "sosfasterect")
+	endif 
 EndFunction
 
 Function Redress(Actor Target)

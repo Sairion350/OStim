@@ -64,6 +64,8 @@ Event OnEffectStart (Actor TarAct, Actor Spot)
 	If (Actra == PlayerRef)
 		UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", False)
 	EndIf
+
+	Debug.SendAnimationEvent(Actra, "sosfasterect")
 EndEvent
 
 Function RegisterAnimationEvents()
@@ -148,6 +150,7 @@ Function CompleteEnd()
 	; Sairion: going to ignore the above.... skipping the below code makes actors get stuck so...
 	; hopefully whatever reason was had for skipping this wasn't important!
 			_oGlobal.ActorLight(Actra, "Remove", OSO.OLightSP, OSO.OLightME)
+			Debug.SendAnimationEvent(Actra, "SOSFlaccid")
 			_oGlobal.FactionClean(Actra, OSO.OFaction)
 			MfgConsoleFunc.ResetPhonemeModifier(Actra)
 			_oGlobal.PackageClean(Actra, OSO.OPackage)
