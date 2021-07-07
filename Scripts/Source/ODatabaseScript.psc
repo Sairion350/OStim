@@ -245,7 +245,7 @@ Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntPa
 	Int i = 0
 	Int L = JArray.Count(Base)
 
-	Int Animation ;optimization 
+	Int Animation ;optimization
 	Bool Parameter
 	Int iOutput
 	String sOutput
@@ -314,7 +314,7 @@ Int Function getAnimationWithAnimID(Int zDatabase, String AnimID) ;returns OArra
 	Int i = 0
 	Int L = GetLengthOArray(Base)
 
-	Int Animation ;optimization 
+	Int Animation ;optimization
 	Int OAAnimIDs
 	while (i < L) ;iterate through scene objects
 		Animation = GetObjectOArray(Base, i)
@@ -333,7 +333,7 @@ Int Function getAnimationWithAnimID(Int zDatabase, String AnimID) ;returns OArra
 
 		If JArray.findStr(OAAnimids, AnimID) != -1
 			AppendObjectOArray(Ret, Animation)
-			Return Ret 
+			Return Ret
 		EndIf
 
 		i += 1
@@ -498,7 +498,7 @@ Int Function GetAllAnimationFiles()
 
 	While (i < NumModules)
 		If (!OStim.StringArrayContainsValue(OriginalModules, Modules[i]))
-			Debug.Notification("OStim - loaded third-party animation pack: " + Modules[i])
+			Debug.Notification("OStim - Loaded third-party animation pack: " + Modules[i])
 		EndIf
 		String[] Positions = MiscUtil.FoldersInFolder(Path + "/" + Modules[i])
 
@@ -548,10 +548,10 @@ EndFunction
 
 Bool Function Build()
 	If (OStim.UseNativeFunctions)
-		Console("Using native build Function")
+		Console("Using native build")
 		Return BuildNative()
 	Else
-		Console("Using papyrus build Function")
+		Console("Using papyrus build")
 		Return BuildPapyrus()
 	EndIf
 EndFunction
@@ -604,7 +604,7 @@ Bool Function BuildPapyrus() ; papyrus implementation of the odatabase builder -
 
 		AppendObjectOArray(Database, OMAnimation)
 		JValue.Retain(OAFiles)
-		Console("-------------------------------------------------------------------------")
+		;Console("-------------------------------------------------------------------------")
 		i += 1
 	EndWhile
 	If (GetLengthOArray(Database) <= 0)
@@ -655,37 +655,37 @@ EndFunction
 
 String Function XMLGetName(String In)
 	String Ret = ToolExtractFirstString(In, "<info name=")
-	Console("	Name: " + Ret)
+	;Console("	Name: " + Ret)
 	Return Ret
 EndFunction
 
 String Function XMLGetSceneID(String In)
 	String Ret = ToolExtractFirstString(In, "<scene id=")
-	Console("	Scene ID: " + Ret)
+	;Console("	Scene ID: " + Ret)
 	Return Ret
 EndFunction
 
 Int Function XMLGetNumActors(String In)
 	Int Ret = ToolSingleDigitStringnumberToInt(toolextractfirststring(In, "actors="))
-	Console("	Number of actors: " + Ret)
+	;Console("	Number of actors: " + Ret)
 	Return Ret
 EndFunction
 
 String Function XMLGetPosData(Int OMAnim)
 	String Ret = StringUtil.Split(getSceneID(OMAnim), "|")[1]
-	Console("	Position Data: " + Ret)
+	;Console("	Position Data: " + Ret)
 	Return Ret
 EndFunction
 
 String Function XMLGetSourceModule(String Path)
 	String Ret = ToolExtractNthFolderPathFolder(Path, 6)
-	Console("	Source Module: " + Ret)
+	;Console("	Source Module: " + Ret)
 	Return Ret
 EndFunction
 
 String Function XMLGetAnimClass(String Path)
 	String Ret = ToolExtractNthFolderPathFolder(Path, 8)
-	Console("	Animation Class: " + Ret)
+	;Console("	Animation Class: " + Ret)
 	Return Ret
 EndFunction
 
@@ -709,43 +709,45 @@ Int Function XMLGetAnimIDs(String In)
 		Ret = Utility.CreateStringArray(1, ToolExtractNthString(In, "<anim id=", 1))
 	EndIf
 
+	;/
 	Int i = 0
 	Int L = Ret.Length
 	While (i < L)
 		Console("		Animation ID " + i + ": " + Ret[i])
 		i += 1
 	EndWhile
+	/;
 
 	Return JArray.ObjectWithStrings(Ret)
 EndFunction
 
 Bool Function XMLIsTransitory(String In)
 	Bool Ret = (ToolExtractFirstString(In, "t=") == "T")
-	Console("	Is Transitory Animation: " + Ret)
+	;Console("	Is Transitory Animation: " + Ret)
 	Return Ret
 EndFunction
 
 Int Function XMLMainActor(String In)
 	Int Ret = ToolSingleDigitStringnumberToInt(ToolExtractFirstString(In, "<speed a="))
-	Console("	Main controlling actor: " + Ret)
+	;Console("	Main controlling actor: " + Ret)
 	Return Ret
 EndFunction
 
 Int Function XMLMinSpeed(String In, Int mainActor)
 	Int Ret = ToolSingleDigitStringNumberToInt(ToolExtractFirstString(In, "<speed a=\""+ mainactor + "\" min="))
-	Console("	Minimum Speed: " + Ret)
+	;Console("	Minimum Speed: " + Ret)
 	Return Ret
 EndFunction
 
 Int Function XMLMaxSpeed(String In)
 	Int Ret = ToolSingleDigitStringNumberToInt(ToolExtractFirstString(In, " max="))
-	Console("	Maximum Speed: " + Ret)
+	;Console("	Maximum Speed: " + Ret)
 	Return Ret
 EndFunction
 
 Bool Function XMLHasIdleSpeed(String In)
 	Bool Ret = ToolExtractFirstString(In, "<sp mtx=") == "^idle"
-	Console("	Has Idle Speed: " + Ret)
+	;Console("	Has Idle Speed: " + Ret)
 	Return Ret
 EndFunction
 
@@ -760,7 +762,7 @@ Bool Function XMLIsHub(String In, Int OMAnim)
 	Else
 		Ret = False
 	EndIf
-	Console("	Is Hub Animation: " + Ret)
+	;Console("	Is Hub Animation: " + Ret)
 	Return Ret
 EndFunction
 
@@ -780,7 +782,7 @@ Bool Function XMLIsAggressive(Int OMAnimation)
 		EndIf
 	EndIf
 
-	Console("	Is Aggressive: " + Ret)
+	;Console("	Is Aggressive: " + Ret)
 	Return Ret
 EndFunction
 

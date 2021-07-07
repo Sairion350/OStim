@@ -1,7 +1,9 @@
-meta.ini
+/.vscode/launch.json
+/.vscode/tasks.json
+/meta.ini
+SkyrimSE.code-workspace
+*.ppj
 *.zip
 *.pex
-SkyrimSE.code-workspace
-.vscode/launch.json
-.vscode/tasks.json
 *.bat
+!OStim_CI.ppj
