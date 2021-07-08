@@ -237,3 +237,16 @@ Float Function TrigAngleZ(Float GameAngleZ) Global
 	EndIf
  	Return (450 - GameAngleZ)
 EndFunction
+
+int[] Function BoolArrToIntArr(bool[] arr) Global 
+	int l = arr.length
+	int[] ret = PapyrusUtil.IntArray(l)
+	int i = 0 
+	while i < l 
+		ret[i] = arr[i] as int
+
+		i += 1
+	endwhile
+
+	return ret
+EndFunction
