@@ -71,7 +71,17 @@ Bool Property TossClothesOntoGround Auto
 Bool Property UseStrongerUnequipMethod Auto
 Bool Property FullyAnimateRedress Auto
 
-Bool Property DisableOSAControls Auto
+bool disableosacontrolsbool
+Bool Property DisableOSAControls
+	Bool Function Get()
+		return disableosacontrolsbool
+	EndFunction
+
+	Function Set(Bool var)
+		disableosacontrolsbool = var 
+		OControl.disableControl = var
+	EndFunction
+EndProperty
 
 Bool  SpeedUpNonSexAnimation
 Float SpeedUpSpeed
@@ -180,6 +190,7 @@ Int SpankCount
 Int SpankMax
 
 _oOmni OSAOmni
+_oControl OControl
 
 Actor PlayerRef
 
@@ -3339,6 +3350,8 @@ Function Startup()
 	EndIf
 
 	Timescale = (Game.GetFormFromFile(0x00003A, "Skyrim.esm")) as GlobalVariable
+
+	OControl = Quest.GetQuest("0SAControl") as _oControl
 
 	AI = ((Self as Quest) as OAiScript)
 	OBars = ((Self as Quest) as OBarsScript)
