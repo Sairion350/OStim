@@ -220,6 +220,21 @@ Race Function GetRaceCached(actorbase in) Global
 	endif 
 EndFunction
 
+; Normally, since this value can change dynamically, we would not want to cache this
+; However, there is no way to get the 'original scale' of an actor after it has been changed without calling setscale(1.0) on them first
+; (setscale is relative to the original scale while getscale always returns the true value, making it more confusing)
+; This serves as a workaround, as long as nobody calls this (the first time) after setscale has been used!
+float Function GetScaleCached(actor in) Global
+	float cached = StorageUtil.GetFloatValue(in, "ostim_cache_scale",  missing = -2.0)
+	if cached != -2
+		return cached
+	else 
+		cached = (in.GetScale())
+		StorageUtil.SetFloatValue(in, "ostim_cache_scale",  cached)
+		return cached
+	endif 
+EndFunction
+
 VoiceType Function GetVoiceTypeCached(actorbase in) Global
 	form cached = StorageUtil.GetFormValue(in, "ostim_cache_voice",  missing = none)
 	if cached 

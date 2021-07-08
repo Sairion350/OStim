@@ -1996,12 +1996,20 @@ Function ScaleToStandardHeight(Actor Act)
 EndFunction
 
 Function ScaleToHeight(Actor Act, Float GoalBodyScale)
-	Float NativeBodyScale = Act.GetScale()
+	Float NativeBodyScale = outils.GetScaleCached(act)
 	Float Scale = ((GoalBodyScale - NativeBodyScale) / NativeBodyScale) + 1.0
 
+	;Console(act.GetDisplayName())
+	;Console("Native scale: " + NativeBodyScale)
+
 	If (Scale < 1.01)  && (Scale > 0.99) ; there is some floating point imprecision with the above.
-		Console("Scale not needed")
-		Return ; no need to scale and update ninode
+		if (math.abs(act.GetScale() - NativeBodyScale)) < 0.01 ; the actor is truly the same size as their original size
+			Console("Scale not needed")
+			Return ; no need to scale and update ninode
+		else 
+			; continue on, actor needs a scale reset
+			scale = 1.0
+		endif 
 	EndIf
 
 	Console("Setting scale: " + Scale)
