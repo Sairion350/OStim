@@ -534,19 +534,19 @@ Event OnUpdate() ;OStim main logic loop
 	RegisterForModEvent("ostim_setvehicle", "OnSetVehicle")
 	
 
-	String DomFormID = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(DomActor))
+	String DomFormID = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor))
 	RegisterForModEvent("0SSO" + DomFormID + "_Sound", "OnSoundDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendMo", "OnMoDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendPh", "OnPhDom")
 	RegisterForModEvent("0SAA" + DomFormID + "_BlendEx", "OnExDom")
 	If (SubActor)
-		String SubFormID = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(SubActor))
+		String SubFormID = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(SubActor))
 		RegisterForModEvent("0SSO" + SubFormID + "_Sound", "OnSoundSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendMo", "OnMoSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendPh", "OnPhSub")
 		RegisterForModEvent("0SAA" + SubFormID + "_BlendEx", "OnExSub")
 		If (ThirdActor)
-			String ThirdFormID = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(ThirdActor))
+			String ThirdFormID = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(ThirdActor)) 
 			RegisterForModEvent("0SSO" + ThirdFormID + "_Sound", "OnSoundThird")
 			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendMo", "OnMoThird")
 			RegisterForModEvent("0SAA" + ThirdFormID + "_BlendPh", "OnPhThird")
@@ -613,14 +613,15 @@ Event OnUpdate() ;OStim main logic loop
 	; Will need updating if/when multi-scene stuff is added but works for now
 	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 51)
 
-	profile()
+	;profile()
 
+	;Console("start osa")
 	CurrScene = OSA.MakeStage()
 	OSA.SetActorsStim(currScene, Actro)
 	OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
 	OSA.StimStart(CurrScene)
 
-	Profile("Startup time")
+	;Profile("Startup time")
 
 	; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
 	; (I didn't pick the nonsense name, it's called that in OSA)
@@ -880,11 +881,11 @@ Event OnUpdate() ;OStim main logic loop
 
 	UnRegisterForModEvent("0SAO" + Password + "_AnimateStage")
 	; subhuman - same as above, but maybe GetLevelledActorBase() should be here
-	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(DomActor)) + "_Sound")
-	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(SubActor)) + "_Sound")
+	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor)) + "_Sound")
+	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(SubActor)) + "_Sound")
 
 	If (ThirdActor)
-		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(ThirdActor)) + "_Sound")
+		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(ThirdActor)) + "_Sound") 
 	EndIf
 
 	If (OldTimescale > 0)
@@ -1288,7 +1289,7 @@ EndFunction
 Bool Function AppearsFemale(Actor Act) 
 	{gender based / looks like a woman but can have a penis}
 	;Return (Act.GetLeveledActorBase().GetSex() == 1)
-	Return OUtils.GetSexCached(OUtils.GetLeveledActorBaseCached(act))
+	Return OSANative.GetSex(OSANative.GetLeveledActorBase(act)) == 1
 EndFunction
 
 Actor Function GetCurrentLeadingActor()
@@ -1316,10 +1317,10 @@ EndFunction
 Function Realign()
 	AllowVehicleReset()
 	Utility.Wait(0.1)
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(DomActor)) + "_AlignStage")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(SubActor)) + "_AlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor)) + "_AlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(SubActor)) + "_AlignStage")
 	If (ThirdActor)
-		SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(ThirdActor)) + "_AlignStage")
+		SendModEvent("0SAA" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(ThirdActor)) + "_AlignStage")
 	EndIf
 EndFunction
 
@@ -1331,10 +1332,10 @@ EndFunction
 
 Function AllowVehicleReset()
 	Console("Allowing vehicle reset...")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(DomActor)) + "_AllowAlignStage")
-	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(SubActor)) + "_AllowAlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor)) + "_AllowAlignStage")
+	SendModEvent("0SAA" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(SubActor)) + "_AllowAlignStage")
 	If (ThirdActor)
-		SendModEvent("0SAA" + _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(ThirdActor)) + "_AllowAlignStage")
+		SendModEvent("0SAA" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(ThirdActor)) + "_AllowAlignStage")
 	EndIf
 EndFunction
 
@@ -1767,7 +1768,7 @@ EndEvent
 
 Function OpenMouth(Actor Act)
 	Console("Opening mouth...")
-	String a = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(Act))
+	String a = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(act))
 
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 40)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 100)
@@ -1776,7 +1777,7 @@ EndFunction
 
 Function CloseMouth(Actor Act)
 	Console("Closing mouth...")
-	String a = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(Act))
+	String a = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(act)) 
 
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "1", numArg = 0)
 	SendModEvent("0SAA" + a + "_BlendPh", strArg = "0", numArg = 0)
@@ -1867,7 +1868,7 @@ Function OnAnimationChange()
 			Console("Third actor: + " + ThirdActor.GetDisplayName() + " has joined the scene")
 
 			; subhuman - cache values
-			ActorBase thirdActorBase = OUtils.GetLeveledActorBaseCached(ThirdActor)
+			ActorBase thirdActorBase = OSANative.GetLeveledActorBase(ThirdActor)
 			RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActorBase) + "_Sound", "OnSoundThird")
 			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendMo", "OnMoThird")
 			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendPh", "OnPhThird")
@@ -1884,7 +1885,7 @@ Function OnAnimationChange()
 	ElseIf (ThirdActor && (CorrectActorCount == 2)) ; third actor, but there should not be.
 		Console("Third actor has left the scene")
 
-		ActorBase thirdActorBase = OUtils.GetLeveledActorBaseCached(ThirdActor)
+		ActorBase thirdActorBase = OSANative.GetLeveledActorBase(ThirdActor)
 		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActorBase) + "_Sound")
 		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendMo")
 		UnRegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendPh")
@@ -3158,7 +3159,7 @@ Function MountNPCSceneAsMain()
 	disableOSAControls = true
 	
 
-	String DomID = _oGlobal.GetFormID_S(OUtils.GetLeveledActorBaseCached(DomActor))
+	String DomID = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor))
 	String InspectMenu = o + ".hud.InspectMenu"
 
 	UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)

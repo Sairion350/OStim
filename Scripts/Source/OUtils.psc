@@ -84,8 +84,8 @@ bool Function IsChild(actor act) Global
 	if act.IsChild()
 		return true
 	else 
-		Race ActorRace  = GetRaceCached(GetLeveledActorBaseCached(act))
-		string RaceName = GetNameCached(act) + MiscUtil.GetRaceEditorID(ActorRace)
+		Race ActorRace  = OSANative.GetRace(OSANative.GetLeveledActorBase(act))
+		string RaceName = OSANative.GetName(act) + MiscUtil.GetRaceEditorID(ActorRace)
 		return StringContains(RaceName, "Child")
 	endif
 EndFunction 
@@ -114,22 +114,22 @@ EndFunction
 ; However, note that the cached data is stored in the skse co-save which is sensitive to bloat. Be cautious about calling these on hundreds of
 ; NPCs.
 
-bool Function IsChildCached(actor act) Global
-	int cached = StorageUtil.GetIntValue(act, "ostim_cache_ischild",  missing = -2)
-	
-	if cached != -2
-		return (cached == 1)
-	else 
-		if ischild(act)
-			cached = 1
-		else 
-			cached = 0
-		endif 
-
-		StorageUtil.SetIntValue(act, "ostim_cache_ischild",  cached)
-		return (cached == 1)
-	endif 
-EndFunction
+;bool Function IsChildCached(actor act) Global
+;	int cached = StorageUtil.GetIntValue(act, "ostim_cache_ischild",  missing = -2)
+;	
+;	if cached != -2
+;		return (cached == 1)
+;	else 
+;;		if ischild(act)
+;			cached = 1
+;		else 
+;			cached = 0
+;		endif 
+;;
+;		StorageUtil.SetIntValue(act, "ostim_cache_ischild",  cached)
+;		return (cached == 1)
+;	endif 
+;EndFunction
 
 ; Cached version of GetActorFromBase in OSANative
 Actor Function GetActorFromBaseCached(ActorBase in) Global
@@ -143,82 +143,82 @@ Actor Function GetActorFromBaseCached(ActorBase in) Global
 	endif 
 EndFunction
 
-ActorBase Function GetLeveledActorBaseCached(actor in) Global
-	form cached = StorageUtil.GetFormValue(in, "ostim_cache_actorbase",  missing = none)
-	if cached 
-		return cached as ActorBase 
-	else 
-		cached = (in.GetLeveledActorBase()) as form 
-		StorageUtil.SetFormValue(in, "ostim_cache_actorbase",  cached)
-		return cached as actorbase
-	endif 
-EndFunction
+;ActorBase Function GetLeveledActorBaseCached(actor in) Global
+;	form cached = StorageUtil.GetFormValue(in, "ostim_cache_actorbase",  missing = none)
+;	if cached 
+;		return cached as ActorBase 
+;	else 
+;		cached = (in.GetLeveledActorBase()) as form 
+;		StorageUtil.SetFormValue(in, "ostim_cache_actorbase",  cached)
+;		return cached as actorbase
+;	endif 
+;EndFunction
 
-int Function GetSexCached(actorbase in) Global
-	int cached = StorageUtil.GetIntValue(in, "ostim_cache_sex",  missing = -2)
-	if cached != -2
-		return cached
-	else 
-		cached = (in.GetSex())
-		StorageUtil.SetIntValue(in, "ostim_cache_sex",  cached)
-		return cached
-	endif 
-EndFunction
+;int Function GetSexCached(actorbase in) Global
+;	int cached = StorageUtil.GetIntValue(in, "ostim_cache_sex",  missing = -2)
+;	if cached != -2
+;		return cached
+;	else 
+;		cached = (in.GetSex())
+;		StorageUtil.SetIntValue(in, "ostim_cache_sex",  cached)
+;		return cached
+;	endif 
+;EndFunction
 
-int Function GetFormIDCached(form in) Global
-	int cached = StorageUtil.GetIntValue(in, "ostim_cache_formid",  missing = -2)
-	if cached != -2
-		return cached
-	else 
-		cached = (in.GetFormID())
-		StorageUtil.SetIntValue(in, "ostim_cache_formid",  cached)
-		return cached
-	endif 
-EndFunction
+;int Function GetFormIDCached(form in) Global
+;	int cached = StorageUtil.GetIntValue(in, "ostim_cache_formid",  missing = -2)
+;	if cached != -2
+;		return cached
+;	else 
+;		cached = (in.GetFormID())
+;		StorageUtil.SetIntValue(in, "ostim_cache_formid",  cached)
+;		return cached
+;	endif 
+;EndFunction
 
-float Function GetWeightCached(form in) Global
-	float cached = StorageUtil.GetFloatValue(in, "ostim_cache_weight",  missing = -2.0)
-	if cached != -2
-		return cached
-	else 
-		cached = (in.GetWeight())
-		StorageUtil.SetFloatValue(in, "ostim_cache_weight",  cached)
-		return cached
-	endif 
-EndFunction
+;float Function GetWeightCached(form in) Global
+;	float cached = StorageUtil.GetFloatValue(in, "ostim_cache_weight",  missing = -2.0)
+;	if cached != -2
+;		return cached
+;	else 
+;		cached = (in.GetWeight())
+;		StorageUtil.SetFloatValue(in, "ostim_cache_weight",  cached)
+;		return cached
+;	endif 
+;EndFunction
 
-String Function GetNameCached(Form in) Global
-	String cached = StorageUtil.GetStringValue(in, "ostim_cache_name",  missing = "null")
-	if cached != "null"
-		return cached
-	else 
-		cached = (in.GetName())
-		StorageUtil.SetStringValue(in, "ostim_cache_name",  cached)
-		return cached
-	endif 
-EndFunction
+;String Function GetNameCached(Form in) Global
+;	String cached = StorageUtil.GetStringValue(in, "ostim_cache_name",  missing = "null")
+;	if cached != "null"
+;		return cached
+;	else 
+;		cached = (in.GetName())
+;		StorageUtil.SetStringValue(in, "ostim_cache_name",  cached)
+;		return cached
+;	endif 
+;EndFunction
 
-String Function GetDisplayNameCached(ObjectReference in) Global
-	String cached = StorageUtil.GetStringValue(in, "ostim_cache_displayname",  missing = "null")
-	if cached != "null"
-		return cached
-	else 
-		cached = (in.GetDisplayName())
-		StorageUtil.SetStringValue(in, "ostim_cache_displayname",  cached)
-		return cached
-	endif 
-EndFunction
+;String Function GetDisplayNameCached(ObjectReference in) Global
+;	String cached = StorageUtil.GetStringValue(in, "ostim_cache_displayname",  missing = "null")
+;	if cached != "null"
+;		return cached
+;	else 
+;		cached = (in.GetDisplayName())
+;		StorageUtil.SetStringValue(in, "ostim_cache_displayname",  cached)
+;		return cached
+;	endif 
+;EndFunction
 
-Race Function GetRaceCached(actorbase in) Global
-	form cached = StorageUtil.GetFormValue(in, "ostim_cache_race",  missing = none)
-	if cached 
-		return cached as race 
-	else 
-		cached = (in.GetRace()) as form 
-		StorageUtil.SetFormValue(in, "ostim_cache_race",  cached)
-		return cached as race
-	endif 
-EndFunction
+;Race Function GetRaceCached(actorbase in) Global
+;	form cached = StorageUtil.GetFormValue(in, "ostim_cache_race",  missing = none)
+;	if cached 
+;		return cached as race 
+;	else 
+;		cached = (in.GetRace()) as form 
+;		StorageUtil.SetFormValue(in, "ostim_cache_race",  cached)
+;		return cached as race
+;	endif 
+;EndFunction
 
 ; Normally, since this value can change dynamically, we would not want to cache this
 ; However, there is no way to get the 'original scale' of an actor after it has been changed without calling setscale(1.0) on them first
@@ -235,16 +235,16 @@ float Function GetScaleCached(actor in) Global
 	endif 
 EndFunction
 
-VoiceType Function GetVoiceTypeCached(actorbase in) Global
-	form cached = StorageUtil.GetFormValue(in, "ostim_cache_voice",  missing = none)
-	if cached 
-		return cached as VoiceType 
-	else 
-		cached = (in.GetVoiceType()) as form 
-		StorageUtil.SetFormValue(in, "ostim_cache_voice",  cached)
-		return cached as VoiceType
-	endif 
-EndFunction
+;VoiceType Function GetVoiceTypeCached(actorbase in) Global
+;	form cached = StorageUtil.GetFormValue(in, "ostim_cache_voice",  missing = none)
+;	if cached 
+;		return cached as VoiceType 
+;	else 
+;		cached = (in.GetVoiceType()) as form 
+;		StorageUtil.SetFormValue(in, "ostim_cache_voice",  cached)
+;		return cached as VoiceType
+;	endif 
+;EndFunction
 
 Float Function TrigAngleZ(Float GameAngleZ) Global
 	If (GameAngleZ < 90)

@@ -13,8 +13,8 @@ Scriptname _oGlobal
 
 
 String Function GetFormID_S(Form zForm) Global
-    String ModID = IntToHex(Math.RightShift(OUtils.GetFormIDCached(zForm), 24))
-    String SubID = IntToHex(Math.LogicalAnd(0x00FFFFFF, OUtils.GetFormIDCached(zForm)))
+    String ModID = IntToHex(Math.RightShift(OSANative.GetFormID(zForm), 24))
+    String SubID = IntToHex(Math.LogicalAnd(0x00FFFFFF, OSANative.GetFormID(zForm)))
 
     If (ModID == "")
         ModID = "00"
@@ -188,14 +188,14 @@ String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni OSO) Globa
     EndIf
     /;
 
-    ActorBase ActB = OUtils.GetLeveledActorBaseCached(Actra)
+    ActorBase ActB = OSANative.GetLeveledActorBase(actra)
     String[] Details = new String[20]
     Details[0] = FormID
-    Details[1] = OUtils.GetFormIDCached(Actra)
+    Details[1] = OSANative.GetFormID(Actra)
     ; CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
     ;details[2] = CPConvert.CPConv(oso.codepage, "UTF-8", ActB.GetName())
-    Details[2] = OUtils.GetDisplayNameCached(Actra)
-    Details[3] = OUtils.GetSexCached(Actb)
+    Details[2] = OSANative.GetDisplayName(Actra)
+    Details[3] = OSANative.GetSex(actb)
 
     If (Actra == OSO.PlayerRef)
         Details[4] = "1"
@@ -213,12 +213,12 @@ String[] Function SendActraDetails(Actor Actra, String FormID, _oOmni OSO) Globa
         Details[12] = StringUtil.SubString(Details[11], 0, StringUtil.Find(Details[11], ".es")) 
         Details[13] = Details[12] + Details[10]
     EndIf
-    Details[8] = OUtils.GetWeightCached(ActB)
-    Details[7] = OUtils.GetFormIDCached( OUtils.GetVoiceTypeCached(ActB) )
+    Details[8] = OSANative.GetWeight(ActB)
+    Details[7] = OSANative.GetFormID( OSANative.GetVoiceType(ActB) )
 
 
     
-    Details[6] = OUtils.GetNameCached( OUtils.GetRaceCached(Actb) )
+    Details[6] = OSANative.GetName( OSANative.GetRace(Actb) )
     ;Details[5] = Actra.GetScale() ;unneeded with new scaling sys?
     Details[5] = 1.0
     Return Details

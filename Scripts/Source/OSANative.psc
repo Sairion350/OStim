@@ -13,6 +13,9 @@ ScriptName OSANative
 Function BuildDB() Global Native
 
 
+
+int Function RandomInt(int min = 0, int max = 100) Global Native
+
 ;  ██████╗ ██████╗      ██╗███████╗ ██████╗████████╗
 ; ██╔═══██╗██╔══██╗     ██║██╔════╝██╔════╝╚══██╔══╝
 ; ██║   ██║██████╔╝     ██║█████╗  ██║        ██║
@@ -115,6 +118,25 @@ EndFunction
 Int Function GetFaceExpressionID(Actor Act) Global
 	Return GetFace(Act, 3, 0)
 EndFunction
+
+; natives 
+ActorBase Function GetLeveledActorBase(actor act) Global Native
+
+int Function GetSex(actorbase base) Global Native
+
+int Function GetFormID(form in) Global Native
+
+float Function GetWeight(form in) Global Native
+
+string Function GetName(form in) Global Native
+
+string Function GetDisplayName(ObjectReference in) Global Native
+
+race Function GetRace(ActorBase in) Global Native
+
+VoiceType Function GetVoiceType(ActorBase in) Global Native
+
+
 
 ; Experimental 
 
