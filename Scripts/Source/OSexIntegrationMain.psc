@@ -72,6 +72,7 @@ Bool Property UseStrongerUnequipMethod Auto
 Bool Property FullyAnimateRedress Auto
 
 bool disableosacontrolsbool
+
 Bool Property DisableOSAControls
 	Bool Function Get()
 		return disableosacontrolsbool
@@ -3078,6 +3079,8 @@ EndFunction
 Function ResetState()
 	Console("Resetting thread state")
 	SceneRunning = False
+	DisableOSAControls = false
+
 	int i = 0 
 	Actor[] a = GetActors()
 	while i < a.Length
@@ -3477,19 +3480,13 @@ Function SendLoadGameEvent()
 
 		while i < l 
 			LoadRegistrations[i].RegisterForModEvent("ostim_gameload", "OnGameLoad")
-
-			i += 1
-		endWhile
-
-		
-		ModEvent.Send(ModEvent.Create("ostim_gameload"))
-
-		i = 1
-		while i < l 
+			ModEvent.Send(ModEvent.Create("ostim_gameload"))
 			LoadRegistrations[i].UnregisterForModEvent("ostim_gameload")
 
+			Utility.Wait(0.5)
 			i += 1
 		endWhile
+
 	endif
 
 EndFunction

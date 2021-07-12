@@ -115,3 +115,9 @@ EndFunction
 Int Function GetFaceExpressionID(Actor Act) Global
 	Return GetFace(Act, 3, 0)
 EndFunction
+
+; Experimental 
+
+Form Function NewObject(string type) global native
+
+Function DeleteObject(Form f) Global Native
