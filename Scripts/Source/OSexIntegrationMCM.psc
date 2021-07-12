@@ -182,6 +182,14 @@ Function Init()
 	DomLightBrightList[1] = "Bright"
 
 	playerref = game.getplayer()
+
+	string[] pagearr = PapyrusUtil.StringArray(0)
+	pagearr = PapyrusUtil.PushString(pagearr, "Configuration")
+	pagearr = PapyrusUtil.PushString(pagearr, "Undressing")
+	pagearr = PapyrusUtil.PushString(pagearr, "Add-ons")
+	pagearr = PapyrusUtil.PushString(pagearr, "About")
+
+	Pages = pagearr
 EndFunction
 
 Event OnPageReset(String Page)
