@@ -1280,10 +1280,17 @@ EndFunction
 Bool Function IsFemale(Actor Act)
 	{genitalia based / has a vagina and not a penis}
 	If SoSInstalled
-		return !Act.IsInFaction(SoSFaction)
-	else
-		Return AppearsFemale(Act)
-	endif
+	;	subhuman - schlongs have two keywords.   Female pubic hair has three
+		if Act.IsInFaction(SoSFaction)
+			form slot52 = Act.GetWornForm(0x00400000)
+			if slot52 && (slot52.GetNumKeywords() == 2)
+	; so... if they have an item in slot52, and that item has 2 keywords it's a schlong, ergo not female
+				return false
+			endIf
+		endIf
+	endIf
+	Return AppearsFemale(Act)
+
 EndFunction
 
 Bool Function AppearsFemale(Actor Act) 
@@ -2665,7 +2672,7 @@ EndFunction
 Bool Function ChanceRoll(Int Chance) ; input 60: 60% of returning true
 
 	; subhuman - we can make this really simple.
-	return (Utility.RandomInt() < Chance)
+	return (RandomInt() < Chance)
 ;/	Int Roll = RandomInt(1, 100)
 	If (Roll <= Chance)
 		Return True
