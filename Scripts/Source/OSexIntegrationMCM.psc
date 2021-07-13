@@ -1084,7 +1084,6 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetHideNPCOnNPCBars", Main.HideBarsInNPCScenes as Int)
 
 	; Orgasm settings export.
-	; These might have been removed from the mcm.
 	JMap.SetInt(OstimSettingsFile, "SetSlowMoOrgasms", Main.SlowMoOnOrgasm as Int)
 	JMap.SetInt(OstimSettingsFile, "SetOrgasmBoostsRel", Main.OrgasmIncreasesRelationship as Int)
 
@@ -1226,6 +1225,10 @@ Function ImportSettings()
 	Main.BedReallignment = JMap.GetInt(OstimSettingsFile, "SetBedReallignment")
 	Main.UseAlternateBedSearch = JMap.GetInt(OstimSettingsFile, "SetBedAlgo")
 	Main.AiSwitchChance = JMap.GetInt(OstimSettingsFile, "SetAIChangeChance")
+	
+	;Orgasm settings
+	Main.SlowMoOnOrgasm = JMap.GetInt(OstimSettingsFile, "SetSlowMoOrgasms")
+	Main.OrgasmIncreasesRelationship = JMap.GetInt(OstimSettingsFile, "SetOrgasmBoostsRel")
 	
 	; Ai/Control settings export.
 	Main.UseAIControl = JMap.GetInt(OstimSettingsFile, "SetAIControl")
