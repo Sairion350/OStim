@@ -567,21 +567,14 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 
-	Float DomX
-	Float DomY
-	Float DomZ
-	Float SubX
-	Float SubY
-	Float SubZ
+	float[] domCoords
+	float[] subCoords
 
 	If ResetPosAfterSceneEnd
-		DomX = DomActor.X
-		DomY = DomActor.Y
-		DomZ = DomActor.Z
 
-		SubX = SubActor.X
-		SubY = SubActor.Y
-		SubZ = SubActor.Z
+		domcoords = OSANative.GetCoords(DomActor)
+
+		subcoords = OSANative.GetCoords(SubActor)
 	EndIf
 
 
@@ -857,8 +850,8 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	If ResetPosAfterSceneEnd
-		SubActor.SetPosition(SubX, SubY, SubZ) ;return
-		DomActor.SetPosition(DomX, DomY, DomZ)
+		SubActor.SetPosition(subcoords[0], subcoords[1], subcoords[2]) ;return
+		DomActor.SetPosition(domcoords[0], domcoords[1], domcoords[2])
 		If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
 			Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
 		EndIf
