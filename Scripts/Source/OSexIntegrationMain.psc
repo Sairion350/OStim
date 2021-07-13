@@ -203,23 +203,6 @@ Bool Property AnimateUndress Auto
 String StartingAnimation
 Actor ThirdActor
 
-Form DomHelm
-Form DomArmor
-Form DomGlove
-Form DomBoot
-Form DomWep
-
-Form SubHelm
-Form SubArmor
-Form SubGlove
-Form SubBoot
-Form SubWep
-
-Form ThirdHelm
-Form ThirdArmor
-Form ThirdGlove
-Form ThirdBoot
-Form ThirdWep
 
 Bool IsFreeCamming
 
@@ -269,10 +252,8 @@ Float ThirdStimMult
 MagicEffect Actra
 Faction OsaFactionStage
 
-Faction ArousedFaction
 ImageSpaceModifier NutEffect
 
-Quest SexLab ; for cum effects
 Sound OrgasmSound
 
 Sound OSADing
@@ -858,12 +839,11 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	If (ForceFirstPersonAfter && IsPlayerInvolved())
-; subhuman - the if is redundant as long as the while is there
-;		If IsInFreeCam()
-			While IsInFreeCam()
-				Utility.Wait(0.1)
-			EndWhile
-;		EndIf 
+
+		While IsInFreeCam()
+			Utility.Wait(0.1)
+		EndWhile
+
 		Game.ForceFirstPerson()
 	EndIf
 
@@ -872,7 +852,7 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	UnRegisterForModEvent("0SAO" + Password + "_AnimateStage")
-	; subhuman - same as above, but maybe GetLevelledActorBase() should be here
+
 	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor)) + "_Sound")
 	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(SubActor)) + "_Sound")
 
@@ -891,7 +871,6 @@ Event OnUpdate() ;OStim main logic loop
 
 	SceneRunning = False
 
-	ResetRandom()
 EndEvent
 
 
@@ -940,7 +919,6 @@ EndFunction
 
 ODatabaseScript Function GetODatabase()
 
-; subhuman - there's no guarantee this loop will ever end
 	While (!ODatabase)
 		Utility.Wait(0.5)
 	Endwhile
@@ -988,8 +966,6 @@ EndFunction
 Function AdjustAnimationSpeed(float amount)
 	{Increase or decrease the animation speed by the amount}
 	If amount < 0
-	; subhuman - x86 is much faster at multiplication than division
-;		int times = math.abs((amount / 0.5)) as int
 		int times = math.abs(amount * 2.0) as int
 		While times > 0
 			UI.Invokefloat("HUD Menu", diasa + ".scena.speedAdjust", -0.5)
@@ -1537,7 +1513,7 @@ Bool Function CheckBed(ObjectReference BedRef, Bool IgnoreUsed = True)
 EndFunction
 
 Bool Function IsBed(ObjectReference Bed) ; trick so dirty it could only be in an adult mod
-	If (Bed.GetDisplayName() == "Bed") || (Bed.Haskeyword(Keyword.GetKeyword("FurnitureBedRoll"))) || (Bed.GetDisplayname() == "Bed (Owned)")
+	If (OSANative.GetDisplayName(bed) == "Bed") || (Bed.Haskeyword(Keyword.GetKeyword("FurnitureBedRoll"))) || (OSANative.GetDisplayName(bed) == "Bed (Owned)")
 		Return True
 	EndIf
 	Return False
@@ -3313,8 +3289,7 @@ Function Startup()
 	installed = false
 	Debug.Notification("Installing OStim. Please wait...")
 
-	LoadRegistrations = new Form[1]
-	LoadRegistrations[0] = none
+	LoadRegistrations = PapyrusUtil.FormArray(0, none)
 
 	InstalledVersion = GetAPIVersion()
 
@@ -3330,10 +3305,6 @@ Function Startup()
 	OSADing = Game.GetFormFromFile(0x000D6D, "Ostim.esp") as Sound
 	OSATickSmall = Game.GetFormFromFile(0x000D6E, "Ostim.esp") as Sound
 	OSATickBig = Game.GetFormFromFile(0x000D6F, "Ostim.esp") as Sound
-
-	If (Game.GetModByName("SexlabAroused.esm") != 255)
-		ArousedFaction = Game.GetFormFromFile(0x0003FC36, "SexlabAroused.esm") as Faction
-	EndIf
 
 	Timescale = (Game.GetFormFromFile(0x00003A, "Skyrim.esm")) as GlobalVariable
 
@@ -3458,8 +3429,8 @@ EndFunction
 Function SendLoadGameEvent()
 	int l = LoadRegistrations.Length
 
-	if l > 1
-		int i = 1 ; skip none
+	if l > 0
+		int i = 0 
 
 		while i < l 
 			LoadRegistrations[i].RegisterForModEvent("ostim_gameload", "OnGameLoad")
