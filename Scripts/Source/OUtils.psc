@@ -267,8 +267,5 @@ int[] Function BoolArrToIntArr(bool[] arr) Global
 EndFunction
 
 Bool Function ChanceRoll(Int Chance) Global ; input 60: 60% of returning true
-
-
 	return ( (OSANative.RandomInt(0, 99) ) < Chance)
-
 EndFunction
