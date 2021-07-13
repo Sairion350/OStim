@@ -613,15 +613,14 @@ Event OnUpdate() ;OStim main logic loop
 	; Will need updating if/when multi-scene stuff is added but works for now
 	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 51)
 
-	;profile()
+	profile()
 
-	;Console("start osa")
 	CurrScene = OSA.MakeStage()
 	OSA.SetActorsStim(currScene, Actro)
 	OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
 	OSA.StimStart(CurrScene)
 
-	;Profile("Startup time")
+	Profile("Startup time")
 
 	; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
 	; (I didn't pick the nonsense name, it's called that in OSA)
@@ -2669,15 +2668,11 @@ Function SetGameSpeed(String In)
 	ConsoleUtil.ExecuteCommand("sgtm " + In)
 EndFunction
 
-Bool Function ChanceRoll(Int Chance) ; input 60: 60% of returning true
+Bool Function ChanceRoll(Int Chance) ; input 60: 60% of returning true ;DEPRECIATED - moving to outils in future ver
 
-	; subhuman - we can make this really simple.
-	return (RandomInt() < Chance)
-;/	Int Roll = RandomInt(1, 100)
-	If (Roll <= Chance)
-		Return True
-	EndIf
-	Return False/;
+
+	return OUtils.ChanceRoll(chance)
+
 EndFunction
 
 Int Function SpeedStringToInt(String In) ; casting does not work so...
@@ -3311,27 +3306,14 @@ int rnd_s1
 int rnd_s2
 int rnd_s3
 
-; subhuman - to be like vanilla, the default range should be 0, 99
-;int Function RandomInt(int min = 0, int max = 100)
-int Function RandomInt(int min = 0, int max = 99)
-	; Returns a random number. Inclusive (same as vanilla's).
-	; roughly 2x as fast as Utility.getrandomint() Randomness is pretty close to vanilla too.
-	
 
-	rnd_s1 = (171 * rnd_s1) % 30269
-	rnd_s2 = (172 * rnd_s2) % 30307
-	rnd_s3 = (170 * rnd_s3) % 30323
-	Float r = rnd_s1 / 30269.0 + rnd_s2 / 30367.0 + rnd_s3 / 30323.0
-	r -= (r as Int)
-	Return  (r * ((max + 1) - min) + min) as int
+int Function RandomInt(int min = 0, int max = 100) ;DEPRECIATED - moving to osanative in future ver
+	return OSANative.RandomInt(min, max)
 EndFunction 
 
 ; Set initial seed values for the RNG. 
 Function ResetRandom()
-	Int realTimeMod = (Utility.GetCurrentRealTime() as Int) + (utility.randomint(1, 150)) % 1000
-	rnd_s1 = 13254 + realTimeMod
-	rnd_s2 = 4931 + realTimeMod
-	rnd_s3 = 24178 + realTimeMod
+	return
 EndFunction
 
 Function Startup()

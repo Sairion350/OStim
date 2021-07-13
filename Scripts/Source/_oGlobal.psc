@@ -275,11 +275,11 @@ Function SendEQSuite(Actor Actra, String FormID, Int Glyph, String CodePage) Glo
     While (zSlot <= 32)
         EqCur = Actra.GetWornForm(GetOSlot(zSlot)) as Armor
         If (EqCur)
-            Eq[zSlot] = EqCur.GetFormID()
+            Eq[zSlot] = OSANative.GetFormID(EqCur)
 
             ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
             ;Eq[zSlot+40] = CPConvert.CPConv(CodePage, "UTF-8", EqCur.GetName())
-            Eq[zSlot+40] = EqCur.GetName()
+            Eq[zSlot+40] = OSANative.GetName(EqCur)
         Else
             Eq[zSlot] = 0
             Eq[zSlot+40] = "noeq"
@@ -312,16 +312,16 @@ String[] Function AnalyzeWeapon(Int zTrueHand, Actor Actra, String FormID, Int G
         WepUnit[3] = "noeq"
         WepUnit[4] = 9
     ElseIf (zWep as Weapon)
-        WepUnit[2] = zWep.GetFormID()
+        WepUnit[2] = OSANative.GetFormID(zWep)
         ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
         ;WepUnit[3] = CPConvert.CPConv(CodePage, "UTF-8", zWep.GetName())
-        zWep.GetName()
+        ;zWep.GetName()
         WepUnit[4] = "0"
     ElseIf (zWep as Spell)
-        WepUnit[2] = zWep.GetFormID()
+        WepUnit[2] = OSANative.GetFormID(zWep)
         ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
         ;WepUnit[3] = CPConvert.CPConv(CodePage, "UTF-8", zWep.GetName())
-        zWep.GetName()
+        ;zWep.GetName()
         WepUnit[4] = "1"
     Else
         WepUnit[2] = 0

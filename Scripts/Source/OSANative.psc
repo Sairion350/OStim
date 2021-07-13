@@ -14,7 +14,6 @@ Function BuildDB() Global Native
 
 
 
-int Function RandomInt(int min = 0, int max = 100) Global Native
 
 ;  ██████╗ ██████╗      ██╗███████╗ ██████╗████████╗
 ; ██╔═══██╗██╔══██╗     ██║██╔════╝██╔════╝╚══██╔══╝
@@ -135,6 +134,8 @@ string Function GetDisplayName(ObjectReference in) Global Native
 race Function GetRace(ActorBase in) Global Native
 
 VoiceType Function GetVoiceType(ActorBase in) Global Native
+
+int Function RandomInt(int min = 0, int max = 100) Global Native
 
 
 

@@ -99,7 +99,7 @@ Actor[] Function BaseArrToActorArr(ActorBase[] base) Global
 	Actor[] ret = PapyrusUtil.ActorArray(l, filler = none)
 	
 	while i < l
-		ret[i] = GetActorFromBaseCached(base[i])
+		ret[i] = OSANative.GetActorFromBase(base[i])
 
 		i += 1
 	endwhile
@@ -132,16 +132,16 @@ EndFunction
 ;EndFunction
 
 ; Cached version of GetActorFromBase in OSANative
-Actor Function GetActorFromBaseCached(ActorBase in) Global
-	form cached = StorageUtil.GetFormValue(in, "ostim_cache_actor",  missing = none)
-	if cached 
-		return cached as actor 
-	else 
-		cached = OSANative.GetActorFromBase(in) as form 
-		StorageUtil.SetFormValue(in, "ostim_cache_actor",  cached)
-		return cached as actor
-	endif 
-EndFunction
+;Actor Function GetActorFromBaseCached(ActorBase in) Global
+;	form cached = StorageUtil.GetFormValue(in, "ostim_cache_actor",  missing = none)
+;	if cached 
+;		return cached as actor 
+;	else 
+;		cached = OSANative.GetActorFromBase(in) as form 
+;		StorageUtil.SetFormValue(in, "ostim_cache_actor",  cached)
+;		return cached as actor
+;	endif 
+;EndFunction
 
 ;ActorBase Function GetLeveledActorBaseCached(actor in) Global
 ;	form cached = StorageUtil.GetFormValue(in, "ostim_cache_actorbase",  missing = none)
@@ -264,4 +264,11 @@ int[] Function BoolArrToIntArr(bool[] arr) Global
 	endwhile
 
 	return ret
+EndFunction
+
+Bool Function ChanceRoll(Int Chance) Global ; input 60: 60% of returning true
+
+
+	return ( (OSANative.RandomInt(0, 99) ) < Chance)
+
 EndFunction
