@@ -1248,11 +1248,11 @@ EndFunction
 Bool Function IsFemale(Actor Act)
 	{genitalia based / has a vagina and not a penis}
 	If SoSInstalled
-	;	subhuman - schlongs have two keywords.   Female pubic hair has three
+		; schlongs have two keywords.   Female pubic hair has three
 		if Act.IsInFaction(SoSFaction)
 			form slot52 = Act.GetWornForm(0x00400000)
 			if slot52 && (slot52.GetNumKeywords() == 2)
-	; so... if they have an item in slot52, and that item has 2 keywords it's a schlong, ergo not female
+		; so... if they have an item in slot52, and that item has 2 keywords it's a schlong, ergo not female
 				return false
 			endIf
 		endIf
@@ -1263,7 +1263,6 @@ EndFunction
 
 Bool Function AppearsFemale(Actor Act) 
 	{gender based / looks like a woman but can have a penis}
-	;Return (Act.GetLeveledActorBase().GetSex() == 1)
 	Return OSANative.GetSex(OSANative.GetLeveledActorBase(act)) == 1
 EndFunction
 

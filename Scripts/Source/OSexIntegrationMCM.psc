@@ -155,6 +155,10 @@ int SetOBPresetKey
 int SetONStopWhenFound
 int SetONFreqMult
 
+string OCrime = "ocrime.esp"
+int SetOCBounty
+string SUOCBounty = "ocrime.bounty"
+
 Event OnInit()
 	Init()
 EndEvent
@@ -364,6 +368,11 @@ Event OnPageReset(String Page)
 			SetOBGenitalRand = AddToggleOption("Randomize genitals", GetExternalBool(OBody, GVOBGenitalRand))
 			SetOBPresetKey = AddKeyMapOption("Edit presets", GetExternalInt(OBody, GVOBPrestKey))
 			
+		endif 
+
+		if main.IsModLoaded(OCrime)
+			AddColoredHeader("OCrime")
+			SetOCBounty = AddSliderOption("Public sex penalty", StorageUtil.GetIntValue(none, suocbounty), "{0} gold")
 		endif 
 
 	ElseIf (Page == "Undressing")
@@ -626,6 +635,8 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("Female NPCs are not cautious about you ejaculating inside them before a relationship and sometimes marriage\nMostly for users with no pregnancy mod")
 		ElseIf (Option == SetONFreqMult)
 			SetInfoText("The frequency at which NPCs will try to have sex with each other")
+		ElseIf (Option == SetOCBounty)
+			SetInfoText("The bounty you will recieve if caught by a guard having sex in public")
 		Elseif (Option == SetONStopWhenFound)
 			SetInfoText("If checked, NPCs will stop having sex if they know the player can see them")
 		Elseif (Option == SetOBRefit)
@@ -864,6 +875,11 @@ Event OnOptionSliderOpen(Int Option)
 		SetSliderDialogDefaultValue(1.0)
 		SetSliderDialogRange(0.1, 5.0)
 		SetSliderDialogInterval(0.1)
+	elseif (option == SetOCBounty)
+		SetSliderDialogStartValue(StorageUtil.GetIntValue(none, SUOCBounty))
+		SetSliderDialogDefaultValue(200)
+		SetSliderDialogRange(1, 2000)
+		SetSliderDialogInterval(1)
 	EndIf
 EndEvent
 
@@ -878,6 +894,9 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 	Elseif (option == SetONFreqMult)
 		SetExternalFloat(ONights, GVONFreqMult, value)
 		SetSliderOptionValue(SetONFreqMult, Value, "{2} x")
+	Elseif (option == SetOCBounty)
+		StorageUtil.SetIntValue(none, SUOCBounty, value as int)
+		SetSliderOptionValue(SetOCBounty, Value, "{0} gold")
 	ElseIf (Option == SetBedSearchDistance)
 		Main.BedSearchDistance = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0} meters")
