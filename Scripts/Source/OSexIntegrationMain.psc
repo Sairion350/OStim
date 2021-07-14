@@ -698,9 +698,15 @@ Event OnUpdate() ;OStim main logic loop
 		EndIf
 	EndIf
 
+	if IsPlayerInvolved()
+		float[] stageCoords = OSANative.getcoords(GetOSAStage())
+		OSANative.SetPositionEx(playerref, stageCoords[0], stageCoords[1], stageCoords[2])
+	endif 
+
 	If (UseFreeCam) && IsPlayerInvolved()
 		ToggleFreeCam(True)
 	EndIf
+
 
 	SendModEvent("ostim_start")
 
