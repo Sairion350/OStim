@@ -80,6 +80,7 @@ Function DoUpdate()
 
 
 	OUtils.Console("Updated")
+	OUtils.DisplayTextBanner("Update complete")
 
 	Updating = false
 EndFunction

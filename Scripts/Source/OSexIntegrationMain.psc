@@ -3429,6 +3429,7 @@ Function RegisterForGameLoadEvent(form f)
 	endWhile
 
 	LoadRegistrations = PapyrusUtil.PushForm(LoadRegistrations, f)
+	;Console("Registered: " + f.getname())
 EndFunction 
 
 Function SendLoadGameEvent()
@@ -3438,6 +3439,7 @@ Function SendLoadGameEvent()
 		int i = 0 
 
 		while i < l 
+			;Console("Loading: " + LoadRegistrations[i].getname())
 			LoadRegistrations[i].RegisterForModEvent("ostim_gameload", "OnGameLoad")
 			ModEvent.Send(ModEvent.Create("ostim_gameload"))
 			LoadRegistrations[i].UnregisterForModEvent("ostim_gameload")

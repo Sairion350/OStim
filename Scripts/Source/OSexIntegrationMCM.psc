@@ -194,6 +194,8 @@ Function Init()
 	pagearr = PapyrusUtil.PushString(pagearr, "About")
 
 	Pages = pagearr
+
+	ImportSettings()
 EndFunction
 
 Event OnPageReset(String Page)
