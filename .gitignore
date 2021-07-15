@@ -6,4 +6,5 @@ SkyrimSE.code-workspace
 *.zip
 *.pex
 *.bat
+*.ps1
 !OStim_CI.ppj

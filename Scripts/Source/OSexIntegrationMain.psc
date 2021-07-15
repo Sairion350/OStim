@@ -636,6 +636,7 @@ Event OnUpdate() ;OStim main logic loop
 	Password = DomActor.GetFactionRank(OsaFactionStage)
 	string EventName = "0SAO" + Password + "_AnimateStage"
 	RegisterForModEvent(eventName, "OnAnimate")
+	RegisterForModEvent("0SAO" + Password + "_ActraSync", "SyncActors")
 
 	int AEvent = ModEvent.Create(EventName)
 	Modevent.PushString(AEvent, EventName)
@@ -858,6 +859,7 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	UnRegisterForModEvent("0SAO" + Password + "_AnimateStage")
+	UnRegisterForModEvent("0SAO" + Password + "_ActraSync")
 
 	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor)) + "_Sound")
 	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(SubActor)) + "_Sound")
@@ -1745,6 +1747,67 @@ Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
 
 	EndIf
 EndEvent
+
+Event SyncActors(string eventName, string strArg, float numArg, Form sender)
+	Console("Dom was " + DomActor.GetDisplayName())
+	Console("Sub was " + SubActor.GetDisplayName())
+	if(ThirdActor)
+		Console("Third was " + ThirdActor.GetDisplayName())
+	endif
+
+	string[] newPositions = PapyrusUtil.StringSplit(strArg,",")
+
+	int actorCount = (newPositions[0]) as int
+	string[] originalPositions = Utility.CreateStringArray(actorCount, "")
+	Actor[] originalActors = GetActors()
+	
+	originalPositions[0] = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor))
+	Console(originalPositions[0])
+	if(SubActor)
+		originalPositions[1] = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(SubActor))
+		Console(originalPositions[1])
+		if(Thirdactor)
+			originalPositions[2] = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(ThirdActor))
+			Console(originalPositions[2])
+		endif
+	endif
+
+	int i = 0
+	while(i < actorCount)
+		if(originalPositions[i] == newPositions[1])
+			DomActor = originalActors[i]
+		else
+			if(actorCount > 1 )
+				if(originalPositions[i] == newPositions[2])
+					SubActor = originalActors[i]
+				endif
+				if(actorCount > 2)
+					if(originalPositions[i] == newPositions[3])
+						ThirdActor = originalActors[i]
+					endif
+				endif
+			endif
+		endif
+		i = i+1
+	endWhile
+
+	Console("Dom is now " + DomActor.GetDisplayName())
+	Console("Sub is now " + SubActor.GetDisplayName())
+	if(ThirdActor)
+		Console("Third is now " + ThirdActor.GetDisplayName())
+	endif
+	bool changed = false
+	int j = 0
+	while(j < actorCount)
+		if(originalPositions[i] != newPositions[i+1])
+			changed = true
+		endif
+		j = j+1
+	endwhile
+	if(changed)
+		SendModEvent("ostim_actorpositionschanged")
+	endif
+endEvent
 
 Function OpenMouth(Actor Act)
 	Console("Opening mouth...")
