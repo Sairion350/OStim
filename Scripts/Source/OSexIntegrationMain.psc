@@ -952,7 +952,7 @@ Int Function GetCurrentAnimationMaxSpeed()
 EndFunction
 
 Int Function GetAPIVersion()
-	Return 16
+	Return 17
 EndFunction
 
 Function IncreaseAnimationSpeed()

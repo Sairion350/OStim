@@ -1175,7 +1175,7 @@ Function ImportSettings()
 		OstimSettingsFileAlt = JValue.readFromFile(".\\Data\\OstimMCMSettings.json")
 	endif
 	if (OstimSettingsFile == False && OstimSettingsFileAlt == False)
-		Debug.MessageBox("Tried to import from file, but no file existed.")
+		;Debug.MessageBox("Tried to import from file, but no file existed.")
 		return
 	ElseIf (OstimSettingsFile == False && OstimSettingsFileAlt == True)
 		OstimSettingsFile = OstimSettingsFileAlt
