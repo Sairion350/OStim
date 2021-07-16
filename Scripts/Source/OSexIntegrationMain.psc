@@ -1760,15 +1760,17 @@ Event SyncActors(string eventName, string strArg, float numArg, Form sender)
 	int actorCount = (newPositions[0]) as int
 	string[] originalPositions = Utility.CreateStringArray(actorCount, "")
 	Actor[] originalActors = GetActors()
+	float[] originalExcitementValues = Utility.CreateFloatArray(actorCount, 0.0)
 	
 	originalPositions[0] = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor))
-	Console(originalPositions[0])
+	originalExcitementValues[0] = DomExcitement
+	
 	if(SubActor)
 		originalPositions[1] = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(SubActor))
-		Console(originalPositions[1])
+		originalExcitementValues[1] = SubExcitement
 		if(Thirdactor)
 			originalPositions[2] = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(ThirdActor))
-			Console(originalPositions[2])
+			originalExcitementValues[2] = ThirdExcitement
 		endif
 	endif
 
@@ -1776,14 +1778,17 @@ Event SyncActors(string eventName, string strArg, float numArg, Form sender)
 	while(i < actorCount)
 		if(originalPositions[i] == newPositions[1])
 			DomActor = originalActors[i]
+			DomExcitement = originalExcitementValues[i]
 		else
 			if(actorCount > 1 )
 				if(originalPositions[i] == newPositions[2])
 					SubActor = originalActors[i]
+					SubExcitement = originalExcitementValues[i]
 				endif
 				if(actorCount > 2)
 					if(originalPositions[i] == newPositions[3])
 						ThirdActor = originalActors[i]
+						ThirdExcitement = originalExcitementValues[i]
 					endif
 				endif
 			endif
