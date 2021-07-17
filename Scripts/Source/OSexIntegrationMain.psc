@@ -876,7 +876,9 @@ Event OnUpdate() ;OStim main logic loop
 
 	SendModEvent("0SA_GameLoaded") ;for safety
 	Console(Utility.GetCurrentRealTime() - StartTime + " seconds passed")
-	DisableOSAControls = false 
+	DisableOSAControls = false
+
+	ranOnce = false  
 
 	SceneRunning = False
 
@@ -1757,7 +1759,14 @@ Event OnAnimate(String EventName, String zAnimation, Float NumArg, Form Sender)
 	EndIf
 EndEvent
 
+
+bool ranOnce ; quick hack to get this to not run on scene start, better solution?
 Event SyncActors(string eventName, string strArg, float numArg, Form sender)
+	if !ranOnce
+		ranOnce = true 
+		Console("Skipping first actra sync event")
+		return 
+	endif 
 	Console("Dom was " + DomActor.GetDisplayName())
 	Console("Sub was " + SubActor.GetDisplayName())
 	if(ThirdActor)
