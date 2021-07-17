@@ -3471,6 +3471,9 @@ Function Startup()
 		Return
 	EndIf
 
+	OControl.ResetControls()
+	OControl.UpdateControls()
+
 	If (SKSE.GetPluginVersion("ImprovedCamera") == -1)
 		Debug.Notification("OStim: Improved Camera is not installed. First person scenes unavailable.")
 		Debug.Notification("OStim: However, freecam will have extra features.")
