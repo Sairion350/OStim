@@ -1255,17 +1255,25 @@ EndFunction
 
 Bool Function IsFemale(Actor Act)
 	{genitalia based / has a vagina and not a penis}
+	; causing male orgasm crashing?
+
+	;If SoSInstalled
+	;	; schlongs have two keywords.   Female pubic hair has three
+	;	if Act.IsInFaction(SoSFaction)
+	;		form slot52 = Act.GetWornForm(0x00400000)
+	;		if slot52 && (slot52.GetNumKeywords() == 2)
+	;	; so... if they have an item in slot52, and that item has 2 keywords it's a schlong, ergo not female
+	;			return false
+	;		endIf
+	;	endIf
+	;endIf
+
+	
 	If SoSInstalled
-		; schlongs have two keywords.   Female pubic hair has three
-		if Act.IsInFaction(SoSFaction)
-			form slot52 = Act.GetWornForm(0x00400000)
-			if slot52 && (slot52.GetNumKeywords() == 2)
-		; so... if they have an item in slot52, and that item has 2 keywords it's a schlong, ergo not female
-				return false
-			endIf
-		endIf
-	endIf
-	Return AppearsFemale(Act)
+		return !Act.IsInFaction(SoSFaction)
+	else
+		Return AppearsFemale(Act)
+	endif
 
 EndFunction
 
