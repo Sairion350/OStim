@@ -954,7 +954,7 @@ Int Function GetCurrentAnimationMaxSpeed()
 EndFunction
 
 Int Function GetAPIVersion()
-	Return 17
+	Return 18
 EndFunction
 
 Function IncreaseAnimationSpeed()
@@ -1268,7 +1268,7 @@ Bool Function IsFemale(Actor Act)
 	;	endIf
 	;endIf
 
-	
+
 	If SoSInstalled
 		return !Act.IsInFaction(SoSFaction)
 	else
@@ -3505,7 +3505,7 @@ Function RegisterForGameLoadEvent(form f)
 	endWhile
 
 	LoadRegistrations = PapyrusUtil.PushForm(LoadRegistrations, f)
-	;Console("Registered: " + f.getname())
+	Console("Registered for load event: " + f.getname())
 EndFunction 
 
 Function SendLoadGameEvent()
