@@ -701,6 +701,7 @@ Event OnUpdate() ;OStim main logic loop
 
 	if IsPlayerInvolved()
 		float[] stageCoords = OSANative.getcoords(GetOSAStage())
+		playerref.setposition(stageCoords[0]+128, stageCoords[1], stageCoords[2])
 		OSANative.SetPositionEx(playerref, stageCoords[0], stageCoords[1], stageCoords[2])
 	endif 
 
