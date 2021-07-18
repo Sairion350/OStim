@@ -588,14 +588,14 @@ Event OnUpdate() ;OStim main logic loop
 	; Will need updating if/when multi-scene stuff is added but works for now
 	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 51)
 
-	profile()
+	;profile()
 
 	CurrScene = OSA.MakeStage()
 	OSA.SetActorsStim(currScene, Actro)
 	OSA.SetModule(CurrScene, "0Sex", StartingAnimation, "")
 	OSA.StimStart(CurrScene)
 
-	Profile("Startup time")
+	;Profile("Startup time")
 
 	; "Diasa" is basically an OSA scene thread. We need to mount it here so OStim can communicate with OSA.
 	; (I didn't pick the nonsense name, it's called that in OSA)
@@ -3485,7 +3485,7 @@ Function Startup()
 	EndIf
 
 	OControl.ResetControls()
-	OControl.UpdateControls()
+	OControl.UpdateControls() ; uneeded?
 
 	If (SKSE.GetPluginVersion("ImprovedCamera") == -1)
 		Debug.Notification("OStim: Improved Camera is not installed. First person scenes unavailable.")
