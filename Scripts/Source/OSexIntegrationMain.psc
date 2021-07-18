@@ -601,8 +601,9 @@ Event OnUpdate() ;OStim main logic loop
 	; (I didn't pick the nonsense name, it's called that in OSA)
 	; Unfortunately, the method used for mounting an NPC on NPC scene is a bit involved.
 	if IsNPCScene()
-		MountNPCSceneAsMain()
+		diasa = GetNPCDiasa(DomActor)
 		Console("Scene is a NPC on NPC scene")
+		disableOSAControls = true
 	Else
 		diasa = o + ".viewStage"
 	endif
@@ -3215,16 +3216,15 @@ Function Profile(String Name = "")
 	EndIf
 EndFunction
 
-Function MountNPCSceneAsMain()
+string Function GetNPCDiasa(actor act)
 	; The player thread is easily accessible through OSA. However, NPC scenes are not.
 	; Normally, we would go through OSA's thread manager and fetch it.
 	; However, SKSE's flash interface doesn't handle flash arrays, so this is not possible.
 	; Instead, running an OSA inspect on an npc mounts their data, and within that data is a link to the scene thread they are in
 	; Closing the inspect menu would break the link, so we need to leave it open.
-	disableOSAControls = true
 	
 
-	String DomID = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor))
+	String DomID = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(act))
 	String InspectMenu = o + ".hud.InspectMenu"
 
 	UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)
@@ -3232,13 +3232,15 @@ Function MountNPCSceneAsMain()
 	string actraD = InspectMenu + ".actra"
 
 
-	diasa = actraD + ".stageStatus"
+	string ret = actraD + ".stageStatus"
 
 
 
 	UI.Invoke("HUD Menu", InspectMenu + ".OmniDim")
 
-   
+	return ret
+
+
 EndFunction
 
 
