@@ -4,6 +4,7 @@ ScriptName OsexIntegrationMCM Extends SKI_ConfigBase
 Int SetActorSpeedControl
 Int SetsexExcitementMult
 Int SetClipinglessFirstPerson
+Int SetDisableHitbox
 Int SetEndAfterActorHit
 Int SetUseRumble
 Int SetUseScreenShake
@@ -226,6 +227,7 @@ Event OnPageReset(String Page)
 		SetActorSpeedControl = AddToggleOption("Actors control speed", Main.EnableActorSpeedControl)
 		SetsexExcitementMult = AddSliderOption("Excitement multiplier", Main.SexExcitementMult, "{2} x")
 		SetClipinglessFirstPerson = AddToggleOption("Clipping-less first person", Main.EnableImprovedCamSupport)
+		SetDisableHitbox = AddToggleOption("Disable player hitbox", Main.disableplayerhitbox)
 		SetCustomTimescale = AddSliderOption("Custom timescale", Main.CustomTimescale, "{0}")
 		SetMisallignmentOption = AddToggleOption("Enable misalignment protection", Main.MisallignmentProtection)
 		SetFlipFix = AddToggleOption("Enable flipped animation fix", Main.FixFlippedAnimations)
@@ -470,6 +472,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetEndOnSubOrgasm)
 		Main.EndOnSubOrgasm = !Main.EndOnSubOrgasm
 		SetToggleOptionValue(SetEndOnSubOrgasm, Main.EndOnSubOrgasm)
+	ElseIf (Option == SetDisableHitbox)
+		Main.DisablePlayerHitbox = !Main.DisablePlayerHitbox
+		SetToggleOptionValue(SetDisableHitbox, Main.DisablePlayerHitbox)
 	ElseIf (Option == SetEndOnBothOrgasm)
 		Main.RequireBothOrgasmsToFinish = !Main.RequireBothOrgasmsToFinish
 		SetToggleOptionValue(SetEndOnBothOrgasm, Main.RequireBothOrgasmsToFinish)
@@ -679,6 +684,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Rumble a controller on thrust, if a controller is being used")
 	ElseIf (Option == SetMatchColorToGender)
 		SetInfoText("Change the color of the bars to match the gender of the character")
+	ElseIf (Option == SetDisableHitbox)
+		SetInfoText("Disables the player's hitbox during scenes. May help misalignment")
 	ElseIf (Option == SetHideNPCOnNPCBars)
 		SetInfoText("Do not show excitement bars if the player is not in a scene")
 	ElseIf (Option == SetStrongerUnequip)
@@ -1070,6 +1077,7 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetEndOnOrgasm", Main.EndOnDomOrgasm as Int)
 	JMap.SetInt(OstimSettingsFile, "SetEndOnSubOrgasm", Main.EndOnSubOrgasm as Int)
 	JMap.SetInt(OstimSettingsFile, "SetEndOnBothOrgasm", Main.RequireBothOrgasmsToFinish as Int)
+	JMap.SetInt(OstimSettingsFile, "SetDisableHitbox", Main.DisablePlayerHitbox as Int)
 	JMap.SetInt(OstimSettingsFile, "SetActorSpeedControl", Main.EnableActorSpeedControl as Int)
 	JMap.SetInt(OstimSettingsFile, "SetResetPosition", Main.ResetPosAfterSceneEnd as Int)
 	JMap.SetFlt(OstimSettingsFile, "SetsexExcitementMult", Main.SexExcitementMult as Float)
@@ -1187,6 +1195,7 @@ Function ImportSettings()
 	Main.EndOnDomOrgasm = Jmap.GetInt(OstimSettingsFile, "SetEndOnOrgasm")
 	Main.EndOnSubOrgasm = JMap.GetInt(OstimSettingsFile, "SetEndOnSubOrgasm")
 	Main.RequireBothOrgasmsToFinish = JMap.GetInt(OstimSettingsFile, "SetEndOnBothOrgasm")
+	Main.DisablePlayerHitbox = JMap.GetInt(OstimSettingsFile, "SetDisableHitbox")
 	Main.EnableActorSpeedControl = JMap.GetInt(OstimSettingsFile, "SetActorSpeedControl")
 	Main.ResetPosAfterSceneEnd = JMap.GetInt(OstimSettingsFile, "SetResetPosition")
 	Main.SexExcitementMult = JMap.GetFlt(OstimSettingsFile, "SetsexExcitementMult")

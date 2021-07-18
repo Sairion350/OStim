@@ -103,6 +103,7 @@ Int Property ControlToggleKey Auto
 Bool Property UseBed Auto
 
 Bool Property MisallignmentProtection Auto
+Bool Property DisablePlayerHitbox Auto
 
 Bool Property UseAIControl Auto
 Bool Property OnlyGayAnimsInGayScenes auto
@@ -699,7 +700,7 @@ Event OnUpdate() ;OStim main logic loop
 		EndIf
 	EndIf
 
-	if IsPlayerInvolved()
+	if disableplayerhitbox && IsPlayerInvolved()
 		float[] stageCoords = OSANative.getcoords(GetOSAStage())
 		playerref.setposition(stageCoords[0]+128, stageCoords[1], stageCoords[2])
 		OSANative.SetPositionEx(playerref, stageCoords[0], stageCoords[1], stageCoords[2])
@@ -3027,6 +3028,8 @@ Function SetDefaultSettings()
 	Usebed = True
 	BedSearchDistance = 15
 	MisallignmentProtection = false
+
+	DisablePlayerHitbox = false 
 
 	DisableStimulationCalculation = false
 
