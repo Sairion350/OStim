@@ -157,7 +157,7 @@ Function RebootScript()
     RegisterForModEvent("OSA_ScanDirectoryForFileType", "OnScanDirectoryForFileType")
 
     OControl = Quest.GetQuest("0SAControl") as _oControl
-    OControl.ResetControls()
+    ;OControl.ResetControls()
     ;;CPConvert.dll NEED FIX (CPConvert needs 64bit recompile)
     ;;codePage = CPConvert.GetCPForGameLng()
     CodePage = 1252
