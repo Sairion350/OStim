@@ -1187,9 +1187,9 @@ Function ImportSettings()
 		return
 	ElseIf (OstimSettingsFile == False && OstimSettingsFileAlt == True)
 		OstimSettingsFile = OstimSettingsFileAlt
-		Debug.MessageBox("Importing modlist settings from file, wait a second or two before clicking OK.")
+		;Debug.MessageBox("Importing modlist settings from file, wait a second or two before clicking OK.")
 	Else
-		Debug.MessageBox("Importing from file, wait a second or two before clicking OK.")
+		;Debug.MessageBox("Importing from file, wait a second or two before clicking OK.")
 	EndIf
 	; Sex settings import.
 	Main.EndOnDomOrgasm = Jmap.GetInt(OstimSettingsFile, "SetEndOnOrgasm")

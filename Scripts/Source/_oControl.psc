@@ -23,6 +23,7 @@ Int[] InspectArmorWorn
 
 Function ResetControls()
     _IsSetup = False
+    _IsKeySetup = False
 EndFunction
 
 int[] Function GetOKEY()
