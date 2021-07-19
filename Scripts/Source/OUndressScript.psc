@@ -102,10 +102,10 @@ Function UnequipForms(Actor Target, Form[] Items)
 	Target.UnequipItem(Target.GetEquippedObject(1))
 EndFunction
 
-Form[] Function StoreEquipmentForms(Actor Target)
+Form[] Function StoreEquipmentForms(Actor Target, bool returnOnly = false)
 	Vector_Form equipment
 	int actorID = ostim.getactors().find(target)
-	if actorID != -1
+	if (actorID != -1) && !returnOnly
 		equipment = EquipmentForms[actorID]
 	else 
 		equipment = MiscVector
