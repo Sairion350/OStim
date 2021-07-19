@@ -3223,8 +3223,10 @@ string Function GetNPCDiasa(actor act)
 	; Instead, running an OSA inspect on an npc mounts their data, and within that data is a link to the scene thread they are in
 	; Closing the inspect menu would break the link, so we need to leave it open.
 	
+	o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
 
 	String DomID = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(act))
+
 	String InspectMenu = o + ".hud.InspectMenu"
 
 	UI.InvokeString("HUD Menu", o + ".ctr.INSPECT", domID)

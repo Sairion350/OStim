@@ -3,9 +3,13 @@ ScriptName OUndressScript Extends Quest
 ; TODO: Ammo unequip?
 OsexIntegrationMain OStim
 
-Form[] Property DomEquipmentForms Auto ;in-inventory versions
-Form[] Property SubEquipmentForms Auto
-Form[] Property ThirdEquipmentForms Auto
+Vector_Form Property MiscVector Auto
+
+Vector_Form Property DomEquipmentForms Auto ;in-inventory versions
+Vector_Form Property SubEquipmentForms Auto
+Vector_Form Property ThirdEquipmentForms Auto
+
+Vector_Form[] EquipmentForms 
 
 ObjectReference[] Property DomEquipmentDrops Auto ; on-the-ground versions
 ObjectReference[] Property SubEquipmentDrops Auto
@@ -18,7 +22,22 @@ Actor ThirdActorAfterLeaving
 
 Event OnInit()
 	OStim = (Self as Quest) as OsexIntegrationMain
-	FakeArmor = (Game.GetFormFromFile(0x000800, "Ostim.esp")) as Armor
+	;FakeArmor = (Game.GetFormFromFile(0x000800, "Ostim.esp")) as Armor
+
+	MiscVector.Destroy()
+	DomEquipmentForms.destroy()
+	SubEquipmentForms.destroy()
+	ThirdEquipmentForms.destroy()
+
+	DomEquipmentForms = Vector_Form.newObject()
+	SubEquipmentForms = Vector_Form.newObject()
+	ThirdEquipmentForms = Vector_Form.newObject()
+	MiscVector = Vector_Form.NewObject()
+
+	EquipmentForms = new Vector_Form[3]
+	EquipmentForms[0] = DomEquipmentForms
+	EquipmentForms[1] = SubEquipmentForms
+	EquipmentForms[2] = ThirdEquipmentForms
 
 	OnGameLoad()
 	PlayerRef = Game.GetPlayer()
@@ -27,11 +46,8 @@ EndEvent
 Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable free cam or else!
 	If (OStim.TossClothesOntoGround)
 		StripAndToss(Target)
-	Elseif (OStim.UseStrongerUnequipMethod)
-		StoreEquipmentForms(Target)
-		EquipFakeArmor(Target)
 	Else
-		Form[] Things = StoreEquipmentForms(Target)
+		form[] Things = StoreEquipmentForms(Target)
 		UnequipForms(Target, Things)
 	Endif
 	if ostim.AnimationRunning()
@@ -61,57 +77,15 @@ Function Redress(Actor Target)
 			PickUpThings(Target, Things)
 		EndIf
 	Else
-		Form[] Things
-		If (Target == OStim.GetDomActor())
-			Things = DomEquipmentForms
-		ElseIf (Target == OStim.GetSubActor())
-			Things = SubEquipmentForms
-		ElseIf (Target == OStim.GetThirdActor()) || (Target == ThirdActorAfterLeaving)
-			Things = ThirdEquipmentForms
-		EndIf
+		Vector_Form Things
+		things = EquipmentForms[ostim.getactors().find(target)]
 
 		If (OStim.FullyAnimateRedress && (Target != PlayerRef) && !OStim.IsSceneAggressiveThemed()) && !(Target.IsInCombat())
-			FullyAnimateRedress(Target, Things)
+			FullyAnimateRedress(Target, Things.data)
 		Else
-			EquipForms(Target, Things)
+			EquipForms(Target, Things.data)
 		EndIf
 	endif
-EndFunction
-
-Function UpdateFakeArmor()
-	Console("Updating fake armor....")
-
-	Int i = 30
-	While (i < 62)
-		SetSlotInFakeArmor(Armor.GetMaskForSlot(i), False)
-		i += 1
-	EndWhile
-
-	i = 0
-	Int len = OStim.StrippingSlots.Length
-	While (i < len)
-		SetSlotInFakeArmor(OStim.StrippingSlots[i], True)
-		i += 1
-	EndWhile
-
-	Console("Fake armor update complete.")
-EndFunction
-
-Function SetSlotInFakeArmor(Int iSlot, Bool bSlot)
-	int Mask = Armor.GetMaskForSlot(iSlot)
-	If (bSlot)
-		FakeArmor.AddSlotToMask(Mask)
-	Else
-		FakeArmor.RemoveSlotFromMask(Mask)
-	EndIf
-EndFunction
-
-Function EquipFakeArmor(Actor Target)
-	Target.EquipItem(FakeArmor, False, True)
-	Utility.Wait(0.15)
-	Target.RemoveItem(FakeArmor, 99, True)
-	Target.UnequipItem(Target.GetEquippedObject(0))
-	Target.UnequipItem(Target.GetEquippedObject(1))
 EndFunction
 
 Function UnequipForms(Actor Target, Form[] Items)
@@ -128,51 +102,30 @@ Function UnequipForms(Actor Target, Form[] Items)
 	Target.UnequipItem(Target.GetEquippedObject(1))
 EndFunction
 
-Function PushEquipmentForm(Int ArrayID, Form Thing)
-	If (ArrayID == 0) ; store the item for lter
-		DomEquipmentForms = PapyrusUtil.PushForm(DomEquipmentForms, Thing)
-	ElseIf (ArrayID == 1)
-		SubEquipmentForms = PapyrusUtil.PushForm(SubEquipmentForms, Thing)
-	ElseIf (ArrayID == 2)
-		ThirdEquipmentForms = PapyrusUtil.PushForm(ThirdEquipmentForms, Thing)
-	EndIf
-EndFunction
-
 Form[] Function StoreEquipmentForms(Actor Target)
-	Int ArrayID
-	If (Target == OStim.GetDomActor()) ; I wish we had pointers of some kind
-		ArrayID = 0
-	ElseIf (Target == OStim.GetSubActor())
-		ArrayID = 1
-	ElseIf (Target == OStim.GetThirdActor())
-		ArrayID = 2
-	EndIf
+	Vector_Form equipment
+	int actorID = ostim.getactors().find(target)
+	if actorID != -1
+		equipment = EquipmentForms[actorID]
+	else 
+		equipment = MiscVector
+		equipment.Clear()
+	endif
 
 	Int i = 0
 	Int len = OStim.StrippingSlots.Length
 	While (i < len)
 		Form Thing = Target.GetEquippedArmorInSlot(OStim.StrippingSlots[i]) as Form ; SE exclusive function
-		PushEquipmentForm(ArrayID, Thing)
+		equipment.Push_back(thing)
 		i += 1
 	EndWhile
 
-	Form Obj0 = Target.GetEquippedObject(0)
-	If (Obj0)
-		PushEquipmentForm(ArrayID, Obj0)
-	EndIf
+	equipment.push_back(Target.GetEquippedObject(0))
+	equipment.push_back(Target.GetEquippedObject(1))
 
-	Form Obj1 = Target.GetEquippedObject(1)
-	If (Obj1)
-		PushEquipmentForm(ArrayID, Obj1)
-	EndIf
+	equipment.Remove(none)
 
-	If (Target == OStim.GetDomActor()) ; I wish we had pointers of some kind
-		Return DomEquipmentForms
-	ElseIf (Target == OStim.GetSubActor())
-		Return SubEquipmentForms
-	ElseIf (Target == OStim.GetThirdActor())
-		Return ThirdEquipmentForms
-	EndIf
+	return equipment.data
 EndFunction
 
 Function StripAndToss(Actor Target)
@@ -205,9 +158,6 @@ Function StripAndToss(Actor Target)
 EndFunction
 
 Function StripAndTossItem(Actor Target, Form Item, Int ArrayID, Bool DoImpulse = True)
-	If (!Item) ; Is this check really necessary?
-		Return
-	EndIf
 
 	ObjectReference Thing = Target.DropObject(Item)
 	Thing.SetPosition(Thing.GetPositionX(), Thing.GetPositionY(), Thing.GetPositionZ() + 64)
@@ -288,9 +238,9 @@ Event OStimPreStart(String EventName, String StrArg, Float NumArg, Form Sender)
 	SubEquipmentDrops = new ObjectReference[1]
 	ThirdEquipmentDrops = new ObjectReference[1]
 
-	DomEquipmentForms = new Form[1]
-	SubEquipmentForms = new Form[1]
-	ThirdEquipmentForms = new Form[1]
+	DomEquipmentForms.clear()
+	SubEquipmentForms.clear()
+	ThirdEquipmentForms.clear()
 
 	If (OStim.AlwaysUndressAtAnimStart)
 		OStim.UndressDom = True
