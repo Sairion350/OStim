@@ -2099,7 +2099,7 @@ Function ScaleToStandardHeight(Actor Act)
 EndFunction
 
 Function ScaleToHeight(Actor Act, Float GoalBodyScale)
-	Float NativeBodyScale = outils.GetScaleCached(act)
+	Float NativeBodyScale = outils.GetOriginalScale(act)
 	Float Scale = ((GoalBodyScale - NativeBodyScale) / NativeBodyScale) + 1.0
 
 	;Console(act.GetDisplayName())

@@ -141,7 +141,7 @@ int Function RandomInt(int min = 0, int max = 100) Global Native
 float Function RandomFloat(float min = 0.0, float max = 1.0) Global Native
 	;untested
 
-
+float Function GetScaleFactor(ObjectReference in) Global Native
 
 ; Experimental 
 
