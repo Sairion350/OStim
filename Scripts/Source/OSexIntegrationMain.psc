@@ -95,6 +95,9 @@ Float Property SexExcitementMult Auto
 
 Int Property KeyMap Auto
 
+string[] scenemetadata
+string[] oldscenemetadata
+
 Int Property SpeedUpKey Auto
 Int Property SpeedDownKey Auto
 Int Property PullOutKey Auto
@@ -882,6 +885,9 @@ Event OnUpdate() ;OStim main logic loop
 
 	ranOnce = false  
 
+	oldscenemetadata = scenemetadata
+	scenemetadata = PapyrusUtil.StringArray(0)
+
 	SceneRunning = False
 
 EndEvent
@@ -1199,6 +1205,22 @@ EndFunction
 Actor Function GetMostRecentOrgasmedActor()
 	Return MostRecentOrgasmedActor
 EndFunction
+
+Function AddSceneMetadata(string MetaTag)
+	scenemetadata = PapyrusUtil.PushString(scenemetadata, MetaTag)
+EndFunction
+
+bool Function HasSceneMetadata(string MetaTag)
+	string[] metadata
+	if SceneRunning
+		metadata = scenemetadata
+	else 
+		metadata = oldscenemetadata
+	endif 
+
+	return metadata.Find(metatag) != -1
+EndFunction
+
 
 Function RunOsexCommand(String CMD)
 	String[] Plan = new String[2]
@@ -3415,6 +3437,7 @@ Function Startup()
 	SetSystemVars()
 	SetDefaultSettings()
 	BuildSoundFormlists()
+	scenemetadata = PapyrusUtil.StringArray(0)
 
 	If (BlockVRInstalls && GetGameIsVR())
 		Debug.MessageBox("OStim: You appear to be using Skyrim VR. VR is not yet supported by OStim. See the OStim description for more details. If you are not using Skyrim VR by chance, update your papyrus Utilities.")
