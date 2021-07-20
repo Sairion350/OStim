@@ -1796,11 +1796,9 @@ Event SyncActors(string eventName, string strArg, float numArg, Form sender)
 	if(ThirdActor)
 		Console("Third was " + ThirdActor.GetDisplayName())
 	endif
-	Console(strArg)
 	string[] newPositions = PapyrusUtil.StringSplit(strArg,",")
 
 	int actorCount = (newPositions[0]) as int
-	console(actorCount)
 	string[] originalPositions = Utility.CreateStringArray(actorCount, "")
 	Actor[] originalActors = GetActors()
 	float[] originalExcitementValues = Utility.CreateFloatArray(actorCount, 0.0)
@@ -1839,10 +1837,7 @@ Event SyncActors(string eventName, string strArg, float numArg, Form sender)
 	endif
 	bool changed = false
 	int j = 0
-	while(j < originalPositions.length)		
-		console(j)
-		console(newPositions.length)
-		console(newPositions[j+1])
+	while(j < originalPositions.length)
 		if(originalPositions[j] != newPositions[j+1])
 			changed = true
 		endif
