@@ -15,19 +15,29 @@ ObjectReference[] Property DomEquipmentDrops Auto ; on-the-ground versions
 ObjectReference[] Property SubEquipmentDrops Auto
 ObjectReference[] Property ThirdEquipmentDrops Auto
 
+
 Armor Property FakeArmor Auto
 
 Actor PlayerRef
-Actor ThirdActorAfterLeaving
+
+Actor[] actors
 
 Event OnInit()
 	OStim = (Self as Quest) as OsexIntegrationMain
 	;FakeArmor = (Game.GetFormFromFile(0x000800, "Ostim.esp")) as Armor
 
-	MiscVector.Destroy()
-	DomEquipmentForms.destroy()
-	SubEquipmentForms.destroy()
-	ThirdEquipmentForms.destroy()
+	if(MiscVector)
+		MiscVector.Destroy()
+	endif
+	if(DomEquipmentForms)
+		DomEquipmentForms.destroy()
+	endif
+	if(SubEquipmentForms)
+		SubEquipmentForms.destroy()
+	endif
+	if(ThirdEquipmentDrops)
+		ThirdEquipmentForms.destroy()
+	endif
 
 	DomEquipmentForms = Vector_Form.newObject()
 	SubEquipmentForms = Vector_Form.newObject()
@@ -43,7 +53,8 @@ Event OnInit()
 	PlayerRef = Game.GetPlayer()
 EndEvent
 
-Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable free cam or else!
+
+Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable free cam or else! 
 	If (OStim.TossClothesOntoGround)
 		StripAndToss(Target)
 	Else
@@ -62,11 +73,11 @@ Function Redress(Actor Target)
 
 	If (OStim.TossClothesOntoGround)
 		ObjectReference[] Things
-		If (Target == OStim.GetDomActor())
+		If (Target == actors[0])
 			Things = DomEquipmentDrops
-		ElseIf (Target == OStim.GetSubActor())
+		ElseIf (Target == actors[1])
 			Things = SubEquipmentDrops
-		ElseIf (Target == OStim.GetThirdActor()) || (target == ThirdActorAfterLeaving)
+		ElseIf (actors.length > 2 && Target == actors[2])
 			Things = ThirdEquipmentDrops
 		EndIf
 
@@ -130,11 +141,11 @@ EndFunction
 
 Function StripAndToss(Actor Target)
 	Int ArrayID
-	If (Target == OStim.GetDomActor())
+	If (Target == actors[0])
 		ArrayID = 0
-	ElseIf (Target == OStim.GetSubActor())
+	ElseIf (Target == actors[1])
 		ArrayID = 1
-	ElseIf (Target == OStim.GetThirdActor())
+	ElseIf (Target == actors[2])
 		ArrayID = 2
 	EndIf
 
@@ -142,7 +153,9 @@ Function StripAndToss(Actor Target)
 	Int len = OStim.StrippingSlots.Length
 	While (i < len)
 		Form Item = Target.GetEquippedArmorInSlot(OStim.Strippingslots[i]) as Form ; SE exclusive function
-		StripAndTossItem(Target, Item, ArrayID)
+		if(Item)
+			StripAndTossItem(Target, Item, ArrayID)
+		endIf
 		i += 1
 	EndWhile
 
@@ -219,20 +232,20 @@ EndFunction
 Event OStimEnd(String EventName, String StrArg, Float NumArg, Form Sender)
 	Console("Redressing...")
 
-	Redress(OStim.GetDomActor())
-	Redress(OStim.GetSubActor())
+	Redress(actors[0])
+	Redress(actors[1])
 
-	Actor ThirdActor = OStim.GetThirdActor()
-	If (ThirdActor)
-		Redress(ThirdActor)
+	
+	If (actors.length > 2)
+		Redress( actors[2])
 	EndIf
-
-	ThirdActorAfterLeaving = None
+	
 	SendModEvent("ostim_redresscomplete")
 EndEvent
 
 Event OStimPreStart(String EventName, String StrArg, Float NumArg, Form Sender)
 	Console("Stripping actors...")
+	actors = Ostim.GetActors()
 
 	DomEquipmentDrops = new ObjectReference[1]
 	SubEquipmentDrops = new ObjectReference[1]
@@ -253,30 +266,29 @@ Event OStimPreStart(String EventName, String StrArg, Float NumArg, Form Sender)
 
 	bool didToggle = false
 	If (OStim.UndressDom) ; animate undress, and chest-only strip not yet supported
-		If OStim.IsInFreeCam() && (OStim.GetDomActor() == playerref)
+		If OStim.IsInFreeCam() && (actors[0] == playerref)
 			DidToggle = True
 			OStim.ToggleFreeCam()
 		EndIf
-		Strip(OStim.GetDomActor())
+		Strip(actors[0])
 	EndIf
 
 	If (OStim.UndressSub)
-		If OStim.IsInFreeCam() && (OStim.GetSubActor() == playerref)
+		If OStim.IsInFreeCam() && (actors[1] == playerref)
 			DidToggle = True
 			OStim.ToggleFreeCam()
 		EndIf
-		Strip(OStim.GetSubActor())
+		Strip(actors[1])
 	EndIf
 
 	; Assume if sub is to be undressed, third actor should also be provided ThirdActor exists.
-	Actor ThirdActor = OStim.GetThirdActor()
-	If (OStim.UndressSub && ThirdActor)
-		If OStim.IsInFreeCam() && (OStim.GetThirdActor() == playerref)
+	
+	If (OStim.UndressSub && actors.length > 2)
+		If OStim.IsInFreeCam() && (actors[2] == playerref)
 			DidToggle = True
 			OStim.ToggleFreeCam()
 		EndIf
-		Strip(ThirdActor)
-		ThirdActorAfterLeaving = ThirdActor
+		Strip(actors[2])		
 	EndIf
 
 	If (DidToggle)
@@ -291,42 +303,42 @@ Event OstimChange(String eventName, String strArg, Float numArg, Form sender)
 	Bool DidToggle = False
 
 	If (OStim.AutoUndressIfNeeded && OStim.AnimationRunning())
-		Bool DomNaked = OStim.IsNaked(OStim.GetDomActor())
-		Bool SubNaked = OStim.IsNaked(OStim.GetSubActor())
+		Bool DomNaked = OStim.IsNaked(actors[0])
+		Bool SubNaked = OStim.IsNaked(actors[1])
 		Bool ThirdNaked = True
 
-		If OStim.GetThirdActor()
-			ThirdNaked = OStim.IsNaked(OStim.GetThirdActor())
+		If actors.length > 2
+			ThirdNaked = OStim.IsNaked(actors[2])
 		EndIf
 
 		String CClass = OStim.GetCurrentAnimationClass()
 		If (!DomNaked)
 			If (CClass == "Sx") || (CClass == "Po") || (CClass == "HhPo") || (CClass == "ApPJ") || (CClass == "HhPJ") || (CClass == "HJ") || (CClass == "ApHJ") || (CClass == "DHJ") || (CClass == "SJ")|| (CClass == "An")|| (CClass == "BoJ")|| (CClass == "FJ")
-				If OStim.IsInFreeCam() && (OStim.GetDomActor() == playerref)
+				If OStim.IsInFreeCam() && (actors[0] == playerref)
 					DidToggle = True
 					OStim.ToggleFreeCam()
 				EndIf
-				Strip(OStim.GetDomActor())
+				Strip(actors[0])
 				SendModEvent("ostim_midsceneundress_dom")
 			EndIf
 		EndIf
 		If (!SubNaked)
 			If (CClass == "Sx") || (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2") || (CClass == "An")|| (CClass == "BoJ")|| (CClass == "BoF")
-				If OStim.IsInFreeCam() && (OStim.GetSubActor() == playerref)
+				If OStim.IsInFreeCam() && (actors[1] == playerref)
 					DidToggle = True
 					OStim.ToggleFreeCam()
 				EndIf
-				Strip(OStim.GetSubActor())
+				Strip(actors[1])
 				SendModEvent("ostim_midsceneundress_sub")
 			EndIf
 		EndIf
 		If (!ThirdNaked)
 			If (CClass == "Sx") || (CClass == "VJ") || (CClass == "Cr") || (CClass == "Pf1") || (CClass == "Pf2") || (CClass == "An")|| (CClass == "BoJ")|| (CClass == "BoF")
-				If OStim.IsInFreeCam() && (OStim.GetThirdActor() == playerref)
+				If OStim.IsInFreeCam() && (actors[2] == playerref)
 					DidToggle = True
 					OStim.ToggleFreeCam()
 				EndIf
-				Strip(OStim.GetThirdActor())
+				Strip(actors[2])
 				SendModEvent("ostim_midsceneundress_third")
 			EndIf
 		EndIf
@@ -338,6 +350,7 @@ Event OstimChange(String eventName, String strArg, Float numArg, Form sender)
 EndEvent
 
 Event OstimThirdJoin(String EventName, String StrArg, Float NumArg, Form Sender)
+	SyncActors()
 	If (OStim.AlwaysUndressAtAnimStart)
 		Console("Stripping third actor")
 
@@ -347,20 +360,81 @@ Event OstimThirdJoin(String EventName, String StrArg, Float NumArg, Form Sender)
 			OStim.ToggleFreeCam()
 		EndIf
 
-		Strip(OStim.GetThirdActor())
+		Strip(actors[2])
 
 		If (DidToggle)
 			OStim.ToggleFreeCam()
 		EndIf
-	EndIf
-
-	ThirdActorAfterLeaving = OStim.GetThirdActor()
+	EndIf	
 EndEvent
 
 Event OstimThirdLeave(String EventName, String StrArg, float NumArg, Form Sender)
 	Console("Redressing third actor")
-	Redress(ThirdActorAfterLeaving)
+	Redress(actors[2])
+	SyncActors()
 EndEvent
+bool syncing = false
+
+Function SyncActors()
+	if(syncing == false)
+		syncing = true
+		Actor[] newActors = Ostim.GetActors()
+		ObjectReference[] originalDomEquipmentDrops = DomEquipmentDrops
+		ObjectReference[] originalSubEquipmentDrops = SubEquipmentDrops
+		ObjectReference[] originalThirdEquipmentDrops = ThirdEquipmentDrops
+
+		int i = 0
+		while(i < actors.length)
+			if(actors[i] == newActors[0])
+				DomEquipmentForms = EquipmentForms[i]
+
+				if(i == 0)
+					DomEquipmentDrops = originalDomEquipmentDrops				
+				elseif(i == 1)
+					DomEquipmentDrops = originalSubEquipmentDrops
+				elseif(i == 2)
+					DomEquipmentDrops = originalThirdEquipmentDrops
+				endif
+			elseif(actors[i] == newActors[1])
+				SubEquipmentForms = EquipmentForms[i]
+				if(i == 0)
+					SubEquipmentDrops = originalDomEquipmentDrops				
+				elseif(i == 1)
+					SubEquipmentDrops = originalSubEquipmentDrops
+				elseif(i == 2)
+					SubEquipmentDrops = originalThirdEquipmentDrops
+				endif
+				
+			elseif(actors[i] == newActors[2])
+				ThirdEquipmentForms = EquipmentForms[i]
+				if(i == 0)
+					ThirdEquipmentDrops = originalDomEquipmentDrops				
+				elseif(i == 1)
+					ThirdEquipmentDrops = originalSubEquipmentDrops
+				elseif(i == 2)
+					ThirdEquipmentDrops = originalThirdEquipmentDrops
+				endif			
+			endif
+			i = i+1
+		endWhile
+
+		EquipmentForms = new Vector_Form[3]
+		EquipmentForms[0] = DomEquipmentForms
+		EquipmentForms[1] = SubEquipmentForms
+		EquipmentForms[2] = ThirdEquipmentForms
+		syncing = false
+
+		actors = newActors
+	else
+		while(syncing)
+			Utility.Wait(0.1)
+		endWhile
+	endif
+endFunction
+
+Event OstimActorPositions(String EventName, String StrArg, float NumArg, Form Sender)
+	SyncActors()
+endEvent
 
 Form[] Set1
 Form[] Set2
@@ -514,4 +588,5 @@ Function OnGameLoad()
 	RegisterForModEvent("ostim_thirdactor_leave", "OstimThirdLeave")
 
 	RegisterForModEvent("ostim_redressthread", "AnimatedRedressThread")
+	RegisterForModEvent("ostim_actorpositionschanged", "OstimActorPositions")
 EndFunction
