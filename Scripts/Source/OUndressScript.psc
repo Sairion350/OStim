@@ -53,7 +53,7 @@ Event OnInit()
 	PlayerRef = Game.GetPlayer()
 EndEvent
 
-;Should we move the freecam disabling into here instead? - KF
+
 Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable free cam or else! 
 	If (OStim.TossClothesOntoGround)
 		StripAndToss(Target)

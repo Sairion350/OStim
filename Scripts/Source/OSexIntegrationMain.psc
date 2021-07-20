@@ -1796,6 +1796,7 @@ Event SyncActors(string eventName, string strArg, float numArg, Form sender)
 	if(ThirdActor)
 		Console("Third was " + ThirdActor.GetDisplayName())
 	endif
+	
 	string[] newPositions = PapyrusUtil.StringSplit(strArg,",")
 
 	int actorCount = (newPositions[0]) as int
