@@ -1796,10 +1796,11 @@ Event SyncActors(string eventName, string strArg, float numArg, Form sender)
 	if(ThirdActor)
 		Console("Third was " + ThirdActor.GetDisplayName())
 	endif
-
+	Console(strArg)
 	string[] newPositions = PapyrusUtil.StringSplit(strArg,",")
 
 	int actorCount = (newPositions[0]) as int
+	console(actorCount)
 	string[] originalPositions = Utility.CreateStringArray(actorCount, "")
 	Actor[] originalActors = GetActors()
 	float[] originalExcitementValues = Utility.CreateFloatArray(actorCount, 0.0)
@@ -1817,23 +1818,16 @@ Event SyncActors(string eventName, string strArg, float numArg, Form sender)
 	endif
 
 	int i = 0
-	while(i < actorCount)
+	while(i < originalPositions.length)
 		if(originalPositions[i] == newPositions[1])
 			DomActor = originalActors[i]
-			DomExcitement = originalExcitementValues[i]
-		else
-			if(actorCount > 1 )
-				if(originalPositions[i] == newPositions[2])
-					SubActor = originalActors[i]
-					SubExcitement = originalExcitementValues[i]
-				endif
-				if(actorCount > 2)
-					if(originalPositions[i] == newPositions[3])
-						ThirdActor = originalActors[i]
-						ThirdExcitement = originalExcitementValues[i]
-					endif
-				endif
-			endif
+			DomExcitement = originalExcitementValues[i]	
+		elseif(originalPositions[i] == newPositions[2])
+			SubActor = originalActors[i]
+			SubExcitement = originalExcitementValues[i]			
+		elseif(originalPositions[i] == newPositions[3])
+			ThirdActor = originalActors[i]
+			ThirdExcitement = originalExcitementValues[i]
 		endif
 		i = i+1
 	endWhile
@@ -1845,8 +1839,11 @@ Event SyncActors(string eventName, string strArg, float numArg, Form sender)
 	endif
 	bool changed = false
 	int j = 0
-	while(j < actorCount)
-		if(originalPositions[i] != newPositions[i+1])
+	while(j < originalPositions.length)		
+		console(j)
+		console(newPositions.length)
+		console(newPositions[j+1])
+		if(originalPositions[j] != newPositions[j+1])
 			changed = true
 		endif
 		j = j+1
