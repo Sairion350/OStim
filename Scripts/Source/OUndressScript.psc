@@ -307,7 +307,7 @@ Event OstimChange(String eventName, String strArg, Float numArg, Form sender)
 		Bool SubNaked = OStim.IsNaked(actors[1])
 		Bool ThirdNaked = True
 
-		If actors[2]
+		If actors.length > 2
 			ThirdNaked = OStim.IsNaked(actors[2])
 		EndIf
 
