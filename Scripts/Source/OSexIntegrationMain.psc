@@ -155,6 +155,8 @@ Int Property AiSwitchChance Auto
 
 Bool Property DisableStimulationCalculation Auto
 
+Bool property ForceCloseOStimThread auto
+
 Bool SMPInstalled
 
 Bool Property Installed auto
@@ -341,7 +343,7 @@ String o
 Int Password
 
 
-
+Vector_Form property subthreads auto
 ; -------------------------------------------------------------------------------------------------
 ; -------------------------------------------------------------------------------------------------
 
@@ -357,15 +359,25 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	
 
 	If (SceneRunning)
-		Debug.Notification("OSA scene already running")
-		Return False
+		if IsNPCScene()
+			Console("NPC scene is already running, moving current scene to subthread")
+			if !GetUnusedSubthread().InheritFromMain()
+				Debug.MessageBox("OStim: Thread overload, please report this on discord")
+				Return false
+			endif
+		else 
+			Debug.Notification("OSA scene already running")
+			Return False
+		endif 
 	EndIf
+
 	If IsActorActive(dom) || IsActorActive(sub)
 		Debug.Notification("One of the actors is already in a OSA scene")
 		Return False
 	EndIf
 	If !dom.Is3DLoaded()
 		console("Dom actor is not loaded")
+		return false
 	EndIf
 
 	; Default OSex gender order
@@ -374,10 +386,6 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	If (AppearsFemale(Dom) && !AppearsFemale(Sub)) ; if the dom is female and the sub is male
 		DomActor = Sub
 		SubActor = Dom
-	; subhuman - the next 3 lines are redundant, you already set those values just above
-;	Else
-;		DomActor = Dom
-;		SubActor = Sub
 	EndIf
 
 
@@ -447,7 +455,7 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 		UsingBed = False
 	EndIf
 
-	
+	ForceCloseOStimThread = false
 
 	Console("Requesting scene start")
 	RegisterForSingleUpdate(0.01) ; start main loop
@@ -481,6 +489,7 @@ Event OnUpdate() ;OStim main logic loop
 	If (EnableImprovedCamSupport) && IsPlayerInvolved()
 		Game.DisablePlayerControls(abCamswitch = True, abMenu = False, abFighting = False, abActivate = False, abMovement = False, aiDisablePOVType = 0)
 	EndIf
+
  
 
 	IsFlipped = False
@@ -586,10 +595,6 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
-    
-    	; Fix for rapid animation swap bug after reload
-	; Will need updating if/when multi-scene stuff is added but works for now
-	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 51)
 
 	;profile()
 
@@ -621,7 +626,7 @@ Event OnUpdate() ;OStim main logic loop
 	;OnAnimationChange()
 
 	Int OldTimescale = 0
-; subhuman - a well- optimized compiler would automagically do this with ints for you, but this is papyrus...
+
 ;	If (CustomTimescale >= 1) && IsPlayerInvolved()
 	If (CustomTimescale > 0) && IsPlayerInvolved()
 		OldTimescale = GetTimeScale()
@@ -722,7 +727,7 @@ Event OnUpdate() ;OStim main logic loop
 		FadeFromBlack()
 	EndIf
 
-	While (IsActorActive(DomActor)) ; Main OStim logic loop
+	While (IsActorActive(DomActor)) && !ForceCloseOStimThread ; Main OStim logic loop
 		If (LoopTimeTotal > 1)
 			;Console("Loop took: " + loopTimeTotal + " seconds")
 			LoopTimeTotal = 0
@@ -824,7 +829,8 @@ Event OnUpdate() ;OStim main logic loop
 	Console("Ending scene")
 
 	SendModEvent("ostim_end")
-	If !DisableScaling
+
+	If !DisableScaling && !ForceCloseOStimThread
 		RestoreScales()
 	EndIf
 
@@ -843,7 +849,7 @@ Event OnUpdate() ;OStim main logic loop
 		ToggleFreeCam(False)
 	EndIf
 
-	If ResetPosAfterSceneEnd
+	If ResetPosAfterSceneEnd && !ForceCloseOStimThread
 		SubActor.SetPosition(subcoords[0], subcoords[1], subcoords[2]) ;return
 		DomActor.SetPosition(domcoords[0], domcoords[1], domcoords[2])
 		If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
@@ -867,11 +873,24 @@ Event OnUpdate() ;OStim main logic loop
 	UnRegisterForModEvent("0SAO" + Password + "_AnimateStage")
 	UnRegisterForModEvent("0SAO" + Password + "_ActraSync")
 
-	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(DomActor)) + "_Sound")
-	UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(SubActor)) + "_Sound")
 
-	If (ThirdActor)
-		UnRegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(ThirdActor)) + "_Sound") 
+	UnRegisterForModEvent("0SSO" + DomFormID + "_Sound")
+	UnRegisterForModEvent("0SAA" + DomFormID + "_BlendMo")
+	UnRegisterForModEvent("0SAA" + DomFormID + "_BlendPh")
+	UnRegisterForModEvent("0SAA" + DomFormID + "_BlendEx")
+	If (SubActor)
+		String SubFormID = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(SubActor))
+		UnRegisterForModEvent("0SSO" + SubFormID + "_Sound")
+		UnRegisterForModEvent("0SAA" + SubFormID + "_BlendMo")
+		UnRegisterForModEvent("0SAA" + SubFormID + "_BlendPh")
+		UnRegisterForModEvent("0SAA" + SubFormID + "_BlendEx")
+		If (ThirdActor)
+			String ThirdFormID = _oGlobal.GetFormID_S(OSANative.GetLeveledActorBase(ThirdActor)) 
+			UnRegisterForModEvent("0SSO" + ThirdFormID + "_Sound")
+			UnRegisterForModEvent("0SAA" + ThirdFormID + "_BlendMo")
+			UnRegisterForModEvent("0SAA" + ThirdFormID + "_BlendPh")
+			UnRegisterForModEvent("0SAA" + ThirdFormID + "_BlendEx")
+		EndIf
 	EndIf
 
 	If (OldTimescale > 0)
@@ -879,7 +898,7 @@ Event OnUpdate() ;OStim main logic loop
 		SetTimeScale(OldTimescale)
 	EndIf
 
-	SendModEvent("0SA_GameLoaded") ;for safety
+	;SendModEvent("0SA_GameLoaded") ;for safety
 	Console(Utility.GetCurrentRealTime() - StartTime + " seconds passed")
 	DisableOSAControls = false
 
@@ -1356,6 +1375,28 @@ Function AllowVehicleReset()
 	EndIf
 EndFunction
 
+float function GetEstimatedTimeUntilEnd()
+	float total = 120
+	total /= SexExcitementMult
+
+	float dom = 99999.0
+	float sub = 99999.0
+
+	if EndOnDomOrgasm
+		dom = total * (1 - (DomExcitement/100.0))
+	endif 
+	if EndOnSubOrgasm
+		sub = total * (1 - (SubExcitement/100.0))
+	endif 
+
+	if sub < dom
+		return sub
+	else 
+		return dom
+	endif
+
+EndFunction
+
 Function ToggleFreeCam(Bool On = True)
 	If (!IsFreeCamming)
 		If game.GetCameraState() == 0
@@ -1447,6 +1488,10 @@ Function SetSpankCount(Int Count)
 	SpankCount = Count
 EndFunction
 
+Function ForceStop()
+	ForceCloseOStimThread = true
+EndFunction
+
 Function DisableActorsCollision()
 	actor[] a = GetActors()
 
@@ -1479,6 +1524,20 @@ Function EnableCollision(actor act)
 	act.stoptranslation()
 EndFunction
 
+OStimSubthread Function GetUnusedSubthread()
+	subthreads.ResetLooping()
+	while subthreads.Loop()
+		OStimSubthread thread = subthreads.i() as OStimSubthread
+
+		if !thread.IsInUse()
+			Console("Subthread found: " + subthreads.LoopPos())
+			return thread
+		endif 
+	endwhile
+
+	Console("No subthread found")
+	return none
+EndFunction
 
 ;
 ;			██████╗ ███████╗██████╗ ███████╗
@@ -1568,7 +1627,6 @@ EndFunction
 Function AllignActorsWithCurrentBed()
 	DomActor.SetDontMove(True)
 	SubActor.SetDontMove(True)
-
 	If ThirdActor
 		ThirdActor.SetDontMove(true)
 	EndIf
@@ -1602,16 +1660,17 @@ Function AllignActorsWithCurrentBed()
 		Console("Bedroll. Not realigning")
 	EndIf
 
-	Float BedX = CurrentBed.GetPositionX() + BedOffsetX
-	Float BedY = Currentbed.GetPositionY() + BedOffsetY
-	Float BedZ = CurrentBed.GetPositionZ() + BedOffsetZ
+	float[] bedCoords = OSANative.GetCoords(CurrentBed)
+	bedCoords[0] = bedCoords[0] + BedOffsetX
+	bedCoords[1] = bedCoords[1] + BedOffsetY
+	bedCoords[2] = bedCoords[2] + BedOffsetZ
 	Float BedAngleX = Currentbed.GetAngleX()
 	Float BedAngleY = Currentbed.GetAngleY()
 	Float BedAngleZ = Currentbed.GetAngleZ()
 
-	DomActor.TranslateTo(BedX, BedY, BedZ, BedAngleX, BedAngleY, BedAngleZ, DomSpeed, afMaxRotationSpeed = 100)
+	DomActor.TranslateTo(bedCoords[0], bedCoords[1], bedCoords[2], BedAngleX, BedAngleY, BedAngleZ, DomSpeed, afMaxRotationSpeed = 100)
 	DomActor.SetAngle(BedAngleX, BedAngleY, BedAngleZ - FlipFloat)
-	If (UseFades && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
+	If (UseFades && IsPlayerInvolved())
 		Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
 	EndIf
 
@@ -1950,7 +2009,6 @@ Function OnAnimationChange()
 		If ThirdActor
 			Console("Third actor: + " + ThirdActor.GetDisplayName() + " has joined the scene")
 
-			; subhuman - cache values
 			ActorBase thirdActorBase = OSANative.GetLeveledActorBase(ThirdActor)
 			RegisterForModEvent("0SSO" + _oGlobal.GetFormID_S(thirdActorBase) + "_Sound", "OnSoundThird")
 			RegisterForModEvent("0SAA" + _oGlobal.GetFormID_S(thirdActorBase) + "_BlendMo", "OnMoThird")
@@ -2032,8 +2090,7 @@ Function OnSpank()
 		If (SpankCount < SpankMax)
 			SubExcitement += 5
 		Else
-			; subhuman - wrappers is bad
-;			SubActor.DamageAV("health", 5.0)
+
 			SubActor.DamageActorValue("health", 5.0)
 		EndIf
 	EndIf
@@ -2049,7 +2106,6 @@ Event OnActorHit(String EventName, String zAnimation, Float NumArg, Form Sender)
 	EndIf
 EndEvent
 
-; subhuman - why is this declaration in the middle of the script?
 Float LastVehicleTime
 Event OnSetVehicle(String EventName, String zAnimation, Float NumArg, Form Sender)
 	If (Game.GetRealHoursPassed() - LastVehicleTime) < 0.000833 ; 3 seconds
@@ -2319,8 +2375,7 @@ Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being sti
 			Ret -= 0.1
 		EndIf
 
-		; subhuman - Math.Ceiling already returns an int, no need to cast an int to an int
-;		Int HalfwaySpeed = (Math.Ceiling((NumSpeeds as Float) / 2.0)) as Int ; 5 -> 3 | 3 -> 2 etc
+
 		Int HalfwaySpeed = Math.Ceiling((NumSpeeds as Float) / 2.0) ; 5 -> 3 | 3 -> 2 etc
 		If (Speed == (HalfwaySpeed - 2))
 			Ret -= 0.4
@@ -2432,10 +2487,7 @@ Function Orgasm(Actor Act)
 		EndIf
 	EndIf
 
-;	SetActorArousal(Act, GetActorArousal(Act) - 50)
 
-	; subhuman- damn wrappers again
-;	Act.DamageAV("stamina", 250.0)
 	Act.DamageActorValue("stamina", 250.0)
 EndFunction
 
@@ -2754,29 +2806,8 @@ EndFunction
 
 Int Function SpeedStringToInt(String In) ; casting does not work so...
 
-	; subhuman - I like one-line functions, don't you?
 	return (StringUtil.AsOrd(StringUtil.GetNthChar(In, 1)) - 48)
-;/	If (In == "s0")
-		Return 0
-	ElseIf (In == "s1")
-		Return 1
-	ElseIf (In == "s2")
-		Return 2
-	ElseIf (In == "s3")
-		Return 3
-	ElseIf (In == "s4")
-		Return 4
-	ElseIf (In == "s5")
-		Return 5
-	ElseIf (In == "s6")
-		Return 6
-	ElseIf (In == "s7")
-		Return 7
-	ElseIf (In == "s8")
-		Return 8
-	ElseIf (In == "s9")
-		Return 9
-	EndIf/;
+
 EndFunction
 
 Function ShakeCamera(Float Power, Float Duration = 0.1)
@@ -2815,8 +2846,7 @@ Int Function GetTimeScale()
 	Return Timescale.GetValue() as Int
 EndFunction
 
-; subhuman- why is this an int function when it doesn't return anything?
-Int Function SetTimeScale(Int Time)
+Function SetTimeScale(Int Time)
 	Timescale.SetValue(Time as Float)
 EndFunction
 
@@ -3010,7 +3040,7 @@ Function SetDefaultSettings()
 	EndAfterActorHit = True
 
 
-
+	ForceCloseOStimThread = false
 
 	DomLightBrightness = 0
 	SubLightBrightness = 1
@@ -3262,24 +3292,29 @@ EndFunction
 
 
 Event OnKeyDown(Int KeyPress)
-	If (DisableOSAControls)
-		Console("OStim controls disabled by property")
-		Return
-	EndIf
 
 	If (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
 		Return
 	EndIf
 
-	; DEBUG
-	If (KeyPress == 26)
-		;
-	ElseIf (KeyPress == 27)
-		;
-	ElseIf (KeyPress == 43)
-		;
+
+	If (KeyPress == KeyMap)
+		Actor Target = Game.GetCurrentCrosshairRef() as Actor
+		If (Target)
+			If (Target.IsInDialogueWithPlayer())
+				Return
+			EndIf
+			If (!Target.IsDead())
+				StartScene(PlayerRef,  Target)
+			EndIf
+		EndIf
 	EndIf
-	; DEBUG
+
+	If (DisableOSAControls)
+		Console("OStim controls disabled by property")
+		Return
+	EndIf
+
 
 	If (AnimationRunning())
 		If (IntArrayContainsValue(OSexControlKeys, KeyPress))
@@ -3347,17 +3382,8 @@ Event OnKeyDown(Int KeyPress)
 		PlayTickBig()
 	EndIf
 
-	Actor Target = Game.GetCurrentCrosshairRef() as Actor
-	If (KeyPress == KeyMap)
-		If (Target)
-			If (Target.IsInDialogueWithPlayer())
-				Return
-			EndIf
-			If (!Target.IsDead())
-				StartScene(PlayerRef,  Target)
-			EndIf
-		EndIf
-	EndIf
+	
+
 EndEvent
 
 Bool SoSInstalled
@@ -3475,27 +3501,28 @@ Function Startup()
 		Debug.Notification("OStim: ConsoleUtil is not installed, a few features may not work")
 	EndIf
 
-; subhuman - minor compile size optimization
 	SoSInstalled = false
 	If (Game.GetModByName("Schlongs of Skyrim.esp") != 255)
 		SoSFaction = (Game.GetFormFromFile(0x0000AFF8, "Schlongs of Skyrim.esp")) as Faction
 		If (SoSFaction)
 			Console("Schlongs of Skyrim loaded")
 			SoSInstalled = true
-;		Else
-;			SoSInstalled = false
+
 		Endif
-;	Else
-;		SoSInstalled = false
+
 	EndIf
 
-	ResetRandom()
+	if subthreads
+		subthreads.DestroyAll()
+	endif
+	subthreads = Vector_Form.NewObject()
+	int i = 0
+	int SubthreadCount = 10
+	while (i < (SubthreadCount))
+		subthreads.Push_back(OStimSubthread.NewObject(i))
 
-	;If (SexLab)
-	;	Console("SexLab loaded, using its cum effects")
-	;Else
-	;	Console("Sexlab is not loaded.")
-	;EndIf
+		i += 1
+	EndWhile
 
 	If (OSA.StimInstalledProper())
 		Console("OSA is installed correctly")
@@ -3586,6 +3613,10 @@ Function OnLoadGame()
 
 	;may annoy ihud users?
 	UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", true)
+
+		; Fix for rapid animation swap bug after reload
+	o = "_root.WidgetContainer." + OSAOmni.Glyph + ".widget"
+	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 51) ;todo test
 
 	if GetAPIVersion() != InstalledVersion
 		OUtils.ForceOUpdate()

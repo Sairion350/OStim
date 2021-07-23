@@ -73,13 +73,7 @@ Function Redress(Actor Target)
 
 	If (OStim.TossClothesOntoGround)
 		ObjectReference[] Things
-		If (Target == actors[0])
-			Things = DomEquipmentDrops
-		ElseIf (Target == actors[1])
-			Things = SubEquipmentDrops
-		ElseIf (actors.length > 2 && Target == actors[2])
-			Things = ThirdEquipmentDrops
-		EndIf
+		things = getdrops(target)
 
 		If (OStim.FullyAnimateRedress && (Target != PlayerRef) && !OStim.IsSceneAggressiveThemed()) && !(Target.IsInCombat())
 			Form[] Stuff = AddDroppedThingsToInv(Target, Things)
@@ -98,6 +92,16 @@ Function Redress(Actor Target)
 		EndIf
 	endif
 EndFunction
+
+ObjectReference[] Function GetDrops(actor target)
+	If (Target == actors[0])
+		return DomEquipmentDrops
+	ElseIf (Target == actors[1])
+		return SubEquipmentDrops
+	ElseIf (actors.length > 2 && Target == actors[2])
+		return ThirdEquipmentDrops
+	EndIf
+endfunction
 
 Function UnequipForms(Actor Target, Form[] Items)
 	Int i = 0
@@ -230,6 +234,10 @@ Function EquipForms(Actor Target, Form[] Items)
 EndFunction
 
 Event OStimEnd(String EventName, String StrArg, Float NumArg, Form Sender)
+	;Console("undresss: " + ostim.ForceCloseOStimThread)
+	if ostim.ForceCloseOStimThread
+		return 
+	endif 
 	Console("Redressing...")
 
 	Redress(actors[0])

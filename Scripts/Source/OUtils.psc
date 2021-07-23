@@ -155,6 +155,32 @@ int[] Function BoolArrToIntArr(bool[] arr) Global
 	return ret
 EndFunction
 
+form[] Function ObjRefArrToFormArr(objectreference[] arr) Global 
+	int l = arr.length
+	form[] ret = PapyrusUtil.FormArray(l)
+	int i = 0 
+	while i < l 
+		ret[i] = arr[i] as form
+
+		i += 1
+	endwhile
+
+	return ret
+EndFunction
+
+ObjectReference[] Function FormArrToObjRefArr(form[] arr) Global 
+	int l = arr.length
+	ObjectReference[] ret = PapyrusUtil.ObjRefArray(l)
+	int i = 0 
+	while i < l 
+		ret[i] = arr[i] as ObjectReference
+
+		i += 1
+	endwhile
+
+	return ret
+EndFunction
+
 Bool Function ChanceRoll(Int Chance) Global ; input 60: 60% of returning true
 	return ( (OSANative.RandomInt(0, 99) ) < Chance)
 EndFunction

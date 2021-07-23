@@ -84,14 +84,12 @@ Function RegisterEvents()
 	RegisterForModEvent("0SAA" + FormID + "_Animate", "OnAnimate")
 	RegisterForModEvent("0SAA" + FormID + "_AlignStage", "OnAlignStage")
 	RegisterForModEvent("0SAA" + FormID + "_AllowAlignStage", "ResetAlignStage")
-	;RegisterForModEvent("0SAA" + FormID + "_BlendMo", "OnBlendMo")
-	;RegisterForModEvent("0SAA" + FormID + "_BlendPh", "OnBlendPh")
-	;RegisterForModEvent("0SAA" + FormID + "_BlendEx", "OnBlendEx")
+	
 	RegisterForModEvent("0SAA" + FormID + "_BlendSc", "OnBlendSc")
 	RegisterForModEvent("0SAA" + FormID + "_SnapSc", "OnSnapSc")
 	;RegisterForModEvent("0SAA" + FormID + "_BodyScale", "OnBodyScale")
 
-	;RegisterForModEvent("0SSO" + FormID + "_Sound", "OnSound")
+	
 	RegisterForModEvent("0SAA" + FormID + "_OShader", "OnOShader")
 	RegisterForModEvent("0SAA" + FormID + "_Lights", "OnLights")
 	RegisterForModEvent("0SAA" + FormID + "_Kill", "OnKill")
@@ -103,6 +101,15 @@ Function RegisterEvents()
 	RegisterForModEvent("0SAA" + FormID + "_EqOffAutoInt", "OnEqOffAutoInt")
 	RegisterForModEvent("0SAA" + FormID + "_WepOFF", "OnWepOFF")
 	RegisterForModEvent("0SAA" + FormID + "_WepON", "OnWepON")
+
+	osexintegrationmain ostim = outils.getostim()
+	if !ostim.animationrunning() || !ostim.isactorinvolved(actra)
+		; subthread events
+		RegisterForModEvent("0SAA" + FormID + "_BlendMo", "OnBlendMo")
+		RegisterForModEvent("0SAA" + FormID + "_BlendPh", "OnBlendPh")
+		RegisterForModEvent("0SAA" + FormID + "_BlendEx", "OnBlendEx")
+		RegisterForModEvent("0SSO" + FormID + "_Sound", "OnSound")
+	endif 
 EndFunction
 
 Event OnGameLoaded(String EventName, String zAnimation, Float NumArg, Form Sender)

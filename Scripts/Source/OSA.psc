@@ -244,7 +244,7 @@ EndFunction
 ; Could use a function to abort the scene if failed.
 
 Bool Function SetActors(String[] SceneSuite, Actor[] Actra) Global
-    OsexIntegrationMain OsexCore = Game.GetFormFromFile(0x000801, "Ostim.esp") as OsexIntegrationMain
+    OsexIntegrationMain OsexCore = OUtils.getostim()
     OsexCore.AcceptReroutingActors(Actra[0], Actra[1])
     Return True
 EndFunction
