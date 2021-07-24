@@ -4,6 +4,8 @@ OsexIntegrationMain OStim
 String[] Modules
 Int Database
 
+odthreadmanager threadmanager
+
 String[] property OriginalModules auto
 String SavePath
 Bool Built = False
@@ -55,6 +57,9 @@ Function InitDatabase()
 	Loaded = False
 
 	OStim = (Self as Quest) as OsexIntegrationMain
+
+	threadmanager.Destroy()
+	threadmanager = ODthreadmanager.NewObject()
 
 	If (LoadInitialFromFile)
 		Load()
@@ -236,75 +241,83 @@ EndFunction
 ;  	Retrieve OArray of animations from Database
 ;-----------------------------------------------
 
+;Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntParam = -100, String StringParam = "", Int BoolParam = -1, Bool AllowPartialStringResult = False, Bool NegativePartial = False)
+;	OStim.Profile()
+;
+;	Int Base = zDatabase
+;	Int Ret = JArray.object()
+;
+	;Int i = 0
+;	Int L = JArray.Count(Base)
+;
+;	Int Animation ;optimization
+;	Bool Parameter
+	;Int iOutput
+;	String sOutput
+;
+ ;   If (IntParam > -100)
+  ;      while (i < L)
+ ;           Animation = JArray.GetObj(base, i)
+   ;         iOutput = JMap.GetInt(Animation, zKey, Default = -10001)
+    ;        If (iOutput == IntParam) && (iOutput != 10001)
+;				JArray.AddObj(Ret, Animation)
+	;		EndIf
+  ;          i += 1
+   ;     endwhile
+	;	OStim.Profile("Lookup")
+;		Return Ret
+ ;   elseif (StringParam != "")
+  ;      If (!AllowPartialStringResult)
+   ;         while (i < L)
+    ;            Animation = JArray.GetObj(base, i)
+ ;               sOutput = JMap.GetStr(Animation, zKey, Default = "")
+     ;           If (sOutput == StringParam) && (sOutput != "")
+	;				JArray.AddObj(Ret, Animation)
+	;			EndIf
+     ;           i += 1
+      ;      endwhile
+;			OStim.Profile("Lookup")
+		;	Return Ret
+  ;      Else
+ ;           while (i < L)
+   ;             Animation = JArray.GetObj(base, i)
+   ;             sOutput = JMap.GetStr(Animation, zKey, Default = "")
+    ;            If (StringUtil.Find(sOutput, StringParam) != -1)
+     ;               If (!NegativePartial)
+      ;                  JArray.AddObj(ret, Animation)
+      ;              EndIf
+       ;         Else
+        ;            If (NegativePartial)
+        ;;                JArray.AddObj(ret, Animation)
+         ;           EndIf
+         ;;       EndIf
+         ;;       i += 1
+        ;    endwhile
+		;;	OStim.Profile("Lookup")
+;			Return Ret
+ ;       endif
+  ;  ElseIf (BoolParam > -1)
+ ;       while (i < L)
+  ;          Animation = JArray.GetObj(base, i)
+  ;          If ((JMap.getInt(Animation, zKey, Default = 0) as Bool) == BoolParam as Bool)
+   ;             JArray.AddObj(Ret, Animation)
+   ;         EndIf
+    ;        i += 1
+    ;    endwhile
+	;	OStim.Profile("Lookup")
+	;	Return Ret
+    ;endif
+;
+;	OStim.Profile("Lookup")
+;	Return Ret
+;EndFunction
+
 Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntParam = -100, String StringParam = "", Int BoolParam = -1, Bool AllowPartialStringResult = False, Bool NegativePartial = False)
-	OStim.Profile()
-
-	Int Base = zDatabase
-	Int Ret = JArray.object()
-
-	Int i = 0
-	Int L = JArray.Count(Base)
-
-	Int Animation ;optimization
-	Bool Parameter
-	Int iOutput
-	String sOutput
-
-    If (IntParam > -100)
-        while (i < L)
-            Animation = JArray.GetObj(base, i)
-            iOutput = JMap.GetInt(Animation, zKey, Default = -10001)
-            If (iOutput == IntParam) && (iOutput != 10001)
-				JArray.AddObj(Ret, Animation)
-			EndIf
-            i += 1
-        endwhile
-		OStim.Profile("Lookup")
-		Return Ret
-    elseif (StringParam != "")
-        If (!AllowPartialStringResult)
-            while (i < L)
-                Animation = JArray.GetObj(base, i)
-                sOutput = JMap.GetStr(Animation, zKey, Default = "")
-                If (sOutput == StringParam) && (sOutput != "")
-					JArray.AddObj(Ret, Animation)
-				EndIf
-                i += 1
-            endwhile
-			OStim.Profile("Lookup")
-			Return Ret
-        Else
-            while (i < L)
-                Animation = JArray.GetObj(base, i)
-                sOutput = JMap.GetStr(Animation, zKey, Default = "")
-                If (StringUtil.Find(sOutput, StringParam) != -1)
-                    If (!NegativePartial)
-                        JArray.AddObj(ret, Animation)
-                    EndIf
-                Else
-                    If (NegativePartial)
-                        JArray.AddObj(ret, Animation)
-                    EndIf
-                EndIf
-                i += 1
-            endwhile
-			OStim.Profile("Lookup")
-			Return Ret
-        endif
-    ElseIf (BoolParam > -1)
-        while (i < L)
-            Animation = JArray.GetObj(base, i)
-            If ((JMap.getInt(Animation, zKey, Default = 0) as Bool) == BoolParam as Bool)
-                JArray.AddObj(Ret, Animation)
-            EndIf
-            i += 1
-        endwhile
-		OStim.Profile("Lookup")
-		Return Ret
-    endif
-
-	OStim.Profile("Lookup")
-	Return Ret
+	Console("Database size: " + GetLengthOArray(zDatabase))
+	ostim.Profile()
+	int ret = threadmanager.DatabaseKeyAndParameterLookup(zDatabase, zKey, IntParam, StringParam, BoolParam, AllowPartialStringResult, NegativePartial)
+	ostim.Profile("Lookup")
+	return ret
 EndFunction
 
 Int Function getAnimationWithAnimID(Int zDatabase, String AnimID) ;returns OArray
@@ -823,19 +836,12 @@ Int Function GetLengthOArray(Int OArray) ;number of items total
 EndFunction
 
 Int Function MergeOArrays(Int[] Arrays) ;may only work if arrays are full of omap or oarray objects
-	Int Ret = NewOArray()
+	Int Ret = JArray.object()
 
 	Int i = 0
 	Int max = Arrays.Length
 	While (i < max)
-		Int Array = Arrays[i]
-
-		Int i2 = 0
-		Int max2 = GetLengthOArray(Array)
-		While (i2 < max2)
-			AppendObjectOArray(Ret, GetObjectOArray(Array, i2))
-			i2 += 1
-		EndWhile
+		JArray.addFromArray(ret, Arrays[i])
 
 		i += 1
 	EndWhile
