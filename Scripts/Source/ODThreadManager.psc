@@ -175,10 +175,10 @@ ODThreadManager Function NewObject() Global
 	return obj
 EndFunction 
 
-Function Destroy()
+Event Destroy()
 	threadlist.DestroyAll()
 	Parent.Destroy()
-EndFunction
+EndEvent
 
 Function Setup()
 	odatabase = (OUtils.GetOStim() as form ) as ODatabaseScript
