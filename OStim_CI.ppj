@@ -11,6 +11,11 @@
         <Variable Name="MyProject" Value="."/>
         <Variable Name="Dist" Value="..\dist"/>
     </Variables>
+    <PreBuildEvent Description="Pre-Build Event Example" UseInBuild="true">
+        <Command>$client = new-object System.Net.WebClient</Command>
+        <Command>$client.DownloadFile("https://nightly.link/Sairion350/OOPapyrus/workflows/main/main/OOPapyrus.zip", @MyProject)</Command>
+        <Command>7z x "./OOPap.zip" @MyProject</Command>
+    </PreBuildEvent>
     <Imports>
         <Import>@MyProject\Scripts\Source</Import>
         <Import>https://github.com/MrOctopus/nl_online/tree/main/jcontainersse/source</Import>

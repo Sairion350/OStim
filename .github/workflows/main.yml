@@ -42,13 +42,6 @@ jobs:
         token: ${{ env.compiler-token }}
         path: ./compiler
 
-
-    - name: Add OOPapyrus
-      uses: actions/download-artifact@v2
-      with:
-        name: Sairion350/OOPapyrus
-        path: path/to/artifact
-
     - name: Get latest Pyro release
       id: pyro_asset
       uses: MrOctopus/download-asset-action@main
