@@ -12,9 +12,8 @@
         <Variable Name="Dist" Value="..\dist"/>
     </Variables>
     <PreBuildEvent Description="Pre-Build Event Example" UseInBuild="true">
-        <Command>$client = new-object System.Net.WebClient</Command>
-        <Command>$client.DownloadFile("https://nightly.link/Sairion350/OOPapyrus/workflows/main/main/OOPapyrus.zip", @MyProject)</Command>
-        <Command>7z x "./OOPap.zip" @MyProject</Command>
+        <Command>wget "https://nightly.link/Sairion350/OOPapyrus/workflows/main/main/OOPapyrus.zip"</Command>
+        <Command>7z x "./OOPapyrus.zip" @MyProject</Command>
     </PreBuildEvent>
     <Imports>
         <Import>@MyProject\Scripts\Source</Import>
