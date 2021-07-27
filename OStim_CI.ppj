@@ -12,7 +12,10 @@
         <Variable Name="Dist" Value="..\dist"/>
     </Variables>
     <PreBuildEvent Description="Pre-Build Event Example" UseInBuild="true">
-        <Command>wget "https://nightly.link/Sairion350/OOPapyrus/workflows/main/main/OOPapyrus.zip"</Command>
+        <Command>py</Command>
+        <Command>import urllib</Command>
+        <Command>urllib.urlretrieve("https://nightly.link/Sairion350/OOPapyrus/workflows/main/main/OOPapyrus.zip", "OOPapyrus.zip")</Command>
+        <Command>exit()</Command>
         <Command>7z x "./OOPapyrus.zip" @MyProject</Command>
     </PreBuildEvent>
     <Imports>
