@@ -46,7 +46,7 @@ jobs:
     - name: Add OOPapyrus
       uses: actions/download-artifact@v2
       with:
-        name: 'OOPapyrus'
+        name: Sairion350/OOPapyrus
         path: path/to/artifact
 
     - name: Get latest Pyro release
