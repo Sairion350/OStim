@@ -13,7 +13,7 @@
     </Variables>
     <PreBuildEvent Description="Pre-Build Event Example" UseInBuild="true">
         <Command>python OOPapDownload.py</Command>
-        <Command>7z x "./OOPapyrus.zip" @MyProject</Command>
+        <Command>7z x "OOPapyrus.zip" @MyProject</Command>
     </PreBuildEvent>
     <Imports>
         <Import>@MyProject\Scripts\Source</Import>
