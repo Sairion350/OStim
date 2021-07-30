@@ -899,7 +899,7 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	;SendModEvent("0SA_GameLoaded") ;for safety
-	Console(Utility.GetCurrentRealTime() - StartTime + " seconds passed")
+	Console(GetTimeSinceStart() + " seconds passed")
 	DisableOSAControls = false
 
 	ranOnce = false  
@@ -1537,6 +1537,10 @@ OStimSubthread Function GetUnusedSubthread()
 
 	Console("No subthread found")
 	return none
+EndFunction
+
+float Function GetTimeSinceStart()
+	return Utility.GetCurrentRealTime() - StartTime
 EndFunction
 
 ;

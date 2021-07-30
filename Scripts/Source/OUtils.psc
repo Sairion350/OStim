@@ -25,7 +25,7 @@ function StoreNPCDataFloat(actor npc, string keys, Float num) Global
 EndFunction
 
 Float function GetNPCDataFloat(actor npc, string keys) Global
-	return StorageUtil.GetFloatValue(npc, keys, -1)
+	return StorageUtil.GetFloatValue(npc, keys, -1.0)
 EndFunction
 
 function StoreNPCDataInt(actor npc, string keys, int num) Global
@@ -183,4 +183,13 @@ EndFunction
 
 Bool Function ChanceRoll(Int Chance) Global ; input 60: 60% of returning true
 	return ( (OSANative.RandomInt(0, 99) ) < Chance)
+EndFunction
+
+float Function ClampFloat(float num, float min, float max) Global
+	if num > max 
+		num = max 
+	elseif num < min 
+		num = min 
+	endif 
+	return num
 EndFunction
