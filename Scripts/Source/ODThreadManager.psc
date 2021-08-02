@@ -3,6 +3,7 @@ ScriptName ODThreadManager extends BaseObject
 ODatabaseScript odatabase 
 
 Vector_Form threadlist
+mutex threadlock
 
 int threadCount = 8
 int singleThreadedThresh = 80
@@ -22,13 +23,7 @@ Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntPa
 		return SingleThreadLookup(zDatabase, zKey, IntParam, StringParam, BoolParam, AllowPartialStringResult, NegativePartial)
 	endif 
 
-	if !clearToReturn
-		int i = 0 
-		while !clearToReturn && (i < 50)
-			Utility.WaitMenuMode(osanative.randomfloat(0.1, 1.5))
-			i += 1
-		EndWhile
-	Endif
+	threadlock.Lock()
 
 	clearToReturn = false 
 	
@@ -58,6 +53,7 @@ Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntPa
 		Utility.WaitMenuMode(0.01)
 	EndWhile
 
+	threadlock.Unlock()
 
 	return odatabase.MergeOArrays(results)
 EndFunction
@@ -176,6 +172,7 @@ ODThreadManager Function NewObject() Global
 EndFunction 
 
 Event Destroy()
+	threadlock.Destroy()
 	threadlist.DestroyAll()
 	Parent.Destroy()
 EndEvent
@@ -186,6 +183,8 @@ Function Setup()
 	clearToReturn = true
 
 	threadlist = Vector_Form.NewObject()
+
+	threadlock = mutex.NewObject()
 
 	int i = 0
 	while i < threadCount
