@@ -343,7 +343,6 @@ String o
 Int Password
 
 
-Vector_Form property subthreads auto
 ; -------------------------------------------------------------------------------------------------
 ; -------------------------------------------------------------------------------------------------
 
@@ -1525,18 +1524,7 @@ Function EnableCollision(actor act)
 EndFunction
 
 OStimSubthread Function GetUnusedSubthread()
-	subthreads.ResetLooping()
-	while subthreads.Loop()
-		OStimSubthread thread = subthreads.i() as OStimSubthread
-
-		if !thread.IsInUse()
-			Console("Subthread found: " + subthreads.LoopPos())
-			return thread
-		endif 
-	endwhile
-
-	Console("No subthread found")
-	return none
+	return OStimSubthread.NewObject(0)
 EndFunction
 
 float Function GetTimeSinceStart()
@@ -3516,17 +3504,7 @@ Function Startup()
 
 	EndIf
 
-	if subthreads
-		subthreads.DestroyAll()
-	endif
-	subthreads = Vector_Form.NewObject()
-	int i = 0
-	int SubthreadCount = 10
-	while (i < (SubthreadCount))
-		subthreads.Push_back(OStimSubthread.NewObject(i))
-
-		i += 1
-	EndWhile
+	
 
 	If (OSA.StimInstalledProper())
 		Console("OSA is installed correctly")
@@ -3589,7 +3567,6 @@ Function SendLoadGameEvent()
 			LoadRegistrations[i].UnregisterForModEvent("ostim_gameload")
 
 
-			;BaseObject.CallEventOnForm(LoadRegistrations[i], "OnGameLoad")
 
 			Utility.Wait(0.5)
 			i += 1

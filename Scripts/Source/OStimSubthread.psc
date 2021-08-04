@@ -312,6 +312,8 @@ Function EndAnimation() ;todo - isloaded check, see osexintegrationmain endanima
 	Redress()
 
 	inuse = false
+
+	destroy()
 EndFunction
 
 Function AlignToBed() ;todo, merge this logic with main?
