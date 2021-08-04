@@ -36,6 +36,7 @@ Function DoUpdate()
 
 	int i = 0 
 	int l = forms.Length 
+	OUtils.Console("Forms to update: " + l)
 	while i < l
 		form f = forms[i]
 		quest q = forms[i] as quest
@@ -55,9 +56,10 @@ Function DoUpdate()
 
 		i += 1
 	EndWhile
-
+	
+	OUtils.Console("Preparing to fire init events...")
 	ResetQuestDB()
-	Utility.Wait(2)
+	Utility.WaitMenuMode(2)
 	
 	i = 0 
 	while i < l 

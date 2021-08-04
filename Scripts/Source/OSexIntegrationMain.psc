@@ -3576,6 +3576,7 @@ Function RegisterForGameLoadEvent(form f)
 EndFunction 
 
 Function SendLoadGameEvent()
+	;Console(LoadRegistrations as string)
 	int l = LoadRegistrations.Length
 
 	if l > 0
@@ -3586,6 +3587,9 @@ Function SendLoadGameEvent()
 			LoadRegistrations[i].RegisterForModEvent("ostim_gameload", "OnGameLoad")
 			ModEvent.Send(ModEvent.Create("ostim_gameload"))
 			LoadRegistrations[i].UnregisterForModEvent("ostim_gameload")
+
+
+			;BaseObject.CallEventOnForm(LoadRegistrations[i], "OnGameLoad")
 
 			Utility.Wait(0.5)
 			i += 1

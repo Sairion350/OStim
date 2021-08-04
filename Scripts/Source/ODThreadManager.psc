@@ -6,7 +6,7 @@ Vector_Form threadlist
 mutex threadlock
 
 int threadCount = 8
-int singleThreadedThresh = 80
+int singleThreadedThresh = 8000
 
 int usingThreads
 
@@ -184,7 +184,7 @@ Function Setup()
 
 	threadlist = Vector_Form.NewObject()
 
-	threadlock = mutex.NewObject()
+	threadlock = mutex.NewObject(0.15)
 
 	int i = 0
 	while i < threadCount
