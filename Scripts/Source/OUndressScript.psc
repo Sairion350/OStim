@@ -3,13 +3,11 @@ ScriptName OUndressScript Extends Quest
 ; TODO: Ammo unequip?
 OsexIntegrationMain OStim
 
-Vector_Form Property MiscVector Auto
 
-Vector_Form Property DomEquipmentForms Auto ;in-inventory versions
-Vector_Form Property SubEquipmentForms Auto
-Vector_Form Property ThirdEquipmentForms Auto
+form[] Property DomEquipmentForms Auto ;in-inventory versions
+form[] Property SubEquipmentForms Auto
+form[] Property ThirdEquipmentForms Auto
 
-Vector_Form[] EquipmentForms 
 
 ObjectReference[] Property DomEquipmentDrops Auto ; on-the-ground versions
 ObjectReference[] Property SubEquipmentDrops Auto
@@ -26,28 +24,6 @@ Event OnInit()
 	OStim = (Self as Quest) as OsexIntegrationMain
 	;FakeArmor = (Game.GetFormFromFile(0x000800, "Ostim.esp")) as Armor
 
-	if(MiscVector)
-		MiscVector.Destroy()
-	endif
-	if(DomEquipmentForms)
-		DomEquipmentForms.destroy()
-	endif
-	if(SubEquipmentForms)
-		SubEquipmentForms.destroy()
-	endif
-	if(ThirdEquipmentDrops)
-		ThirdEquipmentForms.destroy()
-	endif
-
-	DomEquipmentForms = Vector_Form.newObject()
-	SubEquipmentForms = Vector_Form.newObject()
-	ThirdEquipmentForms = Vector_Form.newObject()
-	MiscVector = Vector_Form.NewObject()
-
-	EquipmentForms = new Vector_Form[3]
-	EquipmentForms[0] = DomEquipmentForms
-	EquipmentForms[1] = SubEquipmentForms
-	EquipmentForms[2] = ThirdEquipmentForms
 
 	OnGameLoad()
 	PlayerRef = Game.GetPlayer()
@@ -82,13 +58,13 @@ Function Redress(Actor Target)
 			PickUpThings(Target, Things)
 		EndIf
 	Else
-		Vector_Form Things
-		things = EquipmentForms[ostim.getactors().find(target)]
+		form[] Things
+		things = getstuff(target)
 
 		If (OStim.FullyAnimateRedress && (Target != PlayerRef) && !OStim.IsSceneAggressiveThemed()) && !(Target.IsInCombat())
-			FullyAnimateRedress(Target, Things.data)
+			FullyAnimateRedress(Target, Things)
 		Else
-			EquipForms(Target, Things.data)
+			EquipForms(Target, Things)
 		EndIf
 	endif
 EndFunction
@@ -100,6 +76,16 @@ ObjectReference[] Function GetDrops(actor target)
 		return SubEquipmentDrops
 	ElseIf (actors.length > 2 && Target == actors[2])
 		return ThirdEquipmentDrops
+	EndIf
+endfunction
+
+Form[] Function GetStuff(actor target)
+	If (Target == actors[0])
+		return DomEquipmentforms
+	ElseIf (Target == actors[1])
+		return SubEquipmentforms
+	ElseIf (actors.length > 2 && Target == actors[2])
+		return ThirdEquipmentforms
 	EndIf
 endfunction
 
@@ -118,29 +104,25 @@ Function UnequipForms(Actor Target, Form[] Items)
 EndFunction
 
 Form[] Function StoreEquipmentForms(Actor Target, bool returnOnly = false)
-	Vector_Form equipment
+	form[] equipment
 	int actorID = ostim.getactors().find(target)
 	if (actorID != -1) && !returnOnly
-		equipment = EquipmentForms[actorID]
-	else 
-		equipment = MiscVector
-		equipment.Clear()
+		equipment = GetStuff(target)
 	endif
 
 	Int i = 0
 	Int len = OStim.StrippingSlots.Length
 	While (i < len)
 		Form Thing = Target.GetEquippedArmorInSlot(OStim.StrippingSlots[i]) as Form ; SE exclusive function
-		equipment.Push_back(thing)
+		equipment = PapyrusUtil.PushForm(equipment, thing)
 		i += 1
 	EndWhile
 
-	equipment.push_back(Target.GetEquippedObject(0))
-	equipment.push_back(Target.GetEquippedObject(1))
+	equipment = PapyrusUtil.PushForm(equipment, Target.GetEquippedObject(0))
+	equipment = PapyrusUtil.PushForm(equipment, Target.GetEquippedObject(1))
 
-	equipment.Remove(none)
 
-	return equipment.data
+	return equipment
 EndFunction
 
 Function StripAndToss(Actor Target)
@@ -259,9 +241,9 @@ Event OStimPreStart(String EventName, String StrArg, Float NumArg, Form Sender)
 	SubEquipmentDrops = new ObjectReference[1]
 	ThirdEquipmentDrops = new ObjectReference[1]
 
-	DomEquipmentForms.clear()
-	SubEquipmentForms.clear()
-	ThirdEquipmentForms.clear()
+	DomEquipmentForms = new Form[1]
+	SubEquipmentForms = new Form[1]
+	ThirdEquipmentForms = new Form[1]
 
 	If (OStim.AlwaysUndressAtAnimStart)
 		OStim.UndressDom = True
@@ -391,45 +373,53 @@ Function SyncActors()
 		ObjectReference[] originalSubEquipmentDrops = SubEquipmentDrops
 		ObjectReference[] originalThirdEquipmentDrops = ThirdEquipmentDrops
 
+		form[] originalDomEquipmentForms = DomEquipmentForms
+		form[] originalSubEquipmentForms = SubEquipmentForms
+		form[] originalThirdEquipmentForms = ThirdEquipmentForms
+
 		int i = 0
 		while(i < actors.length)
 			if(actors[i] == newActors[0])
-				DomEquipmentForms = EquipmentForms[i]
+			
 
 				if(i == 0)
-					DomEquipmentDrops = originalDomEquipmentDrops				
+					DomEquipmentDrops = originalDomEquipmentDrops
+					DomEquipmentForms = originalDomEquipmentForms				
 				elseif(i == 1)
 					DomEquipmentDrops = originalSubEquipmentDrops
+					DomEquipmentForms = originalSubEquipmentForms
 				elseif(i == 2)
 					DomEquipmentDrops = originalThirdEquipmentDrops
+					DomEquipmentForms = originalThirdEquipmentForms
 				endif
 			elseif(actors[i] == newActors[1])
-				SubEquipmentForms = EquipmentForms[i]
 				if(i == 0)
-					SubEquipmentDrops = originalDomEquipmentDrops				
+					SubEquipmentDrops = originalDomEquipmentDrops	
+					SubEquipmentForms = originalDomEquipmentForms			
 				elseif(i == 1)
 					SubEquipmentDrops = originalSubEquipmentDrops
+					SubEquipmentForms = originalSubEquipmentForms
 				elseif(i == 2)
 					SubEquipmentDrops = originalThirdEquipmentDrops
+					SubEquipmentForms = originalThirdEquipmentForms
 				endif
 				
 			elseif(actors[i] == newActors[2])
-				ThirdEquipmentForms = EquipmentForms[i]
 				if(i == 0)
-					ThirdEquipmentDrops = originalDomEquipmentDrops				
+					ThirdEquipmentDrops = originalDomEquipmentDrops	
+					ThirdEquipmentForms = originalDomEquipmentforms			
 				elseif(i == 1)
 					ThirdEquipmentDrops = originalSubEquipmentDrops
+					ThirdEquipmentForms = originalSubEquipmentForms
 				elseif(i == 2)
 					ThirdEquipmentDrops = originalThirdEquipmentDrops
+					ThirdEquipmentForms = originalThirdEquipmentForms
 				endif			
 			endif
 			i = i+1
 		endWhile
 
-		EquipmentForms = new Vector_Form[3]
-		EquipmentForms[0] = DomEquipmentForms
-		EquipmentForms[1] = SubEquipmentForms
-		EquipmentForms[2] = ThirdEquipmentForms
+
 		syncing = false
 
 		actors = newActors
