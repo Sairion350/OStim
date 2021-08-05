@@ -6,7 +6,7 @@ Vector_Form threadlist
 mutex threadlock
 
 int threadCount = 8
-int singleThreadedThresh = 8000
+int singleThreadedThresh = 80
 
 int usingThreads
 

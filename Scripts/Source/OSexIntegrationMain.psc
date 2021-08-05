@@ -358,16 +358,16 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	
 
 	If (SceneRunning)
-		if IsNPCScene()
-			Console("NPC scene is already running, moving current scene to subthread")
-			if !GetUnusedSubthread().InheritFromMain()
-				Debug.MessageBox("OStim: Thread overload, please report this on discord")
-				Return false
-			endif
-		else 
+		;if IsNPCScene()
+		;	Console("NPC scene is already running, moving current scene to subthread")
+		;	if !GetUnusedSubthread().InheritFromMain()
+		;		Debug.MessageBox("OStim: Thread overload, please report this on discord")
+		;		Return false
+		;	endif
+		;else 
 			Debug.Notification("OSA scene already running")
 			Return False
-		endif 
+		;endif 
 	EndIf
 
 	If IsActorActive(dom) || IsActorActive(sub)
@@ -1523,9 +1523,9 @@ Function EnableCollision(actor act)
 	act.stoptranslation()
 EndFunction
 
-OStimSubthread Function GetUnusedSubthread()
-	return OStimSubthread.NewObject(0)
-EndFunction
+;OStimSubthread Function GetUnusedSubthread()
+;	return OStimSubthread.NewObject(0)
+;EndFunction
 
 float Function GetTimeSinceStart()
 	return Utility.GetCurrentRealTime() - StartTime
