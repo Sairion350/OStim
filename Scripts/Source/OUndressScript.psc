@@ -35,6 +35,13 @@ Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable fre
 		StripAndToss(Target)
 	Else
 		form[] Things = StoreEquipmentForms(Target)
+		if target == actors[0]
+			DomEquipmentForms = things 
+		elseif target == actors[1]
+			SubEquipmentForms = things 
+		else 
+			ThirdEquipmentForms = things
+		endif 
 		UnequipForms(Target, Things)
 	Endif
 	if ostim.AnimationRunning()
@@ -104,7 +111,7 @@ Function UnequipForms(Actor Target, Form[] Items)
 EndFunction
 
 Form[] Function StoreEquipmentForms(Actor Target, bool returnOnly = false)
-	form[] equipment
+	form[] equipment = PapyrusUtil.FormArray(0)
 	int actorID = ostim.getactors().find(target)
 	if (actorID != -1) && !returnOnly
 		equipment = GetStuff(target)
