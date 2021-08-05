@@ -11,9 +11,6 @@
         <Variable Name="MyProject" Value="."/>
         <Variable Name="Dist" Value="..\dist"/>
     </Variables>
-    <PreBuildEvent Description="Pre-Build Event Example" UseInBuild="true">
-        <Command>python OOPapDownload.py</Command>
-    </PreBuildEvent>
     <Imports>
         <Import>@MyProject\Scripts\Source</Import>
         <Import>https://github.com/MrOctopus/nl_online/tree/main/jcontainersse/source</Import>
@@ -23,7 +20,6 @@
         <Import>https://github.com/MrOctopus/nl_online/tree/main/skyui/source</Import>
         <Import>https://github.com/MrOctopus/nl_online/tree/main/skse64/source</Import>
         <Import>https://github.com/MrOctopus/nl_online/tree/main/sse/source</Import>
-        <Import>https://github.com/Sairion350/OOPapyrus/tree/main/scripts/source</Import>
     </Imports>
     <Folders>
         <Folder>@MyProject\Scripts\Source</Folder>
