@@ -219,3 +219,22 @@ Function TransitionColors(Int a_primaryColor, Int a_secondaryColor = -1, Int a_f
 		UI.InvokeIntA(HUD_MENU, WidgetRoot + ".transitionColors", Args)
 	EndIf
 EndFunction
+
+
+
+
+
+
+
+;==================================================
+; New functions
+
+Function SetBarVisible(bool Visible)
+	If (Visible)
+		FadeTo(100.0, 1.0)
+		FadedOut = False
+	Else
+		FadeTo(0.0, 1.0)
+		FadedOut = True
+	EndIf
+EndFunction
