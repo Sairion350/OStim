@@ -95,6 +95,8 @@ Float Property SexExcitementMult Auto
 
 Int Property KeyMap Auto
 
+int property FreecamKey auto 
+
 string[] scenemetadata
 string[] oldscenemetadata
 
@@ -1398,8 +1400,21 @@ EndFunction
 
 Function ToggleFreeCam(Bool On = True)
 	If (!IsFreeCamming)
-		If game.GetCameraState() == 0
-			game.ForceThirdPerson()
+		int cstate = game.GetCameraState()
+		If (cstate == 0) || ((cstate == 9))
+			if EnableImprovedCamSupport
+				Console("using hack")
+				; Improved cam hack
+				int povkey = input.GetMappedKey("Toggle POV")
+
+				input.HoldKey(povkey)
+				Utility.Wait(0.025)
+				input.ReleaseKey(povkey)
+
+				Utility.Wait(0.05)
+			else 
+				game.ForceThirdPerson()
+			endif 
 		endif 
 		OSANative.EnableFreeCam()
 		OSANative.SetFreeCamSpeed(FreecamSpeed)
@@ -1410,6 +1425,9 @@ Function ToggleFreeCam(Bool On = True)
 		OSANative.DisableFreeCam()
 		OSANative.SetFreeCamSpeed()
 		OSANative.SetFOV(DefaultFOV)
+		if EnableImprovedCamSupport
+			game.ForceFirstPerson()
+		endif 
 		IsFreeCamming = false
 		Console("Disabling freecam")
 	EndIf
@@ -3106,6 +3124,7 @@ Function SetDefaultSettings()
 	BlockVRInstalls = True
 
 	KeyMap = 200
+	FreecamKey = 181  
 	SpeedUpKey = 78
 	SpeedDownKey = 74
 	PullOutKey = 79
@@ -3133,6 +3152,7 @@ Function SetDefaultSettings()
 
 	UseBrokenCosaveWorkaround = True
 	RemapStartKey(Keymap)
+	RegisterForKey(FreecamKey)
 	RemapSpeedDownKey(SpeedDownKey)
 	RemapSpeedUpKey(SpeedUpKey)
 	RemapPullOutKey(PullOutKey)
@@ -3151,6 +3171,7 @@ Function LoadOSexControlKeys()
 	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, PullOutKey)
 	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, ControlToggleKey)
 	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, KeyMap)
+	OSexControlKeys = PapyrusUtil.PushInt(OSexControlKeys, FreecamKey)
 
 	RegisterOSexControlKey(83)
 	RegisterOSexControlKey(156)
@@ -3207,6 +3228,12 @@ Function RemapStartKey(Int zKey)
 	UnregisterForKey(KeyMap)
 	RegisterForKey(zKey)
 	KeyMap = zKey
+EndFunction
+
+Function RemapFreecamKey(Int zKey)
+	UnregisterForKey(FreecamKey)
+	RegisterForKey(zKey)
+	FreecamKey = zKey
 EndFunction
 
 Function RemapControlToggleKey(Int zKey)
@@ -3300,6 +3327,10 @@ Event OnKeyDown(Int KeyPress)
 				StartScene(PlayerRef,  Target)
 			EndIf
 		EndIf
+	elseif (KeyPress == freecamkey)
+		if IsPlayerInvolved()
+			ToggleFreeCam()
+		endif 
 	EndIf
 
 	If (DisableOSAControls)

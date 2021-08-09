@@ -99,6 +99,7 @@ Int SetFreeCamFOV
 Int SetDefaultFOV
 Int SetCameraSpeed
 Int SetForceFirstPerson
+int SetFreecamToggleKey
 
 Int SetUseCosaveWorkaround
 
@@ -315,6 +316,7 @@ Event OnPageReset(String Page)
 		SetKeydown = AddKeyMapOption("Decrease speed", Main.SpeedDownKey)
 		SetPullOut = AddKeyMapOption("Pull out", Main.PullOutKey)
 		SetControlToggle = AddKeyMapOption("Switch control mode", Main.ControlToggleKey)
+		SetFreecamToggleKey = AddKeyMapOption("Toggle freecam", Main.FreecamKey)
 		AddEmptyOption()
 
 		AddColoredHeader("Lights")
@@ -760,6 +762,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Set main actor's light's brightness")
 	ElseIf (Option == SetSubLightBrightness)
 		SetInfoText("Set second actor's light's brightness")
+	ElseIf (Option == SetFreecamToggleKey)
+		SetInfoText("Toggle freecam during scenes involving the player \n If using Improved Camera, make sure Clipping-less First Person is enabled when using this")
 	ElseIf (Option == SetControlToggle)
 		SetInfoText("Press during an animation: switch between manual and full-auto control for the duration of that animation \n Press outside of animation: switch between manual and full-auto control permanently")
 	ElseIf (Option == SetOnlyLightInDark)
@@ -947,6 +951,9 @@ Event OnOptionKeyMapChange(Int Option, Int KeyCode, String ConflictControl, Stri
 	ElseIf (Option == SetControlToggle)
 		Main.RemapControlToggleKey(KeyCode)
 		SetKeyMapOptionValue(Option, KeyCode)
+	ElseIf (Option == SetFreecamToggleKey)
+		Main.RemapFreecamKey(KeyCode)
+		SetKeyMapOptionValue(Option, KeyCode)
 	Elseif (Option == SetORKey)
 		SetExternalInt(oromance, gvorkey, KeyCode)
 		SetKeyMapOptionValue(Option, KeyCode)
@@ -1129,6 +1136,7 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetKeyDown", Main.SpeedDownKey as Int)
 	JMap.SetInt(OstimSettingsFile, "SetPullOut", Main.PullOutKey as Int)
 	JMap.SetInt(OstimSettingsFile, "SetControlToggle", Main.ControlToggleKey as Int)
+	JMap.SetInt(OstimSettingsFile, "SetFreecamToggleKey", Main.FreecamKey as Int)
 
 	; Bed settings export.
 	JMap.SetInt(OstimSettingsFile, "SetEnableBeds", Main.UseBed as Int)
@@ -1248,6 +1256,8 @@ Function ImportSettings()
 	Main.RemapPullOutKey(Main.PullOutKey)
 	Main.ControlToggleKey = JMap.GetInt(OstimSettingsFile, "SetControlToggle")
 	Main.RemapControlToggleKey(Main.ControlToggleKey)
+	Main.FreecamKey = JMap.GetInt(OstimSettingsFile, "SetFreecamToggleKey")
+	main.RemapControlToggleKey(main.FreecamKey)
 	
 	; Bed settings export.
 	Main.UseBed = JMap.GetInt(OstimSettingsFile, "SetEnableBeds")
