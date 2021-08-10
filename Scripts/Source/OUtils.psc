@@ -185,11 +185,28 @@ Bool Function ChanceRoll(Int Chance) Global ; input 60: 60% of returning true
 	return ( (OSANative.RandomInt(0, 99) ) < Chance)
 EndFunction
 
-float Function ClampFloat(float num, float min, float max) Global
-	if num > max 
-		num = max 
-	elseif num < min 
-		num = min 
+string function FormatToDecimalPlace(float num, int DecimalPlacesToShow) Global
+	string[] numString = StringUtil.Split(num as string, ".")
+	numString[1] = StringUtil.Substring(numString[1], 0, DecimalPlacesToShow)
+
+	return PapyrusUtil.StringJoin(numString, ".")
+EndFunction
+
+; in honor of this disaster: qz.com/646467/how-one-programmer-broke-the-internet-by-deleting-a-tiny-piece-of-code/
+; a papyrus version
+string function PadString(string str, int to, bool right = true, string char = " ") Global
+	{fill the string with specified chars until it hits the specified length}
+	int amount = to - stringutil.GetLength(str)
+
+	string[] padding = PapyrusUtil.StringArray(amount, filler = char)
+
+	if right 
+		string[] temp = PapyrusUtil.StringArray(1, str)
+
+		padding = PapyrusUtil.MergeStringArray(temp, padding)
+	else ;left 
+		padding = PapyrusUtil.PushString(padding, str)
 	endif 
-	return num
+
+	return PapyrusUtil.StringJoin(padding, "")
 EndFunction
