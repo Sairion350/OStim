@@ -3328,7 +3328,7 @@ Event OnKeyDown(Int KeyPress)
 			EndIf
 		EndIf
 	elseif (KeyPress == freecamkey)
-		if IsPlayerInvolved()
+		if animationrunning() && IsPlayerInvolved()
 			ToggleFreeCam()
 		endif 
 	EndIf
