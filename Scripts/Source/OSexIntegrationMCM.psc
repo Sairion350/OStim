@@ -161,6 +161,16 @@ string OCrime = "ocrime.esp"
 int SetOCBounty
 string SUOCBounty = "ocrime.bounty"
 
+string OAroused = "OAroused.esp"
+int SetOAKey 
+string SUOAKey = "oaroused.key"
+int SetOARequireLowArousalBeforeEnd
+string SUOALowArousalReq = "oaroused.emptybeforeend"
+int SetOAStatBuffs
+string SUOAStatBuffs = "oaroused.modifystats"
+int SetOANudityBroadcast
+string SUOANudityBroadcast = "oaroused.EnableNudityBroadcast"
+
 Event OnInit()
 	Init()
 EndEvent
@@ -381,6 +391,16 @@ Event OnPageReset(String Page)
 			SetOCBounty = AddSliderOption("Public sex penalty", StorageUtil.GetIntValue(none, suocbounty), "{0} gold")
 		endif 
 
+		if main.IsModLoaded(OAroused)
+			AddColoredHeader("OAroused")
+			SetOAKey = AddKeyMapOption("Show arousal", StorageUtil.GetIntValue(none, SUOAKey))
+			SetOARequireLowArousalBeforeEnd = AddToggleOption("Require low arousal to end scene", StorageUtil.GetIntValue(none, SUOALowArousalReq))
+			SetOAStatBuffs = AddToggleOption("Stat buffs/debuffs", StorageUtil.GetIntValue(none, SUOAStatBuffs))
+			SetOANudityBroadcast = AddToggleOption("Nudity increases arousal", StorageUtil.GetIntValue(none, SUOANudityBroadcast))
+
+		endif 
+
+
 	ElseIf (Page == "Undressing")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayTickBig()
@@ -463,6 +483,15 @@ Event OnOptionSelect(Int Option)
 		elseif option == SetOBGenitalRand
 			SetExternalBool(OBody, GVOBGenitalRand, !GetExternalBool(OBody, GVOBGenitalRand))
 			SetToggleOptionValue(SetOBGenitalRand, GetExternalBool(OBody, GVOBGenitalRand))
+		elseif option == SetOARequireLowArousalBeforeEnd
+			StorageUtil.SetIntValue(none, SUOALowArousalReq, (!(StorageUtil.GetIntValue(none, SUOALowArousalReq) as bool)) as int)
+			SetToggleOptionValue(SetOARequireLowArousalBeforeEnd, StorageUtil.GetIntValue(none, SUOALowArousalReq))
+		elseif option == SetOAStatBuffs
+			StorageUtil.SetIntValue(none, SUOAStatBuffs, (!(StorageUtil.GetIntValue(none, SUOAStatBuffs) as bool)) as int)
+			SetToggleOptionValue(SetOAStatBuffs, StorageUtil.GetIntValue(none, SUOAStatBuffs))
+		elseif option == SetOANudityBroadcast
+			StorageUtil.SetIntValue(none, SUOANudityBroadcast, (!(StorageUtil.GetIntValue(none, SUOANudityBroadcast) as bool)) as int)
+			SetToggleOptionValue(SetOANudityBroadcast, StorageUtil.GetIntValue(none, SUOANudityBroadcast))
 		endif
 
 		return
@@ -630,6 +659,8 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("Press this while looking at an NPC to start interacting\nYou must save and reload for this setting to take affect")
 		elseif (option == SetORDifficulty)
 			SetInfoText("Increasing this value makes actions easier. Lowering makes them harder. Lowering is not advised usually")
+		elseif (option == SetOAKey)
+			SetInfoText("(Save and reload to take effect) Press this to view your arousal level")
 		elseif (option == SetOBPresetKey)
 			SetInfoText("(Save and reload to take effect) Press this to show a menu of all installed presets\nSelect one to apply it to you, or if an NPC is in your crosshair, will apply to them")
 		elseif (option == SetORSexuality)
@@ -654,6 +685,12 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("(Save and reload to take effect) (CBBE-based-bodies) Procedurally generate nipples")
 		Elseif (Option == SetOBGenitalRand)
 			SetInfoText("(Save and reload to take effect) (3bbb/3ba) Procedurally generate genitals")
+		Elseif (Option == SetOAStatBuffs)
+			SetInfoText("When enabled, scenes will not end until your arousal drops below around 15%.")
+		Elseif (Option == SetOANudityBroadcast)
+			SetInfoText("When enabled, player nudity will make nearby NPCs hornier.\n Note that regardless of this setting, anyone including you viewing an OStim scene will become hornier")
+		Elseif (Option == SetOARequireLowArousalBeforeEnd)
+			SetInfoText("(Save and reload to take effect) Stamina regen rate will increase as you get hornier. Magicak rate will decrease.")
 		endif 
 
 		return
@@ -962,6 +999,9 @@ Event OnOptionKeyMapChange(Int Option, Int KeyCode, String ConflictControl, Stri
 		SetKeyMapOptionValue(Option, KeyCode)
 	Elseif (Option == SetORLeft)
 		SetExternalInt(oromance, GVORLeft, KeyCode)
+		SetKeyMapOptionValue(Option, KeyCode)
+	Elseif (Option == SetOAKey)
+		StorageUtil.SetIntValue(none, "oaroused.key", keycode)
 		SetKeyMapOptionValue(Option, KeyCode)
 	Elseif (Option == SetORRight)
 		SetExternalInt(oromance, GVORRight, KeyCode)
