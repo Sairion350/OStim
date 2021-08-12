@@ -1402,8 +1402,10 @@ Function ToggleFreeCam(Bool On = True)
 	If (!IsFreeCamming)
 		int cstate = game.GetCameraState()
 		If (cstate == 0) || ((cstate == 9))
+			game.ForceThirdPerson()
+			
 			if EnableImprovedCamSupport
-				Console("using hack")
+				;Console("using hack")
 				; Improved cam hack
 				int povkey = input.GetMappedKey("Toggle POV")
 
@@ -1412,8 +1414,6 @@ Function ToggleFreeCam(Bool On = True)
 				input.ReleaseKey(povkey)
 
 				Utility.Wait(0.05)
-			else 
-				game.ForceThirdPerson()
 			endif 
 		endif 
 		OSANative.EnableFreeCam()
@@ -3312,7 +3312,7 @@ EndFunction
 
 Event OnKeyDown(Int KeyPress)
 
-	If (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
+	If outils.MenuOpen()
 		Return
 	EndIf
 

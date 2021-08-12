@@ -210,3 +210,7 @@ string function PadString(string str, int to, bool right = true, string char = "
 
 	return PapyrusUtil.StringJoin(padding, "")
 EndFunction
+
+bool Function MenuOpen() global
+	return (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
+EndFunction
