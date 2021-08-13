@@ -40,6 +40,8 @@ Function DoUpdate()
 	while i < l
 		form f = forms[i]
 		quest q = forms[i] as quest
+
+		outils.Console("Clearing: " + f)
 		
 		if q
 			q.reset()
@@ -65,6 +67,8 @@ Function DoUpdate()
 	while i < l 
 		form f = forms[i]
 		quest q = forms[i] as quest
+
+		outils.Console("Starting: " + f)
 		
 		if q 
 			q.start()
@@ -82,6 +86,7 @@ Function DoUpdate()
 
 
 	OUtils.Console("Updated")
+	Utility.Wait(4)
 	OUtils.DisplayTextBanner("Update complete")
 
 	Updating = false
