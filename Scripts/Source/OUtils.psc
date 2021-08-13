@@ -194,17 +194,17 @@ EndFunction
 
 ; in honor of this disaster: qz.com/646467/how-one-programmer-broke-the-internet-by-deleting-a-tiny-piece-of-code/
 ; a papyrus version
-string function PadString(string str, int to, bool right = true, string char = " ") Global
+string function PadString(string str, int to, int side = 0, string char = " ") Global
 	{fill the string with specified chars until it hits the specified length}
 	int amount = to - stringutil.GetLength(str)
 
 	string[] padding = PapyrusUtil.StringArray(amount, filler = char)
 
-	if right 
+	if side == 0 ; right 
 		string[] temp = PapyrusUtil.StringArray(1, str)
 
 		padding = PapyrusUtil.MergeStringArray(temp, padding)
-	else ;left 
+	elseif side == 1 ;left 
 		padding = PapyrusUtil.PushString(padding, str)
 	endif 
 
