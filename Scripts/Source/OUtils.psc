@@ -212,5 +212,5 @@ string function PadString(string str, int to, int side = 0, string char = " ") G
 EndFunction
 
 bool Function MenuOpen() global
-	return (Utility.IsInMenuMode() || UI.IsMenuOpen("console"))
+	return (Utility.IsInMenuMode() || UI.IsMenuOpen("console")) || UI.IsMenuOpen("Crafting Menu") || UI.IsMenuOpen("Dialogue Menu")
 EndFunction
