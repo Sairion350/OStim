@@ -502,10 +502,12 @@ Int Function GetTransitoryAnimations(Int zDatabase, Bool IsTransitory) ; returns
 	Return DatabaseKeyAndParameterLookup(zDatabase, "istransitory", BoolParam = Send)
 EndFunction
 
-Int Function GetSexAnimations(Int zDatabase, Bool IsTransitory) ; returns OArray
+Int Function GetSexAnimations(Int zDatabase, Bool IsSex) ; returns OArray
 	; returns all sexual animations, for intercourse animations only, use the animation class "Sx" as a lookup instead
-	Int a = GetHubAnimations(zDatabase, False)
-	Return GetTransitoryAnimations(a, False)
+	int[] merge = new int[2]
+	merge[0] = GetHubAnimations(zDatabase, !issex)
+	merge[1] = GetTransitoryAnimations(zDatabase, !issex)
+	Return MergeOArrays(merge)
 EndFunction
 
 Int Function GetAnimationsByMainActor(Int zDatabase, Int MainActor) ; returns OArray

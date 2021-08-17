@@ -171,6 +171,17 @@ string SUOAStatBuffs = "oaroused.modifystats"
 int SetOANudityBroadcast
 string SUOANudityBroadcast = "oaroused.EnableNudityBroadcast"
 
+string OSearch = "OSearch.esp"
+int SetOSKey
+string SUOSKey = "osearch.key"
+int SetOSAllowHub
+string SUOSAllowHub = "osearch.allowhub"
+int SetOSAllowTransitory
+string SUOSAllowTransitory = "osearch.allowTransitory"
+int SetOSAllowSex
+string SUOSAllowSex = "osearch.allowSex"
+
+
 Event OnInit()
 	Init()
 EndEvent
@@ -373,6 +384,14 @@ Event OnPageReset(String Page)
 			
 		endif 
 
+		if main.IsModLoaded(OSearch)
+			AddColoredHeader("OSearch")
+			SetOSKey = AddKeyMapOption("Open search bar", StorageUtil.GetIntValue(none, SUOSKey))
+			SetOSAllowSex = AddToggleOption("Show sex animations", StorageUtil.GetIntValue(none, SUOSAllowSex))
+			SetOSAllowHub = AddToggleOption("Show hub animations", StorageUtil.GetIntValue(none, SUOSAllowHub))
+			SetOSAllowTransitory = AddToggleOption("Show transitory animations", StorageUtil.GetIntValue(none, SUOSAllowTransitory))
+		endif 
+
 		;===================================
 
 		SetCursorPosition(3)
@@ -399,6 +418,8 @@ Event OnPageReset(String Page)
 			SetOANudityBroadcast = AddToggleOption("Nudity increases arousal", StorageUtil.GetIntValue(none, SUOANudityBroadcast))
 
 		endif 
+
+		
 
 
 	ElseIf (Page == "Undressing")
@@ -483,9 +504,18 @@ Event OnOptionSelect(Int Option)
 		elseif option == SetOBGenitalRand
 			SetExternalBool(OBody, GVOBGenitalRand, !GetExternalBool(OBody, GVOBGenitalRand))
 			SetToggleOptionValue(SetOBGenitalRand, GetExternalBool(OBody, GVOBGenitalRand))
+		elseif option == SetOSAllowSex
+			StorageUtil.SetIntValue(none, SUOSAllowSex, (!(StorageUtil.GetIntValue(none, SUOSAllowSex) as bool)) as int)
+			SetToggleOptionValue(SetOSAllowSex, StorageUtil.GetIntValue(none, SUOSAllowSex))
+		elseif option == SetOSAllowTransitory
+			StorageUtil.SetIntValue(none, SUOSAllowTransitory, (!(StorageUtil.GetIntValue(none, SUOSAllowTransitory) as bool)) as int)
+			SetToggleOptionValue(SetOSAllowTransitory, StorageUtil.GetIntValue(none, SUOSAllowTransitory))
 		elseif option == SetOARequireLowArousalBeforeEnd
 			StorageUtil.SetIntValue(none, SUOALowArousalReq, (!(StorageUtil.GetIntValue(none, SUOALowArousalReq) as bool)) as int)
 			SetToggleOptionValue(SetOARequireLowArousalBeforeEnd, StorageUtil.GetIntValue(none, SUOALowArousalReq))
+		elseif option == SetOSAllowHub
+			StorageUtil.SetIntValue(none, SUOSAllowHub, (!(StorageUtil.GetIntValue(none, SUOSAllowHub) as bool)) as int)
+			SetToggleOptionValue(SetOSAllowHub, StorageUtil.GetIntValue(none, SUOSAllowHub))
 		elseif option == SetOAStatBuffs
 			StorageUtil.SetIntValue(none, SUOAStatBuffs, (!(StorageUtil.GetIntValue(none, SUOAStatBuffs) as bool)) as int)
 			SetToggleOptionValue(SetOAStatBuffs, StorageUtil.GetIntValue(none, SUOAStatBuffs))
@@ -661,6 +691,8 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("Increasing this value makes actions easier. Lowering makes them harder. Lowering is not advised usually")
 		elseif (option == SetOAKey)
 			SetInfoText("(Save and reload to take effect) Press this to view your arousal level")
+		elseif (option == SetOSKey)
+			SetInfoText("(Save and reload to take effect) Press this during a scene to open the search bar")
 		elseif (option == SetOBPresetKey)
 			SetInfoText("(Save and reload to take effect) Press this to show a menu of all installed presets\nSelect one to apply it to you, or if an NPC is in your crosshair, will apply to them")
 		elseif (option == SetORSexuality)
@@ -687,6 +719,12 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("(Save and reload to take effect) (3bbb/3ba) Procedurally generate genitals")
 		Elseif (Option == SetOARequireLowArousalBeforeEnd)
 			SetInfoText("When enabled, scenes will not end until your arousal drops below around 15%.")
+		Elseif (Option == SetOSAllowHub)
+			SetInfoText("Show hub (non-sex idle animations) in the results")
+		Elseif (Option == SetOSAllowTransitory)
+			SetInfoText("Show transition animations in the results")
+		Elseif (Option == SetOSAllowSex)
+			SetInfoText("Show sex animations in the results")
 		Elseif (Option == SetOANudityBroadcast)
 			SetInfoText("When enabled, player nudity will make nearby NPCs hornier.\n Note that regardless of this setting, anyone including you viewing an OStim scene will become hornier")
 		Elseif (Option == SetOAStatBuffs)
@@ -999,6 +1037,9 @@ Event OnOptionKeyMapChange(Int Option, Int KeyCode, String ConflictControl, Stri
 		SetKeyMapOptionValue(Option, KeyCode)
 	Elseif (Option == SetORLeft)
 		SetExternalInt(oromance, GVORLeft, KeyCode)
+		SetKeyMapOptionValue(Option, KeyCode)
+	Elseif (Option == SetOSKey)
+		StorageUtil.SetIntValue(none, "osearch.key", keycode)
 		SetKeyMapOptionValue(Option, KeyCode)
 	Elseif (Option == SetOAKey)
 		StorageUtil.SetIntValue(none, "oaroused.key", keycode)
