@@ -685,11 +685,11 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("(Save and reload to take effect) (CBBE-based-bodies) Procedurally generate nipples")
 		Elseif (Option == SetOBGenitalRand)
 			SetInfoText("(Save and reload to take effect) (3bbb/3ba) Procedurally generate genitals")
-		Elseif (Option == SetOAStatBuffs)
+		Elseif (Option == SetOARequireLowArousalBeforeEnd)
 			SetInfoText("When enabled, scenes will not end until your arousal drops below around 15%.")
 		Elseif (Option == SetOANudityBroadcast)
 			SetInfoText("When enabled, player nudity will make nearby NPCs hornier.\n Note that regardless of this setting, anyone including you viewing an OStim scene will become hornier")
-		Elseif (Option == SetOARequireLowArousalBeforeEnd)
+		Elseif (Option == SetOAStatBuffs)
 			SetInfoText("(Save and reload to take effect) Stamina regen rate will increase as you get hornier. Magicak rate will decrease.")
 		endif 
 
