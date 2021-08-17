@@ -354,7 +354,7 @@ Event OnPageReset(String Page)
 		AddEmptyOption()
 	ElseIf (Page == "")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
-		Main.PlayDing()
+
 	ElseIf (Page == "Add-ons")
 		SetInfoText(" ")
 		Main.playTickBig()
@@ -439,9 +439,26 @@ Event OnPageReset(String Page)
 		DrawSlotPage()
 	ElseIf (Page == "About")
 		UnloadCustomContent()
-		Main.PlayTickBig()
+		SetInfoText(" ")
 		SetCursorFillMode(TOP_TO_BOTTOM)
-		LoadCustomContent("Ostim/info.dds")
+		SetCursorPosition(0)
+
+		AddTextOption("OStim ", "-")
+		
+		AddTextOption("", "")
+		AddColoredHeader("Authors")
+		AddTextOption("OStim ", "by Sairion")
+		AddTextOption("OSA + OSex", "by CE0")
+
+		SetCursorPosition(1)
+		AddTextOption("OSex Overhaul & API", "")
+
+		AddTextOption("", "")
+		AddColoredHeader("Links")
+		AddTextOption("patreon.com/ostim", "")
+		AddTextOption("discord.gg/RECvhVaRcU", "")
+
+		Main.PlayDing()
 	EndIf
 EndEvent
 
