@@ -211,6 +211,16 @@ string function PadString(string str, int to, int side = 0, string char = " ") G
 	return PapyrusUtil.StringJoin(padding, "")
 EndFunction
 
+form Function GetFormFromFile(int aiFormID, string asFilename) global
+	{GetFormFromFile wrapper with error checking}
+	form a = game.GetFormFromFile(aiFormID,  asFilename)
+
+	if !a 
+		debug.MessageBox("Error trying to get form: " + aiFormID + " from " + asFilename)
+	endif 
+
+	return a
+endfunction
 bool Function MenuOpen() global
 	return (Utility.IsInMenuMode() || UI.IsMenuOpen("console")) || UI.IsMenuOpen("Crafting Menu") || UI.IsMenuOpen("Dialogue Menu")
 EndFunction

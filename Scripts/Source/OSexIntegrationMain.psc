@@ -513,7 +513,7 @@ Event OnUpdate() ;OStim main logic loop
 	DomTimesOrgasm = 0
 	ThirdTimesOrgasm = 0
 	MostRecentOrgasmedActor = None
-	SpankMax = RandomInt(1, 6)
+	SpankMax = osanative.RandomInt(1, 6)
 	IsFreeCamming = False
 	FirstAnimate = true
 
@@ -717,6 +717,7 @@ Event OnUpdate() ;OStim main logic loop
 	endif 
 
 	If (UseFreeCam) && IsPlayerInvolved()
+		Utility.Wait(1)
 		ToggleFreeCam(True)
 	EndIf
 
