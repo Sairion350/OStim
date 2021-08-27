@@ -220,7 +220,8 @@ form Function GetFormFromFile(int aiFormID, string asFilename) global
 	endif 
 
 	return a
-endfunction
+endfunction 
+
 bool Function MenuOpen() global
 	return (Utility.IsInMenuMode() || UI.IsMenuOpen("console")) || UI.IsMenuOpen("Crafting Menu") || UI.IsMenuOpen("Dialogue Menu")
 EndFunction
