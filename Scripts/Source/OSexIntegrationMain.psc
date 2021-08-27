@@ -344,6 +344,8 @@ bool ReallignedDuringThisAnim
 String o
 Int Password
 
+quest subthreadquest
+
 
 ; -------------------------------------------------------------------------------------------------
 ; -------------------------------------------------------------------------------------------------
@@ -360,16 +362,16 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	
 
 	If (SceneRunning)
-		;if IsNPCScene()
-		;	Console("NPC scene is already running, moving current scene to subthread")
-		;	if !GetUnusedSubthread().InheritFromMain()
-		;		Debug.MessageBox("OStim: Thread overload, please report this on discord")
-		;		Return false
-		;	endif
-		;else 
+		if IsNPCScene()
+			Console("NPC scene is already running, moving current scene to subthread")
+			if !GetUnusedSubthread().InheritFromMain()
+				Debug.MessageBox("OStim: Thread overload, please report this on discord")
+				Return false
+			endif
+		else 
 			Debug.Notification("OSA scene already running")
 			Return False
-		;endif 
+		endif 
 	EndIf
 
 	If IsActorActive(dom) || IsActorActive(sub)
@@ -1542,9 +1544,19 @@ Function EnableCollision(actor act)
 	act.stoptranslation()
 EndFunction
 
-;OStimSubthread Function GetUnusedSubthread()
-;	return OStimSubthread.NewObject(0)
-;EndFunction
+OStimSubthread Function GetUnusedSubthread()
+	int i = 0
+	int max = subthreadquest.GetNumAliases()
+	while i < max 
+		OStimSubthread thread = subthreadquest.GetNthAlias(i) as OStimSubthread
+
+		if !thread.IsInUse()
+			return thread 
+		endif 
+
+		i += 1
+	endwhile
+EndFunction
 
 float Function GetTimeSinceStart()
 	return Utility.GetCurrentRealTime() - StartTime
@@ -3463,6 +3475,8 @@ Function Startup()
 ;	OSAUI = (Quest.GetQuest("0SA") as _oui)
 	PlayerRef = Game.GetPlayer()
 	NutEffect = Game.GetFormFromFile(0x000805, "Ostim.esp") as ImageSpaceModifier
+
+	subthreadquest = Game.GetFormFromFile(0x000806, "Ostim.esp") as quest
 
 	OUpdater = Game.GetFormFromFile(0x000D67, "Ostim.esp") as OStimUpdaterScript
 	OSADing = Game.GetFormFromFile(0x000D6D, "Ostim.esp") as Sound

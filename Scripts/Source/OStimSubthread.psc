@@ -406,7 +406,7 @@ endevent
 
 
 Event OnInit()
-	id = 1 ;todo
+	id = GetID()
 	ostim = OUtils.GetOStim()
 	odatabase = ostim.GetODatabase()
 	playerref = game.GetPlayer()
