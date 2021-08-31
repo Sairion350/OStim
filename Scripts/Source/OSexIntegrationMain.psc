@@ -365,7 +365,7 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 		if IsNPCScene()
 			Console("NPC scene is already running, moving current scene to subthread")
 			if !GetUnusedSubthread().InheritFromMain()
-				Debug.MessageBox("OStim: Thread overload, please report this on discord")
+				Debug.Notification("OStim: Thread overload, please report this on discord")
 				Return false
 			endif
 		else 
@@ -1430,6 +1430,8 @@ Function ToggleFreeCam(Bool On = True)
 		OSANative.SetFOV(DefaultFOV)
 		if EnableImprovedCamSupport
 			game.ForceFirstPerson()
+			Utility.Wait(0.034)
+			game.ForceThirdPerson()
 		endif 
 		IsFreeCamming = false
 		Console("Disabling freecam")
