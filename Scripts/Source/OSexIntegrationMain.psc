@@ -1489,6 +1489,10 @@ Function SetStimMult(Actor Act, Float Value)
 	EndIf
 EndFunction
 
+bool Function IsBeingStimulated(Actor act)
+	return (GetCurrentStimulation(act) * GetStimMult(act)) > 0.01
+EndFunction
+
 ; spanking stuff
 Int Function GetSpankCount() ; 
 	{Number of spankings so far this scene}
