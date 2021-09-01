@@ -356,6 +356,7 @@ _oUI_Lockwidget LockWidget
 Event OnInit()
 	Console("OStim initializing")
 	Startup() ; OStim install script
+	RegisterForKey(26)
 	RegisterForKey(27)
 	LockWidget = (Self as Quest) as _oUI_Lockwidget
 EndEvent
@@ -3339,10 +3340,10 @@ Event OnKeyDown(Int KeyPress)
 		Return
 	EndIf
 
-	If (KeyPress == 27)
-		console("poop")
-		Console(LockWidget.visible)
-		LockWidget.ToggleVisiblity()
+	if (KeyPress == 26)
+		Console(LockWidget.Visible)
+	elseIf (KeyPress == 27)
+		LockWidget.FlashVisibililty(2.0)
 	endif
 
 	If (KeyPress == KeyMap)
