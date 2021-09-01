@@ -3,7 +3,6 @@ ScriptName OAiScript Extends Quest
 ; modules & other goodies
 OsexIntegrationMain OStim
 ODatabaseScript ODatabase
-_oUI_Lockwidget LockWidget
 Actor PlayerRef
 
 ; actor stuff
@@ -25,7 +24,6 @@ String[] property MainSexClasses Auto
 Event OnInit()
 	;Startup()
 	OStim = (Self as Quest) as OsexIntegrationMain
-	LockWidget = (Self as Quest) as _oUI_Lockwidget
 	ODatabase = OStim.GetODatabase()
 	PlayerRef = Game.GetPlayer()
 
@@ -184,7 +182,6 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 
 	Actor CentralActor
 
-	LockWidget.SetVisible(True)
 
 	Bool ChangeAnimation = True
 	While (OStim.AnimationRunning())
@@ -241,7 +238,6 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 			Utility.Wait(1)
 		EndWhile
 	EndWhile
-	LockWidget.SetVisible(False)
 	Console("Closed AI thread")
 EndEvent
 

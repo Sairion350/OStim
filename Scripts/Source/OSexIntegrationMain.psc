@@ -3341,12 +3341,8 @@ Event OnKeyDown(Int KeyPress)
 
 	If (KeyPress == 27)
 		console("poop")
-		Console(LockWidget.GetVisible())
-		If (LockWidget.GetVisible())
-			LockWidget.SetVisible(False)
-		Else
-			LockWidget.SetVisible(True)
-		Endif
+		Console(LockWidget.visible)
+		LockWidget.ToggleVisiblity()
 	endif
 
 	If (KeyPress == KeyMap)
@@ -3367,6 +3363,11 @@ Event OnKeyDown(Int KeyPress)
 
 	If (DisableOSAControls)
 		Console("OStim controls disabled by property")
+		
+		if AnimationRunning()
+			LockWidget.FlashVisibililty()
+		endif 
+
 		Return
 	EndIf
 
