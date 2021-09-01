@@ -356,9 +356,6 @@ _oUI_Lockwidget LockWidget
 Event OnInit()
 	Console("OStim initializing")
 	Startup() ; OStim install script
-	RegisterForKey(26)
-	RegisterForKey(27)
-	LockWidget = (Self as Quest) as _oUI_Lockwidget
 EndEvent
 
 
@@ -3340,11 +3337,6 @@ Event OnKeyDown(Int KeyPress)
 		Return
 	EndIf
 
-	if (KeyPress == 26)
-		Console(LockWidget.Visible)
-	elseIf (KeyPress == 27)
-		LockWidget.FlashVisibililty(2.0)
-	endif
 
 	If (KeyPress == KeyMap)
 		Actor Target = Game.GetCurrentCrosshairRef() as Actor
@@ -3496,6 +3488,7 @@ Function Startup()
 ;	OSAUI = (Quest.GetQuest("0SA") as _oui)
 	PlayerRef = Game.GetPlayer()
 	NutEffect = Game.GetFormFromFile(0x000805, "Ostim.esp") as ImageSpaceModifier
+	LockWidget = (Self as Quest) as _oUI_Lockwidget
 
 	subthreadquest = Game.GetFormFromFile(0x000806, "Ostim.esp") as quest
 
