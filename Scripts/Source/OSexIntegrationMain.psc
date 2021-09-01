@@ -346,6 +346,8 @@ Int Password
 
 quest subthreadquest
 
+_oUI_Lockwidget LockWidget
+
 
 ; -------------------------------------------------------------------------------------------------
 ; -------------------------------------------------------------------------------------------------
@@ -354,6 +356,8 @@ quest subthreadquest
 Event OnInit()
 	Console("OStim initializing")
 	Startup() ; OStim install script
+	RegisterForKey(27)
+	LockWidget = (Self as Quest) as _oUI_Lockwidget
 EndEvent
 
 
@@ -3331,6 +3335,15 @@ Event OnKeyDown(Int KeyPress)
 		Return
 	EndIf
 
+	If (KeyPress == 27)
+		console("poop")
+		Console(LockWidget.GetVisible())
+		If (LockWidget.GetVisible())
+			LockWidget.SetVisible(False)
+		Else
+			LockWidget.SetVisible(True)
+		Endif
+	endif
 
 	If (KeyPress == KeyMap)
 		Actor Target = Game.GetCurrentCrosshairRef() as Actor
