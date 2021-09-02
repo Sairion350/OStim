@@ -1,16 +1,14 @@
 ScriptName OStimUpdaterScript Extends Quest
 
-
 Bool Initialized
-
 Bool Updating
 
-Form[] property FormsToUpdate auto 
+Form[] Property FormsToUpdate Auto
 
 Event OnInit()
 	Initialized = False
-	Updating = false
-	
+	Updating = False
+
 	ResetQuestDB()
 
 	OUtils.Console("Updater ready")
@@ -18,8 +16,7 @@ Event OnInit()
 EndEvent
 
 Function ResetQuestDB()
-	FormsToUpdate = new form[4]
-
+	FormsToUpdate = new Form[4]
 	FormsToUpdate[2] = Quest.GetQuest("0SA") ; 0SA
 	FormsToUpdate[1] = Game.GetFormFromFile(0x0070A4, "OSA.esm") as Quest ; 0SUI
 	FormsToUpdate[0] = Quest.GetQuest("0SAControl") as Quest ; 0SAControl
@@ -27,26 +24,24 @@ Function ResetQuestDB()
 EndFunction
 
 Function DoUpdate()
-	Updating = true 
+	Updating = True
 
 	OUtils.DisplayTextBanner("Updating OStim")
 
+	Form[] forms = FormsToUpdate
 
-	Form[] Forms = FormsToUpdate
-
-	int i = 0 
-	int l = forms.Length 
+	Int i = 0
+	Int l = forms.Length
 	OUtils.Console("Forms to update: " + l)
-	while i < l
-		form f = forms[i]
-		quest q = forms[i] as quest
+	While i < l
+		Form f = forms[i]
+		Quest q = forms[i] as Quest
 
-		outils.Console("Clearing: " + f)
-		
-		if q
+		OUtils.Console("Clearing: " + f)
+		If q
 			q.reset()
 			q.stop()
-		endif
+		EndIf
 
 		f.UnregisterForAllMenus()
 		f.UnregisterForUpdateGameTime()
@@ -54,28 +49,25 @@ Function DoUpdate()
 		f.UnregisterForAllModEvents()
 		f.UnregisterForAllKeys()
 
-
-
 		i += 1
 	EndWhile
-	
+
 	OUtils.Console("Preparing to fire init events...")
 	ResetQuestDB()
 	Utility.WaitMenuMode(2)
-	
-	i = 0 
-	while i < l 
-		form f = forms[i]
-		quest q = forms[i] as quest
 
-		outils.Console("Starting: " + f)
-		
-		if q 
-			q.start()
-		endif 
+	i = 0
+	While i < l
+		Form f = forms[i]
+		Quest q = forms[i] as Quest
 
-		OSANative.ForceFireOnInitEvent(f)
-		
+		OUtils.Console("Starting: " + f)
+
+		If q
+			q.Start()
+		EndIf
+
+		OSANative.SendEvent(f, "OnInit")
 
 		Utility.Wait(0.1)
 
@@ -84,7 +76,6 @@ Function DoUpdate()
 
 	SendModEvent("0SA_UIBoot")
 
-
 	OUtils.Console("Updated")
 	Utility.Wait(4)
 	OUtils.DisplayTextBanner("Update complete")
@@ -92,13 +83,10 @@ Function DoUpdate()
 	Updating = false
 EndFunction
 
-
-
-Function AddFormToDatabase(form f)
-	while Updating
+Function AddFormToDatabase(Form f)
+	While Updating
 		Utility.Wait(1)
 	EndWhile
 
-	 
 	FormsToUpdate = PapyrusUtil.PushForm(FormsToUpdate, f)
 EndFunction
