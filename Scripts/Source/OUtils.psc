@@ -225,3 +225,29 @@ endfunction
 bool Function MenuOpen() global
 	return (Utility.IsInMenuMode() || UI.IsMenuOpen("console")) || UI.IsMenuOpen("Crafting Menu") || UI.IsMenuOpen("Dialogue Menu")
 EndFunction
+
+actor[] Function GetActiveNearbyPlayerFollowers() Global
+	faction followerfaction = Game.GetFormFromFile(0x05C84E, "Skyrim.esm") as faction
+
+	return MiscUtil.ScanCellNPCsByFaction(followerfaction, Game.GetPlayer())
+EndFunction
+
+
+Actor[] Function ShuffleActorArray(Actor[] arr) Global
+    
+    int i = arr.length
+    int j ; an index
+
+    actor temp
+    While (i > 0)
+        i -= 1
+        j = osanative.RandomInt(0, i)
+
+        temp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = temp 
+
+    EndWhile
+    return arr
+EndFunction
+
