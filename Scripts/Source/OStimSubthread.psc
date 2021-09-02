@@ -30,6 +30,7 @@ actor property domactor auto
 actor property subactor auto
 actor property thirdactor auto
 actor[] property actorlist auto
+actor aggressiveActor
 
 form[] domclothes
 form[] subclothes
@@ -46,7 +47,7 @@ float timePerSpeed
 
 
 
-bool Function StartScene(actor dom, actor sub = none, actor third = none, float time = 120.0, ObjectReference bed = none, bool isaggressive = false, bool LinkToMain = false)
+bool Function StartScene(actor dom, actor sub = none, actor third = none, float time = 120.0, ObjectReference bed = none, bool isaggressive = false, actor aggressingActor = none, bool LinkToMain = false)
 	if inuse
 		Console("Subthread is already in use")
 		return false
@@ -67,6 +68,7 @@ bool Function StartScene(actor dom, actor sub = none, actor third = none, float 
 
 
 	aggressive = isaggressive
+	aggressiveActor = aggressingActor
 	currentbed = bed 
 
 	if currentbed
@@ -342,7 +344,7 @@ Function AlignToBed() ;todo, merge this logic with main?
 	SubActor.SetAngle(BedAngleX, BedAngleY, BedAngleZ)
 EndFunction
 
-string Function GetRandomAnimationForScene()
+string Function GetRandomAnimationForScene() ; todo aggressive stuff
 	Int Animations = ODatabase.GetAnimationsWithActorCount(ODatabase.GetDatabaseOArray(), actorlist.Length)
 	Animations = ODatabase.GetHubAnimations(Animations, False)
 	Animations = ODatabase.GetTransitoryAnimations(Animations, False)
