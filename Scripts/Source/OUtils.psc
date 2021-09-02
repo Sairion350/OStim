@@ -227,11 +227,30 @@ bool Function MenuOpen() global
 EndFunction
 
 actor[] Function GetActiveNearbyPlayerFollowers() Global
-	faction followerfaction = Game.GetFormFromFile(0x05C84E, "Skyrim.esm") as faction
+	;faction followerfaction = Game.GetFormFromFile(0x05C84E, "Skyrim.esm") as faction
+	actor[] nearby = GetNearbyActors(game.GetPlayer(), 10000)
 
-	return MiscUtil.ScanCellNPCsByFaction(followerfaction, Game.GetPlayer())
+	int i = 0
+	int l = nearby.Length
+	while i < l 
+		if !nearby[i].isplayerteammate()
+			nearby[i] = none
+		endif 
+
+		i += 1
+	endwhile
+
+	return PapyrusUtil.RemoveActor(nearby, none)
 EndFunction
 
+actor[] Function GetNearbyActors(actor source, float radius = 0.0) global 
+	if source.IsInInterior()
+		return MiscUtil.ScanCellNPCs(source, radius = radius)
+	else 
+		;!
+	endif 
+
+endfunction 
 
 Actor[] Function ShuffleActorArray(Actor[] arr) Global
     
