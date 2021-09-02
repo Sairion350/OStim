@@ -244,10 +244,47 @@ actor[] Function GetActiveNearbyPlayerFollowers() Global
 EndFunction
 
 actor[] Function GetNearbyActors(actor source, float radius = 0.0) global 
-	if source.IsInInterior()
+	{do not use this will be removed shortly}
+	if source.IsInInterior() || ((radius < 4096.0) && (radius > 0.0)) 
 		return MiscUtil.ScanCellNPCs(source, radius = radius)
 	else 
-		;!
+		float[] sourceCoords = OSANative.GetCoords(source)
+
+		actor[] anchorPoints = PapyrusUtil.ActorArray(9)
+		anchorPoints[0] = source
+
+		float offset = 4096.0 
+		float radi = offset + (offset / 4)
+
+		; 4 corners
+		anchorPoints[1] = game.FindClosestActor(sourceCoords[0] + offset, sourceCoords[2] + offset, sourceCoords[3], radi)
+		anchorPoints[2] = game.FindClosestActor(sourceCoords[0] - offset, sourceCoords[2] + offset, sourceCoords[3], radi)
+		anchorPoints[3] = game.FindClosestActor(sourceCoords[0] + offset, sourceCoords[2] - offset, sourceCoords[3], radi)
+		anchorPoints[4] = game.FindClosestActor(sourceCoords[0] - offset, sourceCoords[2] - offset, sourceCoords[3], radi)
+
+		; 4 sides
+		anchorPoints[5] = game.FindClosestActor(sourceCoords[0], sourceCoords[2] + offset, sourceCoords[3], radi)
+		anchorPoints[6] = game.FindClosestActor(sourceCoords[0], sourceCoords[2] - offset, sourceCoords[3], radi)
+		anchorPoints[7] = game.FindClosestActor(sourceCoords[0] + offset, sourceCoords[2], sourceCoords[3], radi)
+		anchorPoints[8] = game.FindClosestActor(sourceCoords[0] - offset, sourceCoords[2] , sourceCoords[3], radi)
+
+
+		anchorPoints = PapyrusUtil.MergeActorArray(anchorPoints, anchorPoints, true) ; remove dupes
+		anchorPoints = PapyrusUtil.RemoveActor(anchorPoints, none)
+
+		actor[] ret = PapyrusUtil.ActorArray(0)
+
+		int i = 0
+		int l = anchorPoints.Length
+		while i < l 
+			actor[] search = MiscUtil.ScanCellNPCs(anchorPoints[i])
+
+			ret = PapyrusUtil.MergeActorArray(ret, search, RemoveDupes = true)
+
+			i += 1
+		EndWhile
+
+		return ret
 	endif 
 
 endfunction 
