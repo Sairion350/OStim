@@ -1,51 +1,38 @@
 ScriptName OSANative
 
 
-; ██████╗  █████╗ ████████╗ █████╗ ██████╗  █████╗ ███████╗███████╗
-; ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝
-; ██║  ██║███████║   ██║   ███████║██████╔╝███████║███████╗█████╗
-; ██║  ██║██╔══██║   ██║   ██╔══██║██╔══██╗██╔══██║╚════██║██╔══╝
-; ██████╔╝██║  ██║   ██║   ██║  ██║██████╔╝██║  ██║███████║███████╗
-; ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝
+; █████╗  ██████╗████████╗ ██████╗ ██████╗
+; ██╔══██╗██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗
+; ███████║██║        ██║   ██║   ██║██████╔╝
+; ██╔══██║██║        ██║   ██║   ██║██╔══██╗
+; ██║  ██║╚██████╗   ██║   ╚██████╔╝██║  ██║
+; ╚═╝  ╚═╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
 
 
-; Build the json database
-Function BuildDB() Global Native
+Int Function GetSex(ActorBase Base) Global Native
+Race Function GetRace(ActorBase Base) Global Native
+VoiceType Function GetVoiceType(ActorBase Base) Global Native
+ActorBase Function GetLeveledActorBase(Actor Act) Global Native
 
+; Get all loaded actors
+; [CenterRef] ObjectReference as the origin for the search. (Optional)
+; [Radius]    Radius to search for loaded actors. (Optional)
+Actor[] Function GetActors(ObjectReference CenterRef = None, Float Radius = 0.0) Global Native
 
+; For player only; set position without hitbox updating
+Function SetPositionEx(Actor Act, Float X, Float Y, Float Z) Global Native
 
-
-;  ██████╗ ██████╗      ██╗███████╗ ██████╗████████╗
-; ██╔═══██╗██╔══██╗     ██║██╔════╝██╔════╝╚══██╔══╝
-; ██║   ██║██████╔╝     ██║█████╗  ██║        ██║
-; ██║   ██║██╔══██╗██   ██║██╔══╝  ██║        ██║
-; ╚██████╔╝██████╔╝╚█████╔╝███████╗╚██████╗   ██║
-;  ╚═════╝ ╚═════╝  ╚════╝ ╚══════╝ ╚═════╝   ╚═╝
-
-
-; Find the nearest beds
-; [CenterRef] ObjectReference as the origin for the search.
-; [Radius]    Radius to search for beds.
-; [SameFloor] Setting a value above 0 will set the tolerance threshold for the bed's height.
-; Returns an array of beds from closest to farthest
-ObjectReference[] Function FindBed(ObjectReference CenterRef, Float Radius = 1000.0, Float SameFloor = 0.0) Global Native
+; Works on all NPCs that have a placed ref in the world
+; Will not work on npcs spawned by script or 'placeatme'
+; Most likely will not work on leveledlist npcs like bandits
+; Returns the first one it finds
+Actor Function GetActorFromBase(ActorBase Act) Global Native
 
 ; For example, give this an actor and the 'Spouse' AT and it will return their spouse's actorbase
 ; Returns none if the actor does not have that AT
 ; Works with all ATs
 ; returns an array because sometimes there may be multiple i.e. multiple kids or orcs having multiple spouses
 ActorBase[] Function LookupRelationshipPartners(Actor FirstActor, AssociationType RelationshipType) Global Native
-
-float[] Function GetCoords(ObjectReference obj) Global Native
-
-; Works on all NPCs that have a placed ref in the world 
-; Will not work on npcs spawned by script or 'placeatme'
-; Most likely will not work on leveledlist npcs like bandits
-; Returns the first one it finds
-Actor Function GetActorFromBase(ActorBase act) Global Native
-
-Function SetPositionEx(actor act, float x, float y, float z) Global Native
-{For player only; set position without hitbox updating}
 
 
 ;  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗
@@ -69,14 +56,22 @@ Function SetFreeCamSpeed(Float Speed = 10.0) Global Native
 ; Set FOV
 Function SetFOV(Float Value, Bool FirstPerson = False) Global Native
 
-; Get camera coordinates 
-float[] Function GetCameraPos() Global Native 
+; Get camera coordinates
+; Coordinates are relative to users screen right now, not recomended.
+Float[] Function GetCameraPos() Global Native
+Function SetCameraPos(Float X, Float Y, Float Z) Global Native
 
-;Coordinates are relative to users screen right now, not recomended.
-;Function SetCameraPos(float x, float y, float z) Global Native
 
-; Quests with "Run once" can never fire oninit again after install. until now.
-Function ForceFireOnInitEvent(Form f) Global Native
+; ██████╗  █████╗ ████████╗ █████╗ ██████╗  █████╗ ███████╗███████╗
+; ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝
+; ██║  ██║███████║   ██║   ███████║██████╔╝███████║███████╗█████╗
+; ██║  ██║██╔══██║   ██║   ██╔══██║██╔══██╗██╔══██║╚════██║██╔══╝
+; ██████╔╝██║  ██║   ██║   ██║  ██║██████╔╝██║  ██║███████║███████╗
+; ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝
+
+
+; Build the json database
+Function BuildDB() Global Native
 
 
 ; ███████╗ █████╗  ██████╗███████╗
@@ -119,32 +114,48 @@ Int Function GetFaceExpressionID(Actor Act) Global
 	Return GetFace(Act, 3, 0)
 EndFunction
 
-; natives 
-ActorBase Function GetLeveledActorBase(actor act) Global Native
 
-int Function GetSex(actorbase base) Global Native
+;  ██████╗ ██████╗      ██╗███████╗ ██████╗████████╗
+; ██╔═══██╗██╔══██╗     ██║██╔════╝██╔════╝╚══██╔══╝
+; ██║   ██║██████╔╝     ██║█████╗  ██║        ██║
+; ██║   ██║██╔══██╗██   ██║██╔══╝  ██║        ██║
+; ╚██████╔╝██████╔╝╚█████╔╝███████╗╚██████╗   ██║
+;  ╚═════╝ ╚═════╝  ╚════╝ ╚══════╝ ╚═════╝   ╚═╝
 
-int Function GetFormID(form in) Global Native
 
-float Function GetWeight(form in) Global Native
+Int Function GetFormID(Form FormRef) Global Native
+Float Function GetWeight(Form FormRef) Global Native
+String Function GetName(Form FormRef) Global Native
+String Function GetDisplayName(ObjectReference ObjectRef) Global Native
 
-string Function GetName(form in) Global Native
+; Find the nearest beds
+; [CenterRef] ObjectReference as the origin for the search.
+; [Radius]    Radius to search for beds.
+; [SameFloor] Setting a value above 0 will set the tolerance threshold for the bed's height.
+; Returns an array of beds from closest to farthest
+ObjectReference[] Function FindBed(ObjectReference CenterRef, Float Radius = 1000.0, Float SameFloor = 0.0) Global Native
 
-string Function GetDisplayName(ObjectReference in) Global Native
+Float[] Function GetCoords(ObjectReference ObjectRef) Global Native
 
-race Function GetRace(ActorBase in) Global Native
+; Untested
+Float Function GetScaleFactor(ObjectReference ObjectRef) Global Native
 
-VoiceType Function GetVoiceType(ActorBase in) Global Native
 
-int Function RandomInt(int min = 0, int max = 100) Global Native
+; ██╗   ██╗████████╗██╗██╗
+; ██║   ██║╚══██╔══╝██║██║
+; ██║   ██║   ██║   ██║██║
+; ██║   ██║   ██║   ██║██║
+; ╚██████╔╝   ██║   ██║███████╗
+;  ╚═════╝    ╚═╝   ╚═╝╚══════╝
 
-float Function RandomFloat(float min = 0.0, float max = 1.0) Global Native
-	;untested
 
-float Function GetScaleFactor(ObjectReference in) Global Native
+Int Function RandomInt(Int Min = 0, Int Max = 100) Global Native
+Float Function RandomFloat(Float Min = 0.0, Float Max = 1.0) Global Native
 
-; Experimental 
+; Send any event with no arguments
+; Quests with "Run once" can never fire oninit again after install. until now.
+Function SendEvent(Form FormRef, String Evnt) Global Native
 
-Form Function NewObject(string type) global native
-
-Function DeleteObject(Form f) Global Native
+; Experimental
+Form Function NewObject(String Class) Global Native
+Function DeleteObject(Form FormRef) Global Native
