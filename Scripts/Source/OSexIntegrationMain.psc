@@ -859,8 +859,8 @@ Event OnUpdate() ;OStim main logic loop
 	If ResetPosAfterSceneEnd && !ForceCloseOStimThread
 		SubActor.SetPosition(subcoords[0], subcoords[1], subcoords[2]) ;return
 		DomActor.SetPosition(domcoords[0], domcoords[1], domcoords[2])
-		If (UseFades && EndedProper && ((DomActor == PlayerRef) || (SubActor == PlayerRef)))
-			Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
+		If (UseFades && EndedProper && IsPlayerInvolved())
+			Game.FadeOutGame(False, True, 25.0, 25.0) ; keep the screen black
 		EndIf
 	EndIf
 
@@ -1703,7 +1703,7 @@ Function AllignActorsWithCurrentBed()
 	DomActor.TranslateTo(bedCoords[0], bedCoords[1], bedCoords[2], BedAngleX, BedAngleY, BedAngleZ, DomSpeed, afMaxRotationSpeed = 100)
 	DomActor.SetAngle(BedAngleX, BedAngleY, BedAngleZ - FlipFloat)
 	If (UseFades && IsPlayerInvolved())
-		Game.FadeOutGame(False, True, 10.0, 5) ; keep the screen black
+		Game.FadeOutGame(False, True, 25.0, 25.0) ; keep the screen black
 	EndIf
 
 	Utility.Wait(0.05)
