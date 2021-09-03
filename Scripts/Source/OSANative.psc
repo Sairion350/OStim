@@ -140,6 +140,8 @@ Float[] Function GetCoords(ObjectReference ObjectRef) Global Native
 ; Untested
 Float Function GetScaleFactor(ObjectReference ObjectRef) Global Native
 
+ObjectReference	Function GetLocationMarker(location loc) Global Native
+
 
 ; ██╗   ██╗████████╗██╗██╗
 ; ██║   ██║╚══██╔══╝██║██║

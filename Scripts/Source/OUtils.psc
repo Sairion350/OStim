@@ -242,7 +242,10 @@ actor[] Function FilterToPlayerFollowers(actor[] acts) Global
 	return PapyrusUtil.RemoveActor(acts, none)
 EndFunction
 
-
+bool Function IsInFirstPerson() global
+	int cstate = game.GetCameraState()
+	return (cstate == 0) || ((cstate == 9))
+EndFunction
 
 Actor[] Function ShuffleActorArray(Actor[] arr) Global
     
