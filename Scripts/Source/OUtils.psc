@@ -247,6 +247,24 @@ bool Function IsInFirstPerson() global
 	return (cstate == 0) || ((cstate == 9))
 EndFunction
 
+
+
+Function SetSkyUIWidgetsVisible(bool visible) Global
+	float val
+	if visible
+		val = 100.0
+	else 
+		val = 0.0
+	endif 
+
+	UI.SetNumber("HUD Menu", "_root.WidgetContainer._alpha", val)
+EndFunction
+
+Function SetUIVisible(bool visible) Global
+	UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", visible)
+EndFunction
+
+
 Actor[] Function ShuffleActorArray(Actor[] arr) Global
     
     int i = arr.length

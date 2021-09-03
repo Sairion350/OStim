@@ -1454,12 +1454,12 @@ Function ShowNavMenu()
 	UI.Invoke("HUD Menu", "_root.WidgetContainer." + OSAomni.glyph + ".widget.hud.SceneMenu.OmniLight")
 EndFunction
 
-Function HideAllSkyUIWidgets()
-	UI.SetNumber("HUD Menu", "_root.WidgetContainer._alpha", 0.0)
+Function HideAllSkyUIWidgets() ; DEPRECIATED
+	outils.SetSkyUIWidgetsVisible(false)
 EndFunction
 
 Function ShowAllSkyUIWidgets()
-	UI.SetNumber("HUD Menu", "_root.WidgetContainer._alpha", 100.0)
+	outils.SetSkyUIWidgetsVisible(true)
 EndFunction
 
 bool function IsInFreeCam()
