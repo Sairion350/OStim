@@ -135,6 +135,7 @@ Bool Property UseScreenShake Auto
 
 Bool Property UseFades Auto
 Bool Property UseAutoFades Auto
+bool Property SkipEndingFadein Auto
 
 Bool Property EndAfterActorHit Auto
 
@@ -872,7 +873,7 @@ Event OnUpdate() ;OStim main logic loop
 		Game.ForceFirstPerson()
 	EndIf
 
-	If (UseFades && EndedProper && IsPlayerInvolved())
+	If (UseFades && EndedProper && IsPlayerInvolved() && !SkipEndingFadein)
 		FadeFromBlack(2)
 	EndIf
 
@@ -3142,6 +3143,7 @@ Function SetDefaultSettings()
 
 	UseFades = True
 	UseAutoFades = True
+	SkipEndingFadein = false
 	BlockVRInstalls = True
 
 	KeyMap = 200
