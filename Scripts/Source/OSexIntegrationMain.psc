@@ -916,6 +916,8 @@ Event OnUpdate() ;OStim main logic loop
 
 	SceneRunning = False
 
+	SendModEvent("ostim_totalend")
+
 EndEvent
 
 
