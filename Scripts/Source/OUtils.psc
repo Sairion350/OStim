@@ -267,6 +267,9 @@ Function SetUIVisible(bool visible) Global
 	UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", visible)
 EndFunction
 
+bool Function IsUIVisible() Global
+	return UI.GetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible")
+endfunction 
 
 Actor[] Function ShuffleActorArray(Actor[] arr) Global
     
