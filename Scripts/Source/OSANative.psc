@@ -150,6 +150,10 @@ ObjectReference	Function GetLocationMarker(location loc) Global Native
 ; ╚██████╔╝   ██║   ██║███████╗
 ;  ╚═════╝    ╚═╝   ╚═╝╚══════╝
 
+Function ToggleCombat(bool enable) Global Native
+
+bool Function DetectionActive() Global Native
+
 
 Int Function RandomInt(Int Min = 0, Int Max = 100) Global Native
 Float Function RandomFloat(Float Min = 0.0, Float Max = 1.0) Global Native
@@ -159,5 +163,5 @@ Float Function RandomFloat(Float Min = 0.0, Float Max = 1.0) Global Native
 Function SendEvent(Form FormRef, String Evnt) Global Native
 
 ; Experimental
-Form Function NewObject(String Class) Global Native
-Function DeleteObject(Form FormRef) Global Native
+;Form Function NewObject(String Classname) Global Native
+;Function DeleteObject(Form FormRef) Global Native

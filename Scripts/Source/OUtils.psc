@@ -244,10 +244,13 @@ EndFunction
 
 bool Function IsInFirstPerson() global
 	int cstate = game.GetCameraState()
-	return (cstate == 0) || ((cstate == 9))
+	return (cstate == 0) ;|| ((cstate == 9))
 EndFunction
 
-
+Bool Function AppearsFemale(Actor Act) Global
+	{gender based / looks like a woman but can have a penis}
+	Return OSANative.GetSex(OSANative.GetLeveledActorBase(act)) == 1
+EndFunction
 
 Function SetSkyUIWidgetsVisible(bool visible) Global
 	float val
