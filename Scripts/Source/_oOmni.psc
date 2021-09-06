@@ -101,11 +101,11 @@ Function Maintenance()
 
     _oPatch.OSAPatch(Self as _oOmni)
 
-   ; If (iVersion < _oV.GetIVersion())
-   if true
-        ;If (iVersion)
-        if true
-            ;OUtils.console("Omni cleaning")
+    If (iVersion < _oV.GetIVersion())
+   ;if true
+        If (iVersion)
+        ;if true
+            OUtils.console("Omni cleaning")
 
             CleanScript()
             RebootScript()
@@ -190,7 +190,7 @@ Event OnPreferences(String EventName, String DataString, Float LoadSave, Form Se
 EndEvent
 
 Event OnUIBoot(String EventName, String SoundType, Float NumArg, Form Sender)
-   ; outils.console("UI booting...")
+   outils.console("UI booting...")
 
     Glyph = OI.WidgetID
     _oGlobal.ScanFolders(Glyph)
@@ -512,7 +512,7 @@ Function TestingOutputBak()
 EndFunction
 
 String[] Function SetOINI(Actor Player) Global
-    OsexIntegrationMain ostim = game.GetFormFromFile(0x000801, "Ostim.esp") as OsexIntegrationMain
+    OsexIntegrationMain ostim = outils.getostim()
 
  
     String[] OIN = new String[120]
