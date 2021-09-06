@@ -145,6 +145,7 @@ Float Function GetScaleFactor(ObjectReference ObjectRef) Global Native
 
 ObjectReference	Function GetLocationMarker(location loc) Global Native
 
+form[] Function RemoveFormsBelowValue(form[] forms, int goldvalue) Global Native
 
 ; ██╗   ██╗████████╗██╗██╗
 ; ██║   ██║╚══██╔══╝██║██║
