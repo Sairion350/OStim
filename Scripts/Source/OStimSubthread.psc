@@ -45,7 +45,7 @@ int currspeed
 int maxSpeed
 float timePerSpeed
 
-
+float property estimatedLength auto
 
 bool Function StartScene(actor dom, actor sub = none, actor third = none, float time = 120.0, ObjectReference bed = none, bool isaggressive = false, actor aggressingActor = none, bool LinkToMain = false)
 	if inuse
@@ -103,6 +103,8 @@ bool Function StartScene(actor dom, actor sub = none, actor third = none, float 
 			timePerSpeed = 1
 		endif 
 	endif 
+
+	estimatedLength = (maxSpeed * timePerSpeed) + 8
 	
 	Console("Subthread will use time/speed: " + timePerSpeed)
 	registerforsingleupdate(timePerSpeed)
@@ -144,6 +146,8 @@ bool Function InheritFromMain()
 	while ostim.AnimationRunning()
 		Utility.Wait(0.25)
 	endwhile
+
+	estimatedLength = (maxSpeed * timePerSpeed) + 8
 
 	Console("Subthread will use time/speed: " + timePerSpeed)
 	registerforsingleupdate(timePerSpeed)
