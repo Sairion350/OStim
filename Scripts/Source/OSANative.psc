@@ -34,6 +34,8 @@ Actor Function GetActorFromBase(ActorBase Act) Global Native
 ; returns an array because sometimes there may be multiple i.e. multiple kids or orcs having multiple spouses
 ActorBase[] Function LookupRelationshipPartners(Actor FirstActor, AssociationType RelationshipType) Global Native
 
+actor[] Function SortActorsByDistance(ObjectReference from, actor[] actors) Global Native
+
 
 ;  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗
 ; ██╔════╝██╔══██╗████╗ ████║██╔════╝██╔══██╗██╔══██╗
