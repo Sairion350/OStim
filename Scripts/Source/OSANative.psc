@@ -35,6 +35,7 @@ Actor Function GetActorFromBase(ActorBase Act) Global Native
 ActorBase[] Function LookupRelationshipPartners(Actor FirstActor, AssociationType RelationshipType) Global Native
 
 actor[] Function SortActorsByDistance(ObjectReference from, actor[] actors) Global Native
+actor[] Function RemoveActorsWithGender(actor[] actors, int gender) Global Native
 
 
 ;  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗
