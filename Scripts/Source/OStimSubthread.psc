@@ -279,7 +279,6 @@ Function SetAnimationSpeed(int to)
 	{Increase or decrease the animation speed by the amount}
 	string speed = to
 	runOsexCommand("$Speed,0," + speed)
-	Utility.Wait(0.5)
 	
 	currSpeed = to
 EndFunction
