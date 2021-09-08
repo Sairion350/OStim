@@ -1407,6 +1407,8 @@ float function GetEstimatedTimeUntilEnd()
 EndFunction
 
 Function ToggleFreeCam(Bool On = True)
+	outils.lock("mtx_tfc")
+
 	If (!IsFreeCamming)
 		int cstate = game.GetCameraState()
 		If (cstate == 0) || ((cstate == 9))
@@ -1441,6 +1443,8 @@ Function ToggleFreeCam(Bool On = True)
 		IsFreeCamming = false
 		Console("Disabling freecam")
 	EndIf
+
+	OSANative.Unlock("mtx_tfc")
 EndFunction
 
 bool NavMenuHidden
