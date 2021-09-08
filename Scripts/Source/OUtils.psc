@@ -271,6 +271,10 @@ bool Function IsUIVisible() Global
 	return UI.GetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible")
 endfunction 
 
+objectreference Function GetBlankObject() Global
+	return game.GetPlayer().PlaceAtMe((Quest.GetQuest("0SA") as _oOmni).OBlankStatic) as ObjectReference
+EndFunction
+
 Actor[] Function ShuffleActorArray(Actor[] arr) Global
     
     int i = arr.length
