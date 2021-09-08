@@ -293,3 +293,8 @@ Actor[] Function ShuffleActorArray(Actor[] arr) Global
     return arr
 EndFunction
 
+Function Lock(string mutex_key, float spinlockRate = 0.1) Global
+	while !osanative.TryLock(mutex_key)
+		utility.waitmenumode(spinlockRate)
+	endwhile
+EndFunction

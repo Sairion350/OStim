@@ -169,3 +169,6 @@ Function SendEvent(Form FormRef, String Evnt) Global Native
 ; Experimental
 ;Form Function NewObject(String Classname) Global Native
 ;Function DeleteObject(Form FormRef) Global Native
+
+Bool Function TryLock(String a_lock) Global Native
+Function Unlock(String a_lock) Global Native
