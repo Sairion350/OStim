@@ -170,5 +170,9 @@ Function SendEvent(Form FormRef, String Evnt) Global Native
 ;Form Function NewObject(String Classname) Global Native
 ;Function DeleteObject(Form FormRef) Global Native
 
+; Mutex system
+; See also: OUtils.lock() for a wrapper with while-loop lock
 Bool Function TryLock(String a_lock) Global Native
+{Returns true if nothing has claimed the given string, and claims the string. Returns false if the string is already claimed}
 Function Unlock(String a_lock) Global Native
+{Unclaims the given string}

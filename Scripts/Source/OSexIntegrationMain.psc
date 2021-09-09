@@ -213,7 +213,6 @@ String StartingAnimation
 Actor ThirdActor
 
 
-Bool IsFreeCamming
 
 Bool StallOrgasm
 
@@ -519,7 +518,6 @@ Event OnUpdate() ;OStim main logic loop
 	ThirdTimesOrgasm = 0
 	MostRecentOrgasmedActor = None
 	SpankMax = osanative.RandomInt(1, 6)
-	IsFreeCamming = False
 	FirstAnimate = true
 
 
@@ -852,7 +850,7 @@ Event OnUpdate() ;OStim main logic loop
 		DomActor.SetDontMove(False)
 	EndIf
 
-	If (IsFreeCamming)
+	If (OSANative.IsFreeCam())
 		ToggleFreeCam(False)
 	EndIf
 
@@ -1409,7 +1407,7 @@ EndFunction
 Function ToggleFreeCam(Bool On = True)
 	outils.lock("mtx_tfc")
 
-	If (!IsFreeCamming)
+	If (!OSANative.IsFreeCam())
 		int cstate = game.GetCameraState()
 		If (cstate == 0) || ((cstate == 9))
 			game.ForceThirdPerson()
@@ -1426,13 +1424,14 @@ Function ToggleFreeCam(Bool On = True)
 				Utility.Wait(0.05)
 			endif 
 		endif 
-		OSANative.EnableFreeCam()
+		;OSANative.EnableFreeCam()
+		consoleUtil.ExecuteCommand("tfc")
 		OSANative.SetFreeCamSpeed(FreecamSpeed)
 		OSANative.SetFOV(FreecamFOV)
-		IsFreeCamming = true
 		Console("Enabling freecam")
 	Else
-		OSANative.DisableFreeCam()
+		;OSANative.DisableFreeCam()
+		consoleUtil.ExecuteCommand("tfc")
 		OSANative.SetFreeCamSpeed()
 		OSANative.SetFOV(DefaultFOV)
 		if EnableImprovedCamSupport
@@ -1440,7 +1439,6 @@ Function ToggleFreeCam(Bool On = True)
 			Utility.Wait(0.034)
 			game.ForceThirdPerson()
 		endif 
-		IsFreeCamming = false
 		Console("Disabling freecam")
 	EndIf
 
@@ -2849,7 +2847,7 @@ Int Function SpeedStringToInt(String In) ; casting does not work so...
 EndFunction
 
 Function ShakeCamera(Float Power, Float Duration = 0.1)
-	if !IsFreeCamming
+	if !OSANative.IsFreeCam()
 		Game.ShakeCamera(PlayerRef, Power, Duration)
 	endif
 EndFunction
@@ -3354,11 +3352,13 @@ Event OnKeyDown(Int KeyPress)
 			EndIf
 			If (!Target.IsDead())
 				StartScene(PlayerRef,  Target)
+				return 
 			EndIf
 		EndIf
 	elseif (KeyPress == freecamkey)
 		if animationrunning() && IsPlayerInvolved()
 			ToggleFreeCam()
+			return
 		endif 
 	EndIf
 
