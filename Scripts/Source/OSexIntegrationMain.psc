@@ -175,6 +175,8 @@ Bool Property DisableScaling Auto
 
 int Property InstalledVersion Auto
 
+bool property ShowTutorials auto
+
 ; -------------------------------------------------------------------------------------------------
 ; SCRIPTWIDE VARIABLES ----------------------------------------------------------------------------
 
@@ -3192,6 +3194,8 @@ Function SetDefaultSettings()
 	UseAlternateBedSearch = !UseNativeFunctions
 	;UseAlternateBedSearch = True
 
+	ShowTutorials = true 
+	
 	UseBrokenCosaveWorkaround = True
 	RemapStartKey(Keymap)
 	RegisterForKey(FreecamKey)
