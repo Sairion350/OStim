@@ -2886,6 +2886,21 @@ Function SetTimeScale(Int Time)
 	Timescale.SetValue(Time as Float)
 EndFunction
 
+Function DisplayToastAsync(string txt, float lengthOftime)
+
+	RegisterForModEvent("ostim_toast", "DisplayToastEvent")
+
+	int handle = ModEvent.Create("ostim_toast")
+	ModEvent.PushString(handle, txt)
+	ModEvent.Pushfloat(handle, lengthOftime)
+
+	ModEvent.send(handle)
+endfunction
+
+Event DisplayToastEvent(string txt, float time)
+	outils.DisplayToastText(txt, time)
+EndEvent
+
 Function SetSystemVars()
 	; vanilla OSex class library
 	ClassSex = "Sx"

@@ -75,6 +75,36 @@ Function DisplayTextBanner(String Txt) Global
 	UI.InvokeString("HUD Menu", "_root.HUDMovieBaseInstance.QuestUpdateBaseInstance.ShowNotification", Txt)
 EndFunction
 
+Function DisplayToastText(String Txt, float lengthOfTime) Global
+	outils.Lock("mtx_toast")
+
+	int handle =  UICallback.Create("HUD Menu", "_root.HUDMovieBaseInstance.ShowTutorialHintText")
+	UICallback.PushString(handle, txt)
+	UICallback.PushBool(handle, true)
+
+	UICallback.Send(handle)
+
+	Utility.wait(lengthOfTime)
+
+	handle =  UICallback.Create("HUD Menu", "_root.HUDMovieBaseInstance.ShowTutorialHintText")
+	UICallback.PushString(handle, txt)
+	UICallback.PushBool(handle, false)
+
+	UICallback.Send(handle)
+
+	Utility.Wait(1.0)
+	osanative.Unlock("mtx_toast")
+EndFunction
+
+Function HideTutorialText() Global
+	int handle =  UICallback.Create("HUD Menu", "_root.HUDMovieBaseInstance.ShowTutorialHintText")
+	UICallback.PushString(handle, "txt")
+	UICallback.PushBool(handle, false)
+
+	UICallback.Send(handle)
+
+EndFunction
+
 
 bool Function IsChild(actor act) Global
 	; Normally, we can just use act.ischild() to see if an actor is a child.
