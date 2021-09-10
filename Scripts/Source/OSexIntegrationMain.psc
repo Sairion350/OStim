@@ -3636,8 +3636,12 @@ Function RegisterForGameLoadEvent(form f)
 		Console("Load registrations not ready")
 	endWhile
 
+	OUtils.lock("mtx_os_registerload")
+
 	LoadRegistrations = PapyrusUtil.PushForm(LoadRegistrations, f)
 	Console("Registered for load event: " + f.getname())
+
+	OSANative.unlock("mtx_os_registerload")
 EndFunction 
 
 Function SendLoadGameEvent()
