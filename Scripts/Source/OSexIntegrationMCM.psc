@@ -84,6 +84,7 @@ Int SetForceAIInConsensualScenes
 
 ; misc settings afaik
 Int SetCustomTimescale
+int SetTutorialMessages
 
 Int SetMisallignmentOption
 Int SetFlipFix
@@ -299,6 +300,7 @@ Event OnPageReset(String Page)
 		SetRebuildDatabase = AddTextOption("Rebuild animation database", "")
 		SetUpdate = AddTextOption("Update all", "")
 		SetMute = AddToggleOption("Mute vanilla OSA sounds", Main.MuteOSA)
+		SetTutorialMessages = AddToggleOption("Enable tutorial messages", Main.ShowTutorials)
 		;SetUseCosaveWorkaround = AddToggleOption("Fix keys & auto-mode", Main.useBrokenCosaveWorkaround)
 		AddEmptyOption()
 
@@ -573,6 +575,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetEnableBeds)
 		Main.UseBed = !Main.UseBed
 		SetToggleOptionValue(Option, Main.UseBed)
+	ElseIf (Option == SetTutorialMessages)
+		Main.ShowTutorials = !Main.ShowTutorials
+		SetToggleOptionValue(Option, Main.ShowTutorials)
 	ElseIf (Option == SetScaling)
 		Main.DisableScaling = !Main.DisableScaling
 		SetToggleOptionValue(Option, Main.DisableScaling)
@@ -828,6 +833,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("Enable automatic misalignment detection\nYou may want to disable this if you want to do some custom realigning.\nWarning: can cause characters to glitch on some setups, beware enabling this")
 	ElseIf (Option == SetEnableBeds)
 		SetInfoText("Actors will find the nearest bed to have sex on")
+	ElseIf (Option == SetTutorialMessages)
+		SetInfoText("If OStim or any addon contains a tutorial, disabling this will hide those tutorial messages")
 	ElseIf (Option == setupdate)
 		SetInfoText("Try to flush out old scripts.\nMay not be reliable, perform a clean install if you get weird behavior after updating")
 	ElseIf (Option == SetAIControl)
@@ -1259,6 +1266,8 @@ Function ExportSettings()
 	; Misc settings export.
 	JMap.SetInt(OstimSettingsFile, "SetCustomTimescale", Main.CustomTimescale as Int)
 
+	JMap.SetInt(OstimSettingsFile, "SetTutorialMessages", Main.ShowTutorials as Int)
+
 	JMap.SetInt(OstimSettingsFile, "SetMisallignmentOption", Main.MisallignmentProtection as Int)
 	JMap.SetInt(OstimSettingsFile, "SetFlipFix", Main.FixFlippedAnimations as Int)
 
@@ -1391,6 +1400,8 @@ Function ImportSettings()
 	Main.UseAutoFades = JMap.GetInt(OstimSettingsFile, "SetUseAutoFades")
 	
 	Main.MuteOSA = JMap.GetInt(OstimSettingsFile, "SetMute")
+
+	Main.ShowTutorials = JMap.GetInt(OstimSettingsFile, "SetTutorialMessages")
 	
 	main.StrippingSlots = JArray.asIntArray((jmap.getObj(OstimSettingsFile, "Slots")))
 
