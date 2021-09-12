@@ -105,6 +105,28 @@ Function HideTutorialText() Global
 
 EndFunction
 
+string Function KeycodeToKey(int keycode) Global
+	int data = JValue.readFromFile("data/Interface/scanCodes/scancode.json")
+	return JMap.GetStr(data, keycode)
+endfunction 
+
+int Function KeyToKeycode(string p_key) Global
+	int data = JValue.readFromFile("data/Interface/scanCodes/scancode.json")
+	int loc = jarray.findstr(jmap.allValues(data), p_key)
+	return jmap.getnthkey(data, loc) as int
+endfunction 
+
+string Function GetButtontag(int keycode) Global
+	string ret = "[" + KeycodeToKey(keycode) + "]"
+
+	if keycode == 54
+		ret = "R-" + ret 
+	elseif keycode == 42
+		ret = "L-" + ret 
+	endif 
+
+	return ret
+endfunction 
 
 bool Function IsChild(actor act) Global
 	; Normally, we can just use act.ischild() to see if an actor is a child.
