@@ -3351,6 +3351,7 @@ Event OnKeyDown(Int KeyPress)
 				Return
 			EndIf
 			If (!Target.IsDead())
+				AddSceneMetadata("manual_start")
 				StartScene(PlayerRef,  Target)
 				return 
 			EndIf
