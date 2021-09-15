@@ -350,3 +350,42 @@ Function Lock(string mutex_key, float spinlockRate = 0.1) Global
 		utility.waitmenumode(spinlockRate)
 	endwhile
 EndFunction
+
+string[] Function BlowjobClasses()
+	string[] ret = new String[5]
+	ret[0] = "BJ"
+	ret[1] = "ApPJ"
+	ret[2] = "HhPJ"
+	ret[3] = "HhBJ"
+	ret[4] = "VBJ"
+
+	return ret
+endfunction 
+
+string[] Function HandjobClasses()
+	string[] ret = new String[4]
+	ret[0] = "ApHJ"
+	ret[1] = "HJ"
+	ret[2] = "VHJ"
+	ret[3] = "DHJ"
+
+	return ret
+endfunction 
+
+string[] Function CunnilingusClasses()
+	string[] ret = new String[3]
+	ret[0] = "VJ"
+	ret[1] = "VBJ"
+	ret[2] = "VHJ"
+
+	return ret
+endfunction 
+
+string[] Function VagPlayClasses()
+	string[] ret = new String[3]
+	ret[0] = "Pf1"
+	ret[1] = "Pf2"
+	ret[2] = "Cr"
+
+	return PapyrusUtil.MergeStringArray(ret, CunnilingusClasses())
+endfunction 
