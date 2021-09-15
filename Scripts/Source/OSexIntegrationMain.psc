@@ -227,7 +227,7 @@ Actor MostRecentOrgasmedActor
 Bool UsingBed
 ObjectReference CurrentBed
 
-Bool EndedProper
+Bool property EndedProper auto
 
 Float StartTime
 
