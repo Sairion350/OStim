@@ -264,7 +264,6 @@ Faction OsaFactionStage
 
 ImageSpaceModifier NutEffect
 
-Sound OrgasmSound
 
 Sound OSADing
 Sound OSATickSmall
@@ -339,7 +338,6 @@ Float[] FeetStimValues
 Float[] BreastsStimValues
 Float[] ProstateStimValues
 
-String[] Speeds
 
 bool ReallignedDuringThisAnim
 
@@ -1310,18 +1308,6 @@ EndFunction
 
 Bool Function IsFemale(Actor Act)
 	{genitalia based / has a vagina and not a penis}
-	; causing male orgasm crashing?
-
-	;If SoSInstalled
-	;	; schlongs have two keywords.   Female pubic hair has three
-	;	if Act.IsInFaction(SoSFaction)
-	;		form slot52 = Act.GetWornForm(0x00400000)
-	;		if slot52 && (slot52.GetNumKeywords() == 2)
-	;	; so... if they have an item in slot52, and that item has 2 keywords it's a schlong, ergo not female
-	;			return false
-	;		endIf
-	;	endIf
-	;endIf
 
 
 	If SoSInstalled
@@ -1843,9 +1829,7 @@ Function AutoIncreaseSpeed()
 	EndIf
 EndFunction
 
-String Function NormalSpeedToOsexSpeed(Int Speed)
-	Return Speeds[Speed]
-EndFunction
+
 
 
 ;
@@ -3053,16 +3037,6 @@ Function SetSystemVars()
 	ProstateStimValues[Breasts] = 0.0
 	ProstateStimValues[Prostate] = 0.0
 
-	Speeds = new String[9] ;this is the most fucked up progression i have ever seen
-	Speeds[0] = "-1"
-	Speeds[1] = "0.5"
-	Speeds[2] = "1.5"
-	Speeds[3] = "2"
-	Speeds[4] = "3"
-	Speeds[5] = "4"
-	Speeds[6] = "4.5"
-	Speeds[7] = "5"
-	Speeds[8] =  "6"
 
 	SubMouthOpenClasses = new String[5]
 	SubMouthOpenClasses[0] = "BJ"
