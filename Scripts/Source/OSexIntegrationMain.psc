@@ -1498,6 +1498,13 @@ Function SetStimMult(Actor Act, Float Value)
 	EndIf
 EndFunction
 
+Function ModifyStimMult(actor act, float by)
+	{thread-safe stimulation modification. Highly recomended you use this over Set.}
+	OUtils.lock("mtx_stimmult")
+	SetStimMult(act, GetStimMult(act) + by)
+	osanative.unlock("mtx_stimmult")
+endfunction
+
 bool Function IsBeingStimulated(Actor act)
 	return (GetCurrentStimulation(act) * GetStimMult(act)) > 0.01
 EndFunction
