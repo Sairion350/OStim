@@ -351,7 +351,7 @@ Function Lock(string mutex_key, float spinlockRate = 0.1) Global
 	endwhile
 EndFunction
 
-string[] Function BlowjobClasses()
+string[] Function BlowjobClasses() Global
 	string[] ret = new String[5]
 	ret[0] = "BJ"
 	ret[1] = "ApPJ"
@@ -362,7 +362,7 @@ string[] Function BlowjobClasses()
 	return ret
 endfunction 
 
-string[] Function HandjobClasses()
+string[] Function HandjobClasses() Global
 	string[] ret = new String[4]
 	ret[0] = "ApHJ"
 	ret[1] = "HJ"
@@ -372,7 +372,7 @@ string[] Function HandjobClasses()
 	return ret
 endfunction 
 
-string[] Function CunnilingusClasses()
+string[] Function CunnilingusClasses() Global
 	string[] ret = new String[3]
 	ret[0] = "VJ"
 	ret[1] = "VBJ"
@@ -381,7 +381,7 @@ string[] Function CunnilingusClasses()
 	return ret
 endfunction 
 
-string[] Function VagPlayClasses()
+string[] Function VagPlayClasses() Global
 	string[] ret = new String[3]
 	ret[0] = "Pf1"
 	ret[1] = "Pf2"
