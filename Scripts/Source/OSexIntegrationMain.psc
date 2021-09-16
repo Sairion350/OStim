@@ -1162,6 +1162,10 @@ Actor Function GetAggressiveActor()
 	Return AggressiveActor
 EndFunction
 
+bool Function IsVictim(actor act)
+	return AggressiveThemedSexScene && (act != AggressiveActor)
+endfunction 
+
 Int Function GetTimesOrgasm(Actor Act) ; number of times the Actor has orgasmed
 	If (Act == DomActor)
 		Return DomTimesOrgasm
@@ -3595,9 +3599,6 @@ Function Startup()
 		return
 	EndIf
 
-	If (Utility.GetCurrentGameTime() > 2)
-		Debug.MessageBox("You seem to be installing OStim mid-playthough. If this save previously had an old OStim version installed, don't forget you needed to run a save cleaner to clean out old scripts. If you have done so already, you can safely ignore this message")
-	EndIf
 
 	installed = true 
 
