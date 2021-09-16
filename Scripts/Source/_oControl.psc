@@ -77,6 +77,9 @@ Function OPlayerControls()
 EndFunction
 
 Event OnKeyDown(Int KeyPress)
+    If (OUtils.MenuOpen())
+        Return
+    EndIf
 
     If (KeyPress == OKey[0])
         UI.Invoke("HUD Menu", "_root.WidgetContainer." + Glyph + ".widget.ctr.END")
