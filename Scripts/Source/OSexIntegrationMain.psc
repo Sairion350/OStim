@@ -703,20 +703,20 @@ Event OnUpdate() ;OStim main logic loop
 			Console("Masturbation scene detected. Starting AI")
 			AI.StartAI()
 			AIRunning = True
-		ElseIf (IsNPCScene() && UseAINPConNPC)
+		ElseIf (SubActor && IsNPCScene() && UseAINPConNPC)
 			Console("NPC on NPC scene detected. Starting AI")
 			AI.StartAI()
 			AIRunning = True
-		ElseIf ((AggressiveActor == PlayerRef) && UseAIPlayerAggressor)
+		ElseIf (SubActor && (AggressiveActor == PlayerRef) && UseAIPlayerAggressor)
 			Console("Player aggressor. Starting AI")
 			AI.StartAI()
 			AIRunning = True
-		ElseIf ((AggressiveActor == getSexPartner(PlayerRef)) && UseAIPlayerAggressed)
+		ElseIf (SubActor && (AggressiveActor == getSexPartner(PlayerRef)) && UseAIPlayerAggressed)
 			Console("Player aggressed. Starting AI")
 			AI.StartAI()
 			AIRunning = True
 			DisableOSAControls = true
-		ElseIf (UseAINonAggressive)
+		ElseIf (SubActor && UseAINonAggressive)
 			Console("Non-aggressive scene. Starting AI")
 			AI.StartAI()
 			AIRunning = True
