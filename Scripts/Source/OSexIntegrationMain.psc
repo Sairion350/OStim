@@ -123,6 +123,7 @@ Bool Property UseAINPConNPC Auto
 Bool Property UseAIPlayerAggressor Auto
 Bool Property UseAIPlayerAggressed Auto
 Bool Property UseAINonAggressive Auto
+Bool Property UseAIMasturbation Auto
 
 Bool Property MuteOSA Auto
 
@@ -376,7 +377,7 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 		endif 
 	EndIf
 
-	If IsActorActive(dom) || IsActorActive(sub)
+	If IsActorActive(dom) || (sub && IsActorActive(sub))
 		Debug.Notification("One of the actors is already in a OSA scene")
 		Return False
 	EndIf
@@ -388,7 +389,7 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	; Default OSex gender order
 	DomActor = Dom
 	SubActor = Sub
-	If (AppearsFemale(Dom) && !AppearsFemale(Sub)) ; if the dom is female and the sub is male
+	If (SubActor && AppearsFemale(Dom) && !AppearsFemale(Sub)) ; if the dom is female and the sub is male
 		DomActor = Sub
 		SubActor = Dom
 	EndIf
@@ -409,7 +410,7 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 	EndIf
 
 
-	If IsPlayerInvolved()
+	If SubActor && IsPlayerInvolved()
 		;special reordering settings
 		;todo: clean up all of the ordering code around here
 		bool gay = (AppearsFemale(dom) == AppearsFemale(sub))
@@ -525,8 +526,12 @@ Event OnUpdate() ;OStim main logic loop
 	If (ThirdActor)
 		Actro = New Actor[3]
 		Actro[2] = ThirdActor
-	Else
+		Actro[1] = SubActor
+	ElseIf SubActor
 		Actro = New Actor[2]
+		Actro[1] = SubActor
+	Else
+		Actro = new Actor[1]
 	EndIf
 
 	RegisterForModEvent("ostim_setvehicle", "OnSetVehicle")
@@ -555,7 +560,6 @@ Event OnUpdate() ;OStim main logic loop
 	
 
 	Actro[0] = DomActor
-	Actro[1] = SubActor
 
 	If (!UsingBed && UseBed)
 		Currentbed = FindBed(DomActor)
@@ -569,10 +573,10 @@ Event OnUpdate() ;OStim main logic loop
 	float[] subCoords
 
 	If ResetPosAfterSceneEnd
-
 		domcoords = OSANative.GetCoords(DomActor)
-
-		subcoords = OSANative.GetCoords(SubActor)
+		If SubActor
+			subcoords = OSANative.GetCoords(SubActor)
+		EndIf
 	EndIf
 
 
@@ -586,7 +590,7 @@ Event OnUpdate() ;OStim main logic loop
 			StartingAnimation = "0MF|KNy6!KNy6|Ho|KnLap"
 		EndIf
 	Else
-		If (SubActor != PlayerRef)
+		If (SubActor && SubActor != PlayerRef)
 			SubActor.MoveTo(DomActor)
 		ElseIf (SubActor == PlayerRef)
 			DomActor.MoveTo(SubActor)
@@ -623,8 +627,10 @@ Event OnUpdate() ;OStim main logic loop
 
 	if !ThirdActor
 		CurrentAnimation = "0Sx0MF_Ho-St6RevCud+01T180"
-	else 
+	elseIf SubActor
 		CurrentAnimation = "0Sx0M2F_Ho-DoubleTrouble"
+	Else
+		CurrentAnimation = startingAnimation
 	endif 
 	LastHubOID = -1
 	;OnAnimationChange()
@@ -642,7 +648,7 @@ Event OnUpdate() ;OStim main logic loop
 		If (DomLightPos > 0)
 			LightActor(DomActor, DomLightPos, DomLightBrightness)
 		EndIf
-		If (SubLightPos > 0)
+		If (SubActor && SubLightPos > 0)
 			LightActor(SubActor, SubLightPos, SubLightBrightness)
 		EndIf
 	EndIf
@@ -662,7 +668,7 @@ Event OnUpdate() ;OStim main logic loop
 
 	StartTime = Utility.GetCurrentRealTime()
 
-	Bool WaitForActorsTouch = (SubActor.GetDistance(DomActor) > 1) && (MisallignmentProtection)
+	Bool WaitForActorsTouch = (SubActor && SubActor.GetDistance(DomActor) > 1) && (MisallignmentProtection)
 	Int WaitCycles = 0
 	While (WaitForActorsTouch) && (SceneRunning)
 		Utility.Wait(0.1)
@@ -693,7 +699,11 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	If (!AIRunning)
-		If (IsNPCScene() && UseAINPConNPC)
+		If !SubActor && UseAIMasturbation
+			Console("Masturbation scene detected. Starting AI")
+			AI.StartAI()
+			AIRunning = True
+		ElseIf (IsNPCScene() && UseAINPConNPC)
 			Console("NPC on NPC scene detected. Starting AI")
 			AI.StartAI()
 			AIRunning = True
@@ -742,7 +752,7 @@ Event OnUpdate() ;OStim main logic loop
 		LoopStartTime = Utility.GetCurrentRealTime()
 
 		If (MisallignmentProtection && IsActorActive(DomActor)) && (!ReallignedDuringThisAnim)
-			If (SubActor.GetDistance(DomActor) > 10)
+			If (SubActor && SubActor.GetDistance(DomActor) > 10)
 				Console("Misallignment detected")
 				ReallignedDuringThisAnim = true
 				AlternateRealign()
@@ -780,7 +790,9 @@ Event OnUpdate() ;OStim main logic loop
 		;Profile()
 		If !DisableStimulationCalculation
 			DomExcitement += GetCurrentStimulation(DomActor) * DomStimMult
-			SubExcitement += GetCurrentStimulation(SubActor) * SubStimMult
+			If SubActor
+				SubExcitement += GetCurrentStimulation(SubActor) * SubStimMult
+			EndIf
 			If ThirdActor
 				ThirdExcitement += GetCurrentStimulation(ThirdActor) * ThirdStimMult
 			EndIf
@@ -846,8 +858,10 @@ Event OnUpdate() ;OStim main logic loop
 	ODatabase.Unload()
 
 	If (FixFlippedAnimations)
-		SubActor.SetDontMove(False)
 		DomActor.SetDontMove(False)
+		If SubActor
+			SubActor.SetDontMove(False)
+		EndIf
 	EndIf
 
 	If (OSANative.IsFreeCam())
@@ -855,8 +869,10 @@ Event OnUpdate() ;OStim main logic loop
 	EndIf
 
 	If ResetPosAfterSceneEnd && !ForceCloseOStimThread
-		SubActor.SetPosition(subcoords[0], subcoords[1], subcoords[2]) ;return
 		DomActor.SetPosition(domcoords[0], domcoords[1], domcoords[2])
+		If SubActor
+			SubActor.SetPosition(subcoords[0], subcoords[1], subcoords[2]) ;return
+		EndIf
 		If (UseFades && EndedProper && IsPlayerInvolved())
 			Game.FadeOutGame(False, True, 25.0, 25.0) ; keep the screen black
 		EndIf
@@ -2240,7 +2256,7 @@ Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being sti
 	Float Ret = 0.0
 	String CClass = GetCurrentAnimationClass()
 	;Bool Aggressive = GetCurrentAnimIsAggressive()
-	Bool Sub = (Act == SubActor)
+	Bool Sub = Act == SubActor || (!SubActor && IsFemale(Act))
 	If ThirdActor == Act
 		sub = AppearsFemale(ThirdActor)
 	EndIf
@@ -2404,7 +2420,7 @@ Float Function GetCurrentStimulation(Actor Act) ; how much an Actor is being sti
 			NumSpeeds += 1
 		EndIf
 
-		If (!IsNaked(GetSexPartner(Act)))
+		If (SubActor && !IsNaked(GetSexPartner(Act)))
 			Ret -= 0.1
 		EndIf
 
@@ -3231,6 +3247,20 @@ Function StartReroutedScene()
 	StartScene(ReroutedDomActor,  ReroutedSubActor)
 EndFunction
 
+Function Masturbate(Actor Masturbator, Bool zUndress = False, Bool zAnimUndress = False, ObjectReference MBed = None)
+
+	If ODatabase.GetLengthOArray(ODatabase.GetAnimationsFromModule(ODatabase.GetDatabaseOArray(), "WANK")) > 0
+		If IsFemale(Masturbator)
+			console("actor is female, starting WANK|Sy9|Cr|BillyyFMasturbationStanding")
+			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Cr|BillyyFMasturbationStanding", Bed = MBed)
+		Else
+			console("Actor is male, starting WANK|Sy9|Po|AnubsMasturbationStanding")
+			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Po|AnubsMasturbationStanding", Bed = MBed)
+		EndIf
+	Else
+		console("masturbation animations were not found.")
+	EndIf
+EndFunction
 
 Function ResetState()
 	Console("Resetting thread state")
@@ -3359,6 +3389,10 @@ Event OnKeyDown(Int KeyPress)
 				StartScene(PlayerRef,  Target)
 				return 
 			EndIf
+		Else
+			AddSceneMetadata("ostim_manual_start")
+			Masturbate(PlayerRef)
+			return
 		EndIf
 	elseif (KeyPress == freecamkey)
 		if animationrunning() && IsPlayerInvolved()

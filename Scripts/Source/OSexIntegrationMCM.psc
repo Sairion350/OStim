@@ -81,6 +81,7 @@ Int SetAIChangeChance
 Int SetForceAIIfAttacking
 Int SetForceAIIfAttacked
 Int SetForceAIInConsensualScenes
+Int SetForceAIForMasturbation
 
 ; misc settings afaik
 Int SetCustomTimescale
@@ -322,6 +323,7 @@ Event OnPageReset(String Page)
 		SetForceAIIfAttacking = AddToggleOption("Force full-auto control if player attacking", Main.UseAIPlayerAggressor)
 		SetForceAIIfAttacked = AddToggleOption("Force full-auto control if player is attacked", Main.UseAIPlayerAggressed)
 		SetForceAIInConsensualScenes = AddToggleOption("Force full-auto control in consensual scenes", Main.UseAINonAggressive)
+		SetForceAIForMasturbation = AddToggleOption("Force full-auto control for masturbation", Main.UseAIMasturbation)
 		SetUseAutoFades = AddToggleOption("Fade out in between animation transitions", Main.UseAutoFades)
 		SetAIChangeChance = AddSliderOption("AI Animation Change Chance", Main.AiSwitchChance, "{0}")
 		AddEmptyOption()
@@ -596,6 +598,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetForceAIInConsensualScenes)
 		Main.UseAINonAggressive = !Main.UseAINonAggressive
 		SetToggleOptionValue(Option, Main.UseAINonAggressive)
+	ElseIf (Option == SetForceAIForMasturbation)
+		Main.UseAIMasturbation = !Main.UseAIMasturbation
+		SetToggleOptionValue(Option, Main.UseAIMasturbation)
 	ElseIf (Option == SetDropClothes)
 		Main.TossClothesOntoGround = !Main.TossClothesOntoGround
 		SetToggleOptionValue(Option, Main.TossClothesOntoGround)
@@ -771,6 +776,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("If using manual mode by default, this will force automatic mode to activate if the player is the attacker in an aggressive scene")
 	ElseIf (Option == SetForceAIInConsensualScenes)
 		SetInfoText("If using manual mode by default, this will force automatic mode to activate in consensual scenes")
+	ElseIf (Option == SetForceAIForMasturbation)
+		SetInfoText("If using manual mode by default, this will force automatic mode to activate for player masturbation scenes")
 	ElseIf (Option == SetUseFades)
 		SetInfoText("Fade the screen to black when a scene starts/ends")
 	ElseIf (Option == SetScaling)
@@ -1254,6 +1261,7 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetForceAIIfAttacking", Main.UseAIPlayerAggressor as Int)
 	JMap.SetInt(OstimSettingsFile, "SetForceAIIfAttacked", Main.UseAIPlayerAggressed as Int)
 	JMap.SetInt(OstimSettingsFile, "SetForceAIInConsensualScenes", Main.UseAINonAggressive as Int)
+	JMap.SetInt(OstimSettingsFile, "SetForceAIForMasturbation", Main.UseAIMasturbation as Int)
 	JMap.SetInt(OstimSettingsFile, "SetAIChangeChance", Main.AiSwitchChance as Int)
 
 	; Camera settings export.
@@ -1382,6 +1390,7 @@ Function ImportSettings()
 	Main.UseAIPlayerAggressor = JMap.GetInt(OstimSettingsFile, "SetForceAIIfAttacking")
 	Main.UseAIPlayerAggressed = JMap.GetInt(OstimSettingsFile, "SetForceAIIfAttacked")
 	Main.UseAINonAggressive = JMap.GetInt(OstimSettingsFile, "SetForceAIInConsensualScenes")
+	Main.UseAIMasturbation = JMap.GetInt(OstimSettingsFile, "SetForceAIForMasturbation")
 	
 	; Camera settings export.
 	Main.UseFreeCam = JMap.GetInt(OstimSettingsFile, "SetUseFreeCam")

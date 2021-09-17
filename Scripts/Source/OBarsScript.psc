@@ -144,7 +144,7 @@ Event OstimStart(String eventName, String strArg, Float numArg, Form sender)
     	SetBarVisible(DomBar, True)
 	EndIf
 
-	If (OStim.EnableSubBar)
+	If (OStim.EnableSubBar && (OStim.GetSubActor() != None))
 		SetBarPercent(SubBar, 0.0)
     	SetBarVisible(SubBar, True)
 	EndIf
@@ -292,7 +292,9 @@ endevent
 
 Function SetBarFullnessProper()
 	SetBarPercent(DomBar, OStim.GetActorExcitement(OStim.GetDomActor()))
-	SetBarPercent(SubBar, OStim.GetActorExcitement(OStim.GetSubActor()))
+	If OStim.GetSubActor()
+		SetBarPercent(SubBar, OStim.GetActorExcitement(OStim.GetSubActor()))
+	EndIf
 	If OStim.GetThirdActor()
 		SetBarPercent(ThirdBar, OStim.GetActorExcitement(OStim.GetThirdActor()))
 	EndIf
