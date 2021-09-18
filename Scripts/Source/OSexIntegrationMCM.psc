@@ -192,30 +192,30 @@ Function Init()
 	Main = (Self as Quest) as OsexIntegrationMain
 
 	DomLightModeList = new String[3]
-	DomLightModeList[0] = "No light"
-	DomLightModeList[1] = "Rear light"
-	DomLightModeList[2] = "Face light"
+	DomLightModeList[0] = "$ostim_light_mode_none"
+	DomLightModeList[1] = "$ostim_light_mode_rear"
+	DomLightModeList[2] = "$ostim_light_mode_face"
 
 	SubLightModeList = new String[3]
-	SubLightModeList[0] = "No light"
-	SubLightModeList[1] = "Rear light"
-	SubLightModeList[2] = "Face light"
+	SubLightModeList[0] = "$ostim_light_mode_none"
+	SubLightModeList[1] = "$ostim_light_mode_rear"
+	SubLightModeList[2] = "$ostim_light_mode_face"
 
 	SubLightBrightList = new String[2]
-	SubLightBrightList[0] = "Dim"
+	SubLightBrightList[0] = "$ostim_light_type_dim"
 	SubLightBrightList[1] = "Bright"
 
 	DomLightBrightList = new String[2]
-	DomLightBrightList[0] = "Dim"
-	DomLightBrightList[1] = "Bright"
+	DomLightBrightList[0] = "$ostim_light_type_dim"
+	DomLightBrightList[1] = "$ostim_light_type_bright"
 
 	playerref = game.getplayer()
 
 	string[] pagearr = PapyrusUtil.StringArray(0)
-	pagearr = PapyrusUtil.PushString(pagearr, "Configuration")
-	pagearr = PapyrusUtil.PushString(pagearr, "Undressing")
-	pagearr = PapyrusUtil.PushString(pagearr, "Add-ons")
-	pagearr = PapyrusUtil.PushString(pagearr, "About")
+	pagearr = PapyrusUtil.PushString(pagearr, "$ostim_page_configuration")
+	pagearr = PapyrusUtil.PushString(pagearr, "$ostim_page_undress")
+	pagearr = PapyrusUtil.PushString(pagearr, "$ostim_page_addons")
+	pagearr = PapyrusUtil.PushString(pagearr, "$ostim_page_about")
 
 	Pages = pagearr
 
@@ -226,172 +226,172 @@ Event OnPageReset(String Page)
 	{Called when a new page is selected, including the initial empty page}
 	currPage = page
 
-	If (Page == "Configuration")
+	If (Page == "")
+		LoadCustomContent("Ostim/logo.dds", 184, 31)
+	ElseIf (Page == "$ostim_page_configuration")
 		If (!Main)
 			Init()
 			If (!Main.EndOnDomOrgasm)
 				Main.Startup()
 			EndIf
-			Debug.MessageBox("Anomaly detected in install, please reinstall OStim if it does not start properly")
+			Debug.MessageBox("$ostim_message_main_not_initialized")
 		EndIf
 
 		UnloadCustomContent()
 		SetInfoText(" ")
 		Main.playTickBig()
 		SetCursorFillMode(TOP_TO_BOTTOM)
-		SetThanks = AddTextOption("Thanks!", "")
+		SetThanks = AddTextOption("$ostim_thanks", "")
 		SetCursorPosition(1)
-		AddTextOption("<font color='" + "#939292" +"'>" + "OStim Settings", "")
+		AddTextOption("$ostim_config_text", "")
 		SetCursorPosition(2)
 
 		;=============================================================================================
 
-		AddColoredHeader("Sex scenes")
-		SetActorSpeedControl = AddToggleOption("Actors control speed", Main.EnableActorSpeedControl)
-		SetsexExcitementMult = AddSliderOption("Excitement multiplier", Main.SexExcitementMult, "{2} x")
-		SetClipinglessFirstPerson = AddToggleOption("Clipping-less first person", Main.EnableImprovedCamSupport)
-		SetDisableHitbox = AddToggleOption("Disable player hitbox", Main.disableplayerhitbox)
-		SetCustomTimescale = AddSliderOption("Custom timescale", Main.CustomTimescale, "{0}")
-		SetMisallignmentOption = AddToggleOption("Enable misalignment protection", Main.MisallignmentProtection)
-		SetFlipFix = AddToggleOption("Enable flipped animation fix", Main.FixFlippedAnimations)
-		SetUseFades = AddToggleOption("Fade out on intro/outro", Main.UseFades)
-		SetEndAfterActorHit = AddToggleOption("End if attacked", Main.EndAfterActorHit)
-		SetUseRumble = AddToggleOption("Use controller rumble", Main.UseRumble)
-		SetUseScreenShake = AddToggleOption("Use extra screenshake", Main.UseScreenShake)
-		SetForceFirstPerson = AddToggleOption("Force return to first person after scene", Main.ForceFirstPersonAfter)
-		SetScaling = AddToggleOption("Disable scaling", Main.DisableScaling)
-		SetResetPosition = AddToggleOption("Reset position after scene", Main.ResetPosAfterSceneEnd) 		
+		AddColoredHeader("$ostim_header_sex_scenes")
+		SetActorSpeedControl = AddToggleOption("$ostim_speed_control", Main.EnableActorSpeedControl)
+		SetsexExcitementMult = AddSliderOption("$ostim_excitement_mult", Main.SexExcitementMult, "{2} x")
+		SetClipinglessFirstPerson = AddToggleOption("$ostim_clippingless", Main.EnableImprovedCamSupport)
+		SetDisableHitbox = AddToggleOption("$ostim_disable_hitbox", Main.disableplayerhitbox)
+		SetCustomTimescale = AddSliderOption("$ostim_timescale", Main.CustomTimescale, "{0}")
+		SetMisallignmentOption = AddToggleOption("$ostim_misallignment", Main.MisallignmentProtection)
+		SetFlipFix = AddToggleOption("$ostim_flip_fix", Main.FixFlippedAnimations)
+		SetUseFades = AddToggleOption("$ostim_use_fades", Main.UseFades)
+		SetEndAfterActorHit = AddToggleOption("$ostim_end_on_hit", Main.EndAfterActorHit)
+		SetUseRumble = AddToggleOption("$ostim_use_rumble", Main.UseRumble)
+		SetUseScreenShake = AddToggleOption("$ostim_screenshake", Main.UseScreenShake)
+		SetForceFirstPerson = AddToggleOption("$ostim_force_first", Main.ForceFirstPersonAfter)
+		SetScaling = AddToggleOption("$ostim_scaling", Main.DisableScaling)
+		SetResetPosition = AddToggleOption("$ostim_reset_position", Main.ResetPosAfterSceneEnd) 		
 		AddEmptyOption()
 
-		AddColoredHeader("Player Roles")
-		SetOnlyGayAnimsInGayScenes = AddToggleOption("Only use same sex animations for same sex scenes", Main.OnlyGayAnimsInGayScenes)
-		setPlayerAlwaysDomStraight = AddToggleOption("Player Always Dom: Straight", Main.PlayerAlwaysDomStraight)
-		setPlayerAlwaysSubStraight = AddToggleOption("Player Always Sub: Straight", Main.PlayerAlwaysSubStraight)
-		setPlayerAlwaysDomGay = AddToggleOption("Player Always Dom: Gay", Main.PlayerAlwaysDomGay)
-		setPlayerAlwaysSubGay = AddToggleOption("Player Always Sub: Gay", Main.PlayerAlwaysSubGay)
+		AddColoredHeader("$ostim_header_player_roles")
+		SetOnlyGayAnimsInGayScenes = AddToggleOption("$ostim_force_gay_anims", Main.OnlyGayAnimsInGayScenes)
+		setPlayerAlwaysDomStraight = AddToggleOption("$ostim_always_dom_straight", Main.PlayerAlwaysDomStraight)
+		setPlayerAlwaysSubStraight = AddToggleOption("$ostim_always_sub_straight", Main.PlayerAlwaysSubStraight)
+		setPlayerAlwaysDomGay = AddToggleOption("$ostim_always_dom_gay", Main.PlayerAlwaysDomGay)
+		setPlayerAlwaysSubGay = AddToggleOption("$ostim_always_sub_gay", Main.PlayerAlwaysSubGay)
 		AddEmptyOption()
 
-		AddColoredHeader("Orgasms")
-		SetEndOnOrgasm = AddToggleOption("End sex after Dom actor orgasm", Main.EndOnDomOrgasm)
-		SetEndOnSubOrgasm = AddToggleOption("End sex after Sub actor orgasm", Main.EndOnSubOrgasm)
-		SetEndOnBothOrgasm = AddToggleOption("Require both actors to orgasm to end", Main.RequireBothOrgasmsToFinish)
-		SetSlowMoOrgasms = AddToggleOption("Slow motion on orgasm", Main.SlowMoOnOrgasm)
-		SetOrgasmBoostsRel = AddToggleOption("Orgasm boosts relationship rank", Main.OrgasmIncreasesRelationship)
+		AddColoredHeader("$ostim_header_orgasms")
+		SetEndOnOrgasm = AddToggleOption("$ostim_orgasm_end_dom", Main.EndOnDomOrgasm)
+		SetEndOnSubOrgasm = AddToggleOption("$ostim_orgasm_end_sub", Main.EndOnSubOrgasm)
+		SetEndOnBothOrgasm = AddToggleOption("$ostim_orgasm_end_both", Main.RequireBothOrgasmsToFinish)
+		SetSlowMoOrgasms = AddToggleOption("$ostim_slowmo_orgasm", Main.SlowMoOnOrgasm)
+		SetOrgasmBoostsRel = AddToggleOption("$ostim_orgasm_boost_rel", Main.OrgasmIncreasesRelationship)
 		AddEmptyOption()
 
-		AddColoredHeader("Beds")
-		SetEnableBeds = AddToggleOption("Use beds", Main.UseBed)
-		SetBedSearchDistance = AddSliderOption("Bed search radius", Main.BedSearchDistance, "{0} meters")
-		SetBedReallignment = AddSliderOption("Bed realignment", Main.BedReallignment, "{0} units")
-		SetBedAlgo = AddToggleOption("Use alternate bed search method", Main.UseAlternateBedSearch)
+		AddColoredHeader("$ostim_header_beds")
+		SetEnableBeds = AddToggleOption("$ostim_use_beds", Main.UseBed)
+		SetBedSearchDistance = AddSliderOption("$ostim_bed_search_rad", Main.BedSearchDistance, "{0} meters")
+		SetBedReallignment = AddSliderOption("$ostim_bed_reallignment", Main.BedReallignment, "{0} units")
+		SetBedAlgo = AddToggleOption("$ostim_bed_algo", Main.UseAlternateBedSearch)
 		AddEmptyOption()
 
-		AddColoredHeader("Excitement bars")
-		SetDomBar = AddToggleOption("Main actor HUD bar", Main.EnableDomBar)
-		SetSubBar = AddToggleOption("Second actor HUD bar", Main.EnableSubBar)
-		SetThirdBar = AddToggleOption("Third actor HUD bar", Main.EnableThirdBar)
-		SetAutoHideBar = AddToggleOption("Autohide bars", Main.AutoHideBars)
-		SetMatchColorToGender = AddToggleOption("Match color to gender", Main.MatchBarColorToGender)
-		SetHideNPCOnNPCBars = AddToggleOption("Hide bars in NPC-only scenes", Main.HideBarsInNPCScenes)
+		AddColoredHeader("$ostim_header_excitement_bars")
+		SetDomBar = AddToggleOption("$ostim_dom_bar", Main.EnableDomBar)
+		SetSubBar = AddToggleOption("$ostim_sub_bar", Main.EnableSubBar)
+		SetThirdBar = AddToggleOption("$ostim_third_bar", Main.EnableThirdBar)
+		SetAutoHideBar = AddToggleOption("$ostim_auto_hide_bar", Main.AutoHideBars)
+		SetMatchColorToGender = AddToggleOption("$ostim_match_color_gender", Main.MatchBarColorToGender)
+		SetHideNPCOnNPCBars = AddToggleOption("$ostim_hide_npc_bars", Main.HideBarsInNPCScenes)
 		AddEmptyOption()
 
-		AddColoredHeader("System")
-		SetResetState = AddTextOption("Reset thread state", "")
-		SetRebuildDatabase = AddTextOption("Rebuild animation database", "")
-		SetUpdate = AddTextOption("Update all", "")
-		SetMute = AddToggleOption("Mute vanilla OSA sounds", Main.MuteOSA)
-		SetTutorialMessages = AddToggleOption("Enable tutorial messages", Main.ShowTutorials)
-		;SetUseCosaveWorkaround = AddToggleOption("Fix keys & auto-mode", Main.useBrokenCosaveWorkaround)
+		AddColoredHeader("$ostim_header_system")
+		SetResetState = AddTextOption("$ostim_reset_state", "")
+		SetRebuildDatabase = AddTextOption("$ostim_rebuild_database", "")
+		SetUpdate = AddTextOption("$ostim_update", "")
+		SetMute = AddToggleOption("$ostim_mute_osa", Main.MuteOSA)
+		SetTutorialMessages = AddToggleOption("$ostim_tutorial", Main.ShowTutorials)
+		;SetUseCosaveWorkaround = AddToggleOption("$ostim_cosave", Main.useBrokenCosaveWorkaround)
 		AddEmptyOption()
 
 		;=============================================================================================
 
 		SetCursorPosition(3)
-		AddColoredHeader("Undressing")
-		SetAlwaysUndressAtStart = AddToggleOption("Fully undress at start", Main.AlwaysUndressAtAnimStart)
-		SetUndressIfneed = AddToggleOption("Remove clothes mid-scene", Main.AutoUndressIfNeeded)
-		SetDropClothes = AddToggleOption("Toss clothes onto ground", Main.TossClothesOntoGround)
-		;SetStrongerUnequip = AddToggleOption("Use stronger unequip method", Main.UseStrongerUnequipMethod) Likely redundant 
-		SetAnimateRedress= AddToggleOption("Use animated redress", Main.FullyAnimateRedress)
-		;SetAlwaysAnimateUndress = AddToggleOption("Use undress animation", Main.AlwaysAnimateUndress) Removed in 4.0, may be reimplemented but it was bugged
-		;SetonlyUndressChest = AddToggleOption("Only undress chest piece", Main.OnlyUndressChest) REMOVED in 4.0
+		AddColoredHeader("$ostim_header_undressing")
+		SetAlwaysUndressAtStart = AddToggleOption("$ostim_undress_start", Main.AlwaysUndressAtAnimStart)
+		SetUndressIfneed = AddToggleOption("$ostim_undress_need", Main.AutoUndressIfNeeded)
+		SetDropClothes = AddToggleOption("$ostim_drop_clothes", Main.TossClothesOntoGround)
+		;SetStrongerUnequip = AddToggleOption("$ostim_stronger_unequip", Main.UseStrongerUnequipMethod) Likely redundant 
+		SetAnimateRedress= AddToggleOption("$ostim_animate_redress", Main.FullyAnimateRedress)
+		;SetAlwaysAnimateUndress = AddToggleOption("$ostim_always_animate_undress", Main.AlwaysAnimateUndress) Removed in 4.0, may be reimplemented but it was bugged
+		;SetonlyUndressChest = AddToggleOption("$ostim_only_chest", Main.OnlyUndressChest) REMOVED in 4.0
 		AddEmptyOption()
 
-		AddColoredHeader("AI Control")
-		SetAIControl = AddToggleOption("Enable full-auto control", Main.UseAIControl)
-		SetForceAIIfAttacking = AddToggleOption("Force full-auto control if player attacking", Main.UseAIPlayerAggressor)
-		SetForceAIIfAttacked = AddToggleOption("Force full-auto control if player is attacked", Main.UseAIPlayerAggressed)
-		SetForceAIInConsensualScenes = AddToggleOption("Force full-auto control in consensual scenes", Main.UseAINonAggressive)
-		SetUseAutoFades = AddToggleOption("Fade out in between animation transitions", Main.UseAutoFades)
-		SetAIChangeChance = AddSliderOption("AI Animation Change Chance", Main.AiSwitchChance, "{0}")
+		AddColoredHeader("$ostim_header_ai_control")
+		SetAIControl = AddToggleOption("$ostim_full_auto", Main.UseAIControl)
+		SetForceAIIfAttacking = AddToggleOption("$ostim_force_auto_attacking", Main.UseAIPlayerAggressor)
+		SetForceAIIfAttacked = AddToggleOption("$ostim_force_auto_attacked", Main.UseAIPlayerAggressed)
+		SetForceAIInConsensualScenes = AddToggleOption("$ostim_force_auto_consentual", Main.UseAINonAggressive)
+		;SetForceAIForMasturbation = AddToggleOption("$ostim_force_auto_masturbation", Main.UseAIMasturbation)
+		SetUseAutoFades = AddToggleOption("$ostim_auto_fades", Main.UseAutoFades)
+		SetAIChangeChance = AddSliderOption("$ostim_ai_change_chance", Main.AiSwitchChance, "{0}")
 		AddEmptyOption()
 
-		AddColoredHeader("FreeCam")
-		SetUseFreeCam = AddToggleOption("Switch to freecam mode on start", Main.UseFreeCam)
-		SetFreeCamFOV = AddSliderOption("Freecam FOV", Main.FreecamFOV, "{0}")
-		SetDefaultFOV = AddSliderOption("Default FOV", Main.DefaultFOV, "{0}")
-		SetCameraSpeed = AddSliderOption("Camera speed", Main.FreecamSpeed, "{0}")
+		AddColoredHeader("$ostim_header_freecam")
+		SetUseFreeCam = AddToggleOption("$ostim_freecam", Main.UseFreeCam)
+		SetFreeCamFOV = AddSliderOption("$ostim_freecam_fov", Main.FreecamFOV, "{0}")
+		SetDefaultFOV = AddSliderOption("$ostim_default_fov", Main.DefaultFOV, "{0}")
+		SetCameraSpeed = AddSliderOption("$ostim_freecam_speed", Main.FreecamSpeed, "{0}")
 		AddEmptyOption()
 
-		AddColoredHeader("Keys")
-		SetKeymap = AddKeyMapOption("Start sex with target", Main.KeyMap)
-		SetKeyup = AddKeyMapOption("Increase speed", Main.SpeedUpKey)
-		SetKeydown = AddKeyMapOption("Decrease speed", Main.SpeedDownKey)
-		SetPullOut = AddKeyMapOption("Pull out", Main.PullOutKey)
-		SetControlToggle = AddKeyMapOption("Switch control mode", Main.ControlToggleKey)
-		SetFreecamToggleKey = AddKeyMapOption("Toggle freecam", Main.FreecamKey)
+		AddColoredHeader("$ostim_header_keys")
+		SetKeymap = AddKeyMapOption("$ostim_main_key", Main.KeyMap)
+		SetKeyup = AddKeyMapOption("$ostim_speed_up_key", Main.SpeedUpKey)
+		SetKeydown = AddKeyMapOption("$ostim_speed_down_key", Main.SpeedDownKey)
+		SetPullOut = AddKeyMapOption("$ostim_pullout_key", Main.PullOutKey)
+		SetControlToggle = AddKeyMapOption("$ostim_control_toggle_key", Main.ControlToggleKey)
+		SetFreecamToggleKey = AddKeyMapOption("$ostim_tfc_key", Main.FreecamKey)
 		AddEmptyOption()
 
-		AddColoredHeader("Lights")
-		SetDomLightMode = AddMenuOption("Main actor light mode", DomLightModeList[Main.DomLightPos])
-		SetSubLightMode = AddMenuOption("Second actor light mode", SubLightModeList[Main.SubLightPos])
-		SetDomLightBrightness = AddMenuOption("Main actor light brightness", DomLightBrightList[Main.DomLightBrightness])
-		SetSubLightBrightness = AddMenuOption("Second actor light brightness", SubLightBrightList[Main.SubLightBrightness])
-		SetOnlyLightInDark = AddToggleOption("Only use lights in darkness", Main.LowLightLevelLightsOnly)
+		AddColoredHeader("$ostim_header_lights")
+		SetDomLightMode = AddMenuOption("$ostim_dom_light_mode", DomLightModeList[Main.DomLightPos])
+		SetSubLightMode = AddMenuOption("$ostim_sub_light_mode", SubLightModeList[Main.SubLightPos])
+		SetDomLightBrightness = AddMenuOption("$ostim_dom_light_brightness", DomLightBrightList[Main.DomLightBrightness])
+		SetSubLightBrightness = AddMenuOption("$ostim_sub_light_brightness", SubLightBrightList[Main.SubLightBrightness])
+		SetOnlyLightInDark = AddToggleOption("$ostim_dark_light", Main.LowLightLevelLightsOnly)
 		AddEmptyOption()
 
-		AddColoredHeader("Save and load settings.")
-		ExportSettings = AddTextOption("Export Settings", "Done")
-		ImportSettings = AddTextOption("Import Settings", "Done")
+		AddColoredHeader("$ostim_header_save_load")
+		ExportSettings = AddTextOption("$ostim_export", "$ostim_done")
+		ImportSettings = AddTextOption("$ostim_import", "$ostim_done")
 		AddEmptyOption()
-	ElseIf (Page == "")
-		LoadCustomContent("Ostim/logo.dds", 184, 31)
-
-	ElseIf (Page == "Add-ons")
+	ElseIf (Page == "$ostim_page_addons")
 		SetInfoText(" ")
 		Main.playTickBig()
 		SetCursorFillMode(TOP_TO_BOTTOM)
 		UnloadCustomContent()
 		SetThanks = AddTextOption("", "")
 		SetCursorPosition(1)
-		AddTextOption("<font color='" + "#939292" +"'>" + "Add-on Settings", "")
+		AddTextOption("$ostim_addon_settings_text", "")
 		SetCursorPosition(2)
 
 		if main.IsModLoaded(ORomance)
 			AddColoredHeader("ORomance")
-			SetORSexuality = AddToggleOption("Enable NPC sexualities", GetExternalBool(ORomance, GVORSexuality))
-			SetORDifficulty = AddSliderOption("Difficulty modifier", GetExternalInt(ORomance, GVORDifficulty), "{0}")
-			SetORKey = AddKeyMapOption("Start dialogue", GetExternalInt(oromance, gvorkey))
-			SetORColorblind = AddToggleOption("Enable colorless success indicator", GetExternalBool(ORomance, GVORColorblind))
-			;SetORStationary = AddToggleOption("Enable gamepad control ", GetExternalBool(ORomance, GVORStationaryMode))
-			SetORLeft = AddKeyMapOption("Left Key", GetExternalInt(oromance, GVORLeft))
-			SetORRight = AddKeyMapOption("Right Key", GetExternalInt(oromance, GVORRight))
-			SetORNakadashi = AddToggleOption("NPCs are not cautious about vaginal ejaculation", GetExternalBool(ORomance, GVORNakadashi))
+			SetORSexuality = AddToggleOption("$ostim_addon_or_npc_sexualities", GetExternalBool(ORomance, GVORSexuality))
+			SetORDifficulty = AddSliderOption("$ostim_addon_or_difficulty", GetExternalInt(ORomance, GVORDifficulty), "{0}")
+			SetORKey = AddKeyMapOption("$ostim_addon_or_mainkey", GetExternalInt(oromance, gvorkey))
+			SetORColorblind = AddToggleOption("$ostim_addon_or_colorblind", GetExternalBool(ORomance, GVORColorblind))
+			;SetORStationary = AddToggleOption("$ostim_addon_or_stationary", GetExternalBool(ORomance, GVORStationaryMode))
+			SetORLeft = AddKeyMapOption("$ostim_addon_or_left_key", GetExternalInt(oromance, GVORLeft))
+			SetORRight = AddKeyMapOption("$ostim_addon_or_right_key", GetExternalInt(oromance, GVORRight))
+			SetORNakadashi = AddToggleOption("$ostim_addon_or_nakadashi", GetExternalBool(ORomance, GVORNakadashi))
 		endif 
 
 		if main.IsModLoaded(ONights)
 			AddColoredHeader("ONights")
-			SetONStopWhenFound = AddToggleOption("NPCs stop sex when spotted", GetExternalBool(ONights, GVONStopWhenFound))
-			SetONFreqMult = AddSliderOption("Sex frequency Multiplier", GetExternalFloat(ONights, GVONFreqMult), "{2} x")
+			SetONStopWhenFound = AddToggleOption("$ostim_addon_on_stop", GetExternalBool(ONights, GVONStopWhenFound))
+			SetONFreqMult = AddSliderOption("$ostim_addon_on_freq_mult", GetExternalFloat(ONights, GVONFreqMult), "{2} x")
 			
 		endif 
 
 		if main.IsModLoaded(OSearch)
 			AddColoredHeader("OSearch")
-			SetOSKey = AddKeyMapOption("Open search bar", StorageUtil.GetIntValue(none, SUOSKey))
-			SetOSAllowSex = AddToggleOption("Show sex animations", StorageUtil.GetIntValue(none, SUOSAllowSex))
-			SetOSAllowHub = AddToggleOption("Show hub animations", StorageUtil.GetIntValue(none, SUOSAllowHub))
-			SetOSAllowTransitory = AddToggleOption("Show transitory animations", StorageUtil.GetIntValue(none, SUOSAllowTransitory))
+			SetOSKey = AddKeyMapOption("$ostim_addon_os_key", StorageUtil.GetIntValue(none, SUOSKey))
+			SetOSAllowSex = AddToggleOption("$ostim_addon_os_sex", StorageUtil.GetIntValue(none, SUOSAllowSex))
+			SetOSAllowHub = AddToggleOption("$ostim_addon_os_hub", StorageUtil.GetIntValue(none, SUOSAllowHub))
+			SetOSAllowTransitory = AddToggleOption("$ostim_addon_os_transitory", StorageUtil.GetIntValue(none, SUOSAllowTransitory))
 		endif 
 
 		;===================================
@@ -400,46 +400,42 @@ Event OnPageReset(String Page)
 
 		if main.IsModLoaded(OBody)
 			AddColoredHeader("OBody")
-			SetOBRefit = AddToggleOption("Enable ORefit", GetExternalBool(OBody, GVOBorefit))
-			SetOBNippleRand = AddToggleOption("Randomize nipples", GetExternalBool(OBody, GVOBNippleRand))
-			SetOBGenitalRand = AddToggleOption("Randomize genitals", GetExternalBool(OBody, GVOBGenitalRand))
-			SetOBPresetKey = AddKeyMapOption("Edit presets", GetExternalInt(OBody, GVOBPrestKey))
+			SetOBRefit = AddToggleOption("$ostim_addon_ob_refit", GetExternalBool(OBody, GVOBorefit))
+			SetOBNippleRand = AddToggleOption("$ostim_addon_ob_nipples", GetExternalBool(OBody, GVOBNippleRand))
+			SetOBGenitalRand = AddToggleOption("$ostim_addon_ob_genitals", GetExternalBool(OBody, GVOBGenitalRand))
+			SetOBPresetKey = AddKeyMapOption("$ostim_addon_ob_preset_key", GetExternalInt(OBody, GVOBPrestKey))
 			
 		endif 
 
 		if main.IsModLoaded(OCrime)
 			AddColoredHeader("OCrime")
-			SetOCBounty = AddSliderOption("Public sex penalty", StorageUtil.GetIntValue(none, suocbounty), "{0} gold")
+			SetOCBounty = AddSliderOption("$ostim_addon_oc_bounty", StorageUtil.GetIntValue(none, suocbounty), "{0} Gold")
 		endif 
 
 		if main.IsModLoaded(OAroused)
 			AddColoredHeader("OAroused")
-			SetOAKey = AddKeyMapOption("Show arousal", StorageUtil.GetIntValue(none, SUOAKey))
-			SetOARequireLowArousalBeforeEnd = AddToggleOption("Require low arousal to end scene", StorageUtil.GetIntValue(none, SUOALowArousalReq))
-			SetOAStatBuffs = AddToggleOption("Stat buffs/debuffs", StorageUtil.GetIntValue(none, SUOAStatBuffs))
-			SetOANudityBroadcast = AddToggleOption("Nudity increases arousal", StorageUtil.GetIntValue(none, SUOANudityBroadcast))
+			SetOAKey = AddKeyMapOption("$ostim_addon_oa_key", StorageUtil.GetIntValue(none, SUOAKey))
+			SetOARequireLowArousalBeforeEnd = AddToggleOption("$ostim_addon_oa_low_arousal_end", StorageUtil.GetIntValue(none, SUOALowArousalReq))
+			SetOAStatBuffs = AddToggleOption("$ostim_addon_oa_stat_buffs", StorageUtil.GetIntValue(none, SUOAStatBuffs))
+			SetOANudityBroadcast = AddToggleOption("$ostim_addon_oa_nudity_bc", StorageUtil.GetIntValue(none, SUOANudityBroadcast))
 
 		endif 
-
-		
-
-
-	ElseIf (Page == "Undressing")
+	ElseIf (Page == "$ostim_page_undress")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayTickBig()
 		UnloadCustomContent()
 		SetInfoText(" ")
 		Main.playTickBig()
 		SetCursorFillMode(LEFT_TO_RIGHT)
-		SetUndressingAbout = AddTextOption("What is this?", "")
+		SetUndressingAbout = AddTextOption("$ostim_undress_about", "")
 		SetCursorPosition(1)
-		AddTextOption("<font color='" + "#939292" +"'>" + "OStim Undressing", "")
+		AddTextOption("$ostim_undress_text{OStim}", "")
 		SetCursorPosition(2)
-		AddColoredHeader("Undressing slots")
+		AddColoredHeader("$ostim_undress_slots_header")
 		AddColoredHeader("")
 
 		DrawSlotPage()
-	ElseIf (Page == "About")
+	ElseIf (Page == "$ostim_page_about")
 		UnloadCustomContent()
 		SetInfoText(" ")
 		SetCursorFillMode(TOP_TO_BOTTOM)
@@ -448,15 +444,15 @@ Event OnPageReset(String Page)
 		AddTextOption("OStim ", "-")
 		
 		AddTextOption("", "")
-		AddColoredHeader("Authors")
-		AddTextOption("OStim ", "by Sairion")
-		AddTextOption("OSA + OSex", "by CE0")
+		AddColoredHeader("$ostim_authors")
+		AddTextOption("OStim ", "$ostim_by{Sairion}")
+		AddTextOption("OSA + OSex", "$ostim_by{CE0}")
 
 		SetCursorPosition(1)
 		AddTextOption("OSex Overhaul & API", "")
 
 		AddTextOption("", "")
-		AddColoredHeader("Links")
+		AddColoredHeader("$ostim_links")
 		AddTextOption("patreon.com/ostim", "")
 		AddTextOption("discord.gg/RECvhVaRcU", "")
 
@@ -496,9 +492,9 @@ endfunction
 
 Event OnOptionSelect(Int Option)
 	Main.PlayTickBig()
-	if currPage == "Undressing"
+	if currPage == "$ostim_page_undress"
 		OnSlotSelect(option)
-	elseif currPage == "Add-ons"
+	elseif currPage == "$ostim_page_addons"
 		if option == SetORSexuality
 			SetExternalBool(oromance, GVORSexuality, !GetExternalBool(oromance, GVORSexuality))
 			SetToggleOptionValue(SetORSexuality, GetExternalBool(oromance, GVORSexuality))
@@ -560,11 +556,12 @@ Event OnOptionSelect(Int Option)
 		SetToggleOptionValue(SetEndOnBothOrgasm, Main.RequireBothOrgasmsToFinish)
 	ElseIf (Option == SetResetState)
 		Main.ResetState()
+		ShowMessage("$ostim_message_reset_state", false)
 	ElseIf (Option == SetUpdate)
-		Debug.MessageBox("Close all menus now")
+		ShowMessage("$ostim_message_update_close_menus", false)
 		OUtils.ForceOUpdate()
 	ElseIf (Option == SetRebuildDatabase)
-		Debug.MessageBox("Close all menus and watch the console until it is done")
+		ShowMessage("$ostim_message_rebuild_database", false)
 		Main.GetODatabase().InitDatabase()
 	ElseIf (Option == SetActorSpeedControl)
 		Main.EnableActorSpeedControl = !Main.EnableActorSpeedControl
@@ -696,209 +693,215 @@ Event OnOptionSelect(Int Option)
 		Main.OnlyGayAnimsInGayScenes = !Main.OnlyGayAnimsInGayScenes
 		SetToggleOptionValue(Option, Main.OnlyGayAnimsInGayScenes)
 	ElseIf (Option == ExportSettings)
-		ExportSettings()
+		If ShowMessage("$ostim_message_export_confirm", true)
+			ExportSettings()
+		EndIf
 	ElseIf (Option == ImportSettings)
-		ImportSettings()
+		If ShowMessage("$ostim_message_import_confirm")
+			ImportSettings()
+		EndIf
 	EndIf
 EndEvent
 
 Event OnOptionHighlight(Int Option)
 	;Main.playTickSmall()
-	if currPage == "Undressing"
+	if currPage == "$ostim_page_undress"
 		OnSlotMouseOver(option)
-	elseif currPage == "Add-ons"
+	elseif currPage == "$ostim_page_addons"
 		If (Option == SetORKey)
-			SetInfoText("Press this while looking at an NPC to start interacting\nYou must save and reload for this setting to take affect")
+			SetInfoText("$ostim_tooltip_or_mainkey")
 		elseif (option == SetORDifficulty)
-			SetInfoText("Increasing this value makes actions easier. Lowering makes them harder. Lowering is not advised usually")
+			SetInfoText("$ostim_tooltip_or_difficulty")
 		elseif (option == SetOAKey)
-			SetInfoText("(Save and reload to take effect) Press this to view your arousal level")
+			SetInfoText("$ostim_tooltip_oa_key")
 		elseif (option == SetOSKey)
-			SetInfoText("(Save and reload to take effect) Press this during a scene to open the search bar")
+			SetInfoText("$ostim_tooltip_os_key")
 		elseif (option == SetOBPresetKey)
-			SetInfoText("(Save and reload to take effect) Press this to show a menu of all installed presets\nSelect one to apply it to you, or if an NPC is in your crosshair, will apply to them")
+			SetInfoText("$ostim_tooltip_ob_preset_key")
 		elseif (option == SetORSexuality)
-			SetInfoText("Leaving this off makes all NPCs bisexual. \nTurning it on allows them to be gay/bisexual/hetero")
+			SetInfoText("$ostim_tooltip_or_sexuality")
 		elseif (option == SetORColorblind)
-			SetInfoText("Makes the success indicator use text instead of color")
+			SetInfoText("$ostim_tooltip_or_colorblind")
 		elseif (option == SetORLeft)
-			SetInfoText("Left selection key\nSave and reload to take effect")
+			SetInfoText("$ostim_tooltip_or_left_key")
 		elseif (option == SetORRight)
-			SetInfoText("Right selection key\nSave and reload to take effect")
+			SetInfoText("$ostim_tooltip_or_right_key")
 		elseif (option == SetORNakadashi)
-			SetInfoText("Female NPCs are not cautious about you ejaculating inside them before a relationship and sometimes marriage\nMostly for users with no pregnancy mod")
+			SetInfoText("$ostim_tooltip_or_nakadashi")
 		ElseIf (Option == SetONFreqMult)
-			SetInfoText("The frequency at which NPCs will try to have sex with each other")
+			SetInfoText("$ostim_tooltip_on_freq_mult")
 		ElseIf (Option == SetOCBounty)
-			SetInfoText("The bounty you will recieve if caught by a guard having sex in public")
+			SetInfoText("$ostim_tooltip_oc_bounty")
 		Elseif (Option == SetONStopWhenFound)
-			SetInfoText("If checked, NPCs will stop having sex if they know the player can see them")
+			SetInfoText("$ostim_tooltip_on_stop")
 		Elseif (Option == SetOBRefit)
-			SetInfoText("(Save and reload to take effect) (CBBE-based-bodies) Edit bodies to simulate them being clothed, when clothed")
+			SetInfoText("$ostim_tooltip_ob_refit")
 		Elseif (Option == SetOBNippleRand)
-			SetInfoText("(Save and reload to take effect) (CBBE-based-bodies) Procedurally generate nipples")
+			SetInfoText("$ostim_tooltip_ob_nipple")
 		Elseif (Option == SetOBGenitalRand)
-			SetInfoText("(Save and reload to take effect) (3bbb/3ba) Procedurally generate genitals")
+			SetInfoText("$ostim_tooltip_ob_genitals")
 		Elseif (Option == SetOARequireLowArousalBeforeEnd)
-			SetInfoText("When enabled, scenes will not end until your arousal drops below around 15%.")
+			SetInfoText("$ostim_tooltip_oa_low_arousal_end")
 		Elseif (Option == SetOSAllowHub)
-			SetInfoText("Show hub (non-sex idle animations) in the results")
+			SetInfoText("$ostim_tooltip_os_hub")
 		Elseif (Option == SetOSAllowTransitory)
-			SetInfoText("Show transition animations in the results")
+			SetInfoText("$ostim_tooltip_os_transitory")
 		Elseif (Option == SetOSAllowSex)
-			SetInfoText("Show sex animations in the results")
+			SetInfoText("$ostim_tooltip_os_transitory")
 		Elseif (Option == SetOANudityBroadcast)
-			SetInfoText("When enabled, player nudity will make nearby NPCs hornier.\n Note that regardless of this setting, anyone including you viewing an OStim scene will become hornier")
+			SetInfoText("$ostim_tooltip_oa_nudity_bc")
 		Elseif (Option == SetOAStatBuffs)
-			SetInfoText("(Save and reload to take effect) Stamina regen rate will increase as you get hornier. Magicak rate will decrease.")
+			SetInfoText("$ostim_tooltip_oa_stat_buffs")
 		endif 
 
 		return
 	EndIf
 	If (Option == SetEndOnOrgasm)
-		SetInfoText("End the Osex scene automatically when the dominant actor (usually the male) orgasms")
+		SetInfoText("$ostim_tooltip_orgasm_end_dom")
 	ElseIf (Option == SetEndOnSubOrgasm)
-		SetInfoText("End the Osex scene automatically when the submissive actor (usually the female) orgasms")
+		SetInfoText("$ostim_tooltip_orgasm_end_sub")
 	ElseIf (Option == SetEndOnBothOrgasm)
-		SetInfoText("Will prevent the above 2 settings from ending the scene if both actors have not had an orgasm at least once")
+		SetInfoText("$ostim_tooltip_orgasm_end_both")
 	ElseIf (Option == SetResetState)
-		SetInfoText("Click this if you keep getting a Scene Already Running type error")
+		SetInfoText("$ostim_tooltip_reset")
 	ElseIf (Option == SetUndressingAbout)
-		SetInfoText("This panel lets you select what armor slots are stripped by OStim. See this if you don't know what that is\nhttps://www.creationkit.com/index.php?title=Biped_Object\nThese slots will apply to both the player AND NPCs\nSlots where the name is green mean that Bethesda designated that slot to be used that way\nCyan names mean that the community has designated that slot to be used that way\nMany mods do not use the proper slots, so take the names with a grain of salt\nMouse over the names to see if you are wearing an armor piece in that slot")
+		SetInfoText("$ostim_tooltip_undressing_about")
 	ElseIf (Option == SetForceAIIfAttacked)
-		SetInfoText("If using manual mode by default, this will force automatic mode to activate if the player is the victim in an aggressive scene")
+		SetInfoText("$ostim_tooltip_ai_attacked")
 	ElseIf (Option == SetForceAIIfAttacking)
-		SetInfoText("If using manual mode by default, this will force automatic mode to activate if the player is the attacker in an aggressive scene")
+		SetInfoText("$ostim_tooltip_ai_attacking")
 	ElseIf (Option == SetForceAIInConsensualScenes)
-		SetInfoText("If using manual mode by default, this will force automatic mode to activate in consensual scenes")
+		SetInfoText("$ostim_tooltip_ai_consent")
+	;ElseIf (Option == SetForceAIForMasturbation)
+		;SetInfoText("$ostim_tooltip_ai_masturbation")
 	ElseIf (Option == SetUseFades)
-		SetInfoText("Fade the screen to black when a scene starts/ends")
+		SetInfoText("$ostim_tooltip_fades")
 	ElseIf (Option == SetScaling)
-		SetInfoText("Disable changing actor height to fit animations better when scene starts\nDisabling scaling will absolutely wreck animation alignment, turning it off is not recommended\nHowever, turning it off may help fix issues with HDT-SMP")
+		SetInfoText("$ostim_tooltip_scaling")
 	ElseIf (Option == SetUseCosaveWorkaround)
-		SetInfoText("Some users appear to have a broken SKSE co-save setup\n This manifests itself as full-auto mode not working, and keys not saving\nThis will fix the symptoms of the issue if you have it, but not the core cause")
+		SetInfoText("$ostim_tooltip_cosave")
 	ElseIf (Option == SetFreeCamFOV)
-		SetInfoText("The field of view of the camera when in freecam mode\nThis is incompatible with Improved Camera")
+		SetInfoText("$ostim_tooltip_fov")
 	ElseIf (Option == SetUseRumble)
-		SetInfoText("Rumble a controller on thrust, if a controller is being used")
+		SetInfoText("$ostim_tooltip_rumble")
 	ElseIf (Option == SetMatchColorToGender)
-		SetInfoText("Change the color of the bars to match the gender of the character")
+		SetInfoText("$ostim_tooltip_gendered_colors")
 	ElseIf (Option == SetDisableHitbox)
-		SetInfoText("Disables the player's hitbox during scenes. May help misalignment")
+		SetInfoText("$ostim_tooltip_no_hitbox")
 	ElseIf (Option == SetHideNPCOnNPCBars)
-		SetInfoText("Do not show excitement bars if the player is not in a scene")
+		SetInfoText("$ostim_tooltip_npc_bars")
 	ElseIf (Option == SetStrongerUnequip)
-		SetInfoText("Use an alternate unequip method that may catch more armor pieces, especially armor with auto-reequip scripts\nHowever, some armor it unequips may not be reequipped in redress\nHas no effect if drop clothes on to ground is enabled")
+		SetInfoText("$ostim_tooltip_stronger_unequip")
 	ElseIf (Option == SetEndAfterActorHit)
-		SetInfoText("End the scene after someone in the scene is hit\n Can misfire with certain other mods")
+		SetInfoText("$ostim_tooltip_end_on_hit")
 	ElseIf (Option == SetAnimateRedress)
-		SetInfoText("Makes NPCs play redressing animations after a scene ends if they need to redress")
+		SetInfoText("$ostim_tooltip_animate_redress")
 	ElseIf (Option == SetForceFirstPerson)
-		SetInfoText("Return to first person after scene ends.\nFixes the hybrid-camera bug in Improved Camera")
+		SetInfoText("$ostim_tooltip_force_first")
 	ElseIf (Option == SetCustomTimescale)
-		SetInfoText("Changes the timescale during sex scenes, and reverts it back to what it was after the scene ends\nUseful if you don't want sex taking an entire day\n0 = this feature is disabled")
+		SetInfoText("$ostim_tooltip_custom_timescale")
 	ElseIf (Option == SetClipinglessFirstPerson)
-		 SetInfoText("REQUIRES: Improved Camera, my custom ini settings file\nExperience first person without any clipping")
+		 SetInfoText("$ostim_tooltip_clippingless")
 	ElseIf (Option == SetActorSpeedControl)
-		SetInfoText("Let actors increase the scene speed on their own when their Excitement gets high enough \nThis feature is experimental, disable if Osex behaves strangely on it's own")
+		SetInfoText("$ostim_tooltip_speed_control")
 	ElseIf (Option == SetResetPosition)
-		SetInfoText("Reset actors to where the where when the scene started, when the scene ends")
+		SetInfoText("$ostim_tooltip_reset_position")
 	ElseIf (Option == SetUndressIfNeed)
-		SetInfoText("If actors' genitals are covered by clothes, this will auto-remove the clothes as soon as they need access to their genitals")
+		SetInfoText("$ostim_tooltip_undress_if_need")
 	ElseIf (Option == SetBedSearchDistance)
-		SetInfoText("High values may increase animation start time")
+		SetInfoText("$ostim_tooltip_bed_search_dist")
 	ElseIf (Option == SetBedAlgo)
-		SetInfoText("Use a slower papyrus bed search method rather than a faster native one\n May find more beds but only enable if a bed is not detected")
+		SetInfoText("$ostim_tooltip_bed_algo")
 	ElseIf (Option == SetUseAutoFades)
-		SetInfoText("Fade to black in between animation transitions")
+		SetInfoText("$ostim_tooltip_auto_fades")
 	ElseIf (Option == SetAIChangeChance)
-		SetInfoText("Chance that characters will switch animations mid scene\nDoes not affect chance of a foreplay -> full sex transition")
+		SetInfoText("$ostim_tooltip_ai_change_chance")
 	ElseIf (Option == SetFlipFix)
-		SetInfoText("Fix some third party animations being flipped 180 degrees")
+		SetInfoText("$ostim_tooltip_flip_fix")
 	ElseIf (Option == SetDropClothes)
-		SetInfoText("Characters will drop clothes they take off onto the ground instead of storing them in their inventory\nCharacters will automatically pick them up when redressing")
+		SetInfoText("$ostim_tooltip_drop_clothes")
 	ElseIf (Option == SetAlwaysUndressAtStart)
-		SetInfoText("Actors will always get undressed as a scene starts \nMods using this mod's API can force an undress to occur even if this isn't checked")
+		SetInfoText("$ostim_tooltip_always_undress")
 	ElseIf (Option == SetAlwaysAnimateUndress)
-		SetInfoText("Always play Osex's undressing animations instead of just removing the clothes normally\nNote: that Auto-Remove clothes will never use Osex's undress animation\nFurther note: Mods using this mod's API can force an animation to occur even if this isn't checked")
+		SetInfoText("$ostim_tooltip_always_animate_undress")
 	ElseIf (Option == SetonlyUndressChest)
-		SetInfoText("Only remove the chest piece during undressing\nNote: due to bugginess with Osex, if using Undress Animation, only the chest piece is currently removed even with this not checked")
+		SetInfoText("$ostim_tooltip_only_chest")
 	ElseIf (Option == SetDomBar)
-		SetInfoText("Enable the on-screen bar that tracks the dominant actor's Excitement\nActor's orgasm when their Excitement maxes out")
+		SetInfoText("$ostim_tooltip_dom_bar")
 	ElseIf (Option == SetthirdBar)
-		SetInfoText("Enable the on-screen bar that tracks the third actor's Excitement\nActor's orgasm when their Excitement maxes out")
+		SetInfoText("$ostim_tooltip_third_bar")
 	ElseIf (Option == SetSubBar)
-		SetInfoText("Enable the on-screen bar that tracks the second actor's Excitement\nActor's orgasm when their Excitement maxes out")
+		SetInfoText("$ostim_tooltip_sub_bar")
 	ElseIf (Option == SetMisallignmentOption)
-		SetInfoText("Enable automatic misalignment detection\nYou may want to disable this if you want to do some custom realigning.\nWarning: can cause characters to glitch on some setups, beware enabling this")
+		SetInfoText("$ostim_tooltip_misalignment")
 	ElseIf (Option == SetEnableBeds)
-		SetInfoText("Actors will find the nearest bed to have sex on")
+		SetInfoText("$ostim_tooltip_enable_beds")
 	ElseIf (Option == SetTutorialMessages)
-		SetInfoText("If OStim or any addon contains a tutorial, disabling this will hide those tutorial messages")
+		SetInfoText("$ostim_tooltip_enable_tutorial")
 	ElseIf (Option == setupdate)
-		SetInfoText("Try to flush out old scripts.\nMay not be reliable, perform a clean install if you get weird behavior after updating")
+		SetInfoText("$ostim_tooltip_update")
 	ElseIf (Option == SetAIControl)
-		SetInfoText("If enabled, scenes will play out on their own without user input via procedural generation\nNote: If you have only used Manual mode briefly or not at all, and never became adept with using it, I STRONGLY recommend you give manual mode a fair chance before using this")
+		SetInfoText("$ostim_tooltip_enable_ai")
 	ElseIf (Option == SetAutoHideBar)
-		SetInfoText("Automatically hide the bars during sex when not interacting with the UI")
+		SetInfoText("$ostim_tooltip_auto_hide_bar")
 	ElseIf (Option == SetSlowMoOrgasms)
-		SetInfoText("Add in a few seconds of slow-motion right when the player orgasms")
+		SetInfoText("$ostim_tooltip_slowmo_orgasms")
 	ElseIf (Option == SetOrgasmBoostsRel)
-		SetInfoText("Giving orgasms to actors you have a relationship rank of 0 with will increase them to rank 1, marking them as a friend\nThis may open up unique options in some mods")
+		SetInfoText("$ostim_tooltip_orgasm_boosts_rel")
 	ElseIf (Option == SetDomLightMode)
-		SetInfoText("Enable light on main actor at animation start")
+		SetInfoText("$ostim_tooltip_dom_light")
 	ElseIf (Option == SetMute)
-		SetInfoText("Mute sounds coming from the OSA engine\nYou should probably only disable this if you have a soundpack installed")
+		SetInfoText("$ostim_tooltip_mute_osa")
 	ElseIf (Option == SetSubLightMode)
-		SetInfoText("Enable light on second actor at animation start")
+		SetInfoText("$ostim_tooltip_sub_light")
 	ElseIf (Option == SetCameraSpeed)
-		SetInfoText("The speed of the freecam")
+		SetInfoText("$ostim_tooltip_fc_speed")
 	ElseIf (Option == SetUseFreeCam)
-		SetInfoText("Automatically switch to freecam when a scene starts")
+		SetInfoText("$ostim_tooltip_auto_fc")
 	ElseIf (Option == SetDefaultFOV)
-		SetInfoText("The field of view to return to when a scene ends when using free cam")
+		SetInfoText("$ostim_tooltip_fc_fov")
 	ElseIf (Option == SetDomLightBrightness)
-		SetInfoText("Set main actor's light's brightness")
+		SetInfoText("$ostim_tooltip_dom_brightness")
 	ElseIf (Option == SetSubLightBrightness)
-		SetInfoText("Set second actor's light's brightness")
+		SetInfoText("$ostim_tooltip_sub_brightness")
 	ElseIf (Option == SetFreecamToggleKey)
-		SetInfoText("Toggle freecam during scenes involving the player \n If using Improved Camera, make sure Clipping-less First Person is enabled when using this")
+		SetInfoText("$ostim_tooltip_tfc_key")
 	ElseIf (Option == SetControlToggle)
-		SetInfoText("Press during an animation: switch between manual and full-auto control for the duration of that animation \n Press outside of animation: switch between manual and full-auto control permanently")
+		SetInfoText("$ostim_tooltip_control_toggle_key")
 	ElseIf (Option == SetOnlyLightInDark)
-		SetInfoText("Only use actor lights when the scene takes place in a dark area")
+		SetInfoText("$ostim_tooltip_dark_light")
 	ElseIf (Option == SetRebuildDatabase)
-		SetInfoText("This will rebuild OStim's internal animation database.\n You only need to click this if you have installed or uninstalled an animation pack MID-playthrough\n The animation database is automatically built at the start of a new playthrough")
+		SetInfoText("$ostim_tooltip_rebuild_database")
 	ElseIf (Option == SetsexExcitementMult)
-		SetInfoText("Multiply all the pleasure/second received by actors by this amount\nThis effectively lets you choose how long you want sex to last\n3.0 = 3 times shorter, 0.1 = 10 times longer")
+		SetInfoText("$ostim_tooltip_excitement_mult")
 	ElseIf (Option == SetKeymap)
-		SetInfoText("Press this while looking at an actor to start OStim.\nStarting OSex through OSA will result in normal OSex instead\nOStim is intended to be played with mods that integrate it into the game instead of using this option")
+		SetInfoText("$ostim_tooltip_main_key")
 	ElseIf (Option == SetKeyUp)
-		SetInfoText("Increase speed during OStim scene\nThe default key (numpad +) conflicts with many mods, may need to remap")
+		SetInfoText("$ostim_tooltip_speed_up_key")
 	ElseIf (Option == SetKeyDown)
-		SetInfoText("Decrease speed during OStim scene\nThe default key (numpad -) conflicts with many mods, may need to remap")
+		SetInfoText("$ostim_tooltip_speed_down_key")
 	ElseIf (Option == SetUseScreenShake)
-		SetInfoText("Use extra screenshake on thrust\n This is not compatible with Improved Camera's first person")
+		SetInfoText("$ostim_tooltip_screen_shake")
 	ElseIf (Option == SetBedReallignment)
-		SetInfoText("Move actors forward/back by this amount on a bed")
+		SetInfoText("$ostim_tooltip_bed_reallignment")
 	ElseIf (Option == SetPullOut)
-		SetInfoText("Only usable in manual mode\nWhen pressed during a sexual animation, causes your character to immediately cancel and \"pull out\" of the current animation")
+		SetInfoText("$ostim_tooltip_pullout_key")
 	ElseIf (Option == SetThanks)
-		SetInfoText("Thank you for downloading OStim\nLeave a comment and also share it with others online if you enjoy it, to help others find it")
+		SetInfoText("$ostim_tooltip_thanks")
 	ElseIf (Option == SetPlayerAlwaysSubStraight)
-		SetInfoText("Forces the player to always take the Sub role during Straight scenes. \nIf neither are enabled default actor placement will take place, if both are enabled player will default to Dom. \nNote that individual mods can temporarily override this setting.")
+		SetInfoText("$ostim_tooltip_always_sub_straight")
 	ElseIf (Option == SetPlayerAlwaysSubGay)
-		SetInfoText("Forces the player to always take the Sub role during Gay scenes. \nIf neither are enabled default actor placement will take place, if both are enabled player will default to Dom. \nNote that individual mods can temporarily override this setting.")
+		SetInfoText("$ostim_tooltip_always_sub_gay")
 	ElseIf (Option == SetPlayerAlwaysDomStraight)
-		SetInfoText("Forces the player to always take the Dom role during Straight scenes. \nIf neither are enabled default actor placement will take place, if both are enabled player will default to Dom. \nNote that individual mods can temporarily override this setting.")
+		SetInfoText("$ostim_tooltip_always_dom_straight")
 	ElseIf (Option == SetPlayerAlwaysDomGay)
-		SetInfoText("Forces the player to always take the Dom role during Gay scenes. \nIf neither are enabled default actor placement will take place, if both are enabled player will default to Dom. \nNote that individual mods can temporarily override this setting.")
+		SetInfoText("$ostim_tooltip_always_dom_gay")
 	ElseIf (Option == SetOnlyGayAnimsInGayScenes)
-		SetInfoText("In a same sex scene (Gay & Lesbian) only same sex animations will be used. There is no fallback in this option, so be aware that you will probably have limited animation options.")
+		SetInfoText("$ostim_tooltip_force_gay_anims")
 	ElseIf (Option == ExportSettings)
-		SetInfoText("Click this button to export the Ostim MCM settings.")
+		SetInfoText("$ostim_tooltip_export")
 	ElseIf (Option == ImportSettings)
-		SetInfoText("Click this button to import the Ostim MCM settings.")
+		SetInfoText("$ostim_tooltip_import")
 
 	EndIf
 EndEvent
@@ -1008,10 +1011,10 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 		SetSliderOptionValue(SetONFreqMult, Value, "{2} x")
 	Elseif (option == SetOCBounty)
 		StorageUtil.SetIntValue(none, SUOCBounty, value as int)
-		SetSliderOptionValue(SetOCBounty, Value, "{0} gold")
+		SetSliderOptionValue(SetOCBounty, Value, "{0} Gold")
 	ElseIf (Option == SetBedSearchDistance)
 		Main.BedSearchDistance = (Value as Int)
-		SetSliderOptionValue(Option, Value, "{0} meters")
+		SetSliderOptionValue(Option, Value, "{0} Meters")
 	ElseIf (Option == SetCustomTimescale)
 		Main.CustomTimescale = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0}")
@@ -1026,7 +1029,7 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 		SetSliderOptionValue(Option, Value, "{0}")
 	ElseIf (Option == SetBedReallignment)
 		Main.BedReallignment = (Value as Int)
-		SetSliderOptionValue(Option, Value, "{0} units")
+		SetSliderOptionValue(Option, Value, "{0} Units")
 	ElseIf (Option == SetAIChangeChance)
 		Main.AiSwitchChance = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0}")
@@ -1079,47 +1082,42 @@ function DrawSlotPage()
 
 	string[] names = new string[128]
 
-	names[30] = "<font color='#317335'> Head"
-	names[31] = "<font color='#317335'> Head/hair"
-	names[32] = "<font color='#317335'> Body armor/clothes"
-	names[33] = "<font color='#317335'> Gloves/gauntlets"
-	names[34] = "<font color='#317335'> Forearms"
-	names[35] = "<font color='#317335'> Amulet"
-	names[36] = "<font color='#317335'> Ring"
-	names[37] = "<font color='#317335'> Shoes"
-	names[38] = "<font color='#317335'> Calves"
-	names[39] = "<font color='#317335'> Shield"
-	names[40] = "<font color='#317335'> Tail"
-	names[41] = "<font color='#317335'> Long hair"
-	names[42] = "<font color='#317335'> Circlet"
-	names[43] = "<font color='#317335'> Ear rings"
-
-	names[44] = "<font color='#31755c'> Face/mouth"
-	names[45] = "<font color='#31755c'> Neck/scarf. Sometimes panties"
-	names[46] = "<font color='#31755c'> Extra chest piece"
-	names[47] = "<font color='#31755c'> Back (backpack, wings, etc)"
-	names[48] = "<font color='#31755c'> Misc"
-	names[49] = "<font color='#31755c'> Extra pelvis piece"
-	names[52] = "<font color='#31755c'> Extra pelvis piece 2 | SchlongsofSkyrim"
-	names[53] = "<font color='#31755c'> Extra leg piece"
-	names[54] = "<font color='#31755c'> Extra leg piece 2"
-	names[55] = "<font color='#31755c'> Face alternate or jewelry"
-	names[56] = "<font color='#31755c'> Extra chest piece 2"
-	names[57] = "<font color='#31755c'> Shoulder"
-	names[58] = "<font color='#31755c'> Extra arm piece 2"
-	names[59] = "<font color='#31755c'> Extra arm piece"
-	names[60] = "<font color='#31755c'> Misc"
+	names[30] = "$ostim_slot_30"
+	names[31] = "$ostim_slot_31"
+	names[32] = "$ostim_slot_32"
+	names[33] = "$ostim_slot_33"
+	names[34] = "$ostim_slot_34"
+	names[35] = "$ostim_slot_35"
+	names[36] = "$ostim_slot_36"
+	names[37] = "$ostim_slot_37"
+	names[38] = "$ostim_slot_38"
+	names[39] = "$ostim_slot_39"
+	names[40] = "$ostim_slot_40"
+	names[41] = "$ostim_slot_41"
+	names[42] = "$ostim_slot_42"
+	names[43] = "$ostim_slot_43"
+	
+	names[44] = "$ostim_slot_44"
+	names[45] = "$ostim_slot_45"
+	names[46] = "$ostim_slot_46"
+	names[47] = "$ostim_slot_47"
+	names[48] = "$ostim_slot_48"
+	names[49] = "$ostim_slot_49"
+	names[52] = "$ostim_slot_52"
+	names[53] = "$ostim_slot_53"
+	names[54] = "$ostim_slot_54"
+	names[55] = "$ostim_slot_55"
+	names[56] = "$ostim_slot_56"
+	names[57] = "$ostim_slot_57"
+	names[58] = "$ostim_slot_58"
+	names[59] = "$ostim_slot_59"
+	names[60] = "$ostim_slot_60"
 
 	int i = 30
 	int max = 62
 
 	While i < max
-		string additional = ""
-		if names[i] != ""
-			additional = " " + names[i]
-		endif
-		SlotSets[i] = AddToggleOption("S. " + i as string + additional, Main.IntArrayContainsValue(main.StrippingSlots, i))
-
+		SlotSets[i] = AddToggleOption(names[i],  Main.IntArrayContainsValue(main.StrippingSlots, i))
 		i += 1
 	EndWhile
 
@@ -1132,7 +1130,7 @@ Function OnSlotSelect(int option)
 	osexintegrationmain.console(slot)
 
 	if (slot < 0) || slot > 100
-		debug.messagebox("Slot error. report to dev please")
+		debug.messagebox("$ostim_message_slot_error")
 	endif
 
 	if Main.IntArrayContainsValue(main.StrippingSlots, slot)
@@ -1153,9 +1151,9 @@ Function OnSlotMouseOver(int option)
 	armor equipped = playerref.getEquippedArmorInSlot(slot) ; se exclusive
 
 	if equipped
-		SetInfoText("Player has armor equipped that matches this slot\nName: " + equipped.getname() + "\nFull slotmask: " + equipped.GetSlotMask())
+		SetInfoText("$ostim_slot_contains{" + equipped.getname() + "}{" + equipped.GetSlotMask() + "}")
 	else
-		SetInfoText("No armor matching this slot on player")
+		SetInfoText("$ostim_slots_empty")
 	endif
 endfunction
 
@@ -1183,7 +1181,7 @@ Function ExportSettings()
 	; Export to file.
 	int OstimSettingsFile = JMap.object()
 	
-	Debug.MessageBox("Exporting to file, wait a second or two before clicking OK.")
+	ShowMessage("$ostim_message_export", false)
 	
 	; Sex settings export.
 	JMap.SetInt(OstimSettingsFile, "SetEndOnOrgasm", Main.EndOnDomOrgasm as Int)
@@ -1298,13 +1296,13 @@ Function ImportSettings()
 		OstimSettingsFileAlt = JValue.readFromFile(".\\Data\\OstimMCMSettings.json")
 	endif
 	if (OstimSettingsFile == False && OstimSettingsFileAlt == False)
-		;Debug.MessageBox("Tried to import from file, but no file existed.")
+		;ShowMessage("$ostim_message_import_no_file", false)
 		return
 	ElseIf (OstimSettingsFile == False && OstimSettingsFileAlt == True)
 		OstimSettingsFile = OstimSettingsFileAlt
-		;Debug.MessageBox("Importing modlist settings from file, wait a second or two before clicking OK.")
+		;ShowMessage("$ostim_message_import_ml_settings", false)
 	Else
-		;Debug.MessageBox("Importing from file, wait a second or two before clicking OK.")
+		;ShowMessage("$ostim_message_import", false)
 	EndIf
 	; Sex settings import.
 	Main.EndOnDomOrgasm = Jmap.GetInt(OstimSettingsFile, "SetEndOnOrgasm")
