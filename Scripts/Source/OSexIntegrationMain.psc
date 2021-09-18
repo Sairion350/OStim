@@ -3251,8 +3251,6 @@ Function ResetState()
 	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 54)
 	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 55)
 	UI.InvokeInt("HUD Menu", o + ".com.endCommand", 56)
-
-	Debug.MessageBox("Reset state.")
 EndFunction
 
 Function RemapStartKey(Int zKey)

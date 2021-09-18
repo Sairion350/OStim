@@ -283,8 +283,8 @@ Event OnPageReset(String Page)
 
 		AddColoredHeader("$ostim_header_beds")
 		SetEnableBeds = AddToggleOption("$ostim_use_beds", Main.UseBed)
-		SetBedSearchDistance = AddSliderOption("$ostim_bed_search_rad", Main.BedSearchDistance, "{0} $ostim_meters")
-		SetBedReallignment = AddSliderOption("$ostim_bed_reallignment", Main.BedReallignment, "{0} $ostim_units")
+		SetBedSearchDistance = AddSliderOption("$ostim_bed_search_rad", Main.BedSearchDistance, "{0} meters")
+		SetBedReallignment = AddSliderOption("$ostim_bed_reallignment", Main.BedReallignment, "{0} units")
 		SetBedAlgo = AddToggleOption("$ostim_bed_algo", Main.UseAlternateBedSearch)
 		AddEmptyOption()
 
@@ -409,7 +409,7 @@ Event OnPageReset(String Page)
 
 		if main.IsModLoaded(OCrime)
 			AddColoredHeader("OCrime")
-			SetOCBounty = AddSliderOption("$ostim_addon_oc_bounty", StorageUtil.GetIntValue(none, suocbounty), "{0} $ostim_gold")
+			SetOCBounty = AddSliderOption("$ostim_addon_oc_bounty", StorageUtil.GetIntValue(none, suocbounty), "{0} Gold")
 		endif 
 
 		if main.IsModLoaded(OAroused)
@@ -556,11 +556,12 @@ Event OnOptionSelect(Int Option)
 		SetToggleOptionValue(SetEndOnBothOrgasm, Main.RequireBothOrgasmsToFinish)
 	ElseIf (Option == SetResetState)
 		Main.ResetState()
+		ShowMessage("$ostim_message_reset_state", false)
 	ElseIf (Option == SetUpdate)
-		Debug.MessageBox("$ostim_message_update_close_menus")
+		ShowMessage("$ostim_message_update_close_menus", false)
 		OUtils.ForceOUpdate()
 	ElseIf (Option == SetRebuildDatabase)
-		Debug.MessageBox("$ostim_message_rebuild_database")
+		ShowMessage("$ostim_message_rebuild_database", false)
 		Main.GetODatabase().InitDatabase()
 	ElseIf (Option == SetActorSpeedControl)
 		Main.EnableActorSpeedControl = !Main.EnableActorSpeedControl
@@ -692,9 +693,13 @@ Event OnOptionSelect(Int Option)
 		Main.OnlyGayAnimsInGayScenes = !Main.OnlyGayAnimsInGayScenes
 		SetToggleOptionValue(Option, Main.OnlyGayAnimsInGayScenes)
 	ElseIf (Option == ExportSettings)
-		ExportSettings()
+		If ShowMessage("$ostim_message_export_confirm", true)
+			ExportSettings()
+		EndIf
 	ElseIf (Option == ImportSettings)
-		ImportSettings()
+		If ShowMessage("$ostim_message_import_confirm")
+			ImportSettings()
+		EndIf
 	EndIf
 EndEvent
 
@@ -1006,10 +1011,10 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 		SetSliderOptionValue(SetONFreqMult, Value, "{2} x")
 	Elseif (option == SetOCBounty)
 		StorageUtil.SetIntValue(none, SUOCBounty, value as int)
-		SetSliderOptionValue(SetOCBounty, Value, "{0} $ostim_gold")
+		SetSliderOptionValue(SetOCBounty, Value, "{0} Gold")
 	ElseIf (Option == SetBedSearchDistance)
 		Main.BedSearchDistance = (Value as Int)
-		SetSliderOptionValue(Option, Value, "{0} $ostim_meters")
+		SetSliderOptionValue(Option, Value, "{0} Meters")
 	ElseIf (Option == SetCustomTimescale)
 		Main.CustomTimescale = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0}")
@@ -1024,7 +1029,7 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 		SetSliderOptionValue(Option, Value, "{0}")
 	ElseIf (Option == SetBedReallignment)
 		Main.BedReallignment = (Value as Int)
-		SetSliderOptionValue(Option, Value, "{0} $ostim_units")
+		SetSliderOptionValue(Option, Value, "{0} Units")
 	ElseIf (Option == SetAIChangeChance)
 		Main.AiSwitchChance = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0}")
@@ -1176,7 +1181,7 @@ Function ExportSettings()
 	; Export to file.
 	int OstimSettingsFile = JMap.object()
 	
-	Debug.MessageBox("$ostim_message_export")
+	ShowMessage("$ostim_message_export", false)
 	
 	; Sex settings export.
 	JMap.SetInt(OstimSettingsFile, "SetEndOnOrgasm", Main.EndOnDomOrgasm as Int)
@@ -1291,13 +1296,13 @@ Function ImportSettings()
 		OstimSettingsFileAlt = JValue.readFromFile(".\\Data\\OstimMCMSettings.json")
 	endif
 	if (OstimSettingsFile == False && OstimSettingsFileAlt == False)
-		;Debug.MessageBox("$ostim_message_import_no_file")
+		;ShowMessage("$ostim_message_import_no_file", false)
 		return
 	ElseIf (OstimSettingsFile == False && OstimSettingsFileAlt == True)
 		OstimSettingsFile = OstimSettingsFileAlt
-		;Debug.MessageBox("$ostim_message_import_ml_settings")
+		;ShowMessage("$ostim_message_import_ml_settings", false)
 	Else
-		;Debug.MessageBox("$ostim_message_import")
+		;ShowMessage("$ostim_message_import", false)
 	EndIf
 	; Sex settings import.
 	Main.EndOnDomOrgasm = Jmap.GetInt(OstimSettingsFile, "SetEndOnOrgasm")
