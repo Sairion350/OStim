@@ -19,6 +19,9 @@ String[] property ForeplayClasses Auto
 String[] property BlowjobClasses Auto
 String[] property FemaleCentricClasses Auto
 String[] property MaleCentricClasses Auto
+String[] property MaleMasturbationClasses Auto
+String[] property FemaleMasturbationClasses Auto
+String[] property MasturbationClasses Auto
 String[] property MainSexClasses Auto
 
 Event OnInit()
@@ -63,6 +66,19 @@ Event OnInit()
 
 	MaleCentricClasses = BlowjobClasses
 	MaleCentricClasses = PapyrusUtil.PushString(MaleCentricClasses, "An")
+
+	MaleMasturbationClasses = PapyrusUtil.PushString(MaleMasturbationClasses, "Po")
+
+	FemaleMasturbationClasses = PapyrusUtil.PushString(FemaleMasturbationClasses, "Cr")
+	FemaleMasturbationClasses = PapyrusUtil.PushString(FemaleMasturbationClasses, "Pf1")
+	FemaleMasturbationClasses = PapyrusUtil.PushString(FemaleMasturbationClasses, "Pf2")
+	FemaleMasturbationClasses = PapyrusUtil.PushString(FemaleMasturbationClasses, "Sx") ;dildos
+	
+	MasturbationClasses = PapyrusUtil.PushString(MasturbationClasses, "Po")
+	MasturbationClasses = PapyrusUtil.PushString(MasturbationClasses, "Cr")
+	MasturbationClasses = PapyrusUtil.PushString(MasturbationClasses, "Pf1")
+	MasturbationClasses = PapyrusUtil.PushString(MasturbationClasses, "Pf2")
+	MasturbationClasses = PapyrusUtil.PushString(MasturbationClasses, "Sx") ;dildos
 
 	MainSexClasses = PapyrusUtil.PushString(MainSexClasses, "Sx")
 	MainSexClasses = PapyrusUtil.PushString(MainSexClasses, "An")
@@ -122,8 +138,10 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 
 	If (OStim.GetThirdActor())
 		NumActors = 3
-	Else
+	ElseIf (OStim.GetSubActor())
 		NumActors = 2
+	Else
+		NumActors = 1
 	EndIf
 
 	Int PulloutChance
@@ -174,7 +192,9 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 	Console("sex change anim chance: " + SexChangeChance)
 
 	Int Stage
-	If (ChanceRoll(ForeplayChance))
+	If (NumActors > 1)
+		Stage = 3 ; masturbation
+	ElseIf (ChanceRoll(ForeplayChance))
 		Stage = 1 ; foreplay
 	Else
 		Stage = 2 ; main
@@ -185,17 +205,17 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 
 	Bool ChangeAnimation = True
 	While (OStim.AnimationRunning())
-		If (OStim.StringArrayContainsValue(FemaleCentricClasses, OStim.GetCurrentAnimationClass()))
+		If (NumActors > 1 && OStim.StringArrayContainsValue(FemaleCentricClasses, OStim.GetCurrentAnimationClass()))
 			CentralActor = OStim.GetSubActor()
 		Else
 			CentralActor = OStim.GetDomActor()
 		EndIf
 
-		If (OStim.GetActorExcitement(OStim.GetDomActor()) > 95)
+		If (NumActors > 1 && OStim.GetActorExcitement(OStim.GetDomActor()) > 95)
 			If (ChanceRoll(PulloutChance))
 				ChangeToPulledOutVersion()
 			EndIf
-			Stage = 3
+			Stage = 4
 		EndIf
 
 		If (Stage == 1)
@@ -228,6 +248,19 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 				String Animation = getRandomSexAnimation(MaleCentric = MaleDom, femaleCentric = FemDom, Aggressive = OStim.IsSceneAggressiveThemed())
 				If (Animation != "")
 					Warp(animation)
+				EndIf
+			EndIf
+		ElseIf (Stage == 3)
+			If (!ChangeAnimation)
+				ChangeAnimation = OStim.ChanceRoll(SexChangeChance)
+			EndIf
+
+			If (ChangeAnimation)
+				ChangeAnimation = False
+				Console("Changing to another masturbation animation")
+				String Animation = GetRandomMasturbationAnimation(OStim.IsFemale(OStim.GetDomActor()))
+				If (Animation != "")
+					Warp(Animation)
 				EndIf
 			EndIf
 		EndIf
@@ -290,6 +323,31 @@ String Function GetRandomForeplayAnimation(Bool MaleCentric = False, Bool Female
 	endif
 
 	Return ""
+EndFunction
+
+String Function GetRandomMasturbationAnimation(Bool FemaleCentric)
+	Int Animations = GetAllSexualAnimations()
+
+	Int NumAnimations = ODatabase.GetLengthOArray(Animations)
+	If (NumAnimations < 1)
+		Console("No masturbation animations with these parameters")
+	EndIf
+
+	string[] secondSet
+
+	If (FemaleCentric)
+		secondSet = FemaleMasturbationClasses
+	Else
+		secondSet = MaleMasturbationClasses
+	EndIf
+
+	string sceneID = GetAnimationThatMatchesClassArray(Animations, MasturbationClasses, secondSet)
+
+	if sceneID != "none"
+		return sceneID
+	endif
+	Console("No masturbation scenes were found.")
+	return ""
 EndFunction
 
 String Function GetRandomSexAnimation(Bool MaleCentric = False, Bool FemaleCentric = False, Bool Aggressive = False)

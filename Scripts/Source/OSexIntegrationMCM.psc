@@ -81,6 +81,7 @@ Int SetAIChangeChance
 Int SetForceAIIfAttacking
 Int SetForceAIIfAttacked
 Int SetForceAIInConsensualScenes
+Int SetForceAIForMasturbation
 
 ; misc settings afaik
 Int SetCustomTimescale
@@ -324,7 +325,7 @@ Event OnPageReset(String Page)
 		SetForceAIIfAttacking = AddToggleOption("$ostim_force_auto_attacking", Main.UseAIPlayerAggressor)
 		SetForceAIIfAttacked = AddToggleOption("$ostim_force_auto_attacked", Main.UseAIPlayerAggressed)
 		SetForceAIInConsensualScenes = AddToggleOption("$ostim_force_auto_consentual", Main.UseAINonAggressive)
-		;SetForceAIForMasturbation = AddToggleOption("$ostim_force_auto_masturbation", Main.UseAIMasturbation)
+		SetForceAIForMasturbation = AddToggleOption("$ostim_force_auto_masturbation", Main.UseAIMasturbation)
 		SetUseAutoFades = AddToggleOption("$ostim_auto_fades", Main.UseAutoFades)
 		SetAIChangeChance = AddSliderOption("$ostim_ai_change_chance", Main.AiSwitchChance, "{0}")
 		AddEmptyOption()
@@ -593,6 +594,9 @@ Event OnOptionSelect(Int Option)
 	ElseIf (Option == SetForceAIInConsensualScenes)
 		Main.UseAINonAggressive = !Main.UseAINonAggressive
 		SetToggleOptionValue(Option, Main.UseAINonAggressive)
+	ElseIf (Option == SetForceAIForMasturbation)
+		Main.UseAIMasturbation = !Main.UseAIMasturbation
+		SetToggleOptionValue(Option, Main.UseAIMasturbation)
 	ElseIf (Option == SetDropClothes)
 		Main.TossClothesOntoGround = !Main.TossClothesOntoGround
 		SetToggleOptionValue(Option, Main.TossClothesOntoGround)
@@ -772,8 +776,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("$ostim_tooltip_ai_attacking")
 	ElseIf (Option == SetForceAIInConsensualScenes)
 		SetInfoText("$ostim_tooltip_ai_consent")
-	;ElseIf (Option == SetForceAIForMasturbation)
-		;SetInfoText("$ostim_tooltip_ai_masturbation")
+	ElseIf (Option == SetForceAIForMasturbation)
+		SetInfoText("$ostim_tooltip_ai_masturbation")
 	ElseIf (Option == SetUseFades)
 		SetInfoText("$ostim_tooltip_fades")
 	ElseIf (Option == SetScaling)
@@ -1252,6 +1256,7 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetForceAIIfAttacking", Main.UseAIPlayerAggressor as Int)
 	JMap.SetInt(OstimSettingsFile, "SetForceAIIfAttacked", Main.UseAIPlayerAggressed as Int)
 	JMap.SetInt(OstimSettingsFile, "SetForceAIInConsensualScenes", Main.UseAINonAggressive as Int)
+	JMap.SetInt(OstimSettingsFile, "SetForceAIForMasturbation", Main.UseAIMasturbation as Int)
 	JMap.SetInt(OstimSettingsFile, "SetAIChangeChance", Main.AiSwitchChance as Int)
 
 	; Camera settings export.
@@ -1380,6 +1385,7 @@ Function ImportSettings()
 	Main.UseAIPlayerAggressor = JMap.GetInt(OstimSettingsFile, "SetForceAIIfAttacking")
 	Main.UseAIPlayerAggressed = JMap.GetInt(OstimSettingsFile, "SetForceAIIfAttacked")
 	Main.UseAINonAggressive = JMap.GetInt(OstimSettingsFile, "SetForceAIInConsensualScenes")
+	Main.UseAIMasturbation = JMap.GetInt(OstimSettingsFile, "SetForceAIForMasturbation")
 	
 	; Camera settings export.
 	Main.UseFreeCam = JMap.GetInt(OstimSettingsFile, "SetUseFreeCam")

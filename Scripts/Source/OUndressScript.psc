@@ -230,9 +230,9 @@ Event OStimEnd(String EventName, String StrArg, Float NumArg, Form Sender)
 	Console("Redressing...")
 
 	Redress(actors[0])
-	Redress(actors[1])
-
-	
+	If actors.length > 1
+		Redress(actors[1])
+	EndIf
 	If (actors.length > 2)
 		Redress( actors[2])
 	EndIf
@@ -270,7 +270,7 @@ Event OStimPreStart(String EventName, String StrArg, Float NumArg, Form Sender)
 		Strip(actors[0])
 	EndIf
 
-	If (OStim.UndressSub)
+	If (OStim.GetSubActor() && OStim.UndressSub)
 		If OStim.IsInFreeCam() && (actors[1] == playerref)
 			DidToggle = True
 			OStim.ToggleFreeCam()
@@ -301,11 +301,14 @@ Event OstimChange(String eventName, String strArg, Float numArg, Form sender)
 
 	If (OStim.AutoUndressIfNeeded && OStim.AnimationRunning())
 		Bool DomNaked = OStim.IsNaked(actors[0])
-		Bool SubNaked = OStim.IsNaked(actors[1])
+		Bool SubNaked = True
 		Bool ThirdNaked = True
 
-		If actors.length > 2
-			ThirdNaked = OStim.IsNaked(actors[2])
+		If actors.length > 1
+			SubNaked = OStim.IsNaked(actors[1])
+			If actors.length > 2
+				ThirdNaked = OStim.IsNaked(actors[2])
+			EndIf
 		EndIf
 
 		String CClass = OStim.GetCurrentAnimationClass()
