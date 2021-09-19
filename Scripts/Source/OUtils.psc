@@ -9,6 +9,27 @@ Function Console(String In) Global
 	MiscUtil.PrintConsole("OStim: " + In)
 EndFunction
 
+int Function GetTimeOfDay() global ; 0 - day | 1 - morning/dusk | 2 - Night
+	float hour = GetCurrentHourOfDay()
+
+	if (hour < 4) || (hour > 20 ) ; 8:01 to 3:59. night
+		return 2
+	elseif ((hour >= 18) && (hour <= 20))  || ((hour >= 4) && (hour <= 6)) ; morning/dusk
+		return 1
+	Else
+		return 0
+	endif
+		
+EndFunction
+
+float Function GetCurrentHourOfDay() global
+ 
+	float Time = Utility.GetCurrentGameTime()
+	Time -= Math.Floor(Time) ; Remove "previous in-game days passed" bit
+	Time *= 24 ; Convert from fraction of a day to number of hours
+	Return Time
+ 
+EndFunction
 
 Function RegisterForOUpdate(form f) Global
 	(game.GetFormFromFile(0x000D67, "Ostim.esp") as OStimUpdaterScript).AddFormToDatabase(f)
@@ -258,6 +279,12 @@ string function PadString(string str, int to, int side = 0, string char = " ") G
 		padding = PapyrusUtil.MergeStringArray(temp, padding)
 	elseif side == 1 ;left 
 		padding = PapyrusUtil.PushString(padding, str)
+	elseif side == 2 ; center
+		string[] leftPad = PapyrusUtil.StringArray(amount/2, filler = char)
+		string[] rightPad = PapyrusUtil.StringArray(amount - leftPad.Length , filler = char)
+
+		padding = PapyrusUtil.PushString(leftpad, str)
+		padding = PapyrusUtil.MergeStringArray(padding, rightpad)
 	endif 
 
 	return PapyrusUtil.StringJoin(padding, "")
