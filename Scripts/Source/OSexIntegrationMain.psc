@@ -934,6 +934,21 @@ Event OnUpdate() ;OStim main logic loop
 
 EndEvent
 
+Function Masturbate(Actor Masturbator, Bool zUndress = False, Bool zAnimUndress = False, ObjectReference MBed = None)
+
+	If ODatabase.GetLengthOArray(ODatabase.GetAnimationsFromModule(ODatabase.GetDatabaseOArray(), "WANK")) > 0
+		If IsFemale(Masturbator)
+			console("actor is female, starting WANK|Sy9|Cr|BillyyFMasturbationStanding")
+			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Cr|BillyyFMasturbationStanding", Bed = MBed)
+		Else
+			console("Actor is male, starting WANK|Sy9|Po|AnubsMasturbationStanding")
+			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Po|AnubsMasturbationStanding", Bed = MBed)
+		EndIf
+	Else
+		console("masturbation animations were not found.")
+	EndIf
+EndFunction
+
 
 ;
 ;			██╗   ██╗████████╗██╗██╗     ██╗████████╗██╗███████╗███████╗
@@ -3245,21 +3260,6 @@ EndFunction
 Function StartReroutedScene()
 	Console("Rerouting scene")
 	StartScene(ReroutedDomActor,  ReroutedSubActor)
-EndFunction
-
-Function Masturbate(Actor Masturbator, Bool zUndress = False, Bool zAnimUndress = False, ObjectReference MBed = None)
-
-	If ODatabase.GetLengthOArray(ODatabase.GetAnimationsFromModule(ODatabase.GetDatabaseOArray(), "WANK")) > 0
-		If IsFemale(Masturbator)
-			console("actor is female, starting WANK|Sy9|Cr|BillyyFMasturbationStanding")
-			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Cr|BillyyFMasturbationStanding", Bed = MBed)
-		Else
-			console("Actor is male, starting WANK|Sy9|Po|AnubsMasturbationStanding")
-			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Po|AnubsMasturbationStanding", Bed = MBed)
-		EndIf
-	Else
-		console("masturbation animations were not found.")
-	EndIf
 EndFunction
 
 Function ResetState()
