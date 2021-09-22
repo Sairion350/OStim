@@ -79,6 +79,7 @@ Function DoUpdate()
 	OUtils.Console("Updated")
 	Utility.Wait(4)
 	OUtils.DisplayTextBanner("Update complete")
+	outils.DisplayToastText("Perform a save-clean procedure if you experience issues after updating", 10.0)
 
 	Updating = false
 EndFunction
