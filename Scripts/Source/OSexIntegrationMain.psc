@@ -938,11 +938,11 @@ Function Masturbate(Actor Masturbator, Bool zUndress = False, Bool zAnimUndress 
 
 	If ODatabase.GetLengthOArray(ODatabase.GetAnimationsFromModule(ODatabase.GetDatabaseOArray(), "WANK")) > 0
 		If IsFemale(Masturbator)
-			console("actor is female, starting WANK|Sy9|Cr|BillyyFMasturbationStanding")
-			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Cr|BillyyFMasturbationStanding", Bed = MBed)
+			console("actor is female, starting WANK|Sy9|Ap|FemaleStanding")
+			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Ap|FemaleStanding", Bed = MBed)
 		Else
-			console("Actor is male, starting WANK|Sy9|Po|AnubsMasturbationStanding")
-			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Po|AnubsMasturbationStanding", Bed = MBed)
+			console("Actor is male, starting WANK|Sy9|Ap|MaleStanding")
+			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Ap|MaleStanding", Bed = MBed)
 		EndIf
 	Else
 		console("masturbation animations were not found.")
