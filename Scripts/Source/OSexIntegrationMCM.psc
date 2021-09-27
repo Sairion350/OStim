@@ -151,6 +151,8 @@ int GVOBNippleRand = 0x001803
 int GVOBGenitalRand = 0x001804
 int GVOBPrestKey = 0x001805
 
+
+
 int SetOBRefit
 int SetOBNippleRand
 int SetOBGenitalRand
@@ -183,6 +185,11 @@ string SUOSAllowTransitory = "osearch.allowTransitory"
 int SetOSAllowSex
 string SUOSAllowSex = "osearch.allowSex"
 
+string ovirginity = "OVirginity.esp"
+int SetOVShowEffects
+string SUOVShowEffects = "ovirginity.showhymen"
+int SetOVVirginChance
+string SUOVVirginChance = "ovirginity.virginityChance"
 
 Event OnInit()
 	Init()
@@ -395,6 +402,13 @@ Event OnPageReset(String Page)
 			SetOSAllowTransitory = AddToggleOption("$ostim_addon_os_transitory", StorageUtil.GetIntValue(none, SUOSAllowTransitory))
 		endif 
 
+		if main.IsModLoaded(ovirginity)
+			AddColoredHeader("OVirginity")
+			SetOVShowEffects = AddToggleOption("$ostim_addon_ov_fx", StorageUtil.GetIntValue(none, SUOVShowEffects))
+			SetOVVirginChance = AddSliderOption("$ostim_addon_ov_chance", StorageUtil.GetIntValue(none, SUOVVirginChance), "{0} %")
+			
+		endif 
+
 		;===================================
 
 		SetCursorPosition(3)
@@ -532,6 +546,9 @@ Event OnOptionSelect(Int Option)
 		elseif option == SetOSAllowHub
 			StorageUtil.SetIntValue(none, SUOSAllowHub, (!(StorageUtil.GetIntValue(none, SUOSAllowHub) as bool)) as int)
 			SetToggleOptionValue(SetOSAllowHub, StorageUtil.GetIntValue(none, SUOSAllowHub))
+		elseif option == SetOVShowEffects
+			StorageUtil.SetIntValue(none, SUOVShowEffects, (!(StorageUtil.GetIntValue(none, SUOVShowEffects) as bool)) as int)
+			SetToggleOptionValue(SetOVShowEffects, StorageUtil.GetIntValue(none, SUOVShowEffects))
 		elseif option == SetOAStatBuffs
 			StorageUtil.SetIntValue(none, SUOAStatBuffs, (!(StorageUtil.GetIntValue(none, SUOAStatBuffs) as bool)) as int)
 			SetToggleOptionValue(SetOAStatBuffs, StorageUtil.GetIntValue(none, SUOAStatBuffs))
@@ -736,6 +753,8 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("$ostim_tooltip_on_freq_mult")
 		ElseIf (Option == SetOCBounty)
 			SetInfoText("$ostim_tooltip_oc_bounty")
+		ElseIf (Option == SetOVVirginChance)
+			SetInfoText("$ostim_tooltip_ov_chance")
 		Elseif (Option == SetONStopWhenFound)
 			SetInfoText("$ostim_tooltip_on_stop")
 		Elseif (Option == SetOBRefit)
@@ -748,6 +767,8 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("$ostim_tooltip_oa_low_arousal_end")
 		Elseif (Option == SetOSAllowHub)
 			SetInfoText("$ostim_tooltip_os_hub")
+		Elseif (Option == SetOVShowEffects)
+			SetInfoText("$ostim_tooltip_ov_fx")
 		Elseif (Option == SetOSAllowTransitory)
 			SetInfoText("$ostim_tooltip_os_transitory")
 		Elseif (Option == SetOSAllowSex)
@@ -999,6 +1020,11 @@ Event OnOptionSliderOpen(Int Option)
 		SetSliderDialogDefaultValue(200)
 		SetSliderDialogRange(1, 2000)
 		SetSliderDialogInterval(1)
+	elseif (option == SetOVVirginChance)
+		SetSliderDialogStartValue(StorageUtil.GetIntValue(none, SUOVVirginChance))
+		SetSliderDialogDefaultValue(30)
+		SetSliderDialogRange(0, 100)
+		SetSliderDialogInterval(1)
 	EndIf
 EndEvent
 
@@ -1016,6 +1042,9 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 	Elseif (option == SetOCBounty)
 		StorageUtil.SetIntValue(none, SUOCBounty, value as int)
 		SetSliderOptionValue(SetOCBounty, Value, "{0} Gold")
+	Elseif (option == SetOVVirginChance)
+		StorageUtil.SetIntValue(none, SUOVVirginChance, value as int)
+		SetSliderOptionValue(SetOVVirginChance, Value, "{0} %")
 	ElseIf (Option == SetBedSearchDistance)
 		Main.BedSearchDistance = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0} Meters")
