@@ -31,6 +31,12 @@ EndEvent
 
 
 Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable free cam or else! 
+	bool bRestoreFreecam = false
+	if (target == PlayerRef) && OSANative.IsFreeCam()
+		bRestoreFreecam = true
+		ostim.ToggleFreeCam(false)
+	endif 
+
 	If (OStim.TossClothesOntoGround)
 		StripAndToss(Target)
 	Else
@@ -46,6 +52,10 @@ Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable fre
 	Endif
 	if ostim.AnimationRunning()
 		Debug.SendAnimationEvent(Target, "sosfasterect")
+	endif 
+
+	if bRestoreFreecam
+		ostim.ToggleFreeCam(true)
 	endif 
 EndFunction
 
@@ -261,36 +271,21 @@ Event OStimPreStart(String EventName, String StrArg, Float NumArg, Form Sender)
 		OStim.AnimateUndress = True
 	EndIf
 
-	bool didToggle = false
-	If (OStim.UndressDom) ; animate undress, and chest-only strip not yet supported
-		If OStim.IsInFreeCam() && (actors[0] == playerref)
-			DidToggle = True
-			OStim.ToggleFreeCam()
-		EndIf
+	If (OStim.UndressDom) ; animate undress, and chest-only strip not yet supported	
 		Strip(actors[0])
 	EndIf
 
 	If (OStim.GetSubActor() && OStim.UndressSub)
-		If OStim.IsInFreeCam() && (actors[1] == playerref)
-			DidToggle = True
-			OStim.ToggleFreeCam()
-		EndIf
 		Strip(actors[1])
 	EndIf
 
 	; Assume if sub is to be undressed, third actor should also be provided ThirdActor exists.
 	
 	If (OStim.UndressSub && actors.length > 2)
-		If OStim.IsInFreeCam() && (actors[2] == playerref)
-			DidToggle = True
-			OStim.ToggleFreeCam()
-		EndIf
 		Strip(actors[2])		
 	EndIf
 
-	If (DidToggle)
-		OStim.ToggleFreeCam()
-	EndIf
+	
 
 	Console("Stripped.")
 	SendModEvent("ostim_undresscomplete")
