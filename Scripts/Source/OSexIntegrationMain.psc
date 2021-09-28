@@ -730,7 +730,7 @@ Event OnUpdate() ;OStim main logic loop
 	endif 
 
 	If (UseFreeCam) && IsPlayerInvolved()
-		Utility.Wait(1)
+		;Utility.Wait(1)
 		ToggleFreeCam(True)
 	EndIf
 

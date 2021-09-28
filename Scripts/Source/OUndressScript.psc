@@ -35,6 +35,8 @@ Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable fre
 	if (target == PlayerRef) && OSANative.IsFreeCam()
 		bRestoreFreecam = true
 		ostim.ToggleFreeCam(false)
+
+		outils.lock("mtx_tfc") ; lock free cam, nobody can change it until we say so
 	endif 
 
 	If (OStim.TossClothesOntoGround)
@@ -55,6 +57,7 @@ Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable fre
 	endif 
 
 	if bRestoreFreecam
+		OSANative.Unlock("mtx_tfc"); now you may change it again.
 		ostim.ToggleFreeCam(true)
 	endif 
 EndFunction
