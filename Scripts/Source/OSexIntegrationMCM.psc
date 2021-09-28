@@ -1308,10 +1308,84 @@ Function ExportSettings()
 	JMap.SetInt(OstimSettingsFile, "SetMute", Main.MuteOSA as Int)
 
 	int clothes = JArray.objectWithInts(main.StrippingSlots)
-
 	JMap.setObj(OstimSettingsFile,"Slots", clothes)
+
+	; addon stuff
+	if main.IsModLoaded(ORomance)
+		osexintegrationmain.Console("Saving ORomance settings.")
+		JMap.setInt(OstimSettingsFile, "savedORomance", 1)
+		JMap.setInt(OstimSettingsFile, "SetORSexuality", (GetExternalBool(ORomance, GVORSexuality)) as int)
+		JMap.setInt(OstimSettingsFile, "SetORDifficulty", (GetExternalInt(ORomance, GVORDifficulty)) as int)
+		JMap.setInt(OstimSettingsFile, "SetORKey", GetExternalInt(oromance, gvorkey))
+		JMap.setInt(OstimSettingsFile, "SetORColorblind", GetExternalBool(ORomance, GVORColorblind) as int)
+		JMap.setInt(OstimSettingsFile, "SetORLeft",  GetExternalInt(oromance, GVORLeft))
+		JMap.setInt(OstimSettingsFile, "SetORRight", GetExternalInt(oromance, GVORRight))
+		JMap.setInt(OstimSettingsFile, "SetORNakadashi", GetExternalBool(ORomance, GVORNakadashi) as int)
+	Else
+		JMap.setInt(OstimSettingsFile, "savedORomance", 0)
+	endif
+
+	if main.IsModLoaded(ONights)
+		osexintegrationmain.Console("Saving Onights settings.")
+		JMap.setInt(OstimSettingsFile, "savedOnights", 1)
+		JMap.setInt(OstimSettingsFile, "SetONStopWhenFound", GetExternalBool(ONights, GVONStopWhenFound) as int)
+		JMap.setFlt(OstimSettingsFile, "SetONFreqMult", GetExternalFloat(ONights, GVONFreqMult))
+	Else
+		JMap.setInt(OstimSettingsFile, "savedOnights settings.", 0)
+	endif
+
+	if main.IsModLoaded(OSearch)
+		osexintegrationmain.Console("Saving OSearch settings.")
+		JMap.setInt(OstimSettingsFile, "savedOSearch", 1)
+		JMap.setInt(OstimSettingsFile, "SetOSKey", StorageUtil.GetIntValue(none, SUOSKey))
+		JMap.setInt(OstimSettingsFile, "SetOSAllowSex", StorageUtil.GetIntValue(none, SUOSAllowSex))
+		JMap.setInt(OstimSettingsFile, "SetOSAllowHub", StorageUtil.GetIntValue(none, SUOSAllowHub))
+		JMap.setInt(OstimSettingsFile, "SetOSAllowTransitory", StorageUtil.GetIntValue(none, SUOSAllowTransitory))
+	else
+		JMap.setInt(OstimSettingsFile, "savedOSearch", 0)
+	endif
+
+	if main.IsModLoaded(ovirginity)
+		osexintegrationmain.Console("Saving oVirginity settings.")
+		JMap.setInt(OstimSettingsFile, "savedoVirginity", 1)
+		JMap.SetInt(OstimSettingsFile, "SetOVShowEffects", StorageUtil.GetIntValue(none, SUOVShowEffects))
+		JMap.SetInt(OstimSettingsFile, "SetOVVirginChance", StorageUtil.GetIntValue(none, SUOVVirginChance))
+	Else
+		JMap.setInt(OstimSettingsFile, "savedoVirginity", 0)
+	endif
+
+	if main.IsModLoaded(OBody)
+		osexintegrationmain.Console("Saving OBody settings.")
+		JMap.setInt(OstimSettingsFile, "savedOBody", 1)
+		JMap.setInt(OstimSettingsFile, "SetOBRefit", GetExternalBool(OBody, GVOBorefit) as Int)
+		JMap.setInt(OstimSettingsFile, "SetOBNippleRand", GetExternalBool(OBody, GVOBNippleRand) as Int)
+		JMap.setInt(OstimSettingsFile, "SetOBGenitalRand", GetExternalBool(OBody, GVOBGenitalRand) as Int)
+		JMap.setInt(OstimSettingsFile, "SetOBPresetKey", GetExternalInt(OBody, GVOBPrestKey) as Int)
+	Else
+		JMap.setInt(OstimSettingsFile, "savedOBody", 0)
+	endif
+
+	if main.IsModLoaded(OCrime)
+		osexintegrationmain.Console("Saving OCrime settings.")
+		JMap.setInt(OstimSettingsFile, "savedOCrime", 1)
+		JMap.setInt(OstimSettingsFile, "SetOCBounty", StorageUtil.GetIntValue(none, suocbounty))
+	Else
+		JMap.setInt(OstimSettingsFile, "savedOCrime", 0)
+	endif
+
+	if main.IsModLoaded(OAroused)
+		osexintegrationmain.Console("Saving OAroused settings.")
+		JMap.setInt(OstimSettingsFile, "savedOAroused", 1)
+		JMap.setInt(OstimSettingsFile, "SetOAKey", StorageUtil.GetIntValue(none, SUOAKey))
+		JMap.setInt(OstimSettingsFile, "SetOARequireLowArousalBeforeEnd", StorageUtil.GetIntValue(none, SUOALowArousalReq))
+		JMap.setInt(OstimSettingsFile, "SetOAStatBuffs", StorageUtil.GetIntValue(none, SUOAStatBuffs))
+		JMap.setInt(OstimSettingsFile, "SetOANudityBroadcast", StorageUtil.GetIntValue(none, SUOANudityBroadcast))
+	Else
+		JMap.setInt(OstimSettingsFile, "savedOAroused", 0)
+	endif
 	
 	; Save to file.
+	osexintegrationmain.Console("Saving Ostim settings.")
 	Jvalue.WriteToFile(OstimSettingsFile, JContainers.UserDirectory() + "OstimMCMSettings.json")
 	
 	; Force page reset to show updated changes.
@@ -1438,6 +1512,59 @@ Function ImportSettings()
 	
 	main.StrippingSlots = JArray.asIntArray((jmap.getObj(OstimSettingsFile, "Slots")))
 
+	; addon stuff
+	if main.IsModLoaded(ORomance) && JMap.getInt(OstimSettingsFile, "savedORomance") == 1
+		osexintegrationmain.Console("Loading ORomance settings.")
+		SetExternalBool(ORomance, GVORSexuality, JMap.getInt(OstimSettingsFile, "SetORSexuality") as bool)
+		SetExternalInt(ORomance, GVORDifficulty, JMap.getInt(OstimSettingsFile, "SetORDifficulty"))
+		SetExternalInt(ORomance, gvorkey, JMap.getInt(OstimSettingsFile, "SetORKey"))
+		SetExternalBool(ORomance, GVORColorblind, JMap.getInt(OstimSettingsFile, "SetORColorblind") as bool)
+		SetExternalInt(ORomance, GVORLeft, JMap.getInt(OstimSettingsFile, "SetORLeft"))
+		SetExternalInt(ORomance, GVORRight, JMap.getInt(OstimSettingsFile, "SetORRight"))
+		SetExternalBool(ORomance, GVORNakadashi, JMap.getInt(OstimSettingsFile, "SetORNakadashi") as bool)
+	endif
+	
+	if main.IsModLoaded(ONights) && JMap.getInt(OstimSettingsFile, "savedONights") == 1
+		osexintegrationmain.Console("Loading ONights settings.")
+		SetExternalBool(ONights, GVONStopWhenFound, JMap.getInt(OstimSettingsFile, "SetONStopWhenFound") as bool)
+		SetExternalFloat(ONights, GVONFreqMult, JMap.getFlt(OstimSettingsFile, "SetONFreqMult"))
+	endif
+	
+	if main.IsModLoaded(OSearch) && JMap.getInt(OstimSettingsFile, "savedOSearch") == 1
+		osexintegrationmain.Console("Loading OSearch settings.")
+		 StorageUtil.SetIntValue(none, SUOSKey, JMap.getInt(OstimSettingsFile, "SetOSKey"))
+		 StorageUtil.SetIntValue(none, SUOSAllowSex, JMap.getInt(OstimSettingsFile, "SetOSAllowSex"))
+		 StorageUtil.SetIntValue(none, SUOSAllowHub, JMap.getInt(OstimSettingsFile, "SetOSAllowHub"))
+		 StorageUtil.SetIntValue(none, SUOSAllowTransitory, JMap.getInt(OstimSettingsFile, "SetOSAllowTransitory"))
+	endif
+
+	if main.IsModLoaded(ovirginity) && JMap.getInt(OstimSettingsFile, "savedovirginity") == 1
+		osexintegrationmain.Console("Loading oVirginity settings.")
+		StorageUtil.SetIntValue(none, SUOVShowEffects, JMap.GetInt(OstimSettingsFile, "SetOVShowEffects"))
+		StorageUtil.SetIntValue(none, SUOVVirginChance, JMap.GetInt(OstimSettingsFile, "SetOVVirginChance"))
+	endif
+	
+	if main.IsModLoaded(OBody) && JMap.getInt(OstimSettingsFile, "savedOBody") == 1
+		osexintegrationmain.Console("Loading OBody settings.")
+		SetExternalBool(OBody, GVOBorefit, JMap.getInt(OstimSettingsFile, "SetOBRefit") as bool)
+		SetExternalBool(OBody, GVOBNippleRand, JMap.getInt(OstimSettingsFile, "SetOBNippleRand") as bool)
+		SetExternalBool(OBody, GVOBGenitalRand, JMap.getInt(OstimSettingsFile, "SetOBGenitalRand") as bool)
+		SetExternalInt(OBody, GVOBPrestKey, JMap.getInt(OstimSettingsFile, "SetOBPresetKey"))
+	endif
+	
+	if main.IsModLoaded(OCrime) && JMap.getInt(OstimSettingsFile, "savedOCrime") == 1
+		osexintegrationmain.Console("Loading OCrime settings.")
+		StorageUtil.SetIntValue(none, suocbounty, JMap.getInt(OstimSettingsFile, "SetOCBounty"))
+	endif
+	
+	if main.IsModLoaded(OAroused) && JMap.getInt(OstimSettingsFile, "savedOAroused") == 1
+		osexintegrationmain.Console("Loading OAroused settings.")
+		StorageUtil.SetIntValue(none, SUOAKey, JMap.getInt(OstimSettingsFile, "SetOAKey"))
+		StorageUtil.SetIntValue(none, SUOALowArousalReq, JMap.getInt(OstimSettingsFile, "SetOARequireLowArousalBeforeEnd"))
+		StorageUtil.SetIntValue(none, SUOAStatBuffs, JMap.getInt(OstimSettingsFile, "SetOAStatBuffs"))
+		StorageUtil.SetIntValue(none, SUOANudityBroadcast, JMap.getInt(OstimSettingsFile, "SetOANudityBroadcast"))
+	endif
+	osexintegrationmain.Console("Loading Ostim settings.")
 	; Force page reset to show updated changes.
 	ForcePageReset()
 EndFunction
