@@ -37,6 +37,8 @@ Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable fre
 		ostim.ToggleFreeCam(false)
 
 		outils.lock("mtx_tfc") ; lock free cam, nobody can change it until we say so
+
+		Console("Locking freecam")
 	endif 
 
 	If (OStim.TossClothesOntoGround)
@@ -57,6 +59,7 @@ Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable fre
 	endif 
 
 	if bRestoreFreecam
+		console("unlocking freecam")
 		OSANative.Unlock("mtx_tfc"); now you may change it again.
 		ostim.ToggleFreeCam(true)
 	endif 
@@ -154,6 +157,8 @@ Function StripAndToss(Actor Target)
 	ElseIf (Target == actors[2])
 		ArrayID = 2
 	EndIf
+
+
 
 	Int i = 0
 	Int len = OStim.StrippingSlots.Length
@@ -581,7 +586,7 @@ Function FullyAnimateRedress(Actor Target, Form[] Items)
 EndFunction
 
 Function Console(String In)
-	OsexIntegrationMain.Console(In)
+	MiscUtil.PrintConsole("OStim: " + in)
 EndFunction
 
 Function OnGameLoad()

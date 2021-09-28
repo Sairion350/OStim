@@ -362,7 +362,10 @@ EndEvent
 
 ; Call this function to start a new OStim scene
 Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zUndressSub = False, Bool zAnimateUndress = False, String zStartingAnimation = "", Actor zThirdActor = None, ObjectReference Bed = None, Bool Aggressive = False, Actor AggressingActor = None)
-	
+	if !installed 
+		debug.Notification("OStim not ready or installation failed")
+		return false
+	endif 
 
 	If (SceneRunning)
 		if IsNPCScene()
@@ -3631,10 +3634,9 @@ Function Startup()
 		return
 	EndIf
 
+	OnLoadGame()
 
 	installed = true 
-
-	OnLoadGame()
 
 	OUtils.DisplayTextBanner("OStim installed.")
 EndFunction
