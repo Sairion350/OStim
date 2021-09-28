@@ -32,13 +32,14 @@ EndEvent
 
 Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable free cam or else! 
 	bool bRestoreFreecam = false
-	if (target == PlayerRef) && OSANative.IsFreeCam()
-		bRestoreFreecam = true
-		ostim.ToggleFreeCam(false)
+	if (target == PlayerRef)
+		if OSANative.IsFreeCam()
+			bRestoreFreecam = true
+			ostim.ToggleFreeCam(false)
+			Console("Locking freecam")
+		endif 
 
 		outils.lock("mtx_tfc") ; lock free cam, nobody can change it until we say so
-
-		Console("Locking freecam")
 	endif 
 
 	If (OStim.TossClothesOntoGround)
@@ -58,10 +59,13 @@ Function Strip(Actor Target) ; if you do a strip mid scene, you MUST disable fre
 		Debug.SendAnimationEvent(Target, "sosfasterect")
 	endif 
 
-	if bRestoreFreecam
-		console("unlocking freecam")
+	if (Target == PlayerRef)
 		OSANative.Unlock("mtx_tfc"); now you may change it again.
-		ostim.ToggleFreeCam(true)
+
+		if bRestoreFreecam
+			console("unlocking freecam")
+			ostim.ToggleFreeCam(true)
+		endif 
 	endif 
 EndFunction
 
