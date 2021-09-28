@@ -37,6 +37,8 @@ ActorBase[] Function LookupRelationshipPartners(Actor FirstActor, AssociationTyp
 actor[] Function SortActorsByDistance(ObjectReference from, actor[] actors) Global Native
 actor[] Function RemoveActorsWithGender(actor[] actors, int gender) Global Native
 
+form[] Function GetEquippedAmmo(actor act) Global Native
+
 
 ;  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗
 ; ██╔════╝██╔══██╗████╗ ████║██╔════╝██╔══██╗██╔══██╗

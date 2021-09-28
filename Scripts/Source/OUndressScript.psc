@@ -121,9 +121,6 @@ Function UnequipForms(Actor Target, Form[] Items)
 		EndIf
 		i += 1
 	EndWhile
-
-	Target.UnequipItem(Target.GetEquippedObject(0))
-	Target.UnequipItem(Target.GetEquippedObject(1))
 EndFunction
 
 Form[] Function StoreEquipmentForms(Actor Target, bool returnOnly = false)
@@ -143,21 +140,14 @@ Form[] Function StoreEquipmentForms(Actor Target, bool returnOnly = false)
 
 	equipment = PapyrusUtil.PushForm(equipment, Target.GetEquippedObject(0))
 	equipment = PapyrusUtil.PushForm(equipment, Target.GetEquippedObject(1))
+	equipment = PapyrusUtil.PushForm(equipment, osanative.GetEquippedAmmo(target)[0])
 
 
-	return equipment
+	return PapyrusUtil.RemoveForm(equipment, none)
 EndFunction
 
 Function StripAndToss(Actor Target)
-	Int ArrayID
-	If (Target == actors[0])
-		ArrayID = 0
-	ElseIf (Target == actors[1])
-		ArrayID = 1
-	ElseIf (Target == actors[2])
-		ArrayID = 2
-	EndIf
-
+	Int ArrayID = actors.find(target)
 
 
 	Int i = 0
@@ -179,14 +169,27 @@ Function StripAndToss(Actor Target)
 	If (Obj1)
 		StripAndTossItem(Target, Obj1, ArrayID)
 	EndIf
+
+	Form Arrows = osanative.GetEquippedAmmo(target)[0]
+	If (arrows)
+		StripAndTossItem(Target, arrows, ArrayID)
+	EndIf
 EndFunction
 
 Function StripAndTossItem(Actor Target, Form Item, Int ArrayID, Bool DoImpulse = True)
+	int dropCount = 1
+	if item as ammo 
+		dropCount = target.GetItemCount(item)
+	endif 
 
-	ObjectReference Thing = Target.DropObject(Item)
-	Thing.SetPosition(Thing.GetPositionX(), Thing.GetPositionY(), Thing.GetPositionZ() + 64)
+	ObjectReference Thing = Target.DropObject(Item, dropCount)
+
+	float offset = 64.0
+	;Thing.SetPosition(thingCoords[0] + OSANative.RandomFloat(-offset, offset), thingCoords[1] + OSANative.RandomFloat(-offset, offset), thingCoords[2] + (offset * 1.5))
+	thing.MoveTo(target, afXOffset = OSANative.RandomFloat(-offset, offset), afYOffset = OSANative.RandomFloat(-offset, offset),  afZOffset = (offset * 1.5),  abMatchRotation = false)
+
 	If (DoImpulse)
-		Thing.ApplyHavokImpulse(Utility.RandomFloat(-2.0, 2.0), Utility.RandomFloat(-2.0, 2.0), Utility.RandomFloat(0.2, 1.8), Utility.RandomFloat(5, 25))
+		Thing.ApplyHavokImpulse(osanative.RandomFloat(-2.0, 2.0), osanative.RandomFloat(-2.0, 2.0), osanative.RandomFloat(0.2, 1.8), osanative.RandomFloat(5, 25))
 	EndIf
 
 	If (ArrayID == 0) ; store the item for lter
@@ -239,6 +242,8 @@ Function EquipForms(Actor Target, Form[] Items)
 		i += 1
 	EndWhile
 EndFunction
+
+
 
 Event OStimEnd(String EventName, String StrArg, Float NumArg, Form Sender)
 	;Console("undresss: " + ostim.ForceCloseOStimThread)
