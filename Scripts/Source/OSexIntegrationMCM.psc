@@ -191,6 +191,13 @@ string SUOVShowEffects = "ovirginity.showhymen"
 int SetOVVirginChance
 string SUOVVirginChance = "ovirginity.virginityChance"
 
+string OCum = "OCum.esp"
+int SetOCumKey
+string SUOCumKey = "ocum.key"
+int SetOCumAction
+string SUOCumAction = "ocum.cumaction"
+string[] cumActionStrings
+
 Event OnInit()
 	Init()
 EndEvent
@@ -216,6 +223,16 @@ Function Init()
 	DomLightBrightList = new String[2]
 	DomLightBrightList[0] = "$ostim_light_type_dim"
 	DomLightBrightList[1] = "$ostim_light_type_bright"
+
+	cumActionStrings = new String[8]
+	cumActionStrings[0] = "$ostim_cum_action_none"
+	cumActionStrings[1] = "$ostim_cum_action_spit"
+	cumActionStrings[2] = "$ostim_cum_action_swallow"
+	cumActionStrings[3] = "$ostim_cum_action_random"
+	cumActionStrings[4] = "$ostim_cum_action_bottle_ask"
+	cumActionStrings[5] = "$ostim_cum_action_bottle_spit"
+	cumActionStrings[6] = "$ostim_cum_action_bottle_swallow"
+	cumActionStrings[7] = "$ostim_cum_action_bottle_random"
 
 	playerref = game.getplayer()
 
@@ -435,6 +452,12 @@ Event OnPageReset(String Page)
 			SetOANudityBroadcast = AddToggleOption("$ostim_addon_oa_nudity_bc", StorageUtil.GetIntValue(none, SUOANudityBroadcast))
 
 		endif 
+
+		if main.IsModLoaded(OCum)
+			AddColoredHeader("OCum")
+			SetOCumKey = AddKeyMapOption("$ostim_addon_ocum_key", StorageUtil.GetIntValue(none, SUOCumKey, 157))
+			SetOCumAction = AddMenuOption("$ostim_addon_ocum_action", cumActionStrings[StorageUtil.GetIntValue(none, SUOCumAction, 2)])
+		endIf
 	ElseIf (Page == "$ostim_page_undress")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayTickBig()
@@ -777,6 +800,10 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("$ostim_tooltip_oa_nudity_bc")
 		Elseif (Option == SetOAStatBuffs)
 			SetInfoText("$ostim_tooltip_oa_stat_buffs")
+		ElseIf (Option == SetOCumKey)
+			SetInfoText("$ostim_tooltip_ocum_key")
+		ElseIf (Option == SetOCumAction)
+			SetInfoText("$ostim_tooltip_ocum_action")
 		endif 
 
 		return
@@ -943,6 +970,8 @@ Event OnOptionMenuOpen(Int Option)
 		SetMenuDialogOptions(DomLightBrightList)
 	ElseIf (Option == SetSubLightBrightness)
 		SetMenuDialogOptions(SubLightBrightList)
+	ElseIf (Option == SetOCumAction)
+		SetMenuDialogOptions(cumActionStrings)
 	EndIf
 EndEvent
 
@@ -960,6 +989,9 @@ Event OnOptionMenuAccept(Int Option, Int Index)
 	ElseIf (Option == SetSubLightBrightness)
 		Main.SubLightBrightness = Index
 		SetMenuOptionValue(Option, SubLightBrightList[Index])
+	ElseIf (Option == SetOCumAction)
+		StorageUtil.SetIntValue(none, SUOCumAction, Index)
+		SetMenuOptionValue(Option, cumActionStrings[Index])
 	EndIf
 EndEvent
 
@@ -1106,6 +1138,9 @@ Event OnOptionKeyMapChange(Int Option, Int KeyCode, String ConflictControl, Stri
 		SetKeyMapOptionValue(Option, KeyCode)
 	Elseif (Option == SetORRight)
 		SetExternalInt(oromance, GVORRight, KeyCode)
+		SetKeyMapOptionValue(Option, KeyCode)
+	ElseIf (Option == SetOCumKey)
+		StorageUtil.SetIntValue(none, SUOcumKey, keycode)
 		SetKeyMapOptionValue(Option, KeyCode)
 	EndIf
 EndEvent
@@ -1384,6 +1419,15 @@ Function ExportSettings()
 		JMap.setInt(OstimSettingsFile, "savedOAroused", 0)
 	endif
 	
+	if main.IsModLoaded(OCum)
+		OUtils.Console("Saving OCum settings.")
+		JMap.SetInt(OStimSettingsFile, "savedOCum", 1)
+		JMap.SetInt(OStimSettingsFile, "SetOCumKey", StorageUtil.GetIntValue(none, SUOCumKey))
+		JMap.SetInt(OStimSettingsFile, "SetOCumAction", StorageUtil.GetIntValue(none, SUOCumAction))
+	else
+		JMap.SetInt(OStimSettingsFile, "savedOCum", 0)
+	endIf
+
 	; Save to file.
 	osexintegrationmain.Console("Saving Ostim settings.")
 	Jvalue.WriteToFile(OstimSettingsFile, JContainers.UserDirectory() + "OstimMCMSettings.json")
@@ -1564,6 +1608,12 @@ Function ImportSettings()
 		StorageUtil.SetIntValue(none, SUOAStatBuffs, JMap.getInt(OstimSettingsFile, "SetOAStatBuffs"))
 		StorageUtil.SetIntValue(none, SUOANudityBroadcast, JMap.getInt(OstimSettingsFile, "SetOANudityBroadcast"))
 	endif
+
+	if main.IsModLoaded(OCum) && JMap.GetInt(OStimSettingsFile, "savedOCum") == 1
+		OUtils.Console("Loading OAroused settings.")
+		StorageUtil.SetIntValue(none, SUOCumKey, JMap.GetInt(OStimSettingsFile, "SetOCumKey"))
+		StorageUtil.SetIntValue(none, SUOCumAction, JMap.GetInt(OStimSettingsFile, "SetOCumAction"))
+	endIf
 	osexintegrationmain.Console("Loading Ostim settings.")
 	; Force page reset to show updated changes.
 	ForcePageReset()
