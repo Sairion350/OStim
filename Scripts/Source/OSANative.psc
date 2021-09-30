@@ -180,4 +180,5 @@ Function Unlock(String a_lock) Global Native
 {Unclaims the given string}
 
 ; Experimental
-String Function Translate(String a_key, String a_locale = "") Global Native
+String Function Translate(String a_key) Global Native
+Function SetLocale(String a_locale) Global Native
