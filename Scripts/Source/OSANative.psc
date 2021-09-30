@@ -156,10 +156,12 @@ form[] Function RemoveFormsBelowValue(form[] forms, int goldvalue) Global Native
 ; ╚██████╔╝   ██║   ██║███████╗
 ;  ╚═════╝    ╚═╝   ╚═╝╚══════╝
 
-Function ToggleCombat(bool enable) Global Native
+Function ToggleCombat(bool a_enable) Global Native
 
-bool Function DetectionActive() Global Native
+Bool Function DetectionActive() Global Native
 
+; Print text to console. Supports passing a translation key
+Function PrintConsole(String a_str) Global Native
 
 Int Function RandomInt(Int Min = 0, Int Max = 100) Global Native
 Float Function RandomFloat(Float Min = 0.0, Float Max = 1.0) Global Native
