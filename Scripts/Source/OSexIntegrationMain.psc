@@ -1378,6 +1378,11 @@ Bool Function IsVaginal()
 	Return (GetCurrentAnimationClass() == ClassSex) && IsFemale(SubActor)
 EndFunction
 
+Bool Function IsOral()
+	string animType = GetCurrentAnimationClass()
+	return animType == "BJ" || animType == "HhBJ" || animType == "AgBJ" || animType == "DBJ"
+EndFunction
+
 String[] Function GetScene()
 	{this is not the sceneID, this is an internal osex thing}
 	Return CurrScene

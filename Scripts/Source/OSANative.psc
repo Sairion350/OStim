@@ -178,3 +178,6 @@ Bool Function TryLock(String a_lock) Global Native
 {Returns true if nothing has claimed the given string, and claims the string. Returns false if the string is already claimed}
 Function Unlock(String a_lock) Global Native
 {Unclaims the given string}
+
+; Experimental
+String Function Translate(String a_key, String a_locale = "") Global Native
