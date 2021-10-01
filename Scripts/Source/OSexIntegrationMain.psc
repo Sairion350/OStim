@@ -1028,6 +1028,14 @@ Int Function GetAPIVersion()
 	Return 24
 EndFunction
 
+bool Function SoloAnimsInstalled()
+	return MiscUtil.FileExists("data/meshes/0SA/mod/0Sex/scene/0M2F/Sy6KNy2Sy9/DHJ/Parlor0BJ2HJ.xml")
+EndFunction
+
+bool Function ThreesomeAnimsInstalled()
+	return MiscUtil.FileExists("data/meshes/0SA/mod/0Sex/scene/WANK/Boy9/Sx/AnubsMagicDildoBentOver.xml")
+EndFunction
+
 Function IncreaseAnimationSpeed()
 	If (AnimSpeedAtMax)
 		Return
