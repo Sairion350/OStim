@@ -272,7 +272,6 @@ Event OnPageReset(String Page)
 		SetCursorPosition(2)
 
 		;=============================================================================================
-
 		AddColoredHeader("$ostim_header_sex_scenes")
 		SetActorSpeedControl = AddToggleOption("$ostim_speed_control", Main.EnableActorSpeedControl)
 		SetsexExcitementMult = AddSliderOption("$ostim_excitement_mult", Main.SexExcitementMult, "{2} x")
@@ -1429,6 +1428,7 @@ Function ExportSettings()
 	endIf
 
 	; Save to file.
+	JMap.SetInt(OstimSettingsFile, "OStimAPIVersion", outils.getostim().getapiversion())
 	osexintegrationmain.Console("Saving Ostim settings.")
 	Jvalue.WriteToFile(OstimSettingsFile, JContainers.UserDirectory() + "OstimMCMSettings.json")
 	
@@ -1448,14 +1448,19 @@ Function ImportSettings()
 		OstimSettingsFileAlt = JValue.readFromFile(".\\Data\\OstimMCMSettings.json")
 	endif
 	if (OstimSettingsFile == False && OstimSettingsFileAlt == False)
-		;ShowMessage("$ostim_message_import_no_file", false)
 		return
 	ElseIf (OstimSettingsFile == False && OstimSettingsFileAlt == True)
 		OstimSettingsFile = OstimSettingsFileAlt
-		;ShowMessage("$ostim_message_import_ml_settings", false)
+		osexintegrationmain.Console(osanative.translate("$ostim_message_import_ml_settings"))
 	Else
-		;ShowMessage("$ostim_message_import", false)
+		osexintegrationmain.Console(osanative.translate("$ostim_message_import"))
 	EndIf
+
+	if (outils.getostim().getapiversion() != JMap.GetInt(OstimSettingsFile, "OStimAPIVersion") && !OstimSettingsFileAlt) ;if api version is different, and didn't load modlist setting file from data folder.
+		osexintegrationmain.Console(osanative.translate("$ostim_message_import_old_api"))
+		outils.getostim().DisplayToastAsync(osanative.translate("$ostim_message_import_old_api"), 10)
+	endif
+	
 	; Sex settings import.
 	Main.EndOnDomOrgasm = Jmap.GetInt(OstimSettingsFile, "SetEndOnOrgasm")
 	Main.EndOnSubOrgasm = JMap.GetInt(OstimSettingsFile, "SetEndOnSubOrgasm")
