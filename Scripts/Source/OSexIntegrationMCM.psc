@@ -1458,12 +1458,6 @@ Function ImportSettings()
 
 	if (outils.getostim().getapiversion() != JMap.GetInt(OstimSettingsFile, "OStimAPIVersion") && !OstimSettingsFileAlt) ;if api version is different, and didn't load modlist setting file from data folder.
 		osexintegrationmain.Console(osanative.translate("$ostim_message_import_old_api"))
-		osanative.SetLocale("JAPANESE")
-		osexintegrationmain.Console(osanative.translate("$ostim_message_import_old_api"))
-		osanative.SetLocale("")
-		osexintegrationmain.Console(osanative.translate("$ostim_message_import_old_api"))
-		osanative.SetLocale("ENGLISH")
-		osexintegrationmain.Console(osanative.translate("$ostim_message_import_old_api"))
 		outils.getostim().DisplayToastAsync(osanative.translate("$ostim_message_import_old_api"), 10)
 	endif
 	
