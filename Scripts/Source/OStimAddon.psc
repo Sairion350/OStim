@@ -5,12 +5,16 @@ ScriptName OStimAddon Extends Quest Hidden
 ; Have your addon script extend this one, then at the end of the addon's oninit, call InstallAddon()
 
 
-; Free properties you have access to in all scripts that extend this one
-OSexIntegrationMain property ostim auto 
-actor property PlayerRef auto 
 
+;███████╗████████╗ █████╗ ██████╗ ████████╗██╗███╗   ██╗ ██████╗ 
+;██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██║████╗  ██║██╔════╝ 
+;███████╗   ██║   ███████║██████╔╝   ██║   ██║██╔██╗ ██║██║  ███╗
+;╚════██║   ██║   ██╔══██║██╔══██╗   ██║   ██║██║╚██╗██║██║   ██║
+;███████║   ██║   ██║  ██║██║  ██║   ██║   ██║██║ ╚████║╚██████╔╝
+;╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+                                                                
+; Call this from a child script's OnInit() to set up the addon backend
 
-;------------------------- MUST CALL THIS FROM ONINIT
 Function InstallAddon(string name)
 	ostim = outils.GetOStim()
 	playerref = game.GetPlayer()
@@ -24,38 +28,77 @@ Function InstallAddon(string name)
 		return 
 	endif  
 
-	;if IsStarting() || IsRunning()
-		OStim.RegisterForGameLoadEvent(self) ; register for OnGameLoad() 
-		outils.RegisterForOUpdate(self) ;register to update system
-	;else 
-	;	debug.MessageBox("Addon script quest not running: " + name)
-	;EndIf
+	OStim.RegisterForGameLoadEvent(self) ; register for OnGameLoad() 
+	outils.RegisterForOUpdate(self) ;register to update system
+
 
 	osanative.SendEvent(self, "OnGameLoad") ; call ongameload once.
 
 	debug.Notification(name + " installed")
 EndFunction
-;---------------------------
-
-Event OnInit()
-	Debug.messagebox("Extend me!")
-EndEvent
-
-string[] property RegisteredEvents auto ; Insert events into here to register on each load
-; You cannot use this system while extending OnGameLoad.
 
 
+;██████╗  █████╗ ████████╗ █████╗ 
+;██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗
+;██║  ██║███████║   ██║   ███████║
+;██║  ██║██╔══██║   ██║   ██╔══██║
+;██████╔╝██║  ██║   ██║   ██║  ██║
+;╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
+                                 
+; Properties with some useful data you have access to in all scripts that extend this one
+
+; Only functional after calling InstallAddon()
+OSexIntegrationMain property ostim auto 
+actor property PlayerRef auto 
 string property AddonName auto
+
+
+
+
+;███████╗███████╗████████╗████████╗██╗███╗   ██╗ ██████╗ ███████╗
+;██╔════╝██╔════╝╚══██╔══╝╚══██╔══╝██║████╗  ██║██╔════╝ ██╔════╝
+;███████╗█████╗     ██║      ██║   ██║██╔██╗ ██║██║  ███╗███████╗
+;╚════██║██╔══╝     ██║      ██║   ██║██║╚██╗██║██║   ██║╚════██║
+;███████║███████╗   ██║      ██║   ██║██║ ╚████║╚██████╔╝███████║
+;╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
+  
+; Some settings you can tweak. Tweak them before calling InstallAddon()
+
+; Throws an error is user has a version older than this
 int property RequiredVersion = 24 auto 
 
+; Insert events into here to register for them on each load
+; You cannot use this system while extending OnGameLoad.  
+string[] property RegisteredEvents auto                                                            
 
 
+
+;███████╗██╗  ██╗████████╗███████╗███╗   ██╗██████╗  █████╗ ██████╗ ██╗     ███████╗
+;██╔════╝╚██╗██╔╝╚══██╔══╝██╔════╝████╗  ██║██╔══██╗██╔══██╗██╔══██╗██║     ██╔════╝
+;█████╗   ╚███╔╝    ██║   █████╗  ██╔██╗ ██║██║  ██║███████║██████╔╝██║     █████╗  
+;██╔══╝   ██╔██╗    ██║   ██╔══╝  ██║╚██╗██║██║  ██║██╔══██║██╔══██╗██║     ██╔══╝  
+;███████╗██╔╝ ██╗   ██║   ███████╗██║ ╚████║██████╔╝██║  ██║██████╔╝███████╗███████╗
+;╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
+                                                                                   
 
 Event OnGameLoad() ; You can either extend this, or not extend it and use RegisteredEvents
 	if RegisteredEvents
 		RegisterSavedEvents()
 	endif 
 EndEvent
+
+Event OnInit()
+	Debug.messagebox("Extend me!")
+EndEvent
+
+
+;████████╗ ██████╗  ██████╗ ██╗     ███████╗
+;╚══██╔══╝██╔═══██╗██╔═══██╗██║     ██╔════╝
+;   ██║   ██║   ██║██║   ██║██║     ███████╗
+;   ██║   ██║   ██║██║   ██║██║     ╚════██║
+;   ██║   ╚██████╔╝╚██████╔╝███████╗███████║
+;   ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚══════╝
+                                           
 
 Function RegisterSavedEvents()
 	int i = 0 
@@ -67,8 +110,14 @@ Function RegisterSavedEvents()
 	endwhile
 EndFunction
 
-
-
+;███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗
+;██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
+;█████╗  ██║   ██║█████╗  ██╔██╗ ██║   ██║   ███████╗
+;██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║   ╚════██║
+;███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║
+;╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
+                                                    
+; Some common OStim events. Add them to your script and use RegisterForOEvent if you aren't using the addon event registration system above
 
 Function RegisterForOEvent(string EventName)
 	RegisterForModEvent(EventName, EventName)
