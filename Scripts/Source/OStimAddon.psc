@@ -11,7 +11,7 @@ actor property playerref auto
 
 
 ;------------------------- MUST CALL THIS FROM ONINIT
-Function InstallAddon(string name, int RequiredAPIVersion = 1)
+Function InstallAddon(string name, int RequiredAPIVersion = 24)
 	ostim = outils.GetOStim()
 	playerref = game.GetPlayer()
 
@@ -34,14 +34,51 @@ Function InstallAddon(string name, int RequiredAPIVersion = 1)
 EndFunction
 ;---------------------------
 
-string property AddonName auto
-int property RequiredVersion auto 
-
-Event OnGameLoad() 
-{Event called on each game load. Extend this}
-EndEvent
-
 Event OnInit()
 	Debug.messagebox("Extend me!")
 EndEvent
 
+string property AddonName auto
+int property RequiredVersion auto 
+
+string[] property RegisteredEvents auto ; Insert events into here to register on each load
+; You cannot use this system while extending OnGameLoad.
+
+
+Event OnGameLoad() ; You can either extend this, or not extend it and use RegisteredEvents
+	if RegisteredEvents
+		int i = 0 
+		int l = RegisteredEvents.Length
+		while i < l 
+			registerforoevent(RegisteredEvents[i])
+
+			i += 1
+		endwhile	
+	endif 
+EndEvent
+
+
+
+
+Function RegisterForOEvent(string EventName)
+	RegisterForModEvent(EventName, EventName)
+EndFunction
+
+
+Event OStim_PreStart(string eventName, string strArg, float numArg, Form sender)
+EndEvent
+
+Event OStim_Start(string eventName, string strArg, float numArg, Form sender)
+EndEvent
+
+Event OStim_AnimationChanged(string eventName, string strArg, float numArg, Form sender)
+EndEvent
+
+Event OStim_SceneChanged(string eventName, string strArg, float numArg, Form sender)
+EndEvent
+
+Event OStim_Orgasm(string eventName, string strArg, float numArg, Form sender)
+EndEvent
+
+Event OStim_End(string eventName, string strArg, float numArg, Form sender)
+EndEvent
