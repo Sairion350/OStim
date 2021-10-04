@@ -47,15 +47,19 @@ string[] property RegisteredEvents auto ; Insert events into here to register on
 
 Event OnGameLoad() ; You can either extend this, or not extend it and use RegisteredEvents
 	if RegisteredEvents
-		int i = 0 
-		int l = RegisteredEvents.Length
-		while i < l 
-			registerforoevent(RegisteredEvents[i])
-
-			i += 1
-		endwhile	
+			
 	endif 
 EndEvent
+
+Function RegisterSavedEvents()
+	int i = 0 
+	int l = RegisteredEvents.Length
+	while i < l 
+		registerforoevent(RegisteredEvents[i])
+
+		i += 1
+	endwhile
+EndFunction
 
 
 
