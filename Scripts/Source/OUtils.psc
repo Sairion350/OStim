@@ -416,3 +416,113 @@ string[] Function VagPlayClasses() Global
 
 	return PapyrusUtil.MergeStringArray(ret, CunnilingusClasses())
 endfunction 
+
+
+string[] Function StringArray(string one = "", string two = "", string three = "", string four = "", string five = "", string six = "", string seven = "", string eight = "", string nine = "", string ten = "") Global
+	if one == ""
+		return PapyrusUtil.StringArray(0)
+	elseif two == ""
+		return PapyrusUtil.StringArray(1, one)
+	elseif three == ""
+		string[] ret = PapyrusUtil.StringArray(2)
+		ret[0] = one 
+		ret[1] = two 
+
+		return ret 
+	elseif four == ""
+		string[] ret = PapyrusUtil.StringArray(3)
+		ret[0] = one 
+		ret[1] = two 
+		ret[2] = three
+
+		return ret 
+	elseif five == ""
+		string[] ret = PapyrusUtil.StringArray(4)
+		ret[0] = one 
+		ret[1] = two 
+		ret[2] = three
+		ret[3] = four 
+
+		return ret 
+	elseif six == ""
+		string[] ret = PapyrusUtil.StringArray(5)
+		ret[0] = one 
+		ret[1] = two 
+		ret[2] = three
+		ret[3] = four 
+		ret[4] = five
+
+		return ret 
+	elseif seven == ""
+		string[] ret = PapyrusUtil.StringArray(6)
+		ret[0] = one 
+		ret[1] = two 
+		ret[2] = three
+		ret[3] = four 
+		ret[4] = five
+		ret[5] = six 
+
+	elseif seven == ""
+		string[] ret = PapyrusUtil.StringArray(6)
+		ret[0] = one 
+		ret[1] = two 
+		ret[2] = three
+		ret[3] = four 
+		ret[4] = five
+		ret[5] = six 
+
+		return ret 
+
+	elseif eight == ""
+		string[] ret = PapyrusUtil.StringArray(7)
+		ret[0] = one 
+		ret[1] = two 
+		ret[2] = three
+		ret[3] = four 
+		ret[4] = five
+		ret[5] = six 
+		ret[6] = seven
+
+		return ret  
+	elseif nine == ""
+		string[] ret = PapyrusUtil.StringArray(8)
+		ret[0] = one 
+		ret[1] = two 
+		ret[2] = three
+		ret[3] = four 
+		ret[4] = five
+		ret[5] = six 
+		ret[6] = seven
+		ret[7] = eight
+
+		return ret  
+	elseif ten == ""
+		string[] ret = PapyrusUtil.StringArray(9)
+		ret[0] = one 
+		ret[1] = two 
+		ret[2] = three
+		ret[3] = four 
+		ret[4] = five
+		ret[5] = six 
+		ret[6] = seven
+		ret[7] = eight
+		ret[8] = nine
+
+		return ret  
+	else
+		string[] ret = PapyrusUtil.StringArray(10)
+		ret[0] = one 
+		ret[1] = two 
+		ret[2] = three
+		ret[3] = four 
+		ret[4] = five
+		ret[5] = six 
+		ret[6] = seven
+		ret[7] = eight
+		ret[8] = nine
+		ret[9] = ten
+
+		return ret 
+	endif
+
+EndFunction
