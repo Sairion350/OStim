@@ -7,16 +7,15 @@ ScriptName OStimAddon Extends Quest Hidden
 
 ; Free properties you have access to in all scripts that extend this one
 OSexIntegrationMain property ostim auto 
-actor property playerref auto 
+actor property PlayerRef auto 
 
 
 ;------------------------- MUST CALL THIS FROM ONINIT
-Function InstallAddon(string name, int RequiredAPIVersion = 24)
+Function InstallAddon(string name)
 	ostim = outils.GetOStim()
 	playerref = game.GetPlayer()
 
 	AddonName = name
-	RequiredVersion = RequiredAPIVersion
 
 
 	if ostim.GetAPIVersion() < RequiredVersion
@@ -25,8 +24,12 @@ Function InstallAddon(string name, int RequiredAPIVersion = 24)
 		return 
 	endif  
 
-	OStim.RegisterForGameLoadEvent(self) ; register for OnGameLoad() 
-	outils.RegisterForOUpdate(self) ;register to update system
+	;if IsStarting() || IsRunning()
+		OStim.RegisterForGameLoadEvent(self) ; register for OnGameLoad() 
+		outils.RegisterForOUpdate(self) ;register to update system
+	;else 
+	;	debug.MessageBox("Addon script quest not running: " + name)
+	;EndIf
 
 	osanative.SendEvent(self, "OnGameLoad") ; call ongameload once.
 
@@ -38,16 +41,19 @@ Event OnInit()
 	Debug.messagebox("Extend me!")
 EndEvent
 
-string property AddonName auto
-int property RequiredVersion auto 
-
 string[] property RegisteredEvents auto ; Insert events into here to register on each load
 ; You cannot use this system while extending OnGameLoad.
 
 
+string property AddonName auto
+int property RequiredVersion = 24 auto 
+
+
+
+
 Event OnGameLoad() ; You can either extend this, or not extend it and use RegisteredEvents
 	if RegisteredEvents
-			
+		RegisterSavedEvents()
 	endif 
 EndEvent
 
