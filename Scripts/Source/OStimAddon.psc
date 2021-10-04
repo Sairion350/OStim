@@ -1,15 +1,14 @@
-ScriptName OStimAddon Extends Quest
+ScriptName OStimAddon Extends Quest Hidden
 
 ; 	HOW TO USE THIS
 ; This script contains some common things addons need to function
 ; Have your addon script extend this one, then at the end of the addon's oninit, call InstallAddon()
 
 
+; Free properties you have access to in all scripts that extend this one
 OSexIntegrationMain property ostim auto 
 actor property playerref auto 
 
-string property AddonName auto
-int property RequiredVersion auto 
 
 ;------------------------- MUST CALL THIS FROM ONINIT
 Function InstallAddon(string name, int RequiredAPIVersion = 1)
@@ -34,6 +33,9 @@ Function InstallAddon(string name, int RequiredAPIVersion = 1)
 	debug.Notification(name + " installed")
 EndFunction
 ;---------------------------
+
+string property AddonName auto
+int property RequiredVersion auto 
 
 Event OnGameLoad() 
 {Event called on each game load. Extend this}
