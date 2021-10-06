@@ -271,6 +271,10 @@ string function PadString(string str, int to, int side = 0, string char = " ") G
 	{fill the string with specified chars until it hits the specified length}
 	int amount = to - stringutil.GetLength(str)
 
+	if amount < 1
+		return str 
+	endif 
+
 	string[] padding = PapyrusUtil.StringArray(amount, filler = char)
 
 	if side == 0 ; right 
