@@ -28,11 +28,13 @@ Function InstallAddon(string name)
 		return 
 	endif  
 
-	OStim.RegisterForGameLoadEvent(self) ; register for OnGameLoad() 
+	
 	outils.RegisterForOUpdate(self) ;register to update system
 
-
-	osanative.SendEvent(self, "OnGameLoad") ; call ongameload once.
+	if LoadGameEvents
+		OStim.RegisterForGameLoadEvent(self) ; register for OnGameLoad() 
+		osanative.SendEvent(self, "OnGameLoad") ; call ongameload once.
+	endif 
 
 	debug.Notification(name + " installed")
 EndFunction
@@ -69,7 +71,11 @@ int property RequiredVersion = 24 auto
 
 ; Insert events into here to register for them on each load
 ; You cannot use this system while extending OnGameLoad.  
-string[] property RegisteredEvents auto                                                            
+string[] property RegisteredEvents auto      
+
+; Needed for OnGameLoad() to function.
+; If not needed, can be disabled to free up resources
+bool property LoadGameEvents = true auto                                                       
 
 
 
