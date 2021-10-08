@@ -317,70 +317,31 @@ EndFunction
 ;	Return Ret
 ;EndFunction
 
-Int Function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntParam = -100, String StringParam = "", Int BoolParam = -1, Bool AllowPartialStringResult = False, Bool NegativePartial = False)
-	
-	Int Base = zDatabase
+int function DatabaseKeyAndParameterLookup(Int zDatabase, String zKey, Int IntParam = -100, String StringParam = "", Int BoolParam = -1, Bool AllowPartialStringResult = False, Bool NegativePartial = False)
 	Int Ret = JArray.object()
-
-	Int i = 0
-	Int L = JArray.Count(Base)
-
-	Int Animation ;optimization
-	Bool Parameter
-	Int iOutput
-	String sOutput
-
-    If (IntParam > -100)
-        while (i < L)
-            Animation = JArray.GetObj(base, i)
-            iOutput = JMap.GetInt(Animation, zKey, Default = -10001)
-            If (iOutput == IntParam) && (iOutput != 10001)
-				JArray.AddObj(Ret, Animation)
-			EndIf
-            i += 1
-        endwhile
+	if (IntParam > -100)
+		ret = JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'"+zKey+"', "+IntParam+")")
 		Return Ret
     elseif (StringParam != "")
-        If (!AllowPartialStringResult)
-            while (i < L)
-                Animation = JArray.GetObj(base, i)
-                sOutput = JMap.GetStr(Animation, zKey, Default = "")
-                If (sOutput == StringParam) && (sOutput != "")
-					JArray.AddObj(Ret, Animation)
-				EndIf
-                i += 1
-            endwhile
-			Return Ret
-        Else
-            while (i < L)
-                Animation = JArray.GetObj(base, i)
-                sOutput = JMap.GetStr(Animation, zKey, Default = "")
-                If (StringUtil.Find(sOutput, StringParam) != -1)
-                    If (!NegativePartial)
-                        JArray.AddObj(ret, Animation)
-                    EndIf
-                Else
-                    If (NegativePartial)
-                        JArray.AddObj(ret, Animation)
-                    EndIf
-                EndIf
-                i += 1
-            endwhile
-			Return Ret
+        if (!AllowPartialStringResult)
+			;normal
+			ret = JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'"+zKey+"', '"+StringParam+"')")
+		else
+			if (NegativePartial)
+				;negative partial
+				ret = JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'"+zKey+"', '"+StringParam+"', 1, 1)")
+			else
+				;normal partial
+				ret = JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'"+zKey+"', '"+StringParam+"', 1, 0)")
+			endif
         endif
-    ElseIf (BoolParam > -1)
-        while (i < L)
-            Animation = JArray.GetObj(base, i)
-            If ((JMap.getInt(Animation, zKey, Default = 0) as Bool) == BoolParam as Bool)
-                JArray.AddObj(Ret, Animation)
-            EndIf
-            i += 1
-        endwhile
+		Return Ret
+    elseif (BoolParam > -1)
+		ret = JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'"+zKey+"', "+BoolParam+")") ;no need to cast boolParam as int because it already is one.
 		Return Ret
     endif
-
 	Return Ret
-EndFunction
+endfunction
 
 Int Function getAnimationWithAnimID(Int zDatabase, String AnimID) ;returns OArray
 	Int Base = zDatabase
@@ -455,27 +416,27 @@ EndFunction
 ;-----------
 
 Int Function GetAnimationsWithActorCount(Int zDatabase, Int Num) ; returns OArray
-	Return DatabaseKeyAndParameterLookup(zDatabase, "NumActors", IntParam = Num)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'NumActors', "+Num+")")
 EndFunction
 
 Int Function GetAnimationsWithName(Int zDatabase, String Name, Bool AllowPartialResult = False, Bool Negative = False) ; returns OArray
-	Return DatabaseKeyAndParameterLookup(zDatabase, "name", StringParam = Name, AllowPartialStringResult = AllowPartialResult, NegativePartial = Negative)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject, 'name', '"+Name+"', "+AllowPartialResult as int+", "+Negative as int+")")
 EndFunction
 
 Int Function GetAnimationsWithAnimationClass(Int zDatabase, String zClass) ; returns OArray
-	Return DatabaseKeyAndParameterLookup(zDatabase, "animclass", StringParam = zClass)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'animclass', '"+zClass+"')")
 EndFunction
 
 Int Function GetAnimationsWithPositionData(Int zDatabase, String Pos) ; returns OArray
-	Return DatabaseKeyAndParameterLookup(zDatabase, "positiondata", StringParam = Pos)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'positiondata', '"+Pos+"')")
 EndFunction
 
 Int Function GetAnimationsWithSceneID(Int zDatabase, String SceneID) ; returns OArray
-	Return DatabaseKeyAndParameterLookup(zDatabase, "sceneid", StringParam = SceneID)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'sceneid', '"+SceneID+"')")
 EndFunction
 
 Int Function GetAnimationsFromModule(Int zDatabase, String Module) ; returns OArray
-	Return DatabaseKeyAndParameterLookup(zDatabase, "sourcemodule", StringParam = Module)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'sourcemodule', '"+Module+"')")
 EndFunction
 
 Int Function GetAnimationsByAggression(Int zDatabase, Bool IsAggressive) ; returns OArray
@@ -483,7 +444,7 @@ Int Function GetAnimationsByAggression(Int zDatabase, Bool IsAggressive) ; retur
 	If (IsAggressive)
 		Send = 1
 	EndIf
-	Return DatabaseKeyAndParameterLookup(zDatabase, "aggressive", BoolParam = Send)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'aggressive', "+Send+")")
 EndFunction
 
 Int Function GetHubAnimations(Int zDatabase, Bool IsHub) ; returns OArray
@@ -491,7 +452,7 @@ Int Function GetHubAnimations(Int zDatabase, Bool IsHub) ; returns OArray
 	If (IsHub)
 		Send = 1
 	EndIf
-	Return databaseKeyAndParameterLookup(zDatabase, "ishub", BoolParam = Send)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'ishub', "+Send+")")
 EndFunction
 
 Int Function GetTransitoryAnimations(Int zDatabase, Bool IsTransitory) ; returns OArray
@@ -499,7 +460,7 @@ Int Function GetTransitoryAnimations(Int zDatabase, Bool IsTransitory) ; returns
 	If (IsTransitory)
 		Send = 1
 	EndIf
-	Return DatabaseKeyAndParameterLookup(zDatabase, "istransitory", BoolParam = Send)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'istransitory', "+Send+")")
 EndFunction
 
 Int Function GetSexAnimations(Int zDatabase, Bool IsSex) ; returns OArray
@@ -512,19 +473,19 @@ EndFunction
 
 Int Function GetAnimationsByMainActor(Int zDatabase, Int MainActor) ; returns OArray
 	; 0 - dom, 1 - sub
-	Return DatabaseKeyAndParameterLookup(zDatabase, "mainActor", IntParam = MainActor)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'mainActor', "+MainActor+")")
 EndFunction
 
 Int Function GetAnimationsByMaxSpeed(Int zDatabase, Int Speed) ; returns OArray
-	Return DatabaseKeyAndParameterLookup(zDatabase, "maxspeed", IntParam = Speed)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'maxspeed', "+Speed+")")
 EndFunction
 
 Int Function GetAnimationsByMinSpeed(Int zDatabase, Int Speed) ; returns OArray
-	Return DatabaseKeyAndParameterLookup(zDatabase, "minspeed", IntParam = Speed)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'minspeed', "+Speed+")")
 EndFunction
 
 Int Function GetAnimationsWithIdleSpeed(Int zDatabase, Bool zIdle) ; returns OArray
-	Return DatabaseKeyAndParameterLookup(zDatabase, "hasidlespeed", BoolParam = zIdle as Int)
+	Return JValue.evalLuaObj(zDatabase, "return ostim.getAnimationsKeyValuePair(jobject,'hasidlespeed', "+zIdle as Int+")")
 EndFunction
 
 ;--- auxiliary functions

@@ -3349,8 +3349,10 @@ Function Profile(String Name = "")
 		float ms = seconds * 1000
 		If seconds < 0.0
 			Console(Name + ": Too fast to measure")
+			Debug.Trace("Ostim: "+Name+" : Too fast to measure")
 		else 
 			Console(Name + ": " + seconds + " seconds (" + ms + " milliseconds)")
+			Debug.Trace("Ostim: "+Name+": " + seconds + " seconds (" + ms + " milliseconds)")
 		endif 
 	EndIf
 EndFunction
