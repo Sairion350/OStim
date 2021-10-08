@@ -38,10 +38,10 @@ Function DoUpdate()
 		Quest q = forms[i] as Quest
 
 		OUtils.Console("Clearing: " + f)
-		If q
-			q.reset()
-			q.stop()
-		EndIf
+		;If q
+		;	q.reset()
+		;	q.stop()
+		;EndIf
 
 		f.UnregisterForAllMenus()
 		f.UnregisterForUpdateGameTime()
@@ -63,13 +63,13 @@ Function DoUpdate()
 
 		OUtils.Console("Starting: " + f)
 
-		If q
-			q.Start()
-		EndIf
+		;If q
+		;	q.Start()
+		;EndIf
 
 		OSANative.SendEvent(f, "OnInit")
 
-		Utility.Wait(0.1)
+		Utility.WaitMenuMode(0.1)
 
 		i += 1
 	EndWhile
