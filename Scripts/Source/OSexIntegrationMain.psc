@@ -977,6 +977,9 @@ Bool Function IsActorInvolved(actor act)
 	; IsActorInvolved will return true during ostim startup and shutdown as well as during the osa scene
 	; IsActorInvolved can return true even after a ostim scene has ended completely. In this sense it is basically "WasActorInvolved"  in the most recent scene
 	; Generally isactoractive is preferred, since it will always return false if no ostim scene is running
+	if act == none 
+		return false 
+	endif 
 	return (act == DomActor) || (act == subactor) || (act == ThirdActor)
 EndFunction
 
@@ -1291,6 +1294,10 @@ bool Function HasSceneMetadata(string MetaTag)
 	endif 
 
 	return metadata.Find(metatag) != -1
+EndFunction
+
+string[] Function GetAllSceneMetadata()
+	return scenemetadata
 EndFunction
 
 

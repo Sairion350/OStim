@@ -36,6 +36,7 @@ Function InstallAddon(string name)
 		osanative.SendEvent(self, "OnGameLoad") ; call ongameload once.
 	endif 
 
+	outils.console(name + " installed")
 	debug.Notification(name + " installed")
 EndFunction
 
