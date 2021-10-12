@@ -180,7 +180,14 @@ Actor[] Function BaseArrToActorArr(ActorBase[] base) Global
 	return ret
 EndFunction
 
+actor Function GetNPC(int id, string source = "skyrim.esm") Global
+	actor ret = game.GetFormFromFile(id, source) as actor 
+	if !ret
+		console("----------------- Error getting npc " + id + source)
+	endif 
 
+	return ret 
+EndFunction
 
 ; Cached natives
 ; After running once, the value is cached. Once cached a function will return in less than 1 ms instead of a full frame.
