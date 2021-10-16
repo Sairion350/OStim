@@ -192,7 +192,7 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 	Console("sex change anim chance: " + SexChangeChance)
 
 	Int Stage
-	If (NumActors > 1)
+	If (NumActors == 1)
 		Stage = 3 ; masturbation
 	ElseIf (ChanceRoll(ForeplayChance))
 		Stage = 1 ; foreplay
