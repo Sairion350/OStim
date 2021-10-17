@@ -345,7 +345,7 @@ bool ReallignedDuringThisAnim
 String o
 Int Password
 
-quest subthreadquest
+quest property subthreadquest auto 
 
 _oUI_Lockwidget LockWidget
 

@@ -41,9 +41,9 @@ int property currentOID auto
 bool property aggressive Auto
 string[] currScene
 
-int currspeed
-int maxSpeed
-float timePerSpeed
+int property currspeed auto 
+int property maxSpeed auto
+float property timePerSpeed auto 
 
 float property estimatedLength auto
 
