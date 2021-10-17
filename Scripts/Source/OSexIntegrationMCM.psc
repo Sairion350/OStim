@@ -108,6 +108,7 @@ Int SetUseCosaveWorkaround
 ; mcm save/load settings
 Int ExportSettings
 Int ImportSettings
+Int ImportDefaultSettings
 
 int SetUpdate
 
@@ -231,6 +232,7 @@ Function Init()
 
 	Pages = pagearr
 
+	Utility.Wait(2)
 	ImportSettings()
 EndFunction
 
@@ -367,6 +369,7 @@ Event OnPageReset(String Page)
 		AddColoredHeader("$ostim_header_save_load")
 		ExportSettings = AddTextOption("$ostim_export", "$ostim_done")
 		ImportSettings = AddTextOption("$ostim_import", "$ostim_done")
+		ImportDefaultSettings = AddTextOption("$ostim_import_default", "$ostim_done")
 		AddEmptyOption()
 	ElseIf (Page == "$ostim_page_addons")
 		SetInfoText(" ")
@@ -729,6 +732,10 @@ Event OnOptionSelect(Int Option)
 		If ShowMessage("$ostim_message_import_confirm")
 			ImportSettings()
 		EndIf
+	ElseIf (Option == ImportDefaultSettings)
+		If ShowMessage("$ostim_message_import_confirm")
+			ImportSettings(true)
+		EndIf
 	EndIf
 EndEvent
 
@@ -937,7 +944,8 @@ Event OnOptionHighlight(Int Option)
 		SetInfoText("$ostim_tooltip_export")
 	ElseIf (Option == ImportSettings)
 		SetInfoText("$ostim_tooltip_import")
-
+	ElseIf (Option == ImportDefaultSettings)
+		SetInfoText("$ostim_tooltip_import_default")
 	EndIf
 EndEvent
 
@@ -1414,29 +1422,42 @@ Function ExportSettings()
 	ForcePageReset()
 EndFunction
 
-Function ImportSettings()
+Function ImportSettings(bool default = false)
 	; Import from file.
-	int OstimSettingsFile
-	int OstimSettingsFileAlt
-	if (JContainers.FileExistsAtPath(JContainers.UserDirectory() + "OstimMCMSettings.json"))
-		OstimSettingsFile = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
-	endif
-	if (JContainers.FileExistsAtPath(".\\Data\\OstimMCMSettings.json"))
-		; Tries to import from Data folder as well, this is to allow Modlist creators to package configuration files as mods for mo2 or vortex.
-		OstimSettingsFileAlt = JValue.readFromFile(".\\Data\\OstimMCMSettings.json")
-	endif
-	if (OstimSettingsFile == False && OstimSettingsFileAlt == False)
-		return
-	ElseIf (OstimSettingsFile == False && OstimSettingsFileAlt == True)
-		OstimSettingsFile = OstimSettingsFileAlt
-		osexintegrationmain.Console(osanative.translate("$ostim_message_import_ml_settings"))
-	Else
-		osexintegrationmain.Console(osanative.translate("$ostim_message_import"))
-	EndIf
+		int OstimSettingsFile
+	if !default
+		int OstimSettingsFileAlt
 
-	if (outils.getostim().getapiversion() != JMap.GetInt(OstimSettingsFile, "OStimAPIVersion") && !OstimSettingsFileAlt) ;if api version is different, and didn't load modlist setting file from data folder.
-		osexintegrationmain.Console(osanative.translate("$ostim_message_import_old_api"))
-		outils.getostim().DisplayToastAsync(osanative.translate("$ostim_message_import_old_api"), 10)
+		if (JContainers.FileExistsAtPath(JContainers.UserDirectory() + "OstimMCMSettings.json"))
+			OstimSettingsFile = JValue.readFromFile(JContainers.UserDirectory() + "OstimMCMSettings.json")
+		endif
+
+		if (JContainers.FileExistsAtPath(".\\Data\\OstimMCMSettings.json"))
+			; Tries to import from Data folder as well, this is to allow Modlist creators to package configuration files as mods for mo2 or vortex.
+			OstimSettingsFileAlt = JValue.readFromFile(".\\Data\\OstimMCMSettings.json")
+		endif
+
+		if (OstimSettingsFile == False && OstimSettingsFileAlt == False)
+			osexintegrationmain.Console(osanative.translate("$ostim_import_no_file"))
+			return
+		ElseIf (OstimSettingsFile == False && OstimSettingsFileAlt == True)
+			OstimSettingsFile = OstimSettingsFileAlt
+			osexintegrationmain.Console(osanative.translate("$ostim_message_import_ml_settings"))
+		Else
+			osexintegrationmain.Console(osanative.translate("$ostim_message_import"))
+		EndIf
+
+		if (outils.getostim().getapiversion() != JMap.GetInt(OstimSettingsFile, "OStimAPIVersion") && !OstimSettingsFileAlt) ;if api version is different, and didn't load modlist setting file from data folder.
+			osexintegrationmain.Console(osanative.translate("$ostim_message_import_old_api"))
+			outils.getostim().DisplayToastAsync(osanative.translate("$ostim_message_import_old_api"), 10)
+		endif
+	Else
+		if (JContainers.FileExistsAtPath(".\\Data\\Interface\\Ostim\\DefaultOstimMCMSettings.json"))
+			OstimSettingsFile = JValue.readFromFile(".\\Data\\Interface\\Ostim\\DefaultOstimMCMSettings.json")
+		Else
+			ShowMessage("$ostim_default_missing_error", false)
+			return
+		endif
 	endif
 	
 	; Sex settings import.
