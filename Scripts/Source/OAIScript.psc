@@ -129,20 +129,14 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 		Gay = True
 	EndIf
 
-	If (OStim.IsActorActive(PlayerRef))
+	If (OStim.isplayerinvolved())
 		Agent = OStim.GetSexPartner(PlayerRef)
 	Else
 		Console("Player is not active")
 		Agent = DomActor
 	EndIf
 
-	If (OStim.GetThirdActor())
-		NumActors = 3
-	ElseIf (OStim.GetSubActor())
-		NumActors = 2
-	Else
-		NumActors = 1
-	EndIf
+	NumActors = ostim.getactors().Length
 
 	Int PulloutChance
 	If (AggressiveScene)
@@ -204,7 +198,7 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 
 
 	Bool ChangeAnimation = True
-	While (OStim.AnimationRunning())
+	While (OStim.isactorinvolved(DomActor) && ostim.AnimationRunning())
 		If (NumActors > 1 && OStim.StringArrayContainsValue(FemaleCentricClasses, OStim.GetCurrentAnimationClass()))
 			CentralActor = OStim.GetSubActor()
 		Else
@@ -274,6 +268,7 @@ Event AI_Thread(String EventName, String strArg, Float NumArg, Form Sender)
 	Console("Closed AI thread")
 EndEvent
 
+ 
 Function StartAI()
 	Console("Firing off AI thread")
 	SendModEvent("ostim_start_ai")

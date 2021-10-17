@@ -935,7 +935,7 @@ EndEvent
 
 Function Masturbate(Actor Masturbator, Bool zUndress = False, Bool zAnimUndress = False, ObjectReference MBed = None)
 
-	If ODatabase.GetLengthOArray(ODatabase.GetAnimationsFromModule(ODatabase.GetDatabaseOArray(), "WANK")) > 0
+	If SoloAnimsInstalled()
 		If IsFemale(Masturbator)
 			console("actor is female, starting WANK|Sy9|Ap|FemaleStanding")
 			StartScene(Masturbator, None, zUndressDom = zUndress, zAnimateUndress = zAnimUndress, zStartingAnimation = "WANK|Sy9|Ap|FemaleStanding", Bed = MBed)
