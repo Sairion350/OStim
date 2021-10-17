@@ -1630,6 +1630,7 @@ Function ConvertToSubthread()
 		while SceneRunning
 			Utility.Wait(0.5)
 		endwhile 
+		Utility.Wait(1.0)
 	else 
 		Console("Nothing running...")
 	endif 
