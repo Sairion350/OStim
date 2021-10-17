@@ -369,11 +369,7 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 
 	If (SceneRunning)
 		if IsNPCScene()
-			Console("NPC scene is already running, moving current scene to subthread")
-			if !GetUnusedSubthread().InheritFromMain()
-				Debug.Notification("OStim: Thread overload, please report this on discord")
-				Return false
-			endif
+			ConvertToSubthread()
 		else 
 			Debug.Notification("OSA scene already running")
 			Return False
@@ -1622,6 +1618,21 @@ OStimSubthread Function GetUnusedSubthread()
 
 		i += 1
 	endwhile
+EndFunction
+
+Function ConvertToSubthread()
+{Turn the current thread into a subthread and wait to return}
+	if SceneRunning
+		if !GetUnusedSubthread().InheritFromMain()
+			Debug.Notification("OStim: Thread overload, please report this on discord")
+		endif 
+
+		while SceneRunning
+			Utility.Wait(0.5)
+		endwhile 
+	else 
+		Console("Nothing running...")
+	endif 
 EndFunction
 
 float Function GetTimeSinceStart()
