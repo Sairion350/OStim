@@ -205,6 +205,9 @@ string SUOVShowEffects = "ovirginity.showhymen"
 int SetOVVirginChance
 string SUOVVirginChance = "ovirginity.virginityChance"
 
+string OProstitution = "OProstitution.esp"
+int SetOPFreq
+string SUOPFreq = "oprostitution.freqmod"
 
 Event OnInit()
 	Init()
@@ -422,6 +425,12 @@ Event OnPageReset(String Page)
 			AddColoredHeader("OVirginity")
 			SetOVShowEffects = AddToggleOption("$ostim_addon_ov_fx", StorageUtil.GetIntValue(none, SUOVShowEffects))
 			SetOVVirginChance = AddSliderOption("$ostim_addon_ov_chance", StorageUtil.GetIntValue(none, SUOVVirginChance), "{0} %")
+		endif 
+
+		if main.IsModLoaded(OProstitution)
+			AddColoredHeader("OProstitution")
+
+			SetOPFreq = AddSliderOption("$ostim_addon_op_freq", StorageUtil.GetIntValue(none, SUOPFreq), "{0}")
 		endif 
 
 		;===================================
@@ -796,6 +805,8 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("$ostim_tooltip_oc_bounty")
 		ElseIf (Option == SetOVVirginChance)
 			SetInfoText("$ostim_tooltip_ov_chance")
+		ElseIf (Option == SetOPFreq)
+			SetInfoText("$ostim_tooltip_op_freq")
 		Elseif (Option == SetONStopWhenFound)
 			SetInfoText("$ostim_tooltip_on_stop")
 		Elseif (Option == SetOBRefit)
@@ -1079,6 +1090,11 @@ Event OnOptionSliderOpen(Int Option)
 		SetSliderDialogDefaultValue(30)
 		SetSliderDialogRange(0, 100)
 		SetSliderDialogInterval(1)
+	elseif (option == SetOPFreq)
+		SetSliderDialogStartValue(StorageUtil.GetIntValue(none, SUOPFreq))
+		SetSliderDialogDefaultValue(0)
+		SetSliderDialogRange(-80, 80)
+		SetSliderDialogInterval(1)
 	elseif (option == SetOCRegenMod)
 		GetExternalFloat(ocum, GVOCRegenMod)
 		SetSliderDialogDefaultValue(1)
@@ -1104,6 +1120,9 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 	Elseif (option == SetOVVirginChance)
 		StorageUtil.SetIntValue(none, SUOVVirginChance, value as int)
 		SetSliderOptionValue(SetOVVirginChance, Value, "{0} %")
+	Elseif (option == SetOPFreq)
+		StorageUtil.SetIntValue(none, SUOPFreq, value as int)
+		SetSliderOptionValue(SetOPFreq, Value, "{0}")
 	ElseIf (Option == SetBedSearchDistance)
 		Main.BedSearchDistance = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0} Meters")
