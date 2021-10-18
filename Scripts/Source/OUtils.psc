@@ -144,6 +144,10 @@ string Function GetButtontag(int keycode) Global
 		ret = "R-" + ret 
 	elseif keycode == 42
 		ret = "L-" + ret 
+	elseif keycode == 203
+		ret = "Left-Arrow"
+	elseif keycode == 205
+		ret = "Right-Arrow"
 	endif 
 
 	return ret
