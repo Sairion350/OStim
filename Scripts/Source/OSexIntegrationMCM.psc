@@ -1127,7 +1127,7 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 		SetSliderOptionValue(Option, Value, "{0}")
 	ElseIf (Option == SetOCRegenMod)
 		SetExternalFloat(ocum, GVOCRegenMod, Value)
-		SetSliderOptionValue(GVOCRegenMod, Value, "{1}")
+		SetSliderOptionValue(SetOCRegenMod, Value, "{1}")
 	EndIf
 EndEvent
 
