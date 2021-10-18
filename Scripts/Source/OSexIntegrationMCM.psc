@@ -152,6 +152,19 @@ int GVOBNippleRand = 0x001803
 int GVOBGenitalRand = 0x001804
 int GVOBPrestKey = 0x001805
 
+string OCum = "OCum.esp"
+int SetOCumKey
+string SUOCumKey = "ocum.key"
+int GVOCRegenMod = 0x00CE25
+int SetOCRegenMod
+int GVOCDisableInflation = 0x00CE26
+int SetOCDisableInflation
+int GVOCDisableCumshot = 0x00F5C0
+int SetOCDisableCumshot
+int GVOCDisableCumMesh = 0x00F5D5
+int SetOCDisableCumMesh
+int GVOCDisableCumDecal = 0x00F5D6
+int SetOCDisableCumDecal
 
 
 int SetOBRefit
@@ -192,9 +205,6 @@ string SUOVShowEffects = "ovirginity.showhymen"
 int SetOVVirginChance
 string SUOVVirginChance = "ovirginity.virginityChance"
 
-string OCum = "OCum.esp"
-int SetOCumKey
-string SUOCumKey = "ocum.key"
 
 Event OnInit()
 	Init()
@@ -412,7 +422,6 @@ Event OnPageReset(String Page)
 			AddColoredHeader("OVirginity")
 			SetOVShowEffects = AddToggleOption("$ostim_addon_ov_fx", StorageUtil.GetIntValue(none, SUOVShowEffects))
 			SetOVVirginChance = AddSliderOption("$ostim_addon_ov_chance", StorageUtil.GetIntValue(none, SUOVVirginChance), "{0} %")
-			
 		endif 
 
 		;===================================
@@ -445,7 +454,13 @@ Event OnPageReset(String Page)
 		if main.IsModLoaded(OCum)
 			AddColoredHeader("OCum")
 			SetOCumKey = AddKeyMapOption("$ostim_addon_ocum_key", StorageUtil.GetIntValue(none, SUOCumKey, 157))
+			SetOCRegenMod = AddSliderOption("$ostim_addon_ocum_RegenMod", GetExternalFloat(ocum, GVOCRegenMod), "{1}")
+			SetOCDisableInflation = AddToggleOption("$ostim_addon_ocum_DisableInflation", GetExternalBool(ocum, GVOCDisableInflation))
+			SetOCDisableCumshot = AddToggleOption("$ostim_addon_ocum_DisableCumshot", GetExternalBool(ocum, GVOCDisableCumshot))
+			SetOCDisableCumMesh = AddToggleOption("$ostim_addon_ocum_DisableCumMesh", GetExternalBool(ocum, GVOCDisableCumMesh))
+			SetOCDisableCumDecal = AddToggleOption("$ostim_addon_ocum_DisableCumDecal", GetExternalBool(ocum, GVOCDisableCumDecal))
 		endIf
+
 	ElseIf (Page == "$ostim_page_undress")
 		LoadCustomContent("Ostim/logo.dds", 184, 31)
 		Main.PlayTickBig()
@@ -566,8 +581,19 @@ Event OnOptionSelect(Int Option)
 		elseif option == SetOANudityBroadcast
 			StorageUtil.SetIntValue(none, SUOANudityBroadcast, (!(StorageUtil.GetIntValue(none, SUOANudityBroadcast) as bool)) as int)
 			SetToggleOptionValue(SetOANudityBroadcast, StorageUtil.GetIntValue(none, SUOANudityBroadcast))
+		elseif option == SetOCDisableInflation
+			SetExternalBool(ocum, GVOCDisableInflation, !GetExternalBool(ocum, GVOCDisableInflation))
+			SetToggleOptionValue(SetOCDisableInflation, GetExternalBool(ocum, GVOCDisableInflation))
+		elseif option == SetOCDisableCumshot
+			SetExternalBool(ocum, GVOCDisableCumshot, !GetExternalBool(ocum, GVOCDisableCumshot))
+			SetToggleOptionValue(SetOCDisableCumshot, GetExternalBool(ocum, GVOCDisableCumshot))
+		elseif option == SetOCDisableCumMesh
+			SetExternalBool(ocum, GVOCDisableCumMesh, !GetExternalBool(ocum, GVOCDisableCumMesh))
+			SetToggleOptionValue(SetOCDisableCumMesh, GetExternalBool(ocum, GVOCDisableCumMesh))
+		elseif option == SetOCDisableCumDecal
+			SetExternalBool(ocum, GVOCDisableCumDecal, !GetExternalBool(ocum, GVOCDisableCumDecal))
+			SetToggleOptionValue(SetOCDisableCumDecal, GetExternalBool(ocum, GVOCDisableCumDecal))
 		endif
-
 		return
 	EndIf
 
@@ -794,6 +820,16 @@ Event OnOptionHighlight(Int Option)
 			SetInfoText("$ostim_tooltip_oa_stat_buffs")
 		ElseIf (Option == SetOCumKey)
 			SetInfoText("$ostim_tooltip_ocum_key")
+		ElseIf (Option == SetOCRegenMod)
+			SetInfoText("$ostim_tooltip_OCRegenMod")
+		ElseIf (Option == SetOCDisableInflation)
+			SetInfoText("$ostim_tooltip_OCDisableInflation")
+		ElseIf (Option == SetOCDisableCumshot)
+			SetInfoText("$ostim_tooltip_OCDisableCumshot")
+		ElseIf (Option == SetOCDisableCumMesh)
+			SetInfoText("$ostim_tooltip_OCDisableCumMesh")
+		ElseIf (Option == SetOCDisableCumDecal)
+			SetInfoText("$ostim_tooltip_OCDisableCumDecal")
 		endif 
 
 		return
@@ -1043,6 +1079,11 @@ Event OnOptionSliderOpen(Int Option)
 		SetSliderDialogDefaultValue(30)
 		SetSliderDialogRange(0, 100)
 		SetSliderDialogInterval(1)
+	elseif (option == SetOCRegenMod)
+		GetExternalFloat(ocum, GVOCRegenMod)
+		SetSliderDialogDefaultValue(1)
+		SetSliderDialogRange(0, 2)
+		SetSliderDialogInterval(0.1)
 	EndIf
 EndEvent
 
@@ -1084,6 +1125,9 @@ Event OnOptionSliderAccept(Int Option, Float Value)
 	ElseIf (Option == SetAIChangeChance)
 		Main.AiSwitchChance = (Value as Int)
 		SetSliderOptionValue(Option, Value, "{0}")
+	ElseIf (Option == SetOCRegenMod)
+		SetExternalFloat(ocum, GVOCRegenMod, Value)
+		SetSliderOptionValue(GVOCRegenMod, Value, "{1}")
 	EndIf
 EndEvent
 
@@ -1404,11 +1448,16 @@ Function ExportSettings()
 	Else
 		JMap.setInt(OstimSettingsFile, "savedOAroused", 0)
 	endif
-	
+
 	if main.IsModLoaded(OCum)
 		OUtils.Console("Saving OCum settings.")
 		JMap.SetInt(OStimSettingsFile, "savedOCum", 1)
 		JMap.SetInt(OStimSettingsFile, "SetOCumKey", StorageUtil.GetIntValue(none, SUOCumKey))
+		JMap.SetFlt(OStimSettingsFile, "SetOCRegenMod", GetExternalFloat(ocum, GVOCRegenMod))
+		JMap.SetInt(OStimSettingsFile, "SetOCDisableInflation", GetExternalBool(ocum, GVOCDisableInflation) as int)
+		JMap.SetInt(OStimSettingsFile, "SetOCDisableCumshot", GetExternalBool(ocum, GVOCDisableCumshot) as int)
+		JMap.SetInt(OStimSettingsFile, "SetOCDisableCumMesh", GetExternalBool(ocum, GVOCDisableCumMesh) as int)
+		JMap.SetInt(OStimSettingsFile, "SetOCDisableCumDecal", GetExternalBool(ocum, GVOCDisableCumDecal) as int)
 	else
 		JMap.SetInt(OStimSettingsFile, "savedOCum", 0)
 	endIf
@@ -1560,63 +1609,71 @@ Function ImportSettings(bool default = false)
 	
 	main.StrippingSlots = JArray.asIntArray((jmap.getObj(OstimSettingsFile, "Slots")))
 
+	if !default ; don't load addon settings for reset to default button
 	; addon stuff
-	if main.IsModLoaded(ORomance) && JMap.getInt(OstimSettingsFile, "savedORomance") == 1
-		osexintegrationmain.Console("Loading ORomance settings.")
-		SetExternalBool(ORomance, GVORSexuality, JMap.getInt(OstimSettingsFile, "SetORSexuality") as bool)
-		SetExternalInt(ORomance, GVORDifficulty, JMap.getInt(OstimSettingsFile, "SetORDifficulty"))
-		SetExternalInt(ORomance, gvorkey, JMap.getInt(OstimSettingsFile, "SetORKey"))
-		SetExternalBool(ORomance, GVORColorblind, JMap.getInt(OstimSettingsFile, "SetORColorblind") as bool)
-		SetExternalInt(ORomance, GVORLeft, JMap.getInt(OstimSettingsFile, "SetORLeft"))
-		SetExternalInt(ORomance, GVORRight, JMap.getInt(OstimSettingsFile, "SetORRight"))
-		SetExternalBool(ORomance, GVORNakadashi, JMap.getInt(OstimSettingsFile, "SetORNakadashi") as bool)
-	endif
-	
-	if main.IsModLoaded(ONights) && JMap.getInt(OstimSettingsFile, "savedONights") == 1
-		osexintegrationmain.Console("Loading ONights settings.")
-		SetExternalBool(ONights, GVONStopWhenFound, JMap.getInt(OstimSettingsFile, "SetONStopWhenFound") as bool)
-		SetExternalFloat(ONights, GVONFreqMult, JMap.getFlt(OstimSettingsFile, "SetONFreqMult"))
-	endif
-	
-	if main.IsModLoaded(OSearch) && JMap.getInt(OstimSettingsFile, "savedOSearch") == 1
-		osexintegrationmain.Console("Loading OSearch settings.")
-		 StorageUtil.SetIntValue(none, SUOSKey, JMap.getInt(OstimSettingsFile, "SetOSKey"))
-		 StorageUtil.SetIntValue(none, SUOSAllowSex, JMap.getInt(OstimSettingsFile, "SetOSAllowSex"))
-		 StorageUtil.SetIntValue(none, SUOSAllowHub, JMap.getInt(OstimSettingsFile, "SetOSAllowHub"))
-		 StorageUtil.SetIntValue(none, SUOSAllowTransitory, JMap.getInt(OstimSettingsFile, "SetOSAllowTransitory"))
+		if main.IsModLoaded(ORomance) && JMap.getInt(OstimSettingsFile, "savedORomance") == 1
+			osexintegrationmain.Console("Loading ORomance settings.")
+			SetExternalBool(ORomance, GVORSexuality, JMap.getInt(OstimSettingsFile, "SetORSexuality") as bool)
+			SetExternalInt(ORomance, GVORDifficulty, JMap.getInt(OstimSettingsFile, "SetORDifficulty"))
+			SetExternalInt(ORomance, gvorkey, JMap.getInt(OstimSettingsFile, "SetORKey"))
+			SetExternalBool(ORomance, GVORColorblind, JMap.getInt(OstimSettingsFile, "SetORColorblind") as bool)
+			SetExternalInt(ORomance, GVORLeft, JMap.getInt(OstimSettingsFile, "SetORLeft"))
+			SetExternalInt(ORomance, GVORRight, JMap.getInt(OstimSettingsFile, "SetORRight"))
+			SetExternalBool(ORomance, GVORNakadashi, JMap.getInt(OstimSettingsFile, "SetORNakadashi") as bool)
+		endif
+
+		if main.IsModLoaded(ONights) && JMap.getInt(OstimSettingsFile, "savedONights") == 1
+			osexintegrationmain.Console("Loading ONights settings.")
+			SetExternalBool(ONights, GVONStopWhenFound, JMap.getInt(OstimSettingsFile, "SetONStopWhenFound") as bool)
+			SetExternalFloat(ONights, GVONFreqMult, JMap.getFlt(OstimSettingsFile, "SetONFreqMult"))
+		endif
+
+		if main.IsModLoaded(OSearch) && JMap.getInt(OstimSettingsFile, "savedOSearch") == 1
+			osexintegrationmain.Console("Loading OSearch settings.")
+			 StorageUtil.SetIntValue(none, SUOSKey, JMap.getInt(OstimSettingsFile, "SetOSKey"))
+			 StorageUtil.SetIntValue(none, SUOSAllowSex, JMap.getInt(OstimSettingsFile, "SetOSAllowSex"))
+			 StorageUtil.SetIntValue(none, SUOSAllowHub, JMap.getInt(OstimSettingsFile, "SetOSAllowHub"))
+			 StorageUtil.SetIntValue(none, SUOSAllowTransitory, JMap.getInt(OstimSettingsFile, "SetOSAllowTransitory"))
+		endif
+
+		if main.IsModLoaded(ovirginity) && JMap.getInt(OstimSettingsFile, "savedovirginity") == 1
+			osexintegrationmain.Console("Loading oVirginity settings.")
+			StorageUtil.SetIntValue(none, SUOVShowEffects, JMap.GetInt(OstimSettingsFile, "SetOVShowEffects"))
+			StorageUtil.SetIntValue(none, SUOVVirginChance, JMap.GetInt(OstimSettingsFile, "SetOVVirginChance"))
+		endif
+
+		if main.IsModLoaded(OBody) && JMap.getInt(OstimSettingsFile, "savedOBody") == 1
+			osexintegrationmain.Console("Loading OBody settings.")
+			SetExternalBool(OBody, GVOBorefit, JMap.getInt(OstimSettingsFile, "SetOBRefit") as bool)
+			SetExternalBool(OBody, GVOBNippleRand, JMap.getInt(OstimSettingsFile, "SetOBNippleRand") as bool)
+			SetExternalBool(OBody, GVOBGenitalRand, JMap.getInt(OstimSettingsFile, "SetOBGenitalRand") as bool)
+			SetExternalInt(OBody, GVOBPrestKey, JMap.getInt(OstimSettingsFile, "SetOBPresetKey"))
+		endif
+
+		if main.IsModLoaded(OCrime) && JMap.getInt(OstimSettingsFile, "savedOCrime") == 1
+			osexintegrationmain.Console("Loading OCrime settings.")
+			StorageUtil.SetIntValue(none, suocbounty, JMap.getInt(OstimSettingsFile, "SetOCBounty"))
+		endif
+
+		if main.IsModLoaded(OAroused) && JMap.getInt(OstimSettingsFile, "savedOAroused") == 1
+			osexintegrationmain.Console("Loading OAroused settings.")
+			StorageUtil.SetIntValue(none, SUOAKey, JMap.getInt(OstimSettingsFile, "SetOAKey"))
+			StorageUtil.SetIntValue(none, SUOALowArousalReq, JMap.getInt(OstimSettingsFile, "SetOARequireLowArousalBeforeEnd"))
+			StorageUtil.SetIntValue(none, SUOAStatBuffs, JMap.getInt(OstimSettingsFile, "SetOAStatBuffs"))
+			StorageUtil.SetIntValue(none, SUOANudityBroadcast, JMap.getInt(OstimSettingsFile, "SetOANudityBroadcast"))
+		endif
+
+		if main.IsModLoaded(OCum) && JMap.GetInt(OStimSettingsFile, "savedOCum") == 1
+			OUtils.Console("Loading OAroused settings.")
+			StorageUtil.SetIntValue(none, SUOCumKey, JMap.GetInt(OStimSettingsFile, "SetOCumKey"))
+			SetExternalFloat(OCum, GVOCRegenMod, JMap.GetFlt(OStimSettingsFile, "SetOCRegenMod"))
+			SetExternalBool(OCum, GVOCDisableInflation, JMap.GetInt(OStimSettingsFile, "SetOCDisableInflation") as bool)
+			SetExternalBool(OCum, GVOCDisableCumshot, JMap.GetInt(OStimSettingsFile, "SetOCDisableCumshot") as bool)
+			SetExternalBool(OCum, GVOCDisableCumMesh, JMap.GetInt(OStimSettingsFile, "SetOCDisableCumMesh") as bool)
+			SetExternalBool(OCum, GVOCDisableCumDecal, JMap.GetInt(OStimSettingsFile, "SetOCDisableCumDecal") as bool)
+		endIf
 	endif
 
-	if main.IsModLoaded(ovirginity) && JMap.getInt(OstimSettingsFile, "savedovirginity") == 1
-		osexintegrationmain.Console("Loading oVirginity settings.")
-		StorageUtil.SetIntValue(none, SUOVShowEffects, JMap.GetInt(OstimSettingsFile, "SetOVShowEffects"))
-		StorageUtil.SetIntValue(none, SUOVVirginChance, JMap.GetInt(OstimSettingsFile, "SetOVVirginChance"))
-	endif
-	
-	if main.IsModLoaded(OBody) && JMap.getInt(OstimSettingsFile, "savedOBody") == 1
-		osexintegrationmain.Console("Loading OBody settings.")
-		SetExternalBool(OBody, GVOBorefit, JMap.getInt(OstimSettingsFile, "SetOBRefit") as bool)
-		SetExternalBool(OBody, GVOBNippleRand, JMap.getInt(OstimSettingsFile, "SetOBNippleRand") as bool)
-		SetExternalBool(OBody, GVOBGenitalRand, JMap.getInt(OstimSettingsFile, "SetOBGenitalRand") as bool)
-		SetExternalInt(OBody, GVOBPrestKey, JMap.getInt(OstimSettingsFile, "SetOBPresetKey"))
-	endif
-	
-	if main.IsModLoaded(OCrime) && JMap.getInt(OstimSettingsFile, "savedOCrime") == 1
-		osexintegrationmain.Console("Loading OCrime settings.")
-		StorageUtil.SetIntValue(none, suocbounty, JMap.getInt(OstimSettingsFile, "SetOCBounty"))
-	endif
-	
-	if main.IsModLoaded(OAroused) && JMap.getInt(OstimSettingsFile, "savedOAroused") == 1
-		osexintegrationmain.Console("Loading OAroused settings.")
-		StorageUtil.SetIntValue(none, SUOAKey, JMap.getInt(OstimSettingsFile, "SetOAKey"))
-		StorageUtil.SetIntValue(none, SUOALowArousalReq, JMap.getInt(OstimSettingsFile, "SetOARequireLowArousalBeforeEnd"))
-		StorageUtil.SetIntValue(none, SUOAStatBuffs, JMap.getInt(OstimSettingsFile, "SetOAStatBuffs"))
-		StorageUtil.SetIntValue(none, SUOANudityBroadcast, JMap.getInt(OstimSettingsFile, "SetOANudityBroadcast"))
-	endif
-
-	if main.IsModLoaded(OCum) && JMap.GetInt(OStimSettingsFile, "savedOCum") == 1
-		OUtils.Console("Loading OAroused settings.")
-		StorageUtil.SetIntValue(none, SUOCumKey, JMap.GetInt(OStimSettingsFile, "SetOCumKey"))
-	endIf
 	osexintegrationmain.Console("Loading Ostim settings.")
 	; Force page reset to show updated changes.
 	ForcePageReset()
