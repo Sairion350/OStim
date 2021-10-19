@@ -3425,8 +3425,11 @@ Event OnKeyDown(Int KeyPress)
 				return 
 			EndIf
 		Else
-			AddSceneMetadata("ostim_manual_start")
-			Masturbate(PlayerRef)
+			Utility.Wait(2)
+			if Input.IsKeyPressed(keymap)
+				AddSceneMetadata("ostim_manual_start")
+				Masturbate(PlayerRef)
+			endif 
 			return
 		EndIf
 	elseif (KeyPress == freecamkey)
