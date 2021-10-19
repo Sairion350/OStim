@@ -246,7 +246,7 @@ Function Init()
 	Pages = pagearr
 
 	Utility.Wait(2)
-	;ImportSettings()
+	ImportSettings()
 EndFunction
 
 Event OnPageReset(String Page)
