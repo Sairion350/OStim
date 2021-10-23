@@ -155,15 +155,15 @@ int GVOBPrestKey = 0x001805
 string OCum = "OCum.esp"
 int SetOCumKey
 string SUOCumKey = "ocum.key"
-int GVOCRegenMod = 0x00CE25
+int GVOCRegenMod = 0x000822
 int SetOCRegenMod
-int GVOCDisableInflation = 0x00CE26
+int GVOCDisableInflation = 0x000823
 int SetOCDisableInflation
-int GVOCDisableCumshot = 0x00F5C0
+int GVOCDisableCumshot = 0x000824
 int SetOCDisableCumshot
-int GVOCDisableCumMesh = 0x00F5D5
+int GVOCDisableCumMesh = 0x000837
 int SetOCDisableCumMesh
-int GVOCDisableCumDecal = 0x00F5D6
+int GVOCDisableCumDecal = 0x000838
 int SetOCDisableCumDecal
 
 
