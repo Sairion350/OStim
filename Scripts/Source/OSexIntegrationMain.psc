@@ -1620,6 +1620,14 @@ OStimSubthread Function GetUnusedSubthread()
 	endwhile
 EndFunction
 
+OStimSubthread Function GetSubthread(int id)
+	OStimSubthread ret = subthreadquest.GetNthAlias(id) as OStimSubthread
+	if !ret 
+		Console("Subthread not found")
+	endif 
+	return ret
+EndFunction
+
 Function ConvertToSubthread()
 {Turn the current thread into a subthread and wait to return}
 	if SceneRunning
