@@ -1024,7 +1024,7 @@ Int Function GetCurrentAnimationMaxSpeed()
 EndFunction
 
 Int Function GetAPIVersion()
-	Return 25
+	Return 26
 EndFunction
 
 bool Function SoloAnimsInstalled()
