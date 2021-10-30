@@ -844,7 +844,7 @@ Event OnUpdate() ;OStim main logic loop
 
 	Console("Ending scene")
 
-	SendModEvent("ostim_end")
+	SendModEvent("ostim_end", numArg = -1.0)
 
 	If !DisableScaling && !ForceCloseOStimThread
 		RestoreScales()

@@ -316,9 +316,7 @@ Function EndAnimation() ;todo - isloaded check, see osexintegrationmain endanima
 
 	Redress()
 
-	int me = ModEvent.create("ostim_subthread_end")
-	ModEvent.PushInt(me, id)
-	ModEvent.Send(me)
+	SendModEvent("ostim_end", numArg = id)
 
 	inuse = false
 
