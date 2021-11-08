@@ -92,6 +92,44 @@ bool Function IsModLoaded(string ESPFile) Global
 	return (Game.GetModByName(ESPFile) != 255)
 Endfunction
 
+float[] Function GetNodeLocation(actor act, string node) Global
+	float[] ret = new float[3]
+	NetImmerse.GetNodeWorldPosition(act, node, ret, false)
+	return ret
+EndFunction
+
+int Function GetFloatMin(float[] arr) Global 
+	int min = 0
+	int i = 1 
+	int l = arr.Length 
+	while i < l 
+		if arr[i] < arr[min]
+			min = i 
+		endif  
+		i += 1 
+	endwhile 
+
+	return min 
+EndFunction
+
+int Function GetFloatMax(float[] arr) Global 
+	int max = 0
+	int i = 1 
+	int l = arr.Length 
+	while i < l 
+		if arr[i] > arr[max]
+			max = i 
+		endif  
+		i += 1 
+	endwhile 
+
+	return max
+EndFunction
+
+float Function ThreeDeeDistance(float[] pointSet1, float[] pointSet2) Global
+	return math.sqrt( ((pointset2[0] - pointSet1[0]) * (pointset2[0] - pointSet1[0])) +  ((pointset2[1] - pointSet1[1]) * (pointset2[1] - pointSet1[1])) + ((pointset2[2] - pointSet1[2]) * (pointset2[2] - pointSet1[2])))
+EndFunction
+
 Function DisplayTextBanner(String Txt) Global
 	UI.InvokeString("HUD Menu", "_root.HUDMovieBaseInstance.QuestUpdateBaseInstance.ShowNotification", Txt)
 EndFunction
