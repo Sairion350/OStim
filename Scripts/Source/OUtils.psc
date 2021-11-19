@@ -395,6 +395,10 @@ Function SetSkyUIWidgetsVisible(bool visible) Global
 	UI.SetNumber("HUD Menu", "_root.WidgetContainer._alpha", val)
 EndFunction
 
+Bool Function IsNaked(Actor NPC) global 
+	Return (!(NPC.GetWornForm(0x00000004) as Bool))
+EndFunction
+
 Function SetUIVisible(bool visible) Global
 	UI.SetBool("HUD Menu", "_root.HUDMovieBaseInstance._visible", visible)
 EndFunction

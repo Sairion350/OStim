@@ -1024,7 +1024,7 @@ Int Function GetCurrentAnimationMaxSpeed()
 EndFunction
 
 Int Function GetAPIVersion()
-	Return 26
+	Return 27
 EndFunction
 
 bool Function SoloAnimsInstalled()
@@ -2819,6 +2819,8 @@ Function OnSound(Actor Act, Int SoundID, Int FormNumber)
 	Arg += "," + FormId
 	Arg += "," + SoundId
 	SendModEvent("ostim_osasound", StrArg = Arg)
+
+	;Console("Sound: " + arg)
 EndFunction
 
 Event OnFormBind(String EventName, String zMod, Float IxID, Form Sender)
@@ -3212,6 +3214,9 @@ Function SetDefaultSettings()
 
 	disableOSAControls = false
 
+
+
+
 	UseFreeCam = !(SKSE.GetPluginVersion("ImprovedCamera") != -1)
 
 	Forcefirstpersonafter = !UseFreeCam
@@ -3569,6 +3574,7 @@ EndFunction
 Function Startup()
 	installed = false
 	Debug.Notification("Installing OStim. Please wait...")
+
 
 	LoadRegistrations = PapyrusUtil.FormArray(0, none)
 
