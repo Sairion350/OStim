@@ -244,10 +244,11 @@ Function Init()
 	pagearr = PapyrusUtil.PushString(pagearr, "$ostim_page_about")
 
 	Pages = pagearr
-
-	Utility.Wait(2)
-	ImportSettings()
 EndFunction
+
+Event OnConfigRegister()
+	ImportSettings()
+endEvent
 
 Event OnPageReset(String Page)
 	{Called when a new page is selected, including the initial empty page}
