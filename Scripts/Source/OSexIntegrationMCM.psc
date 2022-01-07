@@ -1586,8 +1586,8 @@ Function ImportSettings(bool default = false)
 	Main.ControlToggleKey = JMap.GetInt(OstimSettingsFile, "SetControlToggle")
 	Main.RemapControlToggleKey(Main.ControlToggleKey)
 	Main.FreecamKey = JMap.GetInt(OstimSettingsFile, "SetFreecamToggleKey")
-	main.RemapControlToggleKey(main.FreecamKey)
-	
+	Main.RemapFreecamKey(main.FreecamKey)
+
 	; Bed settings export.
 	Main.UseBed = JMap.GetInt(OstimSettingsFile, "SetEnableBeds")
 	Main.BedSearchDistance = JMap.GetInt(OstimSettingsFile, "SetBedSearchDistance")
