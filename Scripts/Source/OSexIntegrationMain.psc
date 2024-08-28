@@ -450,7 +450,7 @@ Bool Function StartScene(Actor Dom, Actor Sub, Bool zUndressDom = False, Bool zU
 		EndIf
 	Else
 		AggressiveThemedSexScene = False
-		AggressingActor = None
+		AggressiveActor = None
 	EndIf
 
 	If (Bed)
